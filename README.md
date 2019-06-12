@@ -17,13 +17,16 @@ Automatic Program Repair System
 ranks = faultLocalization(p, T)
 
 for line in p:
-    abstCandidates = applyTemplate(line)
-    sort(abstCandidates, ranks[line], θ)
-    for ac in abstCandidates:
-        condValues = searchCondValue(ac)
-        concreteCandidates = generateCondition(ac, condValues)
-        for cc in concreteCandidates:
-            patch = test(cc, T)
-        return patch
+   abstCandidates += applyTemplate(line):
+        
+sort(abstCandidates, ranks)
+
+for ac in abstCandidates:
+    condValues = searchCondValue(ac)
+    concreteCandidates = generateCondition(ac, condValues)
+    for cc in concreteCandidates:
+        patch = test(cc, T)
+    return patch
+
 ```
 

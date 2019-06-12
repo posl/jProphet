@@ -1,0 +1,13 @@
+# Ignore eclipse meta data
+.settings
+.classpath
+.project
+bin
+
+
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
