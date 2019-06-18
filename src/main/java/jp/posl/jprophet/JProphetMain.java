@@ -27,7 +27,7 @@ public class JProphetMain {
     	
     	// 修正対象コードの全ASTノードの取得
     	AstGenerator astGenerator = new AstGenerator();
-    	List<AstNode> astNodes = astGenerator.getAllASTNode();
+    	List<AstNode> astNodes = astGenerator.getAllAstNode();
     	
     	// 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
     	RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
