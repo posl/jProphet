@@ -27,6 +27,7 @@ dependencies {
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
+    compile group: 'com.github.javaparser', name: 'javaparser-symbol-solver-core', version: '3.5.15'
 }
 
 // Define the main class for the application
