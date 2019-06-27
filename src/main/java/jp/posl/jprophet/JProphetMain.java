@@ -30,7 +30,7 @@ public class JProphetMain {
     	List<AstNode> astNodes = astGenerator.getAllAstNode();
     	
     	// 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
-    	RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
+    	RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator(astNodes);
     	List<AbstractRepairCandidate> abstractRepairCandidates = new ArrayList<AbstractRepairCandidate>();
     	for(AstNode astNode : astNodes) {
     		abstractRepairCandidates.addAll(repairCandidateGenerator.applyTemplate(astNode));
