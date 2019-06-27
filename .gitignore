@@ -3,6 +3,7 @@
 .classpath
 .project
 .vscode
+.code-workspace
 .metadata
 bin
 
