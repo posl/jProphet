@@ -15,6 +15,46 @@ plugins {
     id 'application'
 }
 
+subprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+
+    jacoco {
+        toolVersion = "0.8.3"
+
+        //report結果の出力場所
+        reportsDir = file("$buildDir/customJacocoReportDir")
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.enabled true
+            csv.enabled true
+            html.enabled true
+
+            //これを書かなかったらbuildDir/customJacocoDirに結果が出力される
+            html.destination file("${buildDir}/jacocoHtml")
+
+            //これを書いたらbuildDir直下にxmlreport.xmlという名前で出力される
+            //xml.destination file("${buildDir}/xmlreport.xml")
+        }
+    }
+
+    repositories {
+        jcenter()
+    }
+
+    // 全てのprojectで設定される依存性
+    dependencies {
+        // This dependency is found on compile classpath of this component and consumers.
+        implementation 'com.google.guava:guava:27.0.1-jre'
+
+        // Use JUnit test framework
+        testImplementation 'junit:junit:4.12'
+    }
+}
+
 repositories {
     // Use jcenter for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.

@@ -5,7 +5,7 @@ import jp.posl.jprophet.ProjectConfiguration;
 
 public class FaultLocalization {
 	public FaultLocalization() {
-		# test
+		// test
 		
 	}
 	public HashMap<AstNode, Integer> exec(ProjectConfiguration projectConfiguration) {
