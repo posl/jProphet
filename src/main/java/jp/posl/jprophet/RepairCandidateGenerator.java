@@ -32,13 +32,13 @@ public class RepairCandidateGenerator{
 		for (AstNode astNode : AstNodes) {
 			Node node = astNode.get();
 			if (node instanceof VariableDeclarator) {
-				//((VariableDeclarator)node).setName("huga");
-				//((VariableDeclarator)node).setParentNode(newParentNode)
-				//System.out.println(astNode.getSourceCode());
+				((VariableDeclarator)node).setName("huga");
+				//((VariableDeclarator)node).setParentNode(newParentNode);
+				System.out.println(astNode.getSourceCode());
 			}
 			else if(node instanceof ClassOrInterfaceDeclaration){
-				//((ClassOrInterfaceDeclaration)node).addModifier(Modifier.STATIC);
-				//System.out.println(astNode.getSourceCode());
+				((ClassOrInterfaceDeclaration)node).addModifier(Modifier.STATIC);
+				System.out.println(astNode.getSourceCode());
 			}
 			// else if(node instanceof BlockStmt){
 			// 	// parent nodeが途中からないNodeがある

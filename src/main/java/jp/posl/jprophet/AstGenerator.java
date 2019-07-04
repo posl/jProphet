@@ -42,6 +42,7 @@ public class AstGenerator {
 	private final String FILE_PATH = "/Users/shuto/test.java";
 	//private final String CUR_DIR = System.getProperty("user.dir");
 	private CompilationUnit cu;
+	//cUnit = JavaParser.parse(new File(this.FILE_PATH));
 
 	public AstGenerator() {
 		try {
@@ -49,6 +50,10 @@ public class AstGenerator {
 		} catch (FileNotFoundException e) {
 			System.err.println(e.getMessage());
 		}
+
+		CompilationUnit cUnit;
+
+
 		// LexicalPreservingPrinter.setup(this.cu);
 
 		// Node root = this.cu.findRootNode();
@@ -75,8 +80,6 @@ public class AstGenerator {
 			Node node = nodes.get(index);
 			
 			if(!node.getChildNodes().isEmpty()){
-				//nodes.addAll(node.getChildNodes().stream().map(n -> n.clone()).collect(Collectors.toList()));
-				// List<Node> childs = node.getChildNodes();
 				// List<Node> childClones = new ArrayList<>();
 				// childs.forEach(n -> {
 				// 	Node nodeClone = n.clone();
@@ -124,7 +127,8 @@ public class AstGenerator {
 			CompilationUnit cUnit;
 			try{
 				cUnit = JavaParser.parse(new File(this.FILE_PATH));
-				System.out.println(LexicalPreservingPrinter.print(cUnit));
+				LexicalPreservingPrinter.setup(cUnit);
+				//System.out.println(LexicalPreservingPrinter.print(cUnit));
 				this.findNode(cUnit, node.hashCode()).ifPresent(n -> {
 					astNodes.add(new AstNode(n, cUnit));
 				});
