@@ -12,4 +12,14 @@ public class AppTest {
         iftest classUnderTest = new iftest();
         assertNotNull("app should have a greeting", classUnderTest.suuji(1));
     }
+    /*
+    @Test public void testiftest2() {
+        iftest classUnderTest = new iftest();
+        assertNotNull("app should have a greeting", classUnderTest.suuji(2));
+    }
+    */
+    @Test public void testiftest3() {
+        iftest classUnderTest = new iftest();
+        assertNotNull("app should have a greeting", classUnderTest.suuji(3));
+    }
 }
