@@ -16,27 +16,28 @@ public class TestExecutor {
 
         Runtime runtime = Runtime.getRuntime();
 
-        String[] Command = { "python", "./test.py" };
+        String[] Command = { "python", "./TestProject/test.py" };
 
         Process p = null;
         File dir = new File("./");
 
+        String line = "";
 
         try {
         	p = runtime.exec(Command, null, dir);
             p.waitFor();
             BufferedReader br =
-              new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            String line;
-            while ((line = br.readLine()) != null) {
-               System.out.print(line);
-            }
+              new BufferedReader(new InputStreamReader(p.getInputStream()));
+            line = br.readLine();
           } catch (IOException e) {
              System.out.print(e);
           } catch (InterruptedException e) {
              System.out.print(e);
           }
 
-        return true;
+        if(line.equals("TRUE")) return true;
+        else return false;
+
+
 	}
 }

@@ -17,8 +17,8 @@ public class JProphetMain {
 
 
     	TestExecutor  t = new TestExecutor();
-    	t.test(project);
-
+    	boolean r = t.test(project);
+    	System.out.print(r);
 
     	// フォルトローカライゼーション
     	FaultLocalization faultLocalization = new FaultLocalization();
