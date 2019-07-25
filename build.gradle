@@ -70,6 +70,8 @@ dependencies {
 
     implementation 'org.jacoco:org.jacoco.core:0.8.3'
 
+    implementation 'junit:junit:4.12'
+
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
     compile group: 'com.github.javaparser', name: 'javaparser-symbol-solver-core', version: '3.5.15'

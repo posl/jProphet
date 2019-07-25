@@ -41,6 +41,8 @@ public final class CoreTutorial {
 
 		public void run() {
 			isPrime(7);
+			TestRunner1 test = new TestRunner1();
+			test.runtest1();
 		}
 
 		private boolean isPrime(final int n) {
