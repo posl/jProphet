@@ -26,6 +26,8 @@ import org.jacoco.core.instr.Instrumenter;
 import org.jacoco.core.runtime.IRuntime;
 import org.jacoco.core.runtime.LoggerRuntime;
 import org.jacoco.core.runtime.RuntimeData;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
 
 /**
  * Example usage of the JaCoCo core API. In this tutorial a single target class
@@ -33,59 +35,6 @@ import org.jacoco.core.runtime.RuntimeData;
  * dumped.
  */
 public final class CoreTutorial {
-
-	/**
-	 * The test target we want to see code coverage for.
-	 */
-	public static class TestTarget implements Runnable {
-
-		public void run() {
-			isPrime(7);
-			TestRunner1 test = new TestRunner1();
-			test.runtest1();
-		}
-
-		private boolean isPrime(final int n) {
-			for (int i = 2; i * i <= n; i++) {
-				if ((n ^ i) == 0) {
-					return false;
-				}
-			}
-			return true;
-		}
-
-	}
-
-	/**
-	 * A class loader that loads classes from in-memory data.
-	 */
-	public static class MemoryClassLoader extends ClassLoader {
-
-		private final Map<String, byte[]> definitions = new HashMap<String, byte[]>();
-
-		/**
-		 * Add a in-memory representation of a class.
-		 * 
-		 * @param name
-		 *            name of the class
-		 * @param bytes
-		 *            class definition
-		 */
-		public void addDefinition(final String name, final byte[] bytes) {
-			definitions.put(name, bytes);
-		}
-
-		@Override
-		protected Class<?> loadClass(final String name, final boolean resolve)
-				throws ClassNotFoundException {
-			final byte[] bytes = definitions.get(name);
-			if (bytes != null) {
-				return defineClass(name, bytes, 0, bytes.length);
-			}
-			return super.loadClass(name, resolve);
-		}
-
-	}
 
 	private final PrintStream out;
 
@@ -107,6 +56,7 @@ public final class CoreTutorial {
 	 */
 	public void execute() throws Exception {
 		final String targetName = TestTarget.class.getName();
+		System.out.println(targetName);
 
 		// For instrumentation and runtime we need a IRuntime instance
 		// to collect execution data:
@@ -168,6 +118,10 @@ public final class CoreTutorial {
 
 	private InputStream getTargetClass(final String name) {
 		final String resource = '/' + name.replace('.', '/') + ".class";
+		System.out.println("resource: " + resource);
+		System.out.println("getResourceAsStream: " + getClass().getResourceAsStream(resource));
+		
+		
 		return getClass().getResourceAsStream(resource);
 	}
 

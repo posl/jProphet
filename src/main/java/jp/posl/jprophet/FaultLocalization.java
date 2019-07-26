@@ -11,28 +11,26 @@ public class FaultLocalization {
 	public FaultLocalization() {
 
 		// test_jacoco
-		/*
 		CoreTutorial CoreT = new CoreTutorial(System.out);
 		try{
 			CoreT.execute();
+			System.out.println(System.getProperty("java.class.path"));
+			
 		}catch (Exception e){
 			//例外に対する処理
 		}
-		*/
 		
 
-		/*
-		ClassInfo ClassI = new ClassInfo(System.out);
-		try{
-			ClassI.execute();
-		}catch (Exception e){
-			System.out.println("エラー");
-		}
-		*/
+		// ClassInfo ClassI = new ClassInfo(System.out);
+		// try{
+		// 	ClassI.execute();
+		// }catch (Exception e){
+		// 	System.out.println("エラー");
+		// }
 
 		
-		TestRunner1 Junittest1 = new TestRunner1();
-		Junittest1.runtest1();
+		// TestRunner1 Junittest1 = new TestRunner1();
+		// Junittest1.runtest1();
 		
 		
 	}
