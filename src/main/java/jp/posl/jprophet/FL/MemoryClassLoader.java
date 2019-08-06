@@ -1,12 +1,17 @@
 package jp.posl.jprophet.FL;
 
 import java.util.Map;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.HashMap;
 /**
  * A class loader that loads classes from in-memory data.
  */
-public class MemoryClassLoader extends ClassLoader {
+public class MemoryClassLoader extends URLClassLoader {
 
+    public MemoryClassLoader(URL[] urls) {
+		super(urls);
+	}
     private final Map<String, byte[]> definitions = new HashMap<String, byte[]>();
 
     /**
@@ -22,7 +27,7 @@ public class MemoryClassLoader extends ClassLoader {
     }
 
     @Override
-    protected Class<?> loadClass(final String name, final boolean resolve)
+    public Class<?> loadClass(final String name, final boolean resolve)
             throws ClassNotFoundException {
         final byte[] bytes = definitions.get(name);
         if (bytes != null) {

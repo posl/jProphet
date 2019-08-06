@@ -13,6 +13,8 @@ package jp.posl.jprophet.FL;
 
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,8 +37,27 @@ import org.junit.runner.Result;
  * dumped.
  */
 public final class CoreTutorial {
+	// public static class TestTarget implements Runnable {
+
+	// 	public void run() {
+	// 		isPrime(7);
+	// 		TestRunner1 test = new TestRunner1();
+	// 		test.runtest1();
+	// 	}
+
+	// 	private boolean isPrime(final int n) {
+	// 		for (int i = 2; i * i <= n; i++) {
+	// 			if ((n ^ i) == 0) {
+	// 				return false;
+	// 			}
+	// 		}
+	// 		return true;
+	// 	}
+
+	// }
 
 	private final PrintStream out;
+	private MemoryClassLoader memoryClassLoader;
 
 	/**
 	 * Creates a new example instance printing to the given stream.
@@ -46,6 +67,13 @@ public final class CoreTutorial {
 	 */
 	public CoreTutorial(final PrintStream out) {
 		this.out = out;
+		this.memoryClassLoader = null;
+		try {
+			this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./output/") });
+		} catch (MalformedURLException e){
+			System.err.println(e.getMessage());
+		}
+		//this.memoryClassLoader = new MemoryClassLoader(new URL[] {});
 	}
 
 	/**
@@ -55,8 +83,12 @@ public final class CoreTutorial {
 	 *             in case of errors
 	 */
 	public void execute() throws Exception {
-		final String targetName = TestTarget.class.getName();
-		System.out.println(targetName);
+		//final String targetName = TestTarget.class.getName();
+		// final String targetName = TestTarget.class.getName();
+		// final String targetName = "jp.Prime";
+		final String targetName = "jcc.iftest";
+		final String testName = "jcc.AppTest";
+		// System.out.println("targetName: " + targetName);
 
 		// For instrumentation and runtime we need a IRuntime instance
 		// to collect execution data:
@@ -65,7 +97,8 @@ public final class CoreTutorial {
 		// The Instrumenter creates a modified version of our test target class
 		// that contains additional probes for execution data recording:
 		final Instrumenter instr = new Instrumenter(runtime);
-		InputStream original = getTargetClass(targetName);
+		// InputStream original = this.getTargetClassInputStream(targetName);
+		InputStream original = this.getTargetClassInputStream(targetName);
 		final byte[] instrumented = instr.instrument(original, targetName);
 		original.close();
 
@@ -76,12 +109,17 @@ public final class CoreTutorial {
 
 		// In this tutorial we use a special class loader to directly load the
 		// instrumented class definition from a byte[] instances.
-		final MemoryClassLoader memoryClassLoader = new MemoryClassLoader();
-		memoryClassLoader.addDefinition(targetName, instrumented);
-		final Class<?> targetClass = memoryClassLoader.loadClass(targetName);
+		//if(this.memoryClassLoader == null) return;
+		this.memoryClassLoader.addDefinition(targetName, instrumented);
+		final Class<?> testClass = this.memoryClassLoader.loadClass(testName);
+		// final Class<?> targetClass = this.memoryClassLoader.loadClass(targetName);
+		
 
 		// Here we execute our test target class through its Runnable interface:
-		final Runnable targetInstance = (Runnable) targetClass.newInstance();
+		// final JUnitCore junitCore = new JUnitCore();
+		// junitCore.run(testClass);
+		// final Runnable targetInstance = (Runnable) testClass.newInstance();
+		final Runnable targetInstance = (Runnable) testClass.newInstance();
 		targetInstance.run();
 
 		// At the end of test execution we collect execution data and shutdown
@@ -95,7 +133,9 @@ public final class CoreTutorial {
 		// information:
 		final CoverageBuilder coverageBuilder = new CoverageBuilder();
 		final Analyzer analyzer = new Analyzer(executionData, coverageBuilder);
-		original = getTargetClass(targetName);
+		// original = getTargetClassInputStream(testName);
+		// analyzer.analyzeClass(original, testName);
+		original = getTargetClassInputStream(targetName);
 		analyzer.analyzeClass(original, targetName);
 		original.close();
 
@@ -118,11 +158,19 @@ public final class CoreTutorial {
 
 	private InputStream getTargetClass(final String name) {
 		final String resource = '/' + name.replace('.', '/') + ".class";
-		System.out.println("resource: " + resource);
-		System.out.println("getResourceAsStream: " + getClass().getResourceAsStream(resource));
+		// System.out.println("resource: " + resource);
+		// System.out.println("getResourceAsStream: " + getClass().getResourceAsStream(resource));
 		
 		
 		return getClass().getResourceAsStream(resource);
+	}
+
+	private InputStream getTargetClassInputStream(final String name) {
+		final String resource = name.replace('.', '/') + ".class";
+
+		InputStream is = this.memoryClassLoader.getResourceAsStream(resource);
+		// System.out.println(is);
+		return is;
 	}
 
 	private void printCounter(final String unit, final ICounter counter) {
