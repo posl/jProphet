@@ -6,22 +6,14 @@ package jcc;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class AppTest implements Runnable {
+public class AppTest {
     @Test public void testiftest() {
-        iftest classUnderTest = new iftest();
-        assertNotNull("app should have a greeting", classUnderTest.suuji(1));
+        assertEquals(1, new iftest().printNum(1));
     }
-    public void run(){
-        assertNotNull("app should have a greeting", new iftest().suuji(0)); 
-    }
-    /*
     @Test public void testiftest2() {
-        iftest classUnderTest = new iftest();
-        assertNotNull("app should have a greeting", classUnderTest.suuji(2));
+        assertEquals(2, new iftest().printNum(2));
     }
-    */
     @Test public void testiftest3() {
-        iftest classUnderTest = new iftest();
-        assertNotNull("app should have a greeting", classUnderTest.suuji(2));
+        assertEquals(3, new iftest().printNum(3));
     }
 }

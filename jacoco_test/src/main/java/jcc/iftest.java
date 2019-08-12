@@ -6,22 +6,15 @@ import java.io.PrintWriter;
 import java.io.IOException;
 
 
-public class iftest implements Runnable {
-    public void run(){
-
-        System.out.println("RRUUUN");
-
-    }
-    public int suuji(int x) {
+public class iftest {
+    public int printNum(int x) {
         if (x == 1){
-            System.out.println("111111111111");
+            System.out.println("echo 1");
         }else if(x == 2){
-            System.out.println("222222222222");
+            System.out.println("echo 2");
         }else{
-            System.out.println("OTHERRRRRRRRRRRRRRR");
+            System.out.println("echo OTHER");
         }
-
         return x;
     }
-
 }

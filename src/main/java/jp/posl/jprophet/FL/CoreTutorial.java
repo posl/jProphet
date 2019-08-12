@@ -73,7 +73,6 @@ public final class CoreTutorial {
 		} catch (MalformedURLException e){
 			System.err.println(e.getMessage());
 		}
-		//this.memoryClassLoader = new MemoryClassLoader(new URL[] {});
 	}
 
 	/**
@@ -83,12 +82,8 @@ public final class CoreTutorial {
 	 *             in case of errors
 	 */
 	public void execute() throws Exception {
-		//final String targetName = TestTarget.class.getName();
-		// final String targetName = TestTarget.class.getName();
-		// final String targetName = "jp.Prime";
 		final String targetName = "jcc.iftest";
 		final String testName = "jcc.AppTest";
-		// System.out.println("targetName: " + targetName);
 
 		// For instrumentation and runtime we need a IRuntime instance
 		// to collect execution data:
@@ -97,7 +92,6 @@ public final class CoreTutorial {
 		// The Instrumenter creates a modified version of our test target class
 		// that contains additional probes for execution data recording:
 		final Instrumenter instr = new Instrumenter(runtime);
-		// InputStream original = this.getTargetClassInputStream(targetName);
 		InputStream original = this.getTargetClassInputStream(targetName);
 		final byte[] instrumented = instr.instrument(original, targetName);
 		original.close();
@@ -109,18 +103,13 @@ public final class CoreTutorial {
 
 		// In this tutorial we use a special class loader to directly load the
 		// instrumented class definition from a byte[] instances.
-		//if(this.memoryClassLoader == null) return;
 		this.memoryClassLoader.addDefinition(targetName, instrumented);
 		final Class<?> testClass = this.memoryClassLoader.loadClass(testName);
-		// final Class<?> targetClass = this.memoryClassLoader.loadClass(targetName);
 		
 
-		// Here we execute our test target class through its Runnable interface:
-		// final JUnitCore junitCore = new JUnitCore();
-		// junitCore.run(testClass);
-		// final Runnable targetInstance = (Runnable) testClass.newInstance();
-		final Runnable targetInstance = (Runnable) testClass.newInstance();
-		targetInstance.run();
+		//junitによるテストケースを実行
+		final JUnitCore junitCore = new JUnitCore();
+		junitCore.run(testClass);
 
 		// At the end of test execution we collect execution data and shutdown
 		// the runtime:
@@ -133,8 +122,6 @@ public final class CoreTutorial {
 		// information:
 		final CoverageBuilder coverageBuilder = new CoverageBuilder();
 		final Analyzer analyzer = new Analyzer(executionData, coverageBuilder);
-		// original = getTargetClassInputStream(testName);
-		// analyzer.analyzeClass(original, testName);
 		original = getTargetClassInputStream(targetName);
 		analyzer.analyzeClass(original, targetName);
 		original.close();
@@ -158,9 +145,6 @@ public final class CoreTutorial {
 
 	private InputStream getTargetClass(final String name) {
 		final String resource = '/' + name.replace('.', '/') + ".class";
-		// System.out.println("resource: " + resource);
-		// System.out.println("getResourceAsStream: " + getClass().getResourceAsStream(resource));
-		
 		
 		return getClass().getResourceAsStream(resource);
 	}
@@ -169,7 +153,6 @@ public final class CoreTutorial {
 		final String resource = name.replace('.', '/') + ".class";
 
 		InputStream is = this.memoryClassLoader.getResourceAsStream(resource);
-		// System.out.println(is);
 		return is;
 	}
 
