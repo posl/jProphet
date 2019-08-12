@@ -1,7 +1,5 @@
 package jp.posl.jprophet;
 
-import jp.posl.jprophet.FL.TestRunner1;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,12 +8,9 @@ import java.util.List;
 import jp.posl.jprophet.ProjectConfiguration;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.FL.CoreTutorial;
-import jp.posl.jprophet.FL.ClassInfo;
 
 public class FaultLocalization {
 	public FaultLocalization() {
-
-		String path = System.getProperty("user.dir");
 		List<String> sourceFiles = new ArrayList<>(Arrays.asList("jacoco_test/src/main/java/jcc/iftest.java"));
 		List<String> testFiles = new ArrayList<>(Arrays.asList("jacoco_test/src/test/java/jcc/AppTest.java"));
 
@@ -29,7 +24,6 @@ public class FaultLocalization {
 		CoreTutorial CoreT = new CoreTutorial(System.out);
 		try{
 			CoreT.execute();
-			
 		}catch (Exception e){
 			//例外に対する処理
 		}

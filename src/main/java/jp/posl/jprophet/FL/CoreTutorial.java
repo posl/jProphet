@@ -15,8 +15,6 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
@@ -29,7 +27,6 @@ import org.jacoco.core.runtime.IRuntime;
 import org.jacoco.core.runtime.LoggerRuntime;
 import org.jacoco.core.runtime.RuntimeData;
 import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
 
 /**
  * Example usage of the JaCoCo core API. In this tutorial a single target class
@@ -37,25 +34,6 @@ import org.junit.runner.Result;
  * dumped.
  */
 public final class CoreTutorial {
-	// public static class TestTarget implements Runnable {
-
-	// 	public void run() {
-	// 		isPrime(7);
-	// 		TestRunner1 test = new TestRunner1();
-	// 		test.runtest1();
-	// 	}
-
-	// 	private boolean isPrime(final int n) {
-	// 		for (int i = 2; i * i <= n; i++) {
-	// 			if ((n ^ i) == 0) {
-	// 				return false;
-	// 			}
-	// 		}
-	// 		return true;
-	// 	}
-
-	// }
-
 	private final PrintStream out;
 	private MemoryClassLoader memoryClassLoader;
 
