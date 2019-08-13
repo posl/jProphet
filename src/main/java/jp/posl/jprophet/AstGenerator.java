@@ -39,10 +39,8 @@ import java.util.Optional;
 
 public class AstGenerator {
 
-	private final String FILE_PATH = "/Users/shuto/test.java";
-	//private final String CUR_DIR = System.getProperty("user.dir");
+	private final String FILE_PATH = "./test.java";
 	private CompilationUnit cu;
-	//cUnit = JavaParser.parse(new File(this.FILE_PATH));
 
 	public AstGenerator() {
 		try {
@@ -50,27 +48,8 @@ public class AstGenerator {
 		} catch (FileNotFoundException e) {
 			System.err.println(e.getMessage());
 		}
-
-		CompilationUnit cUnit;
-
-
-		// LexicalPreservingPrinter.setup(this.cu);
-
-		// Node root = this.cu.findRootNode();
-		// Node hoge = root.getChildNodes().get(3).getChildNodes().get(1).getChildNodes().get(0);
-		// ((VariableDeclarator)hoge).setName("hoge");
-        // System.out.println(LexicalPreservingPrinter.print(this.cu));
 	}
 	
-	// NodeをラッパークラスAstNodeに変換
-	// private List<AstNode> nodeToAstNode(List<Node> nodes){
-	// 	List<AstNode> astNodes = new ArrayList<AstNode>();
-	// 	nodes.forEach(n -> {
-	// 		AstNode astNode = new AstNode(n);
-	// 		astNodes.add(astNode);
-	// 	});
-	// 	return astNodes;
-	// }
 
 	// parentNode以下の全ての子ノードをリストにして返す
 	private List<Node> collectAllChildNodes(Node parentNode){
@@ -80,13 +59,7 @@ public class AstGenerator {
 			Node node = nodes.get(index);
 			
 			if(!node.getChildNodes().isEmpty()){
-				// List<Node> childClones = new ArrayList<>();
-				// childs.forEach(n -> {
-				// 	Node nodeClone = n.clone();
-				// 	childClones.add(nodeClone);
-				// });
 				nodes.addAll(node.getChildNodes());
-				//nodes.addAll(childClones);
 			}
 			index++;
 			if(index == nodes.size()) break;
@@ -117,10 +90,6 @@ public class AstGenerator {
 	public List<AstNode> getAllAstNode(){
 		Node root = this.cu.findRootNode();
 		List<Node> nodes = this.collectAllChildNodes(root);
-		// List<Integer> nodeHashCodes = new ArrayList<Integer>();
-		// for(int i = 0; i < nodes.size(); i++){
-		// 	nodeHashCodes.add(nodes.get(i).hashCode());
-		// }
 
 		List<AstNode> astNodes = new ArrayList<AstNode>();
 		for(Node node : nodes){
@@ -128,7 +97,6 @@ public class AstGenerator {
 			try{
 				cUnit = JavaParser.parse(new File(this.FILE_PATH));
 				LexicalPreservingPrinter.setup(cUnit);
-				//System.out.println(LexicalPreservingPrinter.print(cUnit));
 				this.findNode(cUnit, node.hashCode()).ifPresent(n -> {
 					astNodes.add(new AstNode(n, cUnit));
 				});
