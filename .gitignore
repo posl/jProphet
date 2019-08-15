@@ -5,6 +5,7 @@
 .vscode
 .metadata
 bin
+*.code-workspace
 
 
 

@@ -1,6 +1,9 @@
+// comments
 public class mngString {
-    private String str;
-
-    public String get(String str){
+    
+    public void get(){
+        int i = 0;
+        i = 10;
     }
+
 }
