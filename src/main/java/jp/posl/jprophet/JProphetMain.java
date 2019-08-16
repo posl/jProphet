@@ -9,7 +9,7 @@ import jp.posl.jprophet.AstNode;
 import jp.posl.jprophet.AstGenerator;
 import jp.posl.jprophet.AbstractRepairCandidate;
 import jp.posl.jprophet.ConcreteRepairCandidate;
-import jp.posl.jprophet.RepairCandidateGenerator;
+import jp.posl.jprophet.template.RepairCandidateGenerator;
 import jp.posl.jprophet.PlausibilityAnalyzer;
 import jp.posl.jprophet.StagedCondGenerator;
 
@@ -30,11 +30,9 @@ public class JProphetMain {
     	List<AstNode> astNodes = astGenerator.getAllAstNode();
     	
     	// 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
-    	RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator(astNodes);
+    	RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
     	List<AbstractRepairCandidate> abstractRepairCandidates = new ArrayList<AbstractRepairCandidate>();
-    	for(AstNode astNode : astNodes) {
-    		abstractRepairCandidates.addAll(repairCandidateGenerator.applyTemplate(astNode));
-    	}
+    	abstractRepairCandidates.addAll(repairCandidateGenerator.applyTemplate(astNodes));
     	
     	// 学習モデルとフォルトローカライゼーションのスコアによってソート
     	PlausibilityAnalyzer plausibilityAnalyzer = new PlausibilityAnalyzer();  

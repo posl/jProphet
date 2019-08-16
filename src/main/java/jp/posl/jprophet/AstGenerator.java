@@ -1,39 +1,15 @@
 package jp.posl.jprophet;
 
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.visitor.VoidVisitor;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.javaparser.metamodel.NodeMetaModel;
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.StringProvider;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 
-import javassist.expr.Instanceof;
 
-import com.github.javaparser.ast.body.BodyDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.expr.IntegerLiteralExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ContinueStmt;
-import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.visitor.ModifierVisitor;
 
-import java.io.FileInputStream;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import com.github.javaparser.ParseResult;
-import com.github.javaparser.ParseStart;
-import com.github.javaparser.ast.CompilationUnit;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
