@@ -1,12 +1,11 @@
 package jp.posl.jprophet;
 
-import jp.posl.jprophet.TestExecutor;
+import jp.posl.jprophet.AstGenerator;
 import org.junit.Test;                                                                                                                                                                  
 import static org.junit.Assert.*;
 
-public class AppTest {
-    @Test public void testAppHasAGreeting() {
-        TestExecutor testExecutor = new TestExecutor();
-        //assertNotNull("app should have a greeting", classUnderTest.getGreeting());
+public class AstNodeGeneratorTest {
+    @Test public void testFor() {
+        //assertThat(new AstGenerator().getAllAstNode(), );
     }   
 }

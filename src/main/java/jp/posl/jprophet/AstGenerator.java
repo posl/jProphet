@@ -16,12 +16,13 @@ import java.util.Optional;
 
 public class AstGenerator {
 
-	private final String FILE_PATH = "./test.java";
+	private final String filePath;
 	private CompilationUnit cu;
 
-	public AstGenerator() {
+	public AstGenerator(final String filePath) {
+		this.filePath = filePath;
 		try {
-			this.cu = JavaParser.parse(new File(this.FILE_PATH));
+			this.cu = JavaParser.parse(new File(this.filePath));
 		} catch (FileNotFoundException e) {
 			System.err.println(e.getMessage());
 		}
@@ -99,7 +100,7 @@ public class AstGenerator {
 		for(Node node : nodes){
 			CompilationUnit cUnit;
 			try{
-				cUnit = JavaParser.parse(new File(this.FILE_PATH));
+				cUnit = JavaParser.parse(new File(this.filePath));
 				LexicalPreservingPrinter.setup(cUnit);
 				this.findNode(cUnit, node.hashCode(), hashCodeCounts).ifPresent(n -> {
 					astNodes.add(new AstNode(n, cUnit));

@@ -1,4 +1,4 @@
-package jp.posl.jprophet.template;
+package jp.posl.jprophet.operation;
 
 import java.util.List;
 

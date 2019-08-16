@@ -8,7 +8,6 @@ public class AbstractRepairCandidate extends RepairCandidate {
     }
 
     public String toString(){
-        // TODO: 仮のあれ
-        return this.astNode.getSourceCode();
+        return this.astNode.toString();
     }
 }

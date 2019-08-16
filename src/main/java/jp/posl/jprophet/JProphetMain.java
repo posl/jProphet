@@ -9,7 +9,7 @@ import jp.posl.jprophet.AstNode;
 import jp.posl.jprophet.AstGenerator;
 import jp.posl.jprophet.AbstractRepairCandidate;
 import jp.posl.jprophet.ConcreteRepairCandidate;
-import jp.posl.jprophet.template.RepairCandidateGenerator;
+import jp.posl.jprophet.RepairCandidateGenerator;
 import jp.posl.jprophet.PlausibilityAnalyzer;
 import jp.posl.jprophet.StagedCondGenerator;
 
@@ -26,7 +26,7 @@ public class JProphetMain {
     	HashMap<AstNode, Integer> suspiciousenesses = faultLocalization.exec(project);
     	
     	// 修正対象コードの全ASTノードの取得
-    	AstGenerator astGenerator = new AstGenerator();
+    	AstGenerator astGenerator = new AstGenerator("test.java");
     	List<AstNode> astNodes = astGenerator.getAllAstNode();
     	
     	// 各ASTに対して修正テンプレートを適用し抽象修正候補の生成

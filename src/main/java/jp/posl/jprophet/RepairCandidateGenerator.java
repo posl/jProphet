@@ -1,4 +1,4 @@
-package jp.posl.jprophet.template;
+package jp.posl.jprophet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import jp.posl.jprophet.AbstractRepairCandidate;
 import jp.posl.jprophet.AstNode;
+import jp.posl.jprophet.operation.*;
 
 
 public class RepairCandidateGenerator{

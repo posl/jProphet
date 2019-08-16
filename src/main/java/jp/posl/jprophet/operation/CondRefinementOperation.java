@@ -1,12 +1,12 @@
-package jp.posl.jprophet.template;
+package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import jp.posl.jprophet.AstNode;
 
-public class CtrlFlowIntroductionOperation implements AstOperation{
-    public CtrlFlowIntroductionOperation(){
+public class CondRefinementOperation implements AstOperation{
+    public CondRefinementOperation(){
        
     }
 

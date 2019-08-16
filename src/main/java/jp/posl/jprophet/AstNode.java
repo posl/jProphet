@@ -19,26 +19,20 @@ public class AstNode {
         return this.node;
     };
 
-    // public void accept(RepairCandidateGenerator rcGenerator){
-    //     rcGenerator.applyTemplate(this.get());
-    //     return;
-    // }
-
-    // protected AstNode(TokenRange tokenRange) {
-    //     super(tokenRange);
-    //     // TODO Auto-generated constructor stub
-    // }
-
     public String getSourceCode() {
         //return LexicalPreservingPrinter.print(this.compilationUnit);
 
         return new PrettyPrinter(new PrettyPrinterConfiguration()).print(this.compilationUnit);
     }
 
-    public int getLineNumber(int i){
+    public String toString(){
+        return this.compilationUnit.toString();
+    }
+
+    public int getLineNumber(){
         // 未実装
         TokenRange range = this.node.getTokenRange().get();
-        return i;
+        return 0;
     }
 
 }
