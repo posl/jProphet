@@ -6,6 +6,8 @@
 .code-workspace
 .metadata
 bin
+*.code-workspace
+.DS_Store
 
 
 
