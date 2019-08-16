@@ -5,6 +5,8 @@
 .vscode
 .metadata
 bin
+*.code-workspace
+.DS_Store
 
 
 
