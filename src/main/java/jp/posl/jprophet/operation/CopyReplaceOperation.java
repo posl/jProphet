@@ -6,19 +6,19 @@ import java.util.List;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.VariableDeclarator;
 
-import jp.posl.jprophet.AstNode;
+import jp.posl.jprophet.RepairUnit;
 
 public class CopyReplaceOperation implements AstOperation{
     public CopyReplaceOperation(){
        
     }
 
-    public List<AstNode> exec(AstNode astNode){
-        List<AstNode> candidates = new ArrayList<AstNode>();
-        Node node = astNode.get();
+    public List<RepairUnit> exec(RepairUnit repairUnit){
+        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
+        Node node = repairUnit.getNode();
         if(node instanceof VariableDeclarator){
             ((VariableDeclarator)node).setName("hoge");
-            candidates.add(astNode);
+            candidates.add(repairUnit);
         }
         return candidates;
     }

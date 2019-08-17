@@ -14,42 +14,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+
 public class AstGenerator {
 
-	private final String filePath;
-	private CompilationUnit cu;
-
-	public AstGenerator(final String filePath) {
-		this.filePath = filePath;
-		try {
-			this.cu = JavaParser.parse(new File(this.filePath));
-		} catch (FileNotFoundException e) {
-			System.err.println(e.getMessage());
-		}
-	}
-	
-
-	// parentNode以下の全ての子ノードをリストにして返す
+	/**
+	 * ASTノードの全ての子ノードをリストにして返す.
+	 * 
+	 * @param parentNode 探索したい子ノードを持つASTノード
+	 * @return 子ノードのリスト 
+	 */
 	private List<Node> collectAllChildNodes(Node parentNode){
-		List<Node> nodes = new ArrayList<Node>(parentNode.getChildNodes());
+		List<Node> childNodes = new ArrayList<Node>(parentNode.getChildNodes());
 		int index = 0;
 		while(true){
-			if(index == nodes.size()) break;
-			Node node = nodes.get(index);
+			if(index == childNodes.size()) break;
+			Node node = childNodes.get(index);
 			
 			if(!node.getChildNodes().isEmpty()){
-				nodes.addAll(node.getChildNodes());
+				childNodes.addAll(node.getChildNodes());
 			}
 			index++;
 		}
-		return nodes;
+		return childNodes;
 	}
 
 
-	// コンパイルユニットから与えられたハッシュ値を持つノードを見つける
-	private Optional<Node> findNode(CompilationUnit cu, int hashCode, HashMap<Integer, Integer> hashCodeCounts){
+	/**
+	 * 与えられたハッシュ値を持つASTノードをコンパイルユニットの全ての子ノードの中から見つける.
+	 * 
+	 * @param compilationUnit 検索対象の子ノードを持つコンパイルユニット
+	 * @param hashCode 検索するハッシュ値
+	 * @param hashCodeCounts 
+	 * @return ヒットしたASTノード
+	 */
+	private Optional<Node> findNode(CompilationUnit compilationUnit, int hashCode, HashMap<Integer, Integer> hashCodeCounts){
 		List<Node> nodes = new ArrayList<Node>();
-		nodes.add(cu.findRootNode());
+		nodes.add(compilationUnit.findRootNode());
 		int index = 0;
 		int count = 0;
 		while(true){
@@ -71,7 +71,12 @@ public class AstGenerator {
 	}
 
 
-	// 同一のハッシュ値を持つノードを数え上げる
+	/**
+	 * 与えられたASTノードのリストに含まれるノードのハッシュ値を調べ，重複するハッシュ値を数える.
+	 * 
+	 * @param nodes ハッシュ値の重複数を調べるASTノードのリスト
+	 * @return 引数のASTノードのリストに存在したハッシュ値をキーとしてその個数を値とした連想配列
+	 */
 	private HashMap<Integer, Integer> countHashCode(List<Node> nodes){
 		List<Integer> codes = new ArrayList<Integer>();
 		HashMap<Integer, Integer> hashCodeCounts = new HashMap<Integer, Integer>();
@@ -89,30 +94,44 @@ public class AstGenerator {
 	}
 
 
-	// 全てのAstNodeを取得
-	public List<AstNode> getAllAstNode(){
-		Node root = this.cu.findRootNode();
+	/**
+	 * ソースコードから全てのASTノードを抽出し，修正単位であるRepairUnitを取得する.
+	 * 
+	 * @return 修正対象のASTノードとコンパイルユニットを持った修正単位であるRepairUnitのリスト
+	 */
+	public List<RepairUnit> getAllRepairUnit(ProjectConfiguration project){
+		final String filePath = project.getFilePath();
+		final CompilationUnit cu;
+		try {
+			cu = JavaParser.parse(new File(filePath));
+		} catch (FileNotFoundException e) {
+			System.err.println(e.getMessage());
+			return new ArrayList<>();
+		}
+
+		Node root = cu.findRootNode();
 		List<Node> nodes = this.collectAllChildNodes(root);
 
 		HashMap<Integer, Integer> hashCodeCounts = countHashCode(nodes);
 
-		List<AstNode> astNodes = new ArrayList<AstNode>();
+		List<RepairUnit> repairUnits = new ArrayList<RepairUnit>();
 		for(Node node : nodes){
-			CompilationUnit cUnit;
+			CompilationUnit compilationUnit;
 			try{
-				cUnit = JavaParser.parse(new File(this.filePath));
-				LexicalPreservingPrinter.setup(cUnit);
-				this.findNode(cUnit, node.hashCode(), hashCodeCounts).ifPresent(n -> {
-					astNodes.add(new AstNode(n, cUnit));
+				compilationUnit = JavaParser.parse(new File(filePath));
+				LexicalPreservingPrinter.setup(compilationUnit);
+				this.findNode(compilationUnit, node.hashCode(), hashCodeCounts).ifPresent(n -> {
+					repairUnits.add(new RepairUnit(n, compilationUnit, filePath));
 				});
 			}
 			catch (FileNotFoundException e) {
 				System.err.println(e.getMessage());
+				return new ArrayList<>();
 			}
 			
 		}
 
-		return astNodes;
+		return repairUnits;
 	}
 	
 }

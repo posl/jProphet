@@ -32,3 +32,9 @@ dependencies {
 
 // Define the main class for the application
 mainClassName = 'jp.posl.jprophet.JProphetMain'
+
+run {
+    if (project.hasProperty('args')) {    // "args" というプロパティが渡されていたら
+        args project.args.split('\\s+')   // 空白文字で split して、 run タスクの args オプションにセットする
+    }
+}
