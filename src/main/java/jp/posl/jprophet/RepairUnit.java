@@ -9,21 +9,16 @@ import com.github.javaparser.printer.*;
 public class RepairUnit {
     private Node targetNode;
     private CompilationUnit compilationUnit;
-    private String filePath;
 
-    public RepairUnit(Node node, CompilationUnit compilationUnit, String filePath){
+    public RepairUnit(Node node, CompilationUnit compilationUnit){
         this.targetNode = node;
         this.compilationUnit = compilationUnit;
-        this.filePath = filePath;
     }
 
     public Node getNode(){
         return this.targetNode;
     };
 
-    public String getFilePath(){
-        return this.filePath;
-    }
 
     public CompilationUnit getCompilationUnit(){
         return this.compilationUnit;
@@ -40,7 +35,7 @@ public class RepairUnit {
     }
 
     public int getLineNumber(){
-        // 未実装
+        // TODO
         TokenRange range = this.targetNode.getTokenRange().get();
         return 0;
     }

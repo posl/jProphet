@@ -38,3 +38,8 @@ run {
         args project.args.split('\\s+')   // 空白文字で split して、 run タスクの args オプションにセットする
     }
 }
+
+// task javadocPrivate(type: Javadoc){
+//     source = sourceSets.main.allJava
+//     options.showFromPrivate()
+// }

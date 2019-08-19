@@ -1,15 +1,17 @@
 package jp.posl.jprophet;
 
+import java.util.List;
+
 public class ProjectConfiguration {
-	final String filePath;
+	List<String> filePaths;
 	public ProjectConfiguration(String[] args) {
-		if(args.length < 1){
-			throw new IllegalArgumentException("'./gradlew run -Pargs=\"example/target01.java'のように実行時にファイルパスを引数に渡してください.");
-		}
-		this.filePath = args[0];
+		if(args.length < 1)
+			this.filePaths.add("example/target01.java");
+		else
+			this.filePaths.add(args[0]);
 	}
 
-	public String getFilePath(){
-		return this.filePath;
+	public List<String> getFilePaths(){
+		return this.filePaths;
 	}
 }

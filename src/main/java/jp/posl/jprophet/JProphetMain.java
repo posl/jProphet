@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.HashMap;
 import jp.posl.jprophet.ProjectConfiguration;
 import jp.posl.jprophet.FaultLocalization;
-import jp.posl.jprophet.RepairUnit;
-import jp.posl.jprophet.AstGenerator;
 import jp.posl.jprophet.AbstractRepairCandidate;
 import jp.posl.jprophet.ConcreteRepairCandidate;
 import jp.posl.jprophet.RepairCandidateGenerator;
@@ -22,7 +20,7 @@ public class JProphetMain {
 			jprophet.run(project);
 		}
 		catch(IllegalArgumentException e){
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			System.exit(-1);
 		}
 	}
@@ -32,14 +30,10 @@ public class JProphetMain {
     	FaultLocalization faultLocalization = new FaultLocalization();
     	HashMap<Integer, Integer> suspiciousenesses = faultLocalization.exec(project);
     	
-    	// 修正対象コードの全ASTノードの取得
-    	AstGenerator astGenerator = new AstGenerator();
-    	List<RepairUnit> repairUnits = astGenerator.getAllRepairUnit(project);
-    	
     	// 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
     	RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
     	List<AbstractRepairCandidate> abstractRepairCandidates = new ArrayList<AbstractRepairCandidate>();
-    	abstractRepairCandidates.addAll(repairCandidateGenerator.applyTemplate(repairUnits));
+    	abstractRepairCandidates.addAll(repairCandidateGenerator.exec(project));
     	
     	// 学習モデルとフォルトローカライゼーションのスコアによってソート
     	PlausibilityAnalyzer plausibilityAnalyzer = new PlausibilityAnalyzer();  
