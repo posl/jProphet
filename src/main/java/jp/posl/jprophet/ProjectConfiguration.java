@@ -1,9 +1,10 @@
 package jp.posl.jprophet;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectConfiguration {
-	List<String> filePaths;
+	List<String> filePaths = new ArrayList<String>();
 	public ProjectConfiguration(String[] args) {
 		if(args.length < 1)
 			this.filePaths.add("example/target01.java");
