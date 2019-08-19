@@ -27,7 +27,7 @@ public class RepairCandidateGenerator{
 		for(String filePath : filePaths){
 			try {
 				List<String> lines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
-				String souceCode = String.join("", lines);
+				String souceCode = String.join("\n", lines);
 				List<RepairUnit> repairUnits =  new AstGenerator().getAllRepairUnit(souceCode);
 				for(RepairUnit repairUnit : repairUnits){
 					List<RepairUnit> appliedUnits = this.applyTemplate(repairUnit);
