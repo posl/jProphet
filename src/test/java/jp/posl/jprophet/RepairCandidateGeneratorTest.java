@@ -12,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import jp.posl.jprophet.operation.*;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -51,6 +52,12 @@ public class RepairCandidateGeneratorTest {
         List<AbstractRepairCandidate> candidates = repairCandidateGenerator.exec(stubProject);
 
 
+        Mockito.verify(condRefinementOperation, times(6)).exec(Mockito.any(RepairUnit.class));
+        Mockito.verify(condIntroductionOperation, times(6)).exec(Mockito.any(RepairUnit.class));
+        Mockito.verify(ctrlFlowIntroductionOperation, times(6)).exec(Mockito.any(RepairUnit.class));
+        Mockito.verify(insertInitOperation, times(6)).exec(Mockito.any(RepairUnit.class));
+        Mockito.verify(valueReplacementOperation, times(6)).exec(Mockito.any(RepairUnit.class));
+        Mockito.verify(copyReplaceOperation, times(6)).exec(Mockito.any(RepairUnit.class));
         assertThat(candidates.size()).isEqualTo(36);
 
     }
