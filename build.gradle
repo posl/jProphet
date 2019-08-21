@@ -27,6 +27,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.assertj:assertj-core:3.2.0'
+    testImplementation "org.mockito:mockito-core:2.+"
 
     compile group: 'com.github.javaparser', name: 'javaparser-symbol-solver-core', version: '3.5.15'
 }

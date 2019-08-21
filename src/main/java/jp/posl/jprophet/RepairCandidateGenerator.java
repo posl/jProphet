@@ -15,6 +15,14 @@ import jp.posl.jprophet.operation.*;
 
 public class RepairCandidateGenerator{
 
+	// テスト時のモック注入のためにprivate変数化
+	private CondRefinementOperation condRefinementOperation = new CondRefinementOperation();
+	private CondIntroductionOperation condIntroductionOperation = new CondIntroductionOperation(); 
+	private CtrlFlowIntroductionOperation ctrlFlowIntroductionOperation = new CtrlFlowIntroductionOperation(); 
+	private InsertInitOperation insertInitOperation = new InsertInitOperation(); 
+	private ValueReplacementOperation valueReplacementOperation =  new ValueReplacementOperation();
+	private CopyReplaceOperation copyReplaceOperation = new CopyReplaceOperation();
+
 	/**
 	 * バグのあるソースコード群から修正パッチ候補を生成する 
 	 * 
@@ -51,12 +59,12 @@ public class RepairCandidateGenerator{
 	 */
 	private List<RepairUnit> applyTemplate(RepairUnit repairUnit) {
 		List<AstOperation> astOperations = new ArrayList<AstOperation>(Arrays.asList(
-			new CondRefinementOperation(),
-			new CondIntroductionOperation(), 
-			new CtrlFlowIntroductionOperation(), 
-			new InsertInitOperation(), 
-			new ValueReplacementOperation(),
-			new CopyReplaceOperation()
+			condRefinementOperation,
+			condIntroductionOperation,
+			ctrlFlowIntroductionOperation,
+			insertInitOperation,
+			valueReplacementOperation,
+			copyReplaceOperation
 		));
 
 		List<RepairUnit> appliedUnits = new ArrayList<RepairUnit>();
@@ -64,10 +72,6 @@ public class RepairCandidateGenerator{
 			appliedUnits.addAll(astOperation.exec(repairUnit));	
 		}
 
-		//debug
-		for(RepairUnit unit : appliedUnits){
-			System.out.println(unit.toString());
-		}
 		return appliedUnits;
 	}
 
