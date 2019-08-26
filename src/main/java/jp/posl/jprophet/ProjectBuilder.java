@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
@@ -19,41 +21,36 @@ import javax.tools.ToolProvider;
 public class ProjectBuilder {
 
     static private final String CLASSPATH_SEPARATOR = File.pathSeparator;
-    private final String outDir = System.getProperty("java.io.tmpdir");
+    private final String tmpDir = System.getProperty("java.io.tmpdir");
 
-
-    public boolean buildSourceFiles(ProjectConfiguration projectConfiguration){
-        return this.build(projectConfiguration.getSourceFilePaths(), projectConfiguration.getClassPaths(), this.outDir);
-    }
-
-    public boolean buildTestFiles(ProjectConfiguration projectConfiguration){
-        return this.build(projectConfiguration.getTestFilePaths(), projectConfiguration.getClassPaths(), this.outDir);
-    }
-
-    public boolean buildSourceFiles(ProjectConfiguration projectConfiguration, String outDir){
-        return this.build(projectConfiguration.getSourceFilePaths(), projectConfiguration.getClassPaths(), outDir);
-    }
-
-    public boolean buildTestFiles(ProjectConfiguration projectConfiguration, String outDir){
-        return this.build(projectConfiguration.getTestFilePaths(), projectConfiguration.getClassPaths(), outDir);
+    /**
+	 * プロジェクトのソースコードとテストクラスをjava.io.tmpdirにビルド
+	 * 
+     * @param projectConfiguration 対象プロジェクト
+	 * @return ビルドが成功すれば true，失敗すれば false
+	 */
+    public boolean build(ProjectConfiguration projectConfiguration){
+        return this.build(projectConfiguration, this.tmpDir);
     }
 
 	/**
-	 * ソースコードをビルド
+	 * プロジェクトのソースコードとテストクラスをビルド
 	 * 
+     * @param projectConfiguration 対象プロジェクト
 	 * @param outDir
 	 *            バイトコード出力ディレクトリ
 	 * @return ビルドが成功すれば true，失敗すれば false
 	 */
-	private boolean build(List<String> sourceFilePaths, List<String> classPaths, final String outDir) {
+	private boolean build(ProjectConfiguration projectConfiguration, final String outDir) {
 
+        List<String> filePaths = Stream.concat(projectConfiguration.getTestFilePaths().stream(), projectConfiguration.getTestFilePaths().stream()).collect(Collectors.toList());
 		final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		final StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 
 		final Iterable<? extends JavaFileObject> javaFileObjects;
 
         javaFileObjects = fileManager.getJavaFileObjectsFromStrings(
-                sourceFilePaths);
+                filePaths);
 
 
 		final List<String> compilationOptions = new ArrayList<>();
@@ -63,7 +60,7 @@ public class ProjectBuilder {
 		compilationOptions.add("UTF-8");
 		compilationOptions.add("-classpath");
 		compilationOptions.add(String.join(CLASSPATH_SEPARATOR,
-				classPaths));
+				projectConfiguration.getClassPaths()));
 
 		final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 		final CompilationTask task = compiler.getTask(null, fileManager, diagnostics, compilationOptions, null,
@@ -91,53 +88,6 @@ public class ProjectBuilder {
 		return isSuccess;
 	}
 
-
-
-	public boolean buildTest(final String outDir) {
-
-		final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-		final StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
-
-		final Iterable<? extends JavaFileObject> javaFileObjects;
-
-        javaFileObjects = fileManager.getJavaFileObjectsFromStrings(
-                this.projectConfig.getTestFilePaths());
-
-
-		final List<String> compilationOptions = new ArrayList<>();
-		compilationOptions.add("-d");
-		compilationOptions.add(outDir);
-		compilationOptions.add("-encoding");
-		compilationOptions.add("UTF-8");
-		compilationOptions.add("-classpath");
-		compilationOptions.add(String.join(CLASSPATH_SEPARATOR,
-				this.projectConfig.getClassPaths()));
-
-		final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-		final CompilationTask task = compiler.getTask(null, fileManager, diagnostics, compilationOptions, null,
-				javaFileObjects);
-
-        final boolean isSuccess = task.call();
-
-		for (Diagnostic<?> diagnostic : diagnostics.getDiagnostics()) {
-			System.err.println(diagnostic.getCode());
-			System.err.println(diagnostic.getKind());
-			System.err.println(diagnostic.getPosition());
-			System.err.println(diagnostic.getStartPosition());
-			System.err.println(diagnostic.getEndPosition());
-			System.err.println(diagnostic.getSource());
-			System.err.println(diagnostic.getMessage(null));
-
-		}
-
-		try {
-			fileManager.close();
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
-
-		return isSuccess;
-	}
 }
 
 class JavaSourceFromString extends SimpleJavaFileObject {
