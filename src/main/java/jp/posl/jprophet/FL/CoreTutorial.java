@@ -46,6 +46,7 @@ public final class CoreTutorial {
 	public CoreTutorial(final PrintStream out) {
 		this.out = out;
 		this.memoryClassLoader = null;
+		// ここであらかじめoutputディレクトリにビルド済みのクラスファイルをクラスローダーが読み込んでおく
 		try {
 			this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./output/") });
 		} catch (MalformedURLException e){
@@ -60,6 +61,8 @@ public final class CoreTutorial {
 	 *             in case of errors
 	 */
 	public void execute() throws Exception {
+		// 対象のソースファイルとそのテストクラスファイルの完全修飾ドメイン名(FQDN)
+		// ここに直書きしているが実際はファイルパスとかから取得しなきゃいけない
 		final String targetName = "jcc.iftest";
 		final String testName = "jcc.AppTest";
 
@@ -67,8 +70,7 @@ public final class CoreTutorial {
 		// to collect execution data:
 		final IRuntime runtime = new LoggerRuntime();
 
-		// The Instrumenter creates a modified version of our test target class
-		// that contains additional probes for execution data recording:
+		// ここでターゲットのソースファイルをjacocoが書き換えてカバレッジ計測できるようにする
 		final Instrumenter instr = new Instrumenter(runtime);
 		InputStream original = this.getTargetClassInputStream(targetName);
 		final byte[] instrumented = instr.instrument(original, targetName);
@@ -76,12 +78,15 @@ public final class CoreTutorial {
 
 		// Now we're ready to run our instrumented class and need to startup the
 		// runtime first:
+		// ここ以降で走ったjacocoによる書き換え済みプログラムは記録される
 		final RuntimeData data = new RuntimeData();
 		runtime.startup(data);
 
 		// In this tutorial we use a special class loader to directly load the
 		// instrumented class definition from a byte[] instances.
+		// ここでクラスローダーがjacocoの書き換えたターゲットクラスを読み込む
 		this.memoryClassLoader.addDefinition(targetName, instrumented);
+		// ここでテストクラスをクラスローダーから取得 
 		final Class<?> testClass = this.memoryClassLoader.loadClass(testName);
 		
 
