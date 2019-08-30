@@ -21,29 +21,16 @@ import javax.tools.ToolProvider;
 public class ProjectBuilder {
 
     static private final String CLASSPATH_SEPARATOR = File.pathSeparator;
-    private final String tmpDir = System.getProperty("java.io.tmpdir");
-
-    /**
-	 * プロジェクトのソースコードとテストクラスをjava.io.tmpdirにビルド
-	 * 
-     * @param projectConfiguration 対象プロジェクト
-	 * @return ビルドが成功すれば true，失敗すれば false
-	 */
-    public boolean build(ProjectConfiguration projectConfiguration){
-        return this.build(projectConfiguration, this.tmpDir);
-    }
 
 	/**
 	 * プロジェクトのソースコードとテストクラスをビルド
 	 * 
      * @param projectConfiguration 対象プロジェクト
-	 * @param outDir
-	 *            バイトコード出力ディレクトリ
 	 * @return ビルドが成功すれば true，失敗すれば false
 	 */
-	private boolean build(ProjectConfiguration projectConfiguration, final String outDir) {
+	public boolean build(ProjectConfiguration projectConfiguration) {
 
-        List<String> filePaths = Stream.concat(projectConfiguration.getTestFilePaths().stream(), projectConfiguration.getTestFilePaths().stream()).collect(Collectors.toList());
+        List<String> filePaths = Stream.concat(projectConfiguration.getSourceFilePaths().stream(), projectConfiguration.getTestFilePaths().stream()).collect(Collectors.toList());
 		final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		final StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 
@@ -55,7 +42,7 @@ public class ProjectBuilder {
 
 		final List<String> compilationOptions = new ArrayList<>();
 		compilationOptions.add("-d");
-		compilationOptions.add(outDir);
+		compilationOptions.add(projectConfiguration.getBuildPath());
 		compilationOptions.add("-encoding");
 		compilationOptions.add("UTF-8");
 		compilationOptions.add("-classpath");

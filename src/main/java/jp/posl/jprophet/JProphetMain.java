@@ -19,7 +19,8 @@ public class JProphetMain {
 	
 	
     public static void main(String[] args) {
-    	ProjectConfiguration project = new ProjectConfiguration();
+		final String OUT_DIR = System.getProperty("java.io.tmpdir");
+    	ProjectConfiguration project = new ProjectConfiguration(args[0], OUT_DIR);
     	
     	// フォルトローカライゼーション
     	FaultLocalization faultLocalization = new FaultLocalization();
