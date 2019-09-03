@@ -50,7 +50,7 @@ public class AstGenerator {
 			CompilationUnit compilationUnit;
 			compilationUnit = JavaParser.parse(sourceCode);
 			LexicalPreservingPrinter.setup(compilationUnit);
-			repairUnits.add(new RepairUnit(this.collectAllChildNodes(compilationUnit.findRootNode()).get(i), compilationUnit));
+			repairUnits.add(new RepairUnit(this.collectAllChildNodes(compilationUnit.findRootNode()).get(i), i, compilationUnit));
 		}
 
 		return repairUnits;

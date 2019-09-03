@@ -42,22 +42,24 @@ public class RepairCandidateGeneratorTest {
         when(stubProject.getFilePaths()).thenReturn(filePathsForTest);
 
         // 全てのRepairUnitに対して各テンプレート適用操作につきが一つのRepairUnitを返すようにモックを生成
-        List<RepairUnit> units = new ArrayList<RepairUnit>(Arrays.asList(new RepairUnit(null, null))); 
+        List<RepairUnit> units = new ArrayList<RepairUnit>(Arrays.asList(new RepairUnit(null, 0, null))); 
         when(condRefinementOperation.exec(Mockito.any(RepairUnit.class))).thenReturn(units);
         when(condIntroductionOperation.exec(Mockito.any(RepairUnit.class))).thenReturn(units);
         when(ctrlFlowIntroductionOperation.exec(Mockito.any(RepairUnit.class))).thenReturn(units);
         when(insertInitOperation.exec(Mockito.any(RepairUnit.class))).thenReturn(units);
         when(valueReplacementOperation.exec(Mockito.any(RepairUnit.class))).thenReturn(units);
         when(copyReplaceOperation.exec(Mockito.any(RepairUnit.class))).thenReturn(units);
+
+        // stubProject(6個のASTノードを持つソースファイル一つ)を入力にとり，各operationが6回ずつ呼び出されているかをテスト
         List<AbstractRepairCandidate> candidates = repairCandidateGenerator.exec(stubProject);
-
-
         Mockito.verify(condRefinementOperation, times(6)).exec(Mockito.any(RepairUnit.class));
         Mockito.verify(condIntroductionOperation, times(6)).exec(Mockito.any(RepairUnit.class));
         Mockito.verify(ctrlFlowIntroductionOperation, times(6)).exec(Mockito.any(RepairUnit.class));
         Mockito.verify(insertInitOperation, times(6)).exec(Mockito.any(RepairUnit.class));
         Mockito.verify(valueReplacementOperation, times(6)).exec(Mockito.any(RepairUnit.class));
         Mockito.verify(copyReplaceOperation, times(6)).exec(Mockito.any(RepairUnit.class));
+
+        // 最終的な修正パッチ候補が6*6=36個生成されているか(念の為)テスト
         assertThat(candidates.size()).isEqualTo(36);
 
     }

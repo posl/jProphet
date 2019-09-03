@@ -8,10 +8,12 @@ import com.github.javaparser.printer.*;
 
 public class RepairUnit {
     private Node targetNode;
+    private int targetNodeIndex;
     private CompilationUnit compilationUnit;
 
-    public RepairUnit(Node node, CompilationUnit compilationUnit){
-        this.targetNode = node;
+    public RepairUnit(Node targetNode, int targetNodeIndex, CompilationUnit compilationUnit){
+        this.targetNode = targetNode;
+        this.targetNodeIndex = targetNodeIndex;
         this.compilationUnit = compilationUnit;
     }
 
@@ -19,14 +21,12 @@ public class RepairUnit {
         return this.targetNode;
     };
 
-
     public CompilationUnit getCompilationUnit(){
         return this.compilationUnit;
     }
 
     public String getSourceCode() {
         //return LexicalPreservingPrinter.print(this.compilationUnit);
-
         return new PrettyPrinter(new PrettyPrinterConfiguration()).print(this.compilationUnit);
     }
 
@@ -38,6 +38,10 @@ public class RepairUnit {
         // TODO
         TokenRange range = this.targetNode.getTokenRange().get();
         return 0;
+    }
+
+    public int getTargetNodeIndex(){
+        return this.targetNodeIndex; 
     }
 
 }
