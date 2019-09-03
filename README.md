@@ -1,32 +1,5 @@
-# jProphet
-Automatic Program Repair System
+<h1 align="center">jProphet</h1>
 
+<p align="center">Automatic Program Repair System</p>
 
-# 実装計画
-
-## メインフロー草案
-
-```python:flow.py
-# Input:  original program p
-#         test suite T
-#         learned model parameter vector θ
-# Output: list of validated patches
-
-
-
-ranks = faultLocalization(p, T)
-
-for line in p:
-   abstCandidates += applyTemplate(line):
-        
-sort(abstCandidates, ranks)
-
-for ac in abstCandidates:
-    condValues = searchCondValue(ac)
-    concreteCandidates = generateCondition(ac, condValues)
-    for cc in concreteCandidates:
-        patch = test(cc, T)
-    return patch
-
-```
-
+<p align=center> <a href="https://travis-ci.org/posl/jProphet" alt="release"><img src="https://travis-ci.org/posl/jProphet.svg?branch=master"></a></p>
