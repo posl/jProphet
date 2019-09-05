@@ -30,7 +30,7 @@ public class RepairCandidateGenerator{
 	 * @return 条件式が抽象化された修正パッチ候補のリスト
 	 */
 	public List<AbstractRepairCandidate> exec(ProjectConfiguration project){
-		List<String> filePaths = project.getFilePaths();				
+		List<String> filePaths = project.getSourceFilePaths();				
 		List<AbstractRepairCandidate> candidates = new ArrayList<AbstractRepairCandidate>();
 		for(String filePath : filePaths){
 			try {

@@ -39,7 +39,7 @@ public class RepairCandidateGeneratorTest {
         String filePath = "src/test/resources/test01.java";
         List<String> filePathsForTest = new ArrayList<String>(Arrays.asList(filePath));
         ProjectConfiguration stubProject = mock(ProjectConfiguration.class);
-        when(stubProject.getFilePaths()).thenReturn(filePathsForTest);
+        when(stubProject.getSourceFilePaths()).thenReturn(filePathsForTest);
 
         // 全てのRepairUnitに対して各テンプレート適用操作につきが一つのRepairUnitを返すようにモックを生成
         List<RepairUnit> units = new ArrayList<RepairUnit>(Arrays.asList(new RepairUnit(null, 0, null))); 
