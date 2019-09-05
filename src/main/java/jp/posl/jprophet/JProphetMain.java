@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.HashMap;
 import jp.posl.jprophet.ProjectConfiguration;
 import jp.posl.jprophet.FaultLocalization;
-import jp.posl.jprophet.AstNode;
-import jp.posl.jprophet.AstGenerator;
 import jp.posl.jprophet.AbstractRepairCandidate;
 import jp.posl.jprophet.ConcreteRepairCandidate;
 import jp.posl.jprophet.RepairCandidateGenerator;
@@ -15,26 +13,27 @@ import jp.posl.jprophet.StagedCondGenerator;
 
 
 public class JProphetMain {   
-	
-	
-	
     public static void main(String[] args) {
-    	ProjectConfiguration project = new ProjectConfiguration();
-    	
+		try {
+			final ProjectConfiguration project = new ProjectConfiguration(args);
+			final JProphetMain jprophet = new JProphetMain();
+			jprophet.run(project);
+		}
+		catch(IllegalArgumentException e){
+			e.printStackTrace();
+			System.exit(-1);
+		}
+	}
+
+	private void run(ProjectConfiguration project){
     	// フォルトローカライゼーション
     	FaultLocalization faultLocalization = new FaultLocalization();
-    	HashMap<AstNode, Integer> suspiciousenesses = faultLocalization.exec(project);
-    	
-    	// 修正対象コードの全ASTノードの取得
-    	AstGenerator astGenerator = new AstGenerator();
-    	List<AstNode> astNodes = astGenerator.getAllASTNode();
+    	HashMap<Integer, Integer> suspiciousenesses = faultLocalization.exec(project);
     	
     	// 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
     	RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
     	List<AbstractRepairCandidate> abstractRepairCandidates = new ArrayList<AbstractRepairCandidate>();
-    	for(AstNode astNode : astNodes) {
-    		abstractRepairCandidates.addAll(repairCandidateGenerator.applyTemplate(astNode));
-    	}
+    	abstractRepairCandidates.addAll(repairCandidateGenerator.exec(project));
     	
     	// 学習モデルとフォルトローカライゼーションのスコアによってソート
     	PlausibilityAnalyzer plausibilityAnalyzer = new PlausibilityAnalyzer();  
@@ -54,7 +53,6 @@ public class JProphetMain {
     			}
     		}
     	}
-    	
-    	
-    }
+
+	}
 }

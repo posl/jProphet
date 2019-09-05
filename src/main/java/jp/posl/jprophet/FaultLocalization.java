@@ -7,7 +7,7 @@ public class FaultLocalization {
 	public FaultLocalization() {
 		
 	}
-	public HashMap<AstNode, Integer> exec(ProjectConfiguration projectConfiguration) {
+	public HashMap<Integer, Integer> exec(ProjectConfiguration projectConfiguration) {
 		return new HashMap<>();
 	}
 	
