@@ -41,13 +41,12 @@ public class AstGenerator {
 	public List<RepairUnit> getAllRepairUnit(String sourceCode){
 		final CompilationUnit cu;
 		cu = JavaParser.parse(sourceCode);
-
 		Node root = cu.findRootNode();
-		List<Node> nodes = this.collectAllChildNodes(root);
+		int nodeCount = this.collectAllChildNodes(root).size();
 
 		List<RepairUnit> repairUnits = new ArrayList<RepairUnit>();
-		for(int i = 0; i < nodes.size(); i++){
-			CompilationUnit compilationUnit;
+		for(int i = 0; i < nodeCount; i++){
+			CompilationUnit compilationUnit;   //RepairUnitごとに新しいインスタンスの生成
 			compilationUnit = JavaParser.parse(sourceCode);
 			LexicalPreservingPrinter.setup(compilationUnit);
 			repairUnits.add(new RepairUnit(this.collectAllChildNodes(compilationUnit.findRootNode()).get(i), i, compilationUnit));
@@ -55,6 +54,5 @@ public class AstGenerator {
 
 		return repairUnits;
 	}
-	
 }
 
