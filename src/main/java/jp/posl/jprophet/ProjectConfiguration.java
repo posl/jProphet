@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 public class ProjectConfiguration {
 	private List<String> sourceFilePaths;
 	private List<String> testFilePaths;
@@ -53,11 +52,11 @@ public class ProjectConfiguration {
 	}
 
 	public List<String> getTestFilePaths() {
-		return testFilePaths;
+		return this.testFilePaths;
 	}
 
 	public List<String> getClassPaths() {
-		return classPaths;
+		return this.classPaths;
 	}
 
 	public String getBuildPath(){
