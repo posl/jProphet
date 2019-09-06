@@ -40,6 +40,8 @@ public class ProjectBuilderTest {
         assertThat(new File("./tmp/testGradleProject01").exists()).isTrue();
         assertThat(new File("./tmp/testGradleProject01/App.class").exists()).isTrue();
         assertThat(new File("./tmp/testGradleProject01/AppTest.class").exists()).isTrue();
+        assertThat(new File("./tmp/testGradleProject01/App2.class").exists()).isTrue();
+        assertThat(new File("./tmp/testGradleProject01/App2Test.class").exists()).isTrue();
         deleteDirectory(this.outDir);
     }
 
