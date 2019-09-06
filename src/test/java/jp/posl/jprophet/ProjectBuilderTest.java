@@ -14,6 +14,9 @@ public class ProjectBuilderTest {
     private ProjectConfiguration project;
     private ProjectBuilder builder;
 
+    /**
+     * テスト入力用のプロジェクトの用意
+     */
     @Before public void setUpProject(){
         this.outDir = new File("./tmp/");
         this.project = new ProjectConfiguration("src/test/resources/testGradleProject01", outDir.getPath());
