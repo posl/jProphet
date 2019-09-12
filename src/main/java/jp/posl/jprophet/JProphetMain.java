@@ -14,8 +14,9 @@ import jp.posl.jprophet.StagedCondGenerator;
 
 public class JProphetMain {   
     public static void main(String[] args) {
+		final String OUT_DIR = System.getProperty("java.io.tmpdir");
 		try {
-			final ProjectConfiguration project = new ProjectConfiguration(args);
+			final ProjectConfiguration project = new ProjectConfiguration(args[0], OUT_DIR);
 			final JProphetMain jprophet = new JProphetMain();
 			jprophet.run(project);
 		}
