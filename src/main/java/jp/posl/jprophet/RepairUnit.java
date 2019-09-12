@@ -31,7 +31,7 @@ public class RepairUnit {
     }
 
     public String toString(){
-        return this.compilationUnit.toString();
+        return this.targetNode.toString();
     }
 
     public int getLineNumber(){
