@@ -13,6 +13,8 @@ plugins {
 
     // Apply the application plugin to add support for building an application
     id 'application'
+
+    id 'jacoco'
 }
 
 repositories {
@@ -25,6 +27,8 @@ dependencies {
     // This dependency is found on compile classpath of this component and consumers.
     implementation 'com.google.guava:guava:27.0.1-jre'
 
+    implementation 'junit:junit:4.12'
+    implementation 'org.jacoco:org.jacoco.core:0.8.3'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.assertj:assertj-core:3.2.0'
     testImplementation "org.mockito:mockito-core:2.+"
