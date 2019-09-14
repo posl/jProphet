@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
@@ -27,6 +28,8 @@ import org.jacoco.core.runtime.IRuntime;
 import org.jacoco.core.runtime.LoggerRuntime;
 import org.jacoco.core.runtime.RuntimeData;
 import org.junit.runner.JUnitCore;
+
+import jp.posl.jprophet.ProjectConfiguration;
 
 /**
  * Example usage of the JaCoCo core API. In this tutorial a single target class
@@ -48,7 +51,7 @@ public final class CoverageProject {
 		this.memoryClassLoader = null;
 		// ここであらかじめoutputディレクトリにビルド済みのクラスファイルをクラスローダーが読み込んでおく
 		try {
-			this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./output/") });
+			this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./tmp/") });
 		} catch (MalformedURLException e){
 			System.err.println(e.getMessage());
 		}

@@ -28,8 +28,8 @@ public class JProphetMain {
 
 	private void run(ProjectConfiguration project){
     	// フォルトローカライゼーション
-    	FaultLocalization faultLocalization = new FaultLocalization();
-    	List<Suspiciousness> suspiciousenesses = faultLocalization.exec(project);
+    	FaultLocalization faultLocalization = new FaultLocalization(project);
+    	List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
     	
     	// 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
     	RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
