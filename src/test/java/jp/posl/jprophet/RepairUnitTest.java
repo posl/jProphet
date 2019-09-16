@@ -71,7 +71,7 @@ public class RepairUnitTest {
     @Test public void testForCopiedTargetNode() {
         RepairUnit copiedRepairUnit = RepairUnit.copy(this.repairUnits.get(2));
 
-        Node copiedTargetNode = copiedRepairUnit.getNode();
+        Node copiedTargetNode = copiedRepairUnit.getTargetNode();
         Node copiedTargetNodeFromCu = AstGenerator.findByLevelOrderIndex(copiedRepairUnit.getCompilationUnit(), 2).orElseThrow();
         Node copiedNodeFromTargetNode = copiedTargetNode.getChildNodes().get(0);
         Node copiedNodeFromCu = copiedTargetNodeFromCu.getChildNodes().get(0);

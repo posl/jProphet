@@ -45,7 +45,7 @@ public class RepairUnit {
      * 修正対象のステートメントのASTを返す  
      * @return 修正対象のステートメント
      */
-    public Node getNode(){
+    public Node getTargetNode(){
         return this.targetNode;
     };
 
