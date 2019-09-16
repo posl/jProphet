@@ -91,9 +91,4 @@ public class RepairUnit {
     public int getTargetNodeIndex(){
         return this.targetNodeIndex; 
     }
-
-	public Object findFirst(Class<ClassOrInterfaceDefinition> class1) {
-		return null;
-	}
-
 }
