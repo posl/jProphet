@@ -94,13 +94,14 @@ public class FaultLocalization {
 	public List<Suspiciousness> exec() {
 		List<Suspiciousness> list = new ArrayList<Suspiciousness>();
 
-		
+		System.out.println("exec now");
 
 		CoverageProject coverageproject = new CoverageProject(System.out);
 		try{
-			coverageproject.execute();
+			coverageproject.execute(SourceClassFilePaths, TestClassFilePaths);
 		}catch (Exception e){
 			//例外処理
+			System.out.println("エラー");
 		}
 
 		return list;

@@ -28,6 +28,7 @@ import org.jacoco.core.runtime.IRuntime;
 import org.jacoco.core.runtime.LoggerRuntime;
 import org.jacoco.core.runtime.RuntimeData;
 import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
 
 import jp.posl.jprophet.ProjectConfiguration;
 
@@ -39,6 +40,8 @@ import jp.posl.jprophet.ProjectConfiguration;
 public final class CoverageProject {
 	private final PrintStream out;
 	private MemoryClassLoader memoryClassLoader;
+	private final IRuntime runtime;
+	private final Instrumenter instrumenter;
 
 	/**
 	 * Creates a new example instance printing to the given stream.
@@ -48,10 +51,12 @@ public final class CoverageProject {
 	 */
 	public CoverageProject(final PrintStream out) {
 		this.out = out;
+		this.runtime = new LoggerRuntime();
+		this.instrumenter = new Instrumenter(runtime);
 		this.memoryClassLoader = null;
 		// ここであらかじめoutputディレクトリにビルド済みのクラスファイルをクラスローダーが読み込んでおく
 		try {
-			this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./tmp/") });
+			this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./Ftmp/") });
 		} catch (MalformedURLException e){
 			System.err.println(e.getMessage());
 		}
@@ -63,54 +68,48 @@ public final class CoverageProject {
 	 * @throws Exception
 	 *             in case of errors
 	 */
-	public void execute() throws Exception {
+	public void execute(List<String> SourceClasses, List<String> TestClasses) throws Exception {
 		// 対象のソースファイルとそのテストクラスファイルの完全修飾ドメイン名(FQDN)
-		// ここに直書きしているが実際はファイルパスとかから取得しなきゃいけない
-		final String targetName = "jcc.iftest";
-		final String testName = "jcc.AppTest";
-
-		// For instrumentation and runtime we need a IRuntime instance
-		// to collect execution data:
-		final IRuntime runtime = new LoggerRuntime();
-
-		// ここでターゲットのソースファイルをjacocoが書き換えてカバレッジ計測できるようにする
-		final Instrumenter instr = new Instrumenter(runtime);
-		InputStream original = this.getTargetClassInputStream(targetName);
-		final byte[] instrumented = instr.instrument(original, targetName);
-		original.close();
-
-		// Now we're ready to run our instrumented class and need to startup the
-		// runtime first:
-		// ここ以降で走ったjacocoによる書き換え済みプログラムは記録される
-		final RuntimeData data = new RuntimeData();
-		runtime.startup(data);
-
-		// In this tutorial we use a special class loader to directly load the
-		// instrumented class definition from a byte[] instances.
-		// ここでクラスローダーがjacocoの書き換えたターゲットクラスを読み込む
-		this.memoryClassLoader.addDefinition(targetName, instrumented);
-		// ここでテストクラスをクラスローダーから取得 
-		final Class<?> testClass = this.memoryClassLoader.loadClass(testName);
 		
+		for (final String targetName : SourceClasses) {
+			System.out.println(targetName);
+			final Instrumenter instr = new Instrumenter(runtime);
+			InputStream original = this.getTargetClassInputStream(targetName);
+			final byte[] instrumented = instr.instrument(original, targetName);original.close();
+			this.memoryClassLoader.addDefinition(targetName, instrumented);
+			//ここがエラー
+			//loadClass(targetName, instrument(targetName));
+		}
 
-		//junitによるテストケースを実行
+		final RuntimeData runtimeData = new RuntimeData();
+		this.runtime.startup(runtimeData);
+		
 		final JUnitCore junitCore = new JUnitCore();
-		junitCore.run(testClass);
+		for (final String targetName : TestClasses) {
+			final Class<?> junitClass = this.memoryClassLoader.loadClass(targetName);
+			final Result result = junitCore.run(junitClass);
+			//TestResults.add(result);
+			System.out.println("Failure count: " + result.getFailureCount() + " (" + targetName);
+		}
 
-		// At the end of test execution we collect execution data and shutdown
-		// the runtime:
+		System.out.println("finish junitcore");
+
+		
 		final ExecutionDataStore executionData = new ExecutionDataStore();
 		final SessionInfoStore sessionInfos = new SessionInfoStore();
-		data.collect(executionData, sessionInfos, false);
+		runtimeData.collect(executionData, sessionInfos, false);
 		runtime.shutdown();
 
-		// Together with the original class definition we can calculate coverage
-		// information:
+		System.out.println("finish runtime.shutdown");
+
 		final CoverageBuilder coverageBuilder = new CoverageBuilder();
 		final Analyzer analyzer = new Analyzer(executionData, coverageBuilder);
-		original = getTargetClassInputStream(targetName);
-		analyzer.analyzeClass(original, targetName);
-		original.close();
+		for(final String targetName : SourceClasses){
+			InputStream original = getTargetClassInputStream(targetName);
+			analyzer.analyzeClass(original, targetName);
+			original.close();
+		}
+
 
 		// Let's dump some metrics and line coverage information:
 		for (final IClassCoverage cc : coverageBuilder.getClasses()) {
@@ -158,6 +157,15 @@ public final class CoverageProject {
 			return "green";
 		}
 		return "";
+	}
+
+	private byte[] instrument(final String targetName) throws Exception {
+		return this.instrumenter.instrument(getTargetClass(targetName), "");
+	}
+	
+	private Class<?> loadClass(final String targetName, final byte[] bytes) throws ClassNotFoundException {
+		this.memoryClassLoader.addDefinition(targetName, bytes);
+		return this.memoryClassLoader.loadClass(targetName); // force load instrumented class.
 	}
 
 	/**
