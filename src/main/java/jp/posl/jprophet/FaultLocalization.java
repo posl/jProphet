@@ -4,6 +4,9 @@ package jp.posl.jprophet;
 import jp.posl.jprophet.ProjectConfiguration;
 import jp.posl.jprophet.FL.Suspiciousness;
 import jp.posl.jprophet.FL.CoverageProject;
+import jp.posl.jprophet.FL.TestExecutor;
+import jp.posl.jprophet.FL.TestResults;
+import jp.posl.jprophet.FL.FullyQualifiedName;
 import jp.posl.jprophet.ProjectBuilder;
 import java.util.List;
 import java.util.ArrayList;
@@ -13,8 +16,6 @@ import java.nio.file.Paths;
 import java.io.File;
 import java.util.stream.Collectors;
 import java.io.IOException;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 
 
@@ -29,14 +30,14 @@ public class FaultLocalization {
 	public FaultLocalization(ProjectConfiguration project) {
 		this.projectBuilder.build(project);
 		this.buildPath = project.getBuildPath();
-		//System.out.println(project.getSourceFilePaths());
-		//System.out.println(project.getTestFilePaths());
 
 		List<String> SourceFilePaths = project.getSourceFilePaths();
 		List<String> TestFilePaths = project.getTestFilePaths();
 		List<String> SourceFileNames = new ArrayList<String>();
 		List<String> TestFileNames = new ArrayList<String>();
 
+		//以下ファイルパスからFQDNを取得する処理
+		//TODO もっといい書き方があるはず. ファイルパスを処理するクラスをつくってそっちに書いておいた方がいい.
 		int Ssize = project.getSourceFilePaths().size();
 		for(int i = 0; i < Ssize; i++){	
 			String str = SourceFilePaths.get(i);
@@ -51,9 +52,6 @@ public class FaultLocalization {
 			TestFileNames.add(file.getName().replace(".java", ".class"));
 		}
 
-		//System.out.println(SourceFileNames);
-		//System.out.println(TestFileNames);
-
 		try{
 		this.classDir =  Paths.get(this.buildPath);
 
@@ -64,10 +62,9 @@ public class FaultLocalization {
 			).collect(Collectors.toList());
 
 		}catch(NullPointerException | IOException e){
-			//例外処理
+			//TODO 例外処理
 		}
 			
-		//System.out.println(classFilePaths);
 
 		int Csize = classFilePaths.size();
 		for(int i = 0; i < Csize; i++){	
@@ -94,16 +91,54 @@ public class FaultLocalization {
 	public List<Suspiciousness> exec() {
 		List<Suspiciousness> list = new ArrayList<Suspiciousness>();
 
-		System.out.println("exec now");
-
-		CoverageProject coverageproject = new CoverageProject(System.out);
+		
+		CoverageProject coverageproject = new CoverageProject(System.out, buildPath);
 		try{
 			coverageproject.execute(SourceClassFilePaths, TestClassFilePaths);
 		}catch (Exception e){
 			//例外処理
 			System.out.println("エラー");
 		}
+		
+		
+		List<FullyQualifiedName> sourceClass = new ArrayList<FullyQualifiedName>();
+		List<FullyQualifiedName> testClass = new ArrayList<FullyQualifiedName>();
+		TestResults testresults = new TestResults();
+		int SCFPsize = SourceClassFilePaths.size();
+		for(int k = 0; k < SCFPsize; k++){
+			sourceClass.add(new FullyQualifiedName(SourceClassFilePaths.get(k)));
+		}
+		int TCFPsize = TestClassFilePaths.size();
+		for(int k = 0; k < TCFPsize; k++){
+			testClass.add(new FullyQualifiedName(TestClassFilePaths.get(k)));
+		}
+		System.out.println("********************************");
+		System.out.println(sourceClass.get(0).value);
+		System.out.println(testClass.get(0).value);
+		System.out.println(testClass.get(1).value);
+		System.out.println(testClass.get(2).value);
+		System.out.println(testClass.get(3).value);
+		System.out.println(testClass.get(4).value);
+		System.out.println("********************************");
 
+		TestExecutor executor = new TestExecutor();
+		try{
+			testresults = executor.exec(sourceClass, testClass);
+			System.out.println(testresults.getFailedTestResults().get(0).getMethodName().value);
+			System.out.println(testresults.getFailedTestResults().get(1).getMethodName().value);
+			System.out.println(testresults.getFailedTestResults().get(2).getMethodName().value);
+			System.out.println(testresults.getFailedTestResults().get(3).getMethodName().value);
+			System.out.println(testresults.getSuccessedTestResults().get(0).getMethodName().value);
+			System.out.println(testresults.getSuccessedTestResults().get(1).getMethodName().value);
+			System.out.println(testresults.getSuccessedTestResults().get(2).getMethodName().value);
+			System.out.println(testresults.getSuccessedTestResults().get(3).getMethodName().value);
+			
+
+
+		}catch (Exception e){
+			System.out.println("例外");
+		}
+		
 		return list;
 	}
 	

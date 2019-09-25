@@ -1,14 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2009, 2019 Mountainminds GmbH & Co. KG and Contributors
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    Marc R. Hoffmann - initial API and implementation
- *    
- *******************************************************************************/
 package jp.posl.jprophet.FL;
 
 import java.io.InputStream;
@@ -21,6 +10,7 @@ import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.analysis.IClassCoverage;
 import org.jacoco.core.analysis.ICounter;
+import org.jacoco.core.data.ExecutionData;
 import org.jacoco.core.data.ExecutionDataStore;
 import org.jacoco.core.data.SessionInfoStore;
 import org.jacoco.core.instr.Instrumenter;
@@ -29,19 +19,24 @@ import org.jacoco.core.runtime.LoggerRuntime;
 import org.jacoco.core.runtime.RuntimeData;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
+import org.junit.runner.Description;
 
-import jp.posl.jprophet.ProjectConfiguration;
+
+import jp.posl.jprophet.FL.Suspiciousness;
 
 /**
- * Example usage of the JaCoCo core API. In this tutorial a single target class
- * will be instrumented and executed. Finally the coverage information will be
- * dumped.
+ * jUnit+JaCoCoの最低限の実装
+ * @param out stream for output
+ * @param memoryClassLoader	ビルド済みのクラスファイル
+ * @param runtime runtimeデータ
+ * @param 
+ * 
  */
+
 public final class CoverageProject {
 	private final PrintStream out;
 	private MemoryClassLoader memoryClassLoader;
 	private final IRuntime runtime;
-	private final Instrumenter instrumenter;
 
 	/**
 	 * Creates a new example instance printing to the given stream.
@@ -49,14 +44,13 @@ public final class CoverageProject {
 	 * @param out
 	 *            stream for outputs
 	 */
-	public CoverageProject(final PrintStream out) {
+	public CoverageProject(final PrintStream out, String buildpath) {
 		this.out = out;
 		this.runtime = new LoggerRuntime();
-		this.instrumenter = new Instrumenter(runtime);
 		this.memoryClassLoader = null;
 		// ここであらかじめoutputディレクトリにビルド済みのクラスファイルをクラスローダーが読み込んでおく
 		try {
-			this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./Ftmp/") });
+			this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./" + buildpath + "/") });
 		} catch (MalformedURLException e){
 			System.err.println(e.getMessage());
 		}
@@ -69,16 +63,14 @@ public final class CoverageProject {
 	 *             in case of errors
 	 */
 	public void execute(List<String> SourceClasses, List<String> TestClasses) throws Exception {
-		// 対象のソースファイルとそのテストクラスファイルの完全修飾ドメイン名(FQDN)
-		
+		// 対象のソースファイルとそのテストクラスファイルの完全修飾ドメイン名(FQDN)	
 		for (final String targetName : SourceClasses) {
 			System.out.println(targetName);
 			final Instrumenter instr = new Instrumenter(runtime);
 			InputStream original = this.getTargetClassInputStream(targetName);
-			final byte[] instrumented = instr.instrument(original, targetName);original.close();
+			final byte[] instrumented = instr.instrument(original, targetName);
+			original.close();
 			this.memoryClassLoader.addDefinition(targetName, instrumented);
-			//ここがエラー
-			//loadClass(targetName, instrument(targetName));
 		}
 
 		final RuntimeData runtimeData = new RuntimeData();
@@ -88,11 +80,11 @@ public final class CoverageProject {
 		for (final String targetName : TestClasses) {
 			final Class<?> junitClass = this.memoryClassLoader.loadClass(targetName);
 			final Result result = junitCore.run(junitClass);
-			//TestResults.add(result);
 			System.out.println("Failure count: " + result.getFailureCount() + " (" + targetName);
-		}
+			System.out.println("Run count: " + result.getRunCount() + " (" + targetName);
+			System.out.println(result.getFailures());
 
-		System.out.println("finish junitcore");
+		}
 
 		
 		final ExecutionDataStore executionData = new ExecutionDataStore();
@@ -100,7 +92,6 @@ public final class CoverageProject {
 		runtimeData.collect(executionData, sessionInfos, false);
 		runtime.shutdown();
 
-		System.out.println("finish runtime.shutdown");
 
 		final CoverageBuilder coverageBuilder = new CoverageBuilder();
 		final Analyzer analyzer = new Analyzer(executionData, coverageBuilder);
@@ -109,7 +100,6 @@ public final class CoverageProject {
 			analyzer.analyzeClass(original, targetName);
 			original.close();
 		}
-
 
 		// Let's dump some metrics and line coverage information:
 		for (final IClassCoverage cc : coverageBuilder.getClasses()) {
@@ -124,6 +114,12 @@ public final class CoverageProject {
 			for (int i = cc.getFirstLine(); i <= cc.getLastLine(); i++) {
 				out.printf("Line %s: %s%n", Integer.valueOf(i),
 						getColor(cc.getLine(i).getStatus()));
+				//System.out.println(cc.getLine(i).getInstructionCounter());
+				//System.out.println(cc.getLine(i).getBranchCounter());
+				//System.out.println(cc.getLine(i).getStatus());
+				//System.out.println(cc.getLine(i).getInstructionCounter().getCoveredCount());
+				//System.out.println(cc.getLine(i).getBranchCounter().getMissedCount());
+
 			}
 		}
 	}
@@ -136,7 +132,6 @@ public final class CoverageProject {
 
 	private InputStream getTargetClassInputStream(final String name) {
 		final String resource = name.replace('.', '/') + ".class";
-
 		InputStream is = this.memoryClassLoader.getResourceAsStream(resource);
 		return is;
 	}
@@ -159,14 +154,8 @@ public final class CoverageProject {
 		return "";
 	}
 
-	private byte[] instrument(final String targetName) throws Exception {
-		return this.instrumenter.instrument(getTargetClass(targetName), "");
-	}
 	
-	private Class<?> loadClass(final String targetName, final byte[] bytes) throws ClassNotFoundException {
-		this.memoryClassLoader.addDefinition(targetName, bytes);
-		return this.memoryClassLoader.loadClass(targetName); // force load instrumented class.
-	}
+
 
 	/**
 	 * Entry point to run this examples as a Java application.
