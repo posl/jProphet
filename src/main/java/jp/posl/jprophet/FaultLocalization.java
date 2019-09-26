@@ -1,12 +1,12 @@
 package jp.posl.jprophet;
 
-
 import jp.posl.jprophet.ProjectConfiguration;
 import jp.posl.jprophet.FL.Suspiciousness;
 import jp.posl.jprophet.FL.CoverageProject;
 import jp.posl.jprophet.FL.TestExecutor;
 import jp.posl.jprophet.FL.TestResults;
 import jp.posl.jprophet.FL.FullyQualifiedName;
+import jp.posl.jprophet.FL.LineStatus;
 import jp.posl.jprophet.ProjectBuilder;
 import java.util.List;
 import java.util.ArrayList;
@@ -124,14 +124,44 @@ public class FaultLocalization {
 		TestExecutor executor = new TestExecutor();
 		try{
 			testresults = executor.exec(sourceClass, testClass);
-			System.out.println(testresults.getFailedTestResults().get(0).getMethodName().value);
-			System.out.println(testresults.getFailedTestResults().get(1).getMethodName().value);
-			System.out.println(testresults.getFailedTestResults().get(2).getMethodName().value);
-			System.out.println(testresults.getFailedTestResults().get(3).getMethodName().value);
-			System.out.println(testresults.getSuccessedTestResults().get(0).getMethodName().value);
-			System.out.println(testresults.getSuccessedTestResults().get(1).getMethodName().value);
-			System.out.println(testresults.getSuccessedTestResults().get(2).getMethodName().value);
-			System.out.println(testresults.getSuccessedTestResults().get(3).getMethodName().value);
+
+			System.out.println("Failed");
+			int Fsize = testresults.getFailedTestResults().size();
+			int Testsize;
+			for(int k = 0; k < Fsize; k++){
+				System.out.println(testresults.getFailedTestResults().get(k).getMethodName().value);
+				Testsize = testresults.getFailedTestResults().get(k).getCoverages().size();
+				for(int l = 0; l < Testsize; l++){
+					System.out.println(testresults.getFailedTestResults().get(k).getCoverages().get(l));
+				}
+				System.out.println("\n");
+			}
+
+			System.out.println("\nSuccessed");
+			int Ssize = testresults.getSuccessedTestResults().size();
+			int Testsize2;
+			for(int k = 0; k < Ssize; k++){
+				System.out.println(testresults.getSuccessedTestResults().get(k).getMethodName().value);
+				Testsize2 = testresults.getSuccessedTestResults().get(k).getCoverages().size();
+				for(int l = 0; l < Testsize2; l++){
+					System.out.println(testresults.getSuccessedTestResults().get(k).getCoverages().get(l));
+				}
+				System.out.println("\n");
+			}
+
+			for(int k = 0; k < Ssize; k++){
+				System.out.println(testresults.getSuccessedTestResults().get(k).getMethodName().value);
+				Testsize2 = testresults.getSuccessedTestResults().get(k).getCoverages().size();
+				for(int l = 0; l < Testsize2; l++){
+					System.out.println(testresults.getSuccessedTestResults().get(k).getCoverages().get(l).getStatusOfLisne());
+				}
+				System.out.println("\n");
+			}
+
+			System.out.println("\nNCF of Line" + "6 in " + testresults.getSuccessedTestResults().get(0).getCoverages().get(0).getName() + " = " + new LineStatus(testresults, 6, 0).NCF);
+			System.out.println("\nNUF of Line" + "6 in " + testresults.getSuccessedTestResults().get(0).getCoverages().get(0).getName() + " = " + new LineStatus(testresults, 6, 0).NUF);
+			System.out.println("\nNCS of Line" + "6 in " + testresults.getSuccessedTestResults().get(0).getCoverages().get(0).getName() + " = " + new LineStatus(testresults, 6, 0).NCS);
+			System.out.println("\nNUS of Line" + "6 in " + testresults.getSuccessedTestResults().get(0).getCoverages().get(0).getName() + " = " + new LineStatus(testresults, 6, 0).NUS);
 			
 
 

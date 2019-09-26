@@ -3,6 +3,7 @@ package jp.posl.jprophet.FL;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 
 import org.jacoco.core.analysis.IClassCoverage;
 import org.jacoco.core.analysis.ICounter;
@@ -84,5 +85,17 @@ public class Coverage implements Serializable {
 			sb.append(separator);
 		}
 		return sb.toString();
+	}
+
+	public HashMap<Integer, Integer> getStatusOfLisne(){
+		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+		for (int k = 1; k <= statuses.size(); k++){
+			map.put(k, statuses.get(k-1).ordinal());
+		}
+		return map;				
+	}
+
+	public String getName(){ 
+		return className;
 	}
 }

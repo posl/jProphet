@@ -6,9 +6,9 @@ import static org.hamcrest.CoreMatchers.*;
 
 public class IfstatementTest2 {
     
-    @Test public void test2() {
+    @Test public void test3_4() {
         Ifstatement ifTest = new Ifstatement();
-        assertThat(ifTest.plus(0), is(1));
+        assertThat(ifTest.plus(3), is(4));
     }
     
 }
