@@ -98,4 +98,8 @@ public class Coverage implements Serializable {
 	public String getName(){ 
 		return className;
 	}
+
+	public Integer getLength(){
+		return statuses.size();
+	}
 }

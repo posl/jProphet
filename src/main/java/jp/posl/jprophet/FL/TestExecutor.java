@@ -32,7 +32,7 @@ public class TestExecutor {
 	private final Instrumenter jacocoInstrumenter;
 	private final RuntimeData jacocoRuntimeData;
 
-	public TestExecutor() {
+	public TestExecutor(String buildpath) {
 		//this.memoryClassLoader = new MemoryClassLoader2();
 		this.memoryClassLoader = null;
 		this.jacocoRuntime = new LoggerRuntime();
@@ -40,7 +40,7 @@ public class TestExecutor {
 		this.jacocoRuntimeData = new RuntimeData();
 
 		try {
-			this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./" + "FLtmp" + "/") });
+			this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./" + buildpath + "/") });
 		} catch (MalformedURLException e){
 			System.err.println(e.getMessage());
 		}

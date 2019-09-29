@@ -7,6 +7,7 @@ import jp.posl.jprophet.FL.TestExecutor;
 import jp.posl.jprophet.FL.TestResults;
 import jp.posl.jprophet.FL.FullyQualifiedName;
 import jp.posl.jprophet.FL.LineStatus;
+import jp.posl.jprophet.FL.CalculateSuspiciousness;
 import jp.posl.jprophet.ProjectBuilder;
 import java.util.List;
 import java.util.ArrayList;
@@ -121,7 +122,7 @@ public class FaultLocalization {
 		System.out.println(testClass.get(4).value);
 		System.out.println("********************************");
 
-		TestExecutor executor = new TestExecutor();
+		TestExecutor executor = new TestExecutor(buildPath);
 		try{
 			testresults = executor.exec(sourceClass, testClass);
 
@@ -158,11 +159,15 @@ public class FaultLocalization {
 				System.out.println("\n");
 			}
 
-			System.out.println("\nNCF of Line" + "6 in " + testresults.getSuccessedTestResults().get(0).getCoverages().get(0).getName() + " = " + new LineStatus(testresults, 6, 0).NCF);
-			System.out.println("\nNUF of Line" + "6 in " + testresults.getSuccessedTestResults().get(0).getCoverages().get(0).getName() + " = " + new LineStatus(testresults, 6, 0).NUF);
-			System.out.println("\nNCS of Line" + "6 in " + testresults.getSuccessedTestResults().get(0).getCoverages().get(0).getName() + " = " + new LineStatus(testresults, 6, 0).NCS);
-			System.out.println("\nNUS of Line" + "6 in " + testresults.getSuccessedTestResults().get(0).getCoverages().get(0).getName() + " = " + new LineStatus(testresults, 6, 0).NUS);
+			System.out.println("\nNCF of Line" + "6 in " + testresults.getSuccessedTestResults().get(0).getCoverages().get(0).getName() + " = " + new LineStatus(testresults, 3, 0).NCF);
+			System.out.println("\nNUF of Line" + "6 in " + testresults.getSuccessedTestResults().get(0).getCoverages().get(0).getName() + " = " + new LineStatus(testresults, 3, 0).NUF);
+			System.out.println("\nNCS of Line" + "6 in " + testresults.getSuccessedTestResults().get(0).getCoverages().get(0).getName() + " = " + new LineStatus(testresults, 3, 0).NCS);
+			System.out.println("\nNUS of Line" + "6 in " + testresults.getSuccessedTestResults().get(0).getCoverages().get(0).getName() + " = " + new LineStatus(testresults, 3, 0).NUS);
+			System.out.println(testresults.getSuccessedTestResults().get(0).getCoverages().get(0).getLength());
+			System.out.println(testresults.getSuccessedTestResults().get(0).getCoverages().get(1).getLength());
+
 			
+			list = new CalculateSuspiciousness(testresults).slist;
 
 
 		}catch (Exception e){
