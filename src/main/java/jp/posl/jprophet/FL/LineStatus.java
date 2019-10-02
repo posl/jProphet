@@ -4,17 +4,20 @@ import java.util.List;
 import java.util.HashMap;
 
 public class LineStatus{
-    public int NCF;
-    public int NUF;
-    public int NCS;
-    public int NUS;
-    public int NC;
-    public int NU;
-    public int NS;
-    public int NF;
+    /**
+     * NCF : number of failed test cases that cover a statement <br>
+     * NUF : number of failed test cases that do not cover a statement <br>
+     * NCS : number of successful test cases that cover a statement <br>
+     * NUS : number of successful test cases that do not cover a statement <br>
+     * NC  : total number of test cases that cover a statement
+     * NU  : total number of test cases that do not cover 
+     */
+    public int NCF, NUF, NCS, NUS, NC, NU;
+    //public int NS;
+    //public int NF;
 
     /**
-     * 
+     * filenumで指定されたソースファイルの「line」行のNCF, NUF, NCS, NUSを取得
      * @param testresults
      * @param line          テストファイルの行番号
      * @param filenum       Coverlageのリストの何番目のテストファイルかを表す(できればString filenameにしたい)
@@ -24,8 +27,10 @@ public class LineStatus{
         this.NUF = getNUF(testresults, line, filenum);
         this.NCS = getNCS(testresults, line, filenum);
         this.NUS = getNUS(testresults, line, filenum);
-        this.NS = testresults.getSuccessedTestResults().size();
-        this.NF = testresults.getFailedTestResults().size();
+        this.NC = this.NCF + this.NCS;
+        this.NU = this.NUF + this.NUS;
+        //this.NS = testresults.getSuccessedTestResults().size();
+        //this.NF = testresults.getFailedTestResults().size();
     }
 
 
@@ -35,7 +40,7 @@ public class LineStatus{
         int size = testresults.getFailedTestResults().size();
         int ncf = 0;
         for(int k = 0; k < size; k++){
-            if (testresults.getFailedTestResults().get(k).getCoverages().get(filenum).getStatusOfLisne().get(line) == 2){
+            if (testresults.getFailedTestResults().get(k).getCoverages().get(filenum).getStatusOfLine().get(line) == 2){
                 ncf = ncf + 1;
             }
         }
@@ -46,7 +51,7 @@ public class LineStatus{
         int size = testresults.getFailedTestResults().size();
         int nuf = 0;
         for(int k = 0; k < size; k++){
-            if (testresults.getFailedTestResults().get(k).getCoverages().get(filenum).getStatusOfLisne().get(line) != 2){
+            if (testresults.getFailedTestResults().get(k).getCoverages().get(filenum).getStatusOfLine().get(line) != 2){
                 nuf = nuf + 1;
             }
         }
@@ -57,7 +62,7 @@ public class LineStatus{
         int size = testresults.getSuccessedTestResults().size();
         int ncs = 0;
         for(int k = 0; k < size; k++){
-            if (testresults.getSuccessedTestResults().get(k).getCoverages().get(filenum).getStatusOfLisne().get(line) == 2){
+            if (testresults.getSuccessedTestResults().get(k).getCoverages().get(filenum).getStatusOfLine().get(line) == 2){
                 ncs = ncs + 1;
             }
         }
@@ -68,7 +73,7 @@ public class LineStatus{
         int size = testresults.getSuccessedTestResults().size();
         int nus = 0;
         for(int k = 0; k < size; k++){
-            if (testresults.getSuccessedTestResults().get(k).getCoverages().get(filenum).getStatusOfLisne().get(line) != 2){
+            if (testresults.getSuccessedTestResults().get(k).getCoverages().get(filenum).getStatusOfLine().get(line) != 2){
                 nus = nus + 1;
             }
         }

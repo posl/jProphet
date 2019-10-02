@@ -21,11 +21,6 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
-/**
- * 
- * @author shinsuke
- *
- */
 public class TestExecutor {
 	private MemoryClassLoader memoryClassLoader;
 	private final IRuntime jacocoRuntime;
@@ -33,7 +28,6 @@ public class TestExecutor {
 	private final RuntimeData jacocoRuntimeData;
 
 	public TestExecutor(String buildpath) {
-		//this.memoryClassLoader = new MemoryClassLoader2();
 		this.memoryClassLoader = null;
 		this.jacocoRuntime = new LoggerRuntime();
 		this.jacocoInstrumenter = new Instrumenter(jacocoRuntime);
@@ -47,9 +41,9 @@ public class TestExecutor {
 	}
 
 	/**
-	 * JaCoCo + JUnitの実行．<br>
-	 * sourceClassesで指定したソースをJaCoCoでinstrumentして，JUnitを実行する．<br>
-	 * 実行対象のclasspathは通ってることが前提．
+	 * JaCoCo + JUnitの実行
+	 * sourceClassesで指定したソースをJaCoCoでinstrumentして，JUnitを実行する
+	 * 実行対象のclasspathは通ってることが前提
 	 * 
 	 * @param sourceFQNs 計測対象のソースコードのFQNのリスト
 	 * @param testFQNs 実行する単体テストのFQNのリスト
@@ -63,13 +57,11 @@ public class TestExecutor {
 		loadInstrumentedClasses(sourceFQNs);
 		final List<Class<?>> junitClasses = loadInstrumentedClasses(testFQNs);
 
-		// TODO
-		// junitCore.run(Classes<?>...)による一括実行を使えないか？
-		// 速度改善するかも．jacocoとの連携が難しい．listenerを再利用すると結果がバグる
 		for (Class<?> junitClass : junitClasses) {
 			final JUnitCore junitCore = new JUnitCore();
 			final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
 			junitCore.addListener(listener);
+			//TODO junitCore.runはどうやって動いているのか調べる
 			junitCore.run(junitClass);
 		}
 

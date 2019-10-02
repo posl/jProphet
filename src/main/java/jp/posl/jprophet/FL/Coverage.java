@@ -36,8 +36,9 @@ public class Coverage implements Serializable {
 
 	/**
 	 * 
-	 * @param className Coverage計測対象のクラス名
-	 * @param statuses Coverage計測の結果
+	 * className : Coverage計測対象のクラス名
+	 * statuses : Coverage計測の結果
+	 * @param classCoverage
 	 */
 	public Coverage(IClassCoverage classCoverage) {
 		this.className = classCoverage.getName().replaceAll("/", ".");
@@ -87,7 +88,7 @@ public class Coverage implements Serializable {
 		return sb.toString();
 	}
 
-	public HashMap<Integer, Integer> getStatusOfLisne(){
+	public HashMap<Integer, Integer> getStatusOfLine(){
 		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
 		for (int k = 1; k <= statuses.size(); k++){
 			map.put(k, statuses.get(k-1).ordinal());

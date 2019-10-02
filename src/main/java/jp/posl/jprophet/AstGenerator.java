@@ -35,7 +35,7 @@ public class AstGenerator {
 	/**
 	 * ソースコードから全てのASTノードを抽出し，修正単位であるRepairUnitを取得する.
 	 * 
-	 * @param source AST抽出対象のソースコード
+	 * @param sourceCode AST抽出対象のソースコード
 	 * @return 修正対象のASTノードとコンパイルユニットを持った修正単位であるRepairUnitのリスト
 	 */
 	public List<RepairUnit> getAllRepairUnit(String sourceCode){

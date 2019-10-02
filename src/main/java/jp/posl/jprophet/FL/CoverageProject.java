@@ -26,10 +26,9 @@ import jp.posl.jprophet.FL.Suspiciousness;
 
 /**
  * jUnit+JaCoCoの最低限の実装
- * @param out stream for output
- * @param memoryClassLoader	ビルド済みのクラスファイル
- * @param runtime runtimeデータ
- * @param 
+ * param out stream for output
+ * param memoryClassLoader	ビルド済みのクラスファイル
+ * param runtime runtimeデータ
  * 
  */
 
