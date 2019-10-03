@@ -6,6 +6,7 @@ package testGradleProject01;
 public class App {
     public String getGreeting() {
         return "Hello world.";
+        //return null;
     }
 
     public static void main(String[] args) {
