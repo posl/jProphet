@@ -11,9 +11,9 @@ import java.io.File;
 
 public class TestExecutor {
 
-	public ProjectBuilder builder;
-	public MemoryClassLoader loader;
-	public List<Class<?>> testClasses;
+	private ProjectBuilder builder;
+	private MemoryClassLoader loader;
+	private List<Class<?>> testClasses;
 	//ほとんどの関数がProjectConfigurationを引数にしているためメンバとして保持してもいい気はするが、
 	//そうするとメイン関数を変更する事になるのでとりあえず後回し
 	
