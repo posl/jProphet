@@ -15,6 +15,7 @@ public class ProjectConfiguration {
 	private List<String> testFilePaths;
 	private List<String> classPaths;
 	private String buildPath;
+	private String projectPath;
 
 	/**
 	 * graldeプロジェクトからソースファイルとテストファイルを収集 
@@ -23,6 +24,7 @@ public class ProjectConfiguration {
 	 */
 	public ProjectConfiguration(String projectPath, String buildPath) {
 		this.buildPath = buildPath;
+		this.projectPath = projectPath;
 		Path srcDir;
 		Path testDir;
 		
@@ -83,6 +85,14 @@ public class ProjectConfiguration {
 	 */
 	public String getBuildPath(){
 		return this.buildPath;
+	}
+
+	/**
+	 * プロジェクトのパスを取得
+	 * @return プロジェクトのパス
+	 */
+	public String getProjectPath(){
+		return this.projectPath;
 	}
 }
 
