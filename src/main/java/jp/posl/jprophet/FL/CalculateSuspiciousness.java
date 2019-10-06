@@ -30,7 +30,7 @@ public class CalculateSuspiciousness {
             
             for (int k = 1; k <= linelength; k++){
                 LineStatus linestatus = new LineStatus(testresults, k, i);
-                Suspiciousness suspiciousness = new Suspiciousness(testname, k, jaccard((double)linestatus.NCF, (double)linestatus.NUF, (double)linestatus.NCS, (double)linestatus.NUS, (double)linestatus.NC, (double)linestatus.NU, (double)NS, (double)NF));
+                Suspiciousness suspiciousness = new Suspiciousness(testname, k, Jaccard((double)linestatus.NCF, (double)linestatus.NUF, (double)linestatus.NCS, (double)linestatus.NUS, (double)linestatus.NC, (double)linestatus.NU, (double)NS, (double)NF));
                 //確認用print
                 System.out.println("FQDN           = " + suspiciousness.getPath());
                 System.out.println("Line           = " + suspiciousness.getLine());
@@ -42,14 +42,14 @@ public class CalculateSuspiciousness {
         this.slist = list;
     }
 
-    public Double ochiai(double NCF, double NUF, double NCS, double NUS, double NC, double NU, double NS, double NF){
+    public Double kakunin(double NCF, double NUF, double NCS, double NUS, double NC, double NU, double NS, double NF){
         //疑惑地の計算
         double suspiciousenesses;
         suspiciousenesses = NCF * 1000 + NUF * 100 + NCS * 10 + NUS;
         return suspiciousenesses;
     }
 
-    public Double jaccard(double NCF, double NUF, double NCS, double NUS, double NC, double NU, double NS, double NF){
+    public Double Jaccard(double NCF, double NUF, double NCS, double NUS, double NC, double NU, double NS, double NF){
         double suspiciousenesses;
         suspiciousenesses = NCF / (NCF + NUF + NCS);
         return suspiciousenesses;
@@ -57,7 +57,13 @@ public class CalculateSuspiciousness {
 
     public Double Tarantula(double NCF, double NUF, double NCS, double NUS, double NC, double NU, double NS, double NF){
         double suspiciousenesses;
-        suspiciousenesses = (NCF/NF)/(NCF/NF+NCS/NS);
+        suspiciousenesses = (NCF / NF) / (NCF / NF + NCS / NS);
+        return suspiciousenesses;
+    }
+
+    public Double Ochiai(double NCF, double NUF, double NCS, double NUS, double NC, double NU, double NS, double NF){
+        double suspiciousenesses;
+        suspiciousenesses = NCF / Math.sqrt(NF * (NCF + NCS));
         return suspiciousenesses;
     }
 

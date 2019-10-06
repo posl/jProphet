@@ -13,14 +13,12 @@ public class LineStatus{
      * NU  : total number of test cases that do not cover 
      */
     public int NCF, NUF, NCS, NUS, NC, NU;
-    //public int NS;
-    //public int NF;
 
     /**
      * filenumで指定されたソースファイルの「line」行のNCF, NUF, NCS, NUSを取得
      * @param testresults
      * @param line          テストファイルの行番号
-     * @param filenum       Coverlageのリストの何番目のテストファイルかを表す(できればString filenameにしたい)
+     * @param filenum       Coverlageのリストの何番目のテストファイルかを表す(できればstream()をうまく使ってString filenameにしたい)
      */
     public LineStatus(TestResults testresults, int line, int filenum){
         this.NCF = getNCF(testresults, line, filenum);
@@ -29,8 +27,6 @@ public class LineStatus{
         this.NUS = getNUS(testresults, line, filenum);
         this.NC = this.NCF + this.NCS;
         this.NU = this.NUF + this.NUS;
-        //this.NS = testresults.getSuccessedTestResults().size();
-        //this.NF = testresults.getFailedTestResults().size();
     }
 
 

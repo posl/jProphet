@@ -48,37 +48,6 @@ public class TestResults implements Serializable {
 		return getFailedTestResults().stream().map(r -> r.getMethodName()).collect(Collectors.toList());
 	}
 
-	/**
-	 * テストの成功率
-	 * 
-	 * @return
-	 */
-	public double getSuccessRate() {
-		final int fail = getFailedTestResults().size();
-		final int success = getSuccessedTestResults().size();
-		return success / (success + fail);
-	}
-
-	public Map<Location, Integer> getExecutedFailedTestCounts() {
-		return null;
-	}
-
-	public Map<Location, Integer> getNotExecutedFailedTestCounts() {
-		return null;
-	}
-
-	public Map<Location, Integer> getExecutedPassedTestCounts() {
-		return null;
-	}
-
-	public Map<Location, Integer> getNotExecutedPassedTestCounts() {
-		return null;
-	}
-
-	/*
-	 * public void add(final Result result) { testResults.add(new TestResult(null,
-	 * result, null)); }
-	 */
 
 	public static String getSerFilename() {
 		return "tmp/__testresults.ser";
