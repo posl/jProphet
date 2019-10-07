@@ -33,6 +33,7 @@ public class TestExecutor {
 		this.jacocoInstrumenter = new Instrumenter(jacocoRuntime);
 		this.jacocoRuntimeData = new RuntimeData();
 
+		// ここであらかじめビルド済みのクラスファイルをクラスローダーが読み込んでおく
 		try {
 			this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./" + buildpath + "/") });
 		} catch (MalformedURLException e){
@@ -42,12 +43,11 @@ public class TestExecutor {
 
 	/**
 	 * JaCoCo + JUnitの実行
-	 * sourceClassesで指定したソースをJaCoCoでinstrumentして，JUnitを実行する
-	 * 実行対象のclasspathは通ってることが前提
+	 * sourceClassesで指定したソースをJaCoCoでinstrumentして,JUnitを実行する
 	 * 
 	 * @param sourceFQNs 計測対象のソースコードのFQNのリスト
 	 * @param testFQNs 実行する単体テストのFQNのリスト
-	 * @return
+	 * @return テスト結果
 	 * @throws Exception
 	 */
 	public TestResults exec(final List<FullyQualifiedName> sourceFQNs, final List<FullyQualifiedName> testFQNs)

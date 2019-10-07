@@ -29,9 +29,15 @@ public class LineStatus{
         this.NU = this.NUF + this.NUS;
     }
 
-
+    //TODO 以下4つの関数でカバレッジ結果が2(COVERD)の時のみその行を通ったことにしているが,3(PARTLY_COVERED)のときどうするか要検討
     
-
+    /**
+     * filenumで指定されたline行目のNCFを取得
+     * @param testresults
+     * @param line
+     * @param filenum
+     * @return
+     */
     private Integer getNCF(TestResults testresults, int line, int filenum) {
         int size = testresults.getFailedTestResults().size();
         int ncf = 0;
@@ -43,6 +49,13 @@ public class LineStatus{
         return ncf;
     }
 
+    /**
+     * filenumで指定されたline行目のNUFを取得
+     * @param testresults
+     * @param line
+     * @param filenum
+     * @return
+     */
     private Integer getNUF(TestResults testresults, int line, int filenum) {
         int size = testresults.getFailedTestResults().size();
         int nuf = 0;
@@ -54,6 +67,13 @@ public class LineStatus{
         return nuf;
     }
 
+    /**
+     * filenumで指定されたline行目のNCSを取得
+     * @param testresults
+     * @param line
+     * @param filenum
+     * @return
+     */
     private Integer getNCS(TestResults testresults, int line, int filenum) {
         int size = testresults.getSuccessedTestResults().size();
         int ncs = 0;
@@ -65,6 +85,13 @@ public class LineStatus{
         return ncs;
     }
 
+    /**
+     * filenumで指定されたline行目のNUFを取得
+     * @param testresults
+     * @param line
+     * @param filenum
+     * @return
+     */
     private Integer getNUS(TestResults testresults, int line, int filenum) {
         int size = testresults.getSuccessedTestResults().size();
         int nus = 0;

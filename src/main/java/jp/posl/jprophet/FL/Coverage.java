@@ -88,6 +88,10 @@ public class Coverage implements Serializable {
 		return sb.toString();
 	}
 
+	/**
+	 * 各行のカバレッジ(0,1,2,3)をHashMapで取得
+	 * @return 各行のカバレッジ
+	 */
 	public HashMap<Integer, Integer> getStatusOfLine(){
 		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
 		for (int k = 1; k <= statuses.size(); k++){
@@ -96,10 +100,18 @@ public class Coverage implements Serializable {
 		return map;				
 	}
 
+	/**
+	 * テスト対象のソースコードのクラス名を取得
+	 * @return テスト対象のソースコードのクラス名
+	 */
 	public String getName(){ 
 		return className;
 	}
 
+	/**
+	 * テスト対象のソースコードの行数を取得
+	 * @return テスト対象のソースコードの行数
+	 */
 	public Integer getLength(){
 		return statuses.size();
 	}

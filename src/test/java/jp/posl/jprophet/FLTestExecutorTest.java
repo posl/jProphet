@@ -58,7 +58,7 @@ public class FLTestExecutorTest{
     }
 
     /**
-     * TestExecutorが動作しているかどうかのテスト
+     * FL内のTestExecutorが動作しているかどうかのテスト
      */
     
      @Test public void testForTestExecutor(){
@@ -67,7 +67,7 @@ public class FLTestExecutorTest{
 
         try{
             testresults = executor.exec(sourceClass, testClass);
-            //testresultsのいろいろassertThatで確認
+            //失敗,成功したテストの個数が正しいか確認
             assertThat(testresults.getFailedTestResults().size()).isEqualTo(1);
             assertThat(testresults.getSuccessedTestResults().size()).isEqualTo(9);
 
@@ -79,6 +79,7 @@ public class FLTestExecutorTest{
                 .map(s -> s.getMethodName().value)
                 .collect(Collectors.toList());
 
+            //失敗,成功したテストの一覧が正しいか確認
             assertThat(Smethodlist).contains("testFLProject.AppTest.testAppHasAGreeting");
             assertThat(Smethodlist).contains("testFLProject.ForstatementTest.Ftest0_1");
             assertThat(Smethodlist).contains("testFLProject.ForstatementTest.Ftest1_1");

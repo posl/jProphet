@@ -69,6 +69,7 @@ public class LineStatusTest{
         try{
             testresults = executor.exec(sourceClass, testClass);
 
+            //testFLProject.Ifstatementの12行目,9行目のカバレッジが正しいか確認
             int filenum = SourceClassFilePaths.indexOf("testFLProject.Ifstatement");
             
             LineStatus line12 = new LineStatus(testresults, 12, filenum);

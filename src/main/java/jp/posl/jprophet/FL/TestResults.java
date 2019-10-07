@@ -27,19 +27,26 @@ public class TestResults implements Serializable {
 	}
 
 	/**
-	 * 失敗したテスト結果の一覧を取得．
+	 * 失敗したテスト結果の一覧を取得
 	 * 
-	 * @return 失敗したテスト結果s
+	 * @return 失敗したテスト結果
 	 */
 	public List<TestResult> getFailedTestResults() {
 		return this.testResults.stream().filter(r -> r.wasFailed()).collect(Collectors.toList());
 	}
 
-	// necessary?
+	/**
+	 * 成功したテスト結果の一覧を取得
+	 * @return 成功したテスト結果
+	 */
 	public List<TestResult> getSuccessedTestResults() {
 		return this.testResults.stream().filter(r -> !r.wasFailed()).collect(Collectors.toList());
 	}
 
+	/**
+	 * 全てのテスト結果の一覧を取得している
+	 * @return 全てのテスト結果
+	 */
 	public List<TestResult> getTestResults() {
 		return testResults;
 	}

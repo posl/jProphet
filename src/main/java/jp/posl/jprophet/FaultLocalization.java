@@ -69,7 +69,7 @@ public class FaultLocalization {
 			list = new CalculateSuspiciousness(testresults).slist;
 
 			//確認用print
-			
+			/*
 			System.out.println(testresults.getFailedTestResults().get(0).getCoverages().get(0).getStatusOfLine());
 			System.out.println("Failed");
 			int Fsize = testresults.getFailedTestResults().size();
@@ -94,6 +94,7 @@ public class FaultLocalization {
 				}
 				System.out.println("\n");
 			}
+			*/
 			
 
 		}catch (Exception e){

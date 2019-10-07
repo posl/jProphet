@@ -15,6 +15,7 @@ plugins {
     id 'application'
 
     id 'jacoco'
+
 }
 
 jacoco {
@@ -23,6 +24,7 @@ jacoco {
     //report結果の出力場所
     reportsDir = file("$buildDir/customJacocoReportDir")
 }
+
 
 jacocoTestReport {
     reports {

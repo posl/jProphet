@@ -59,6 +59,7 @@ public class FaultLocalizationTest{
         double sus12 = 1; //1/(1+0+0)
         assertThat(ifline12.get(0).getValue()).isEqualTo(sus12);
 
+        //Ifstatementの9行目の疑惑値 (Jaccard)
         List<Suspiciousness> ifline9 = list.stream()
             .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLine() == 9)
             .collect(Collectors.toList());

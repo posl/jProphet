@@ -2,7 +2,7 @@ package jp.posl.jprophet.FL;
 
 public class Suspiciousness {
 
-    // 疑惑値とその場所のリスト
+    // 疑惑値とその場所のリスト pathはStringではなくFullyQualifiedNameにするべき?
     final private String path;
     final private int line;
     final private double value;

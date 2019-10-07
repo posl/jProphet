@@ -32,9 +32,11 @@ public class CalculateSuspiciousness {
                 LineStatus linestatus = new LineStatus(testresults, k, i);
                 Suspiciousness suspiciousness = new Suspiciousness(testname, k, Jaccard((double)linestatus.NCF, (double)linestatus.NUF, (double)linestatus.NCS, (double)linestatus.NUS, (double)linestatus.NC, (double)linestatus.NU, (double)NS, (double)NF));
                 //確認用print
+                /*
                 System.out.println("FQDN           = " + suspiciousness.getPath());
                 System.out.println("Line           = " + suspiciousness.getLine());
                 System.out.println("Suspiciousness = "+ suspiciousness.getValue() + "\n");
+                */
                 list.add(suspiciousness);
             }
         }
