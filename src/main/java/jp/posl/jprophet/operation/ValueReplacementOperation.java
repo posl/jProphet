@@ -21,7 +21,7 @@ import jp.posl.jprophet.RepairUnit;
  */
 public class ValueReplacementOperation implements AstOperation {
     public List<RepairUnit> exec(RepairUnit repairUnit) {
-        Node targetNode = repairUnit.getNode();
+        Node targetNode = repairUnit.getTargetNode();
 
         if (targetNode instanceof AssignExpr) {
             // Node clone = targetNode.clone();
