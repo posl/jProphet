@@ -1,7 +1,7 @@
 package jp.posl.jprophet;
 
 import org.junit.Before;
-import org.junit.Test;                                                                                                                                                                  
+import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 
 import org.mockito.InjectMocks;
@@ -15,9 +15,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.CompilationUnit;
 
 
 public class RepairCandidateGeneratorTest {
@@ -30,7 +35,7 @@ public class RepairCandidateGeneratorTest {
 	@Mock private CopyReplaceOperation copyReplaceOperation = new CopyReplaceOperation();
     @InjectMocks
     private RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
-    @Before public void setup(){
+    @Before public void setUp(){
         MockitoAnnotations.initMocks(this);
     }
 
@@ -42,7 +47,15 @@ public class RepairCandidateGeneratorTest {
         when(stubProject.getSourceFilePaths()).thenReturn(filePathsForTest);
 
         // 全てのRepairUnitに対して各テンプレート適用操作につきが一つのRepairUnitを返すようにモックを生成
-        List<RepairUnit> units = new ArrayList<RepairUnit>(Arrays.asList(new RepairUnit(null, 0, null))); 
+        CompilationUnit compilationUnit;
+        try{
+            compilationUnit = JavaParser.parse(Paths.get(filePath));
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            return;
+        }
+        List<RepairUnit> units = new ArrayList<RepairUnit>(Arrays.asList(new RepairUnit(compilationUnit, 0, compilationUnit))); 
         when(condRefinementOperation.exec(Mockito.any(RepairUnit.class))).thenReturn(units);
         when(condIntroductionOperation.exec(Mockito.any(RepairUnit.class))).thenReturn(units);
         when(ctrlFlowIntroductionOperation.exec(Mockito.any(RepairUnit.class))).thenReturn(units);

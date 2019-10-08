@@ -1,6 +1,5 @@
 package jp.posl.jprophet;
 
-import jp.posl.jprophet.ProjectConfiguration;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
