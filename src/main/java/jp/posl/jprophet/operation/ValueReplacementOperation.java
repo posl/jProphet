@@ -23,30 +23,32 @@ public class ValueReplacementOperation implements AstOperation {
     public List<RepairUnit> exec(RepairUnit repairUnit) {
         Node targetNode = repairUnit.getTargetNode();
 
+        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
+
         if (targetNode instanceof AssignExpr) {
-            // Node clone = targetNode.clone();
-            // ((AssignExpr) targetNode).setValue(new FieldAccessExpr(new ThisExpr(),
-            // "hoge"));
-            // ((AssignExpr) targetNode).setValue(new NameExpr("lc"));
             Node classNode = targetNode.findParent(ClassOrInterfaceDeclaration.class).get();
             Node methodNode =  targetNode.findParent(MethodDeclaration.class).get();
             List<FieldDeclaration> fields = classNode.findAll(FieldDeclaration.class);
             List<VariableDeclarationExpr> localVars = methodNode.findAll(VariableDeclarationExpr.class);
 
             for(FieldDeclaration field: fields){
-                String fieldName = field.findAll(SimpleName.class).get(1).asString();
-                // List<SimpleName> fieldNames = field.findAll(SimpleName.class);
-                ((AssignExpr) targetNode).setValue(new FieldAccessExpr(
+                // フィールド宣言文中に，SimpleNameは型名と変数名の二つがある
+                int varNameIndexInSimpleNames = 1;
+                String fieldName = field.findAll(SimpleName.class).get(varNameIndexInSimpleNames).asString();
+                RepairUnit newCandidate = RepairUnit.copy(repairUnit);
+                ((AssignExpr) newCandidate.getTargetNode()).setValue(new FieldAccessExpr(
                     new ThisExpr(), fieldName
                 ));
+                candidates.add(newCandidate);
             }
             for(VariableDeclarationExpr localVar: localVars){
                 String varName = localVar.findAll(SimpleName.class).get(1).asString();
-                ((AssignExpr) targetNode).setValue(new NameExpr(varName));
+                RepairUnit newCandidate = RepairUnit.copy(repairUnit);
+                ((AssignExpr) newCandidate.getTargetNode()).setValue(new NameExpr(varName));
+                candidates.add(newCandidate);
             }
         }
 
-        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
         return candidates;
     }
 

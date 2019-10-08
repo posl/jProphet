@@ -34,6 +34,7 @@ public class ValueReplacementOperationTest{
     @Test public void test(){
         List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(this.sourceValue);
         ValueReplacementOperation op = new ValueReplacementOperation();
-        op.exec(repairUnits.get(23));
+        List<RepairUnit> candidates = op.exec(repairUnits.get(23));
+        return;
     }
 }
