@@ -4,31 +4,35 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
+
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 
 public class AstGenerator {
 
 	/**
-	 * ASTノードの全ての子ノードをリストにして返す.
+	 * ノードの子ノードを幅優先で探索し，与えられたインデックスのノードを返す
 	 * 
-	 * @param parentNode 探索したい子ノードを持つASTノード
-	 * @return 子ノードのリスト 
+	 * @param node 検索対象の親ノード
+	 * @param targetIndex レベル順（幅優先）のインデックス
+	 * @return レベル順でtargetIndex番目のノード
 	 */
-	private List<Node> collectAllChildNodes(Node parentNode){
-		List<Node> childNodes = new ArrayList<Node>(parentNode.getChildNodes());
-		int index = 0;
-		while(true){
-			if(index == childNodes.size()) break;
-			Node node = childNodes.get(index);
-			
-			if(!node.getChildNodes().isEmpty()){
-				childNodes.addAll(node.getChildNodes());
+	public static Optional<Node> findByLevelOrderIndex(Node node, int targetIndex){
+		List<Node> childNodes = new LinkedList<Node>(node.getChildNodes());
+		for(int i = 0;;i++){
+			if(childNodes.isEmpty()){ 
+				return Optional.empty();
 			}
-			index++;
+			Node head = childNodes.remove(0);
+			if(i == targetIndex){
+				return Optional.of(head); 
+			}
+			childNodes.addAll(head.getChildNodes());
 		}
-		return childNodes;
 	}
 
 
@@ -39,20 +43,20 @@ public class AstGenerator {
 	 * @return 修正対象のASTノードとコンパイルユニットを持った修正単位であるRepairUnitのリスト
 	 */
 	public List<RepairUnit> getAllRepairUnit(String sourceCode){
-		final CompilationUnit cu;
-		cu = JavaParser.parse(sourceCode);
-		Node root = cu.findRootNode();
-		int nodeCount = this.collectAllChildNodes(root).size();
-
 		List<RepairUnit> repairUnits = new ArrayList<RepairUnit>();
-		for(int i = 0; i < nodeCount; i++){
+		for(int i = 0; ; i++){
 			CompilationUnit compilationUnit;   //RepairUnitごとに新しいインスタンスの生成
 			compilationUnit = JavaParser.parse(sourceCode);
-			LexicalPreservingPrinter.setup(compilationUnit);
-			repairUnits.add(new RepairUnit(this.collectAllChildNodes(compilationUnit.findRootNode()).get(i), i, compilationUnit));
-		}
 
-		return repairUnits;
+			// TODO なんかここ良い書き方にしたい．やってることがただのnullチェックif分岐
+			Optional<Node> optNode = AstGenerator.findByLevelOrderIndex(compilationUnit.findRootNode(), i); 
+			if(optNode.isPresent()){
+				repairUnits.add(new RepairUnit(optNode.orElseThrow(), i, compilationUnit)); 
+			}
+			else{
+				return repairUnits;
+			}
+		}
 	}
 }
 

@@ -1,11 +1,8 @@
 package jp.posl.jprophet;
 
-import jp.posl.jprophet.ProjectBuilder;
-
 import org.junit.Before;
 import org.junit.Test;                                                                                                                                                                  
 import static org.assertj.core.api.Assertions.*;
-
 import java.io.File;
 
 
@@ -50,11 +47,13 @@ public class ProjectBuilderTest {
      * @param dir 削除対象ディレクトリ
      */
     private void deleteDirectory(File dir){
-        for(File file : dir.listFiles()){
-            if(file.isFile())
-                file.delete();
-            else
-                deleteDirectory(file);
+        if(dir.listFiles() != null){
+            for(File file : dir.listFiles()){
+                if(file.isFile())
+                    file.delete();
+                else
+                    deleteDirectory(file);
+            }
         }
         dir.delete();
     }

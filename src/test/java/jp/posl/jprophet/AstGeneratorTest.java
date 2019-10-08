@@ -1,6 +1,5 @@
 package jp.posl.jprophet;
 
-import jp.posl.jprophet.AstGenerator;
 import org.junit.Test;                                                                                                                                                                  
 import static org.assertj.core.api.Assertions.*;
 import java.util.List;
@@ -21,12 +20,12 @@ public class AstGeneratorTest {
         
         // ASTが取得できているか確認
         assertThat(repairUnit.size()).isEqualTo(6);
-        assertThat(repairUnit.get(0).getNode().toString()).isEqualTo("public class A {\n\n    public void a() {\n    }\n}");
-        assertThat(repairUnit.get(1).getNode().toString()).isEqualTo("A");
-        assertThat(repairUnit.get(2).getNode().toString()).isEqualTo("public void a() {\n}");
-        assertThat(repairUnit.get(3).getNode().toString()).isEqualTo("a");
-        assertThat(repairUnit.get(4).getNode().toString()).isEqualTo("void");
-        assertThat(repairUnit.get(5).getNode().toString()).isEqualTo("{\n}");
+        assertThat(repairUnit.get(0).getTargetNode().toString()).isEqualTo("public class A {\n\n    public void a() {\n    }\n}");
+        assertThat(repairUnit.get(1).getTargetNode().toString()).isEqualTo("A");
+        assertThat(repairUnit.get(2).getTargetNode().toString()).isEqualTo("public void a() {\n}");
+        assertThat(repairUnit.get(3).getTargetNode().toString()).isEqualTo("a");
+        assertThat(repairUnit.get(4).getTargetNode().toString()).isEqualTo("void");
+        assertThat(repairUnit.get(5).getTargetNode().toString()).isEqualTo("{\n}");
     }   
 
     @Test public void testForCompilationUnit(){
@@ -39,26 +38,27 @@ public class AstGeneratorTest {
             .toString();
         List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
         assertThat(repairUnits.size()).isEqualTo(12);
-        RepairUnit targetUnit = repairUnits.get(8);
+        final int targetUnitIndex = 8;
+        RepairUnit targetUnit = repairUnits.get(targetUnitIndex);
         
         // それぞれのRepairUnitの持つコンパイルユニットが別インスタンスで，かつtargetNodeのコンパイルユニットと
         // 一致していることの確認 
         for(RepairUnit repairUnit : repairUnits){
-            assertThat(repairUnit.getNode().findRootNode()).isSameAs(repairUnit.getCompilationUnit());
+            assertThat(repairUnit.getTargetNode().findRootNode()).isSameAs(repairUnit.getCompilationUnit());
         }
         for(int i = 0; i < repairUnits.size(); i++){
-            if(i == 8) continue;
+            if(i == targetUnitIndex) continue;
             assertThat(targetUnit.getCompilationUnit()).isNotSameAs(repairUnits.get(i).getCompilationUnit());
         }
 
-        Node node = targetUnit.getNode();
+        Node node = targetUnit.getTargetNode();
         assertThat(node).isInstanceOf(VariableDeclarator.class);
         ((VariableDeclarator)node).setName("test");
         assertThat(targetUnit.getCompilationUnit().toString()).contains("test");       
 
         // 実際にASTに変更を加えて確認(念の為)
         for(int i = 0; i < repairUnits.size(); i++){
-            if(i == 8) continue;
+            if(i == targetUnitIndex) continue;
             assertThat(repairUnits.get(i).getCompilationUnit().toString()).doesNotContain("test");       
         }
     }
