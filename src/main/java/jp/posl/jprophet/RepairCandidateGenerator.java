@@ -20,7 +20,7 @@ public class RepairCandidateGenerator{
 	private CondIntroductionOperation condIntroductionOperation = new CondIntroductionOperation(); 
 	private CtrlFlowIntroductionOperation ctrlFlowIntroductionOperation = new CtrlFlowIntroductionOperation(); 
 	private InsertInitOperation insertInitOperation = new InsertInitOperation(); 
-	private ValueReplacementOperation valueReplacementOperation =  new ValueReplacementOperation();
+	private VariableReplacementOperation valueReplacementOperation =  new VariableReplacementOperation();
 	private CopyReplaceOperation copyReplaceOperation = new CopyReplaceOperation();
 
 	/**

@@ -33,7 +33,7 @@ public class VariableReplacementOperationTest{
     .toString();
     @Test public void test(){
         List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(this.sourceValue);
-        ValueReplacementOperation op = new ValueReplacementOperation();
+        VariableReplacementOperation op = new VariableReplacementOperation();
         List<RepairUnit> candidates = op.exec(repairUnits.get(23));
         return;
     }

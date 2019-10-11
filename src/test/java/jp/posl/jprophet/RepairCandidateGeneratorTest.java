@@ -31,7 +31,7 @@ public class RepairCandidateGeneratorTest {
 	@Mock private CondIntroductionOperation condIntroductionOperation = new CondIntroductionOperation(); 
 	@Mock private CtrlFlowIntroductionOperation ctrlFlowIntroductionOperation = new CtrlFlowIntroductionOperation(); 
 	@Mock private InsertInitOperation insertInitOperation = new InsertInitOperation(); 
-	@Mock private ValueReplacementOperation valueReplacementOperation =  new ValueReplacementOperation();
+	@Mock private VariableReplacementOperation valueReplacementOperation =  new VariableReplacementOperation();
 	@Mock private CopyReplaceOperation copyReplaceOperation = new CopyReplaceOperation();
     @InjectMocks
     private RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
