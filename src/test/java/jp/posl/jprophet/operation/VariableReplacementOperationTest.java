@@ -7,7 +7,7 @@ import jp.posl.jprophet.RepairUnit;
 import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 
-public class ValueReplacementOperationTest{
+public class VariableReplacementOperationTest{
     private final String sourceMethod = new StringBuilder().append("")
     .append("public class A {\n")
     .append("   private void ma() {\n")

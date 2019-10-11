@@ -17,9 +17,9 @@ import com.github.javaparser.ast.expr.ThisExpr;
 import jp.posl.jprophet.RepairUnit;
 
 /**
- * 対象ステートメントの変数や関数，定数などを別のもので置き換える操作
+ * 対象ステートメント中の変数を別のもので置き換える操作
  */
-public class ValueReplacementOperation implements AstOperation {
+public class VariableReplacementOperation implements AstOperation {
     public List<RepairUnit> exec(RepairUnit repairUnit) {
         Node targetNode = repairUnit.getTargetNode();
 
