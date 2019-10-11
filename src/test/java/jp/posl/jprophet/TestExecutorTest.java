@@ -39,11 +39,13 @@ public class TestExecutorTest {
      * @param dir 削除対象ディレクトリ
      */
     private void deleteDirectory(File dir){
-        for(File file : dir.listFiles()){
-            if(file.isFile())
-                file.delete();
-            else
-                deleteDirectory(file);
+        if(dir.listFiles() != null){
+            for(File file : dir.listFiles()){
+                if(file.isFile())
+                    file.delete();
+                else
+                    deleteDirectory(file);
+            }
         }
         dir.delete();
     }

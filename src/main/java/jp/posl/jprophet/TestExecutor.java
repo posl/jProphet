@@ -38,7 +38,7 @@ public class TestExecutor {
 			testClasses = loadTestClass(projectConfiguration);
 			return runAllTestClass(testClasses);
 		}
-		catch (Exception e) {  //エラーの処理はこれでいいのか良く分からない
+		catch (MalformedURLException | ClassNotFoundException e) {
 			System.err.println(e.getMessage());
 			return false;
 		}
@@ -62,7 +62,7 @@ public class TestExecutor {
      * @param project 対象プロジェクト
 	 * @return テストクラスのリスト
 	 */
-	private List<Class<?>> loadTestClass(ProjectConfiguration project) throws Exception {
+	private List<Class<?>> loadTestClass(ProjectConfiguration project) throws ClassNotFoundException {
 		List<Class<?>> classes = new ArrayList<Class<?>>();
 		final String testFolderPath = project.getProjectPath() + gradleTestPath;
 		for (String source : project.getTestFilePaths()) {
@@ -82,8 +82,8 @@ public class TestExecutor {
 	private boolean runAllTestClass(List<Class<?>> classes){
 		final JUnitCore junitCore = new JUnitCore();
 		for (Class<?> testClass : testClasses){
-			final boolean result = junitCore.run(testClass).wasSuccessful();
-			if(result == false) return false;
+			final boolean isSuccess = junitCore.run(testClass).wasSuccessful();
+			if(!isSuccess) return false;
 		}
 		return true;
 	}
