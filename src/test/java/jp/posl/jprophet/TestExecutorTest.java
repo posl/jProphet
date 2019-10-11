@@ -7,10 +7,12 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 
+import jp.posl.jprophet.test.TestExecutor;
+
 public class TestExecutorTest {
 
     private TestExecutor testExecutor;
-    private ProjectConfiguration project;
+    private ProjectConfiguration correctProject, errorProject;
     private File outDir;
 
     /**
@@ -19,7 +21,8 @@ public class TestExecutorTest {
     @Before
     public void setUpProject() {
         this.outDir = new File("./tmp/");
-        this.project = new ProjectConfiguration("src/test/resources/testGradleProject01", outDir.getPath());
+        this.correctProject = new ProjectConfiguration("src/test/resources/testGradleProject01", outDir.getPath());
+        this.errorProject = new ProjectConfiguration("src/test/resources/testGradleProject02", outDir.getPath());
         this.testExecutor = new TestExecutor();
     }
 
@@ -29,8 +32,12 @@ public class TestExecutorTest {
     @Test
     public void testForExecute() {
 
-        boolean isSuccess = this.testExecutor.test(project);
-        assertThat(isSuccess).isTrue();
+        boolean isSuccess01 = this.testExecutor.run(correctProject);
+        assertThat(isSuccess01).isTrue();
+        deleteDirectory(this.outDir);
+
+        boolean isSuccess02 = this.testExecutor.run(errorProject);
+        assertThat(isSuccess02).isFalse();
         deleteDirectory(this.outDir);
     }
 

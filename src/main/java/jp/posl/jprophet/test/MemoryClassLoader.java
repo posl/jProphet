@@ -1,4 +1,4 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.test;
 
 import java.net.URL;
 import java.net.URLClassLoader;

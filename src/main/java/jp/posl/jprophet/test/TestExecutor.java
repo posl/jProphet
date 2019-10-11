@@ -1,14 +1,20 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
 import org.junit.runner.JUnitCore;
+
+import jp.posl.jprophet.ProjectBuilder;
+import jp.posl.jprophet.ProjectConfiguration;
+
 import java.io.File;
 
 
-
+/**
+ *  コード修正後のプロジェクトに対してテスト実行を行う
+ */
 public class TestExecutor {
 
 	private ProjectBuilder builder;
@@ -19,6 +25,11 @@ public class TestExecutor {
 	
 	private final String gradleTestPath = "/src/test/java/"; //出来ればgradleから取得したい
 
+
+	/**
+	 * コンストラクタ
+	 * 
+	 */
 	public TestExecutor() {
 		this.builder = new ProjectBuilder();
 		this.loader = null;
@@ -27,11 +38,11 @@ public class TestExecutor {
 	/**
 	 * 対象のプロジェクトのテストを実行し、全て通るかどうかを判定
 	 * 
-     * @param project 対象プロジェクト
+	 * @param projectConfiguration 対象プロジェクト
 	 * @return 全てのテスト実行が通ったかどうか
 	 */
 
-	public boolean test(ProjectConfiguration projectConfiguration)  {
+	public boolean run(ProjectConfiguration projectConfiguration)  {
 		try {
 			builder.build(projectConfiguration);
 			getClassLoader(projectConfiguration);
@@ -48,7 +59,7 @@ public class TestExecutor {
 	/**
 	 * クラスローダーを取得
 	 * 
-     * @param project 対象プロジェクト
+	 * @param project 対象プロジェクト
 	 */
 	private void getClassLoader(ProjectConfiguration project) throws MalformedURLException {
 		File file = new File(project.getBuildPath());
@@ -59,7 +70,7 @@ public class TestExecutor {
 	/**
 	 * プロジェクトのテストクラスを取得
 	 * 
-     * @param project 対象プロジェクト
+	 * @param project 対象プロジェクト
 	 * @return テストクラスのリスト
 	 */
 	private List<Class<?>> loadTestClass(ProjectConfiguration project) throws ClassNotFoundException {
@@ -76,7 +87,7 @@ public class TestExecutor {
 	/**
 	 * プロジェクトのテストクラスをJunitで実行し、全て通るか判定
 	 * 
-     * @param classes テストクラスのリスト
+	 * @param classes テストクラスのリスト
 	 * @return 全てのテスト実行が通ったかどうか
 	 */
 	private boolean runAllTestClass(List<Class<?>> classes){

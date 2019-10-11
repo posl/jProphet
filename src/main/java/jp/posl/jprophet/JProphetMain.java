@@ -2,6 +2,9 @@ package jp.posl.jprophet;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import jp.posl.jprophet.test.TestExecutor;
+
 import java.util.HashMap;
 
 
@@ -45,7 +48,7 @@ public class JProphetMain {
     		List<ConcreteRepairCandidate> concreteRepairCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
     		for(ConcreteRepairCandidate concreteRepairCandidate: concreteRepairCandidates) {
     			ProjectConfiguration modifiedProject = programGenerator.applyPatch(concreteRepairCandidate);
-    			if(testExecutor.test(modifiedProject)) {
+    			if(testExecutor.run(modifiedProject)) {
     				return;
     			}
     		}
