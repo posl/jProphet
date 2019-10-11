@@ -4,7 +4,6 @@ import jp.posl.jprophet.ProjectConfiguration;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import jp.posl.jprophet.FaultLocalization;

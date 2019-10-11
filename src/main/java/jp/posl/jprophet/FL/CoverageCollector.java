@@ -21,13 +21,13 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
-public class TestExecutor {
+public class CoverageCollector {
 	private MemoryClassLoader memoryClassLoader;
 	private final IRuntime jacocoRuntime;
 	private final Instrumenter jacocoInstrumenter;
 	private final RuntimeData jacocoRuntimeData;
 
-	public TestExecutor(String buildpath) {
+	public CoverageCollector(String buildpath) {
 		this.memoryClassLoader = null;
 		this.jacocoRuntime = new LoggerRuntime();
 		this.jacocoInstrumenter = new Instrumenter(jacocoRuntime);
@@ -57,6 +57,7 @@ public class TestExecutor {
 		loadInstrumentedClasses(sourceFQNs);
 		final List<Class<?>> junitClasses = loadInstrumentedClasses(testFQNs);
 
+		//final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
 		for (Class<?> junitClass : junitClasses) {
 			final JUnitCore junitCore = new JUnitCore();
 			final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);

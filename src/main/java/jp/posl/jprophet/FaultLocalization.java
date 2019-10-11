@@ -2,11 +2,9 @@ package jp.posl.jprophet;
 
 import jp.posl.jprophet.ProjectConfiguration;
 import jp.posl.jprophet.FL.Suspiciousness;
-import jp.posl.jprophet.FL.CoverageProject;
-import jp.posl.jprophet.FL.TestExecutor;
+import jp.posl.jprophet.FL.CoverageCollector;
 import jp.posl.jprophet.FL.TestResults;
 import jp.posl.jprophet.FL.FullyQualifiedName;
-import jp.posl.jprophet.FL.LineStatus;
 import jp.posl.jprophet.FL.CalculateSuspiciousness;
 import jp.posl.jprophet.ProjectBuilder;
 import java.util.List;
@@ -63,9 +61,9 @@ public class FaultLocalization {
 			testClass.add(new FullyQualifiedName(TestClassFilePaths.get(k)));
 		}
 
-		TestExecutor executor = new TestExecutor(buildPath);
+		CoverageCollector collector = new CoverageCollector(buildPath);
 		try{
-			testresults = executor.exec(sourceClass, testClass);
+			testresults = collector.exec(sourceClass, testClass);
 			list = new CalculateSuspiciousness(testresults).slist;
 
 			//確認用print

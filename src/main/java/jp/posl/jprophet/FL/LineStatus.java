@@ -1,7 +1,5 @@
 package jp.posl.jprophet.FL;
 
-import java.util.List;
-import java.util.HashMap;
 
 public class LineStatus{
     /**

@@ -44,13 +44,6 @@ public class CalculateSuspiciousness {
         this.slist = list;
     }
 
-    public Double kakunin(double NCF, double NUF, double NCS, double NUS, double NC, double NU, double NS, double NF){
-        //疑惑地の計算
-        double suspiciousenesses;
-        suspiciousenesses = NCF * 1000 + NUF * 100 + NCS * 10 + NUS;
-        return suspiciousenesses;
-    }
-
     public Double Jaccard(double NCF, double NUF, double NCS, double NUS, double NC, double NU, double NS, double NF){
         double suspiciousenesses;
         suspiciousenesses = NCF / (NCF + NUF + NCS);

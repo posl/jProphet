@@ -6,15 +6,14 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import jp.posl.jprophet.FL.FullyQualifiedName;
 import jp.posl.jprophet.FL.TestResults;
-import jp.posl.jprophet.FL.TestExecutor;
+import jp.posl.jprophet.FL.CoverageCollector;
 import java.io.File;
 
-public class FLTestExecutorTest{
+public class CoverageCollectorTest{
     // 入力として用意するテスト用のプロジェクト
     private String projectPath;
     private ProjectConfiguration project;
@@ -63,7 +62,7 @@ public class FLTestExecutorTest{
     
      @Test public void testForTestExecutor(){
 
-        TestExecutor executor = new TestExecutor("TEtmp");
+        CoverageCollector executor = new CoverageCollector("TEtmp");
 
         try{
             testresults = executor.exec(sourceClass, testClass);

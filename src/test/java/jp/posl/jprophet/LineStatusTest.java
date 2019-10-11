@@ -6,12 +6,10 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import jp.posl.jprophet.FL.FullyQualifiedName;
 import jp.posl.jprophet.FL.TestResults;
-import jp.posl.jprophet.FL.TestExecutor;
+import jp.posl.jprophet.FL.CoverageCollector;
 import jp.posl.jprophet.FL.LineStatus;
 import java.io.File;
 
@@ -64,7 +62,7 @@ public class LineStatusTest{
     
      @Test public void testForLineStatus(){
 
-        TestExecutor executor = new TestExecutor("TEtmp");
+        CoverageCollector executor = new CoverageCollector("TEtmp");
         
         try{
             testresults = executor.exec(sourceClass, testClass);
