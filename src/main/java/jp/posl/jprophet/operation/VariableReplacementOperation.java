@@ -2,6 +2,7 @@ package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.Node;
@@ -24,8 +25,15 @@ import jp.posl.jprophet.RepairUnit;
 public class VariableReplacementOperation implements AstOperation {
     public List<RepairUnit> exec(RepairUnit repairUnit) {
         final Node targetNode = repairUnit.getTargetNode();
-        final Node classNode = targetNode.findParent(ClassOrInterfaceDeclaration.class).get();
-        final Node methodNode =  targetNode.findParent(MethodDeclaration.class).get();
+        final Node classNode; 
+        final Node methodNode; 
+        try {
+            classNode = targetNode.findParent(ClassOrInterfaceDeclaration.class).orElseThrow();
+            methodNode =  targetNode.findParent(MethodDeclaration.class).orElseThrow();
+        }
+        catch (NoSuchElementException e) {
+            return new ArrayList<>();
+        }
         final List<FieldDeclaration> fields = classNode.findAll(FieldDeclaration.class);
         final List<VariableDeclarationExpr> localVars = methodNode.findAll(VariableDeclarationExpr.class);
         final int varNameIndexInSimpleName = 1;
