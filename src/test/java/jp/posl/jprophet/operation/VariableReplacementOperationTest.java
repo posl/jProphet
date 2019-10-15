@@ -8,19 +8,41 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 
 public class VariableReplacementOperationTest{
-    private final String sourceMethod = new StringBuilder().append("")
+    private final String sourceForFieldReplacement = new StringBuilder().append("")
     .append("public class A {\n")
+    .append("   private String fa = \"a\";\n")
+    .append("   private String fb = \"b\";\n")
     .append("   private void ma() {\n")
-    .append("       this.mb();\n")
-    .append("   }\n")
-    .append("   private void mb() {\n")
-    .append("   }\n")
-    .append("   private void mc() {\n")
+    .append("       this.fa = 'hoge';\n")
     .append("   }\n")
     .append("}\n")
     .toString();
 
-    private final String sourceValue = new StringBuilder().append("")
+    private final String sourceForLocalVarReplacement = new StringBuilder().append("")
+    .append("public class A {\n")
+    .append("   private String fa = \"a\";\n")
+    .append("   private void ma() {\n")
+    .append("       String la = \"b\";\n")
+    .append("       String lb = \"c\";\n")
+    .append("       this.fa = lb;\n")
+    .append("   }\n")
+    .append("}\n")
+    .toString();
+
+    private final String sourceForArgumentReplacement = new StringBuilder().append("")
+    .append("public class A {\n")
+    .append("   private String fa = \"a\";\n")
+    .append("   private String fb = \"a\";\n")
+    .append("   private void ma() {\n")
+    .append("       String la = \"b\";\n")
+    .append("       this.mb(a, b);\n")
+    .append("   }\n")
+    .append("   private void mb(String a) {\n")
+    .append("   }\n")
+    .append("}\n")
+    .toString();
+
+    private final String source = new StringBuilder().append("")
     .append("public class A {\n")
     .append("   private String ma = \"a\";\n")
     .append("   private String mb = \"b\";\n")
@@ -31,10 +53,11 @@ public class VariableReplacementOperationTest{
     .append("   }\n")
     .append("}\n")
     .toString();
+
     @Test public void test(){
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(this.sourceValue);
+        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(this.sourceForArgumentReplacement);
         VariableReplacementOperation op = new VariableReplacementOperation();
-        List<RepairUnit> candidates = op.exec(repairUnits.get(23));
+        List<RepairUnit> candidates = op.exec(repairUnits.get(28));
         return;
     }
 }
