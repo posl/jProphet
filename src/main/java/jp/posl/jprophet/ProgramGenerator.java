@@ -1,6 +1,5 @@
 package jp.posl.jprophet;
 
-import jp.posl.jprophet.ProjectConfiguration;
 
 public class ProgramGenerator {
 

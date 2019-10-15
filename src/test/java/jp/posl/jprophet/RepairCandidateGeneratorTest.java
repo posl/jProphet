@@ -35,7 +35,7 @@ public class RepairCandidateGeneratorTest {
 	@Mock private CopyReplaceOperation copyReplaceOperation = new CopyReplaceOperation();
     @InjectMocks
     private RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
-    @Before public void setup(){
+    @Before public void setUp(){
         MockitoAnnotations.initMocks(this);
     }
 

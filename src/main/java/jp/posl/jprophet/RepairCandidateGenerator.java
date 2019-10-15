@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import jp.posl.jprophet.AbstractRepairCandidate;
-import jp.posl.jprophet.RepairUnit;
 import jp.posl.jprophet.operation.*;
 
 

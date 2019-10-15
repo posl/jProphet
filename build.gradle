@@ -10,9 +10,19 @@ plugins {
     // Apply the java plugin to add support for Java
     id 'java'
     id 'eclipse'
+    id "com.github.spotbugs" version "1.6.9"
+    id 'pmd'
 
     // Apply the application plugin to add support for building an application
     id 'application'
+}
+
+pmd {
+    ignoreFailures = true
+}
+
+spotbugs {
+    ignoreFailures = true
 }
 
 repositories {
