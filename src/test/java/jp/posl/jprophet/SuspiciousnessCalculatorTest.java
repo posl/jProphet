@@ -73,9 +73,10 @@ public class SuspiciousnessCalculatorTest{
         }
 
         SuspiciousnessCalculator suspiciousnessCalculator = new SuspiciousnessCalculator(testResults);
+		suspiciousnessCalculator.run();
 
         //Ifstatementの3行目の疑惑値 (Jaccard)
-        List<Suspiciousness> ifline3 = suspiciousnessCalculator.suspiciousnessList.stream()
+        List<Suspiciousness> ifline3 = suspiciousnessCalculator.getSuspiciousnessList().stream()
             .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLine() == 3)
             .collect(Collectors.toList());
         assertThat(ifline3.size()).isEqualTo(1);
@@ -83,7 +84,7 @@ public class SuspiciousnessCalculatorTest{
         assertThat(ifline3.get(0).getValue()).isEqualTo(sus3);
 
         //Ifstatementの6行目の疑惑値 (Jaccard)
-        List<Suspiciousness> ifline6 = suspiciousnessCalculator.suspiciousnessList.stream()
+        List<Suspiciousness> ifline6 = suspiciousnessCalculator.getSuspiciousnessList().stream()
             .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLine() == 6)
             .collect(Collectors.toList());
         assertThat(ifline6.size()).isEqualTo(1);

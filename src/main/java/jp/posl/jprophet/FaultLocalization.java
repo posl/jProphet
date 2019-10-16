@@ -54,7 +54,9 @@ public class FaultLocalization {
 		CoverageCollector collector = new CoverageCollector(buildPath);
 		try{
 			testResults = collector.exec(sourceClass, testClass);
-			suspiciousnessList = new SuspiciousnessCalculator(testResults).suspiciousnessList;
+			SuspiciousnessCalculator suspiciousnessCalculator = new SuspiciousnessCalculator(testResults);
+			suspiciousnessCalculator.run();
+			suspiciousnessList = suspiciousnessCalculator.getSuspiciousnessList();
 		}catch (Exception e){
 			System.out.println("例外");
 		}
