@@ -22,7 +22,7 @@ public class CoverageCollectorTest{
     private List<String> TestClassFilePaths = new ArrayList<String>();
     private List<FullyQualifiedName> sourceClass = new ArrayList<FullyQualifiedName>();
 	private List<FullyQualifiedName> testClass = new ArrayList<FullyQualifiedName>();
-    private TestResults testresults = new TestResults();
+    private TestResults testResults = new TestResults();
     private int SCFPsize;
     private int TCFPsize;
 
@@ -57,43 +57,43 @@ public class CoverageCollectorTest{
     }
 
     /**
-     * FL内のTestExecutorが動作しているかどうかのテスト
+     * CoverageCollectorが動作しているかどうかのテスト
      */
     
      @Test public void testForTestExecutor(){
 
-        CoverageCollector executor = new CoverageCollector("TEtmp");
+        CoverageCollector coverageCollector = new CoverageCollector("TEtmp");
 
         try{
-            testresults = executor.exec(sourceClass, testClass);
-            //失敗,成功したテストの個数が正しいか確認
-            assertThat(testresults.getFailedTestResults().size()).isEqualTo(1);
-            assertThat(testresults.getSuccessedTestResults().size()).isEqualTo(9);
-
-            List<String> Smethodlist = testresults.getSuccessedTestResults().stream()
-                .map(s -> s.getMethodName().value)
-                .collect(Collectors.toList());
-
-            List<String> Fmethodlist = testresults.getFailedTestResults().stream()
-                .map(s -> s.getMethodName().value)
-                .collect(Collectors.toList());
-
-            //失敗,成功したテストの一覧が正しいか確認
-            assertThat(Smethodlist).contains("testFLProject.AppTest.testAppHasAGreeting");
-            assertThat(Smethodlist).contains("testFLProject.ForstatementTest.Ftest0_1");
-            assertThat(Smethodlist).contains("testFLProject.ForstatementTest.Ftest1_1");
-            assertThat(Smethodlist).contains("testFLProject.ForstatementTest.Ftest2_2");
-            assertThat(Smethodlist).contains("testFLProject.ForstatementTest.Ftest3_6");
-            assertThat(Smethodlist).contains("testFLProject.IfstatementTest.test1_2");
-            assertThat(Smethodlist).contains("testFLProject.IfstatementTest.test2_3");
-            assertThat(Smethodlist).contains("testFLProject.IfstatementTest2.test3_4");
-            assertThat(Smethodlist).contains("testFLProject.IfstatementTest4.test0_0");
-            assertThat(Fmethodlist).contains("testFLProject.IfstatementTest3.test4_5");
-
+            testResults = coverageCollector.exec(sourceClass, testClass);
         }catch (Exception e){
 			System.out.println("例外");
         }
         
+        //失敗,成功したテストの個数が正しいか確認
+        assertThat(testResults.getFailedTestResults().size()).isEqualTo(1);
+        assertThat(testResults.getSuccessedTestResults().size()).isEqualTo(9);
+
+        List<String> Smethodlist = testResults.getSuccessedTestResults().stream()
+            .map(s -> s.getMethodName().value)
+            .collect(Collectors.toList());
+
+        List<String> Fmethodlist = testResults.getFailedTestResults().stream()
+            .map(s -> s.getMethodName().value)
+            .collect(Collectors.toList());
+
+        //失敗,成功したテストの一覧が正しいか確認
+        assertThat(Smethodlist).contains("testFLProject.AppTest.testAppHasAGreeting");
+        assertThat(Smethodlist).contains("testFLProject.ForstatementTest.Ftest0_1");
+        assertThat(Smethodlist).contains("testFLProject.ForstatementTest.Ftest1_1");
+        assertThat(Smethodlist).contains("testFLProject.ForstatementTest.Ftest2_2");
+        assertThat(Smethodlist).contains("testFLProject.ForstatementTest.Ftest3_6");
+        assertThat(Smethodlist).contains("testFLProject.IfstatementTest.test1_2");
+        assertThat(Smethodlist).contains("testFLProject.IfstatementTest.test2_3");
+        assertThat(Smethodlist).contains("testFLProject.IfstatementTest2.test3_4");
+        assertThat(Smethodlist).contains("testFLProject.IfstatementTest4.test0_0");
+        assertThat(Fmethodlist).contains("testFLProject.IfstatementTest3.test4_5");
+
         deleteDirectory(new File("./TEtmp/"));
 
     }

@@ -19,12 +19,12 @@ public class FaultLocalizationTest{
      * FaultLocalizationが動作しているかどうかのテスト
      */
     @Test public void testForSourceFilePaths(){
-        List<Suspiciousness> list = new ArrayList<Suspiciousness>();
+        List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
         FaultLocalization faultLocalization = new FaultLocalization(project);
-        list = faultLocalization.exec();
+        suspiciousnessList = faultLocalization.exec();
 
         //疑惑値のリストの中にテスト対象のファイルのFQDNが存在するかチェック
-        List<String> pathList = list.stream()
+        List<String> pathList = suspiciousnessList.stream()
             .map(s -> s.getPath())
             .distinct()
             .collect(Collectors.toList());
@@ -33,15 +33,15 @@ public class FaultLocalizationTest{
         assertThat(pathList).contains("testFLProject.Forstatement");
 
         //それぞれのテスト対象ファイルの行数が正しいかチェック
-        List<Integer> iflineList = list.stream()
+        List<Integer> iflineList = suspiciousnessList.stream()
             .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()))
             .map(s -> s.getLine())
             .collect(Collectors.toList());
-        List<Integer> applineList = list.stream()
+        List<Integer> applineList = suspiciousnessList.stream()
             .filter(s -> "testFLProject.App".equals(s.getPath()))
             .map(s -> s.getLine())
             .collect(Collectors.toList());
-        List<Integer> forlineList = list.stream()
+        List<Integer> forlineList = suspiciousnessList.stream()
             .filter(s -> "testFLProject.Forstatement".equals(s.getPath()))
             .map(s -> s.getLine())
             .collect(Collectors.toList());
@@ -51,7 +51,7 @@ public class FaultLocalizationTest{
         assertThat(forlineList.size()).isEqualTo(9);
 
         //Ifstatementの12行目の疑惑値 (Jaccard)
-        List<Suspiciousness> ifline12 = list.stream()
+        List<Suspiciousness> ifline12 = suspiciousnessList.stream()
             .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLine() == 12)
             .collect(Collectors.toList());
         assertThat(ifline12.size()).isEqualTo(1);
@@ -59,7 +59,7 @@ public class FaultLocalizationTest{
         assertThat(ifline12.get(0).getValue()).isEqualTo(sus12);
 
         //Ifstatementの9行目の疑惑値 (Jaccard)
-        List<Suspiciousness> ifline9 = list.stream()
+        List<Suspiciousness> ifline9 = suspiciousnessList.stream()
             .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLine() == 9)
             .collect(Collectors.toList());
         assertThat(ifline9.size()).isEqualTo(1);

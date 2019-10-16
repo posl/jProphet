@@ -1,6 +1,5 @@
 package jp.posl.jprophet.FL;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
@@ -8,9 +7,7 @@ import java.util.HashMap;
 import org.jacoco.core.analysis.IClassCoverage;
 import org.jacoco.core.analysis.ICounter;
 
-public class Coverage implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class Coverage {
 
 	public enum Status {
 		/**

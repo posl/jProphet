@@ -1,11 +1,8 @@
 package jp.posl.jprophet.FL;
 
-import java.io.Serializable;
 import java.util.List;
 
-public class TestResult implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class TestResult {
 
 	private FullyQualifiedName methodName;
 	private boolean failed;
@@ -13,6 +10,7 @@ public class TestResult implements Serializable {
 
 	/**
 	 * constructor
+	 * テストの結果(成功or失敗)とカバレッジをテストのメソッドごとに生成
 	 * 
 	 * @param methodName 実行したテストメソッドの名前
 	 * @param failed テストの結果

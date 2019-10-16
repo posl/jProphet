@@ -7,13 +7,15 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import jp.posl.jprophet.FL.FullyQualifiedName;
 import jp.posl.jprophet.FL.TestResults;
 import jp.posl.jprophet.FL.CoverageCollector;
-import jp.posl.jprophet.FL.LineStatus;
+import jp.posl.jprophet.FL.SuspiciousnessCalculator;
+import jp.posl.jprophet.FL.Suspiciousness;
 import java.io.File;
 
-public class LineStatusTest{
+public class SuspiciousnessCalculatorTest{
     // 入力として用意するテスト用のプロジェクト
     private String projectPath;
     private ProjectConfiguration project;
@@ -22,14 +24,14 @@ public class LineStatusTest{
     private List<String> TestClassFilePaths = new ArrayList<String>();
     private List<FullyQualifiedName> sourceClass = new ArrayList<FullyQualifiedName>();
 	private List<FullyQualifiedName> testClass = new ArrayList<FullyQualifiedName>();
-    private TestResults testresults = new TestResults();
+    private TestResults testResults = new TestResults();
     private int SCFPsize;
     private int TCFPsize;
 
 
     @Before public void setup(){
         this.projectPath = "src/test/resources/testFLProject";
-        this.project = new ProjectConfiguration(this.projectPath, "./LStmp/");
+        this.project = new ProjectConfiguration(this.projectPath, "./SCtmp/");
         this.SourceClassFilePaths.add("testFLProject.Forstatement");
         this.SourceClassFilePaths.add("testFLProject.Ifstatement");
         this.SourceClassFilePaths.add("testFLProject.App");
@@ -57,36 +59,38 @@ public class LineStatusTest{
     }
 
     /**
-     * LineStatusが動作しているかどうかのテスト
+     * SuspiciousnessCalculatorが動作しているかどうかのテスト
      */
     
-     @Test public void testForLineStatus(){
+     @Test public void testForSuspiciousnessCalculator(){
 
-        CoverageCollector executor = new CoverageCollector("TEtmp");
-        
+        CoverageCollector coverageCollector = new CoverageCollector("SCtmp");
+
         try{
-            testresults = executor.exec(sourceClass, testClass);
-
-            //testFLProject.Ifstatementの12行目,9行目のカバレッジが正しいか確認
-            int filenum = SourceClassFilePaths.indexOf("testFLProject.Ifstatement");
-            
-            LineStatus line12 = new LineStatus(testresults, 12, filenum);
-            assertThat(line12.NCF).isEqualTo(1);
-            assertThat(line12.NUF).isEqualTo(0);
-            assertThat(line12.NCS).isEqualTo(0);
-            assertThat(line12.NUS).isEqualTo(9);
-
-            LineStatus line9 = new LineStatus(testresults, 9, filenum);
-            assertThat(line9.NCF).isEqualTo(1);
-            assertThat(line9.NUF).isEqualTo(0);
-            assertThat(line9.NCS).isEqualTo(2);
-            assertThat(line9.NUS).isEqualTo(7);
-
+            testResults = coverageCollector.exec(sourceClass, testClass);
         }catch (Exception e){
 			System.out.println("例外");
         }
-        
-        deleteDirectory(new File("./LStmp/"));
+
+        SuspiciousnessCalculator suspiciousnessCalculator = new SuspiciousnessCalculator(testResults);
+
+        //Ifstatementの3行目の疑惑値 (Jaccard)
+        List<Suspiciousness> ifline3 = suspiciousnessCalculator.suspiciousnessList.stream()
+            .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLine() == 3)
+            .collect(Collectors.toList());
+        assertThat(ifline3.size()).isEqualTo(1);
+        double sus3 = 0.2; //1/(1+0+4)
+        assertThat(ifline3.get(0).getValue()).isEqualTo(sus3);
+
+        //Ifstatementの6行目の疑惑値 (Jaccard)
+        List<Suspiciousness> ifline6 = suspiciousnessCalculator.suspiciousnessList.stream()
+            .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLine() == 6)
+            .collect(Collectors.toList());
+        assertThat(ifline6.size()).isEqualTo(1);
+        double sus6 = 0; //0/(0+1+1)
+        assertThat(ifline6.get(0).getValue()).isEqualTo(sus6);
+
+        deleteDirectory(new File("./SCtmp/"));
 
     }
 
@@ -105,4 +109,5 @@ public class LineStatusTest{
         }
         dir.delete();
     }
+
 }
