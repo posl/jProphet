@@ -13,7 +13,10 @@ import jp.posl.jprophet.RepairUnit;
  * 対象ステートメントの直前に挿入し，さらに置換操作(ValueReplacementOperation)を適用する．
  */
 public class CopyReplaceOperation implements AstOperation{
-    public List<RepairUnit> exec(RepairUnit repairUnit){
+    public CopyReplaceOperation(RepairUnit repairUnit){
+
+    }
+    public List<RepairUnit> exec(){
         List<RepairUnit> candidates = new ArrayList<RepairUnit>();
         return candidates;
     }

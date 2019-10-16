@@ -56,8 +56,8 @@ public class VariableReplacementOperationTest{
 
     @Test public void test(){
         List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(this.sourceForArgumentReplacement);
-        VariableReplacementOperation op = new VariableReplacementOperation();
-        List<RepairUnit> candidates = op.exec(repairUnits.get(28));
+        VariableReplacementOperation op = new VariableReplacementOperation(repairUnits.get(28));
+        List<RepairUnit> candidates = op.exec();
         return;
     }
 }
