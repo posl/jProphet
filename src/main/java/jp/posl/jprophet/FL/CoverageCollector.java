@@ -50,8 +50,7 @@ public class CoverageCollector {
 	 * @return テスト結果
 	 * @throws Exception
 	 */
-	public TestResults exec(final List<FullyQualifiedName> sourceFQNs, final List<FullyQualifiedName> testFQNs)
-			throws Exception {
+	public TestResults exec(final List<String> sourceFQNs, final List<String> testFQNs) throws Exception {
 		final TestResults testResults = new TestResults();
 
 		loadInstrumentedClasses(sourceFQNs);
@@ -76,9 +75,9 @@ public class CoverageCollector {
 	 * @return 書き換えたクラスオブジェクトs
 	 * @throws Exception
 	 */
-	private List<Class<?>> loadInstrumentedClasses(List<FullyQualifiedName> fqns) throws Exception {
+	private List<Class<?>> loadInstrumentedClasses(List<String> fqns) throws Exception {
 		List<Class<?>> loadedClasses = new ArrayList<>();
-		for (final FullyQualifiedName fqn : fqns) {
+		for (final String fqn : fqns) {
 			final byte[] instrumentedData = instrument(fqn);
 			loadedClasses.add(loadClass(fqn, instrumentedData));
 		}
@@ -92,8 +91,8 @@ public class CoverageCollector {
 	 * @return 書き換えた
 	 * @throws Exception
 	 */
-	private byte[] instrument(final FullyQualifiedName fqn) throws Exception {
-		return this.jacocoInstrumenter.instrument(getTargetClassInputStream(fqn), fqn.value);
+	private byte[] instrument(final String fqn) throws Exception {
+		return this.jacocoInstrumenter.instrument(getTargetClassInputStream(fqn), fqn);
 	}
 
 	/**
@@ -104,9 +103,9 @@ public class CoverageCollector {
 	 * @return
 	 * @throws ClassNotFoundException
 	 */
-	private Class<?> loadClass(final FullyQualifiedName fqn, final byte[] bytes) throws ClassNotFoundException {
-		this.memoryClassLoader.addDefinition(fqn.value, bytes);
-		return this.memoryClassLoader.loadClass(fqn.value); // force load instrumented class.
+	private Class<?> loadClass(final String fqn, final byte[] bytes) throws ClassNotFoundException {
+		this.memoryClassLoader.addDefinition(fqn, bytes);
+		return this.memoryClassLoader.loadClass(fqn); // force load instrumented class.
 	}
 
 	/**
@@ -115,8 +114,8 @@ public class CoverageCollector {
 	 * @param fqn 読み込み対象のFQN
 	 * @return
 	 */
-	private InputStream getTargetClassInputStream(final FullyQualifiedName fqn) {
-		final String resource = fqn.value.replace('.', '/') + ".class";
+	private InputStream getTargetClassInputStream(final String fqn) {
+		final String resource = fqn.replace('.', '/') + ".class";
 		//return getClass().getResourceAsStream(resource);
 		InputStream is = this.memoryClassLoader.getResourceAsStream(resource);
 		return is;
@@ -134,7 +133,7 @@ public class CoverageCollector {
 	class CoverageMeasurementListener extends RunListener {
 		private final Description FAILED = Description.createTestDescription("failed", "failed");
 
-		final private List<FullyQualifiedName> measuredClasses;
+		final private List<String> measuredClasses;
 		final public TestResults testResults;
 
 		/**
@@ -144,7 +143,7 @@ public class CoverageCollector {
 		 * @param storedTestResults テスト実行結果の保存先
 		 * @throws Exception
 		 */
-		public CoverageMeasurementListener(List<FullyQualifiedName> measuredFQNs, TestResults storedTestResults)
+		public CoverageMeasurementListener(List<String> measuredFQNs, TestResults storedTestResults)
 				throws Exception {
 			jacocoRuntime.startup(jacocoRuntimeData);
 			this.testResults = storedTestResults;
@@ -196,8 +195,8 @@ public class CoverageCollector {
 		 * @param description
 		 * @return
 		 */
-		private FullyQualifiedName getTestMethodName(Description description) {
-			return new FullyQualifiedName(description.getTestClass().getName() + "." + description.getMethodName());
+		private String getTestMethodName(Description description) {
+			return description.getTestClass().getName() + "." + description.getMethodName();
 		}
 
 		/**
@@ -224,8 +223,8 @@ public class CoverageCollector {
 			jacocoRuntime.shutdown();
 
 			final Analyzer analyzer = new Analyzer(executionData, coverageBuilder);
-			for (final FullyQualifiedName measuredClass : measuredClasses) {
-				analyzer.analyzeClass(getTargetClassInputStream(measuredClass), measuredClass.value);
+			for (final String measuredClass : measuredClasses) {
+				analyzer.analyzeClass(getTargetClassInputStream(measuredClass), measuredClass);
 			}
 		}
 
@@ -237,7 +236,7 @@ public class CoverageCollector {
 		 */
 		private void addJacocoCoverageToTestResults(final CoverageBuilder coverageBuilder,
 				final Description description) {
-			final FullyQualifiedName testMethodFQN = getTestMethodName(description);
+			final String testMethodFQN = getTestMethodName(description);
 			final boolean isFailed = isFailed(description);
 			List<Coverage> coverages = coverageBuilder.getClasses().stream().map(c -> new Coverage(c))
 					.collect(Collectors.toList());

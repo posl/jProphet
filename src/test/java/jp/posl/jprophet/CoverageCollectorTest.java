@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import jp.posl.jprophet.FL.FullyQualifiedName;
 import jp.posl.jprophet.FL.TestResults;
 import jp.posl.jprophet.FL.CoverageCollector;
 import java.io.File;
@@ -20,11 +19,7 @@ public class CoverageCollectorTest{
     private ProjectBuilder projectBuilder = new ProjectBuilder();
     private List<String> SourceClassFilePaths = new ArrayList<String>();
     private List<String> TestClassFilePaths = new ArrayList<String>();
-    private List<FullyQualifiedName> sourceClass = new ArrayList<FullyQualifiedName>();
-	private List<FullyQualifiedName> testClass = new ArrayList<FullyQualifiedName>();
     private TestResults testResults = new TestResults();
-    private int SCFPsize;
-    private int TCFPsize;
 
 
     @Before public void setup(){
@@ -42,17 +37,7 @@ public class CoverageCollectorTest{
         this.TestClassFilePaths.add("testFLProject.ForstatementTest");
         this.TestClassFilePaths.add("testFLProject.IfstatementTest");
 
-        SCFPsize = SourceClassFilePaths.size();
-        TCFPsize = TestClassFilePaths.size();
-
         projectBuilder.build(project);
-         
-        for(int k = 0; k < SCFPsize; k++){
-			sourceClass.add(new FullyQualifiedName(SourceClassFilePaths.get(k)));
-		}
-		for(int k = 0; k < TCFPsize; k++){
-			testClass.add(new FullyQualifiedName(TestClassFilePaths.get(k)));
-        }
     
     }
 
@@ -65,7 +50,7 @@ public class CoverageCollectorTest{
         CoverageCollector coverageCollector = new CoverageCollector("TEtmp");
 
         try{
-            testResults = coverageCollector.exec(sourceClass, testClass);
+            testResults = coverageCollector.exec(SourceClassFilePaths, TestClassFilePaths);
         }catch (Exception e){
 			System.out.println("例外");
         }
@@ -75,11 +60,13 @@ public class CoverageCollectorTest{
         assertThat(testResults.getSuccessedTestResults().size()).isEqualTo(9);
 
         List<String> Smethodlist = testResults.getSuccessedTestResults().stream()
-            .map(s -> s.getMethodName().value)
+            //.map(s -> s.getMethodName().value)
+            .map(s -> s.getMethodName())
             .collect(Collectors.toList());
 
         List<String> Fmethodlist = testResults.getFailedTestResults().stream()
-            .map(s -> s.getMethodName().value)
+            //.map(s -> s.getMethodName().value)
+            .map(s -> s.getMethodName())
             .collect(Collectors.toList());
 
         //失敗,成功したテストの一覧が正しいか確認

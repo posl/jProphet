@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import jp.posl.jprophet.FL.FullyQualifiedName;
 import jp.posl.jprophet.FL.TestResults;
 import jp.posl.jprophet.FL.CoverageCollector;
 import jp.posl.jprophet.FL.SuspiciousnessCalculator;
@@ -22,11 +21,8 @@ public class SuspiciousnessCalculatorTest{
     private ProjectBuilder projectBuilder = new ProjectBuilder();
     private List<String> SourceClassFilePaths = new ArrayList<String>();
     private List<String> TestClassFilePaths = new ArrayList<String>();
-    private List<FullyQualifiedName> sourceClass = new ArrayList<FullyQualifiedName>();
-	private List<FullyQualifiedName> testClass = new ArrayList<FullyQualifiedName>();
     private TestResults testResults = new TestResults();
-    private int SCFPsize;
-    private int TCFPsize;
+
 
 
     @Before public void setup(){
@@ -44,17 +40,9 @@ public class SuspiciousnessCalculatorTest{
         this.TestClassFilePaths.add("testFLProject.ForstatementTest");
         this.TestClassFilePaths.add("testFLProject.IfstatementTest");
 
-        SCFPsize = SourceClassFilePaths.size();
-        TCFPsize = TestClassFilePaths.size();
 
         projectBuilder.build(project);
-         
-        for(int k = 0; k < SCFPsize; k++){
-			sourceClass.add(new FullyQualifiedName(SourceClassFilePaths.get(k)));
-		}
-		for(int k = 0; k < TCFPsize; k++){
-			testClass.add(new FullyQualifiedName(TestClassFilePaths.get(k)));
-        }
+        
     
     }
 
@@ -67,7 +55,8 @@ public class SuspiciousnessCalculatorTest{
         CoverageCollector coverageCollector = new CoverageCollector("SCtmp");
 
         try{
-            testResults = coverageCollector.exec(sourceClass, testClass);
+            //testResults = coverageCollector.exec(sourceClass, testClass);
+            testResults = coverageCollector.exec(SourceClassFilePaths, TestClassFilePaths);
         }catch (Exception e){
 			System.out.println("例外");
         }

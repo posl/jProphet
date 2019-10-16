@@ -4,7 +4,6 @@ import jp.posl.jprophet.ProjectConfiguration;
 import jp.posl.jprophet.FL.Suspiciousness;
 import jp.posl.jprophet.FL.CoverageCollector;
 import jp.posl.jprophet.FL.TestResults;
-import jp.posl.jprophet.FL.FullyQualifiedName;
 import jp.posl.jprophet.FL.SuspiciousnessCalculator;
 import jp.posl.jprophet.ProjectBuilder;
 import java.util.List;
@@ -36,24 +35,10 @@ public class FaultLocalization {
 	 */
 	public List<Suspiciousness> exec() {
 		List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
-				
-		List<FullyQualifiedName> sourceClass = new ArrayList<FullyQualifiedName>();
-		List<FullyQualifiedName> testClass = new ArrayList<FullyQualifiedName>();
 		TestResults testResults = new TestResults();
-
-		//List<String> FQDN -> List<FullyQualifiedName> FQN
-		int SCFPsize = sourceClassFilePaths.size();
-		for(int k = 0; k < SCFPsize; k++){
-			sourceClass.add(new FullyQualifiedName(sourceClassFilePaths.get(k)));
-		}
-		int TCFPsize = testClassFilePaths.size();
-		for(int k = 0; k < TCFPsize; k++){
-			testClass.add(new FullyQualifiedName(testClassFilePaths.get(k)));
-		}
-
 		CoverageCollector collector = new CoverageCollector(buildPath);
 		try{
-			testResults = collector.exec(sourceClass, testClass);
+			testResults = collector.exec(sourceClassFilePaths, testClassFilePaths);
 			SuspiciousnessCalculator suspiciousnessCalculator = new SuspiciousnessCalculator(testResults);
 			suspiciousnessCalculator.run();
 			suspiciousnessList = suspiciousnessCalculator.getSuspiciousnessList();

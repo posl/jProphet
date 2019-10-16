@@ -7,7 +7,6 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
-import jp.posl.jprophet.FL.FullyQualifiedName;
 import jp.posl.jprophet.FL.TestResults;
 import jp.posl.jprophet.FL.CoverageCollector;
 import jp.posl.jprophet.FL.StatementStatus;
@@ -20,11 +19,7 @@ public class StatementStatusTest{
     private ProjectBuilder projectBuilder = new ProjectBuilder();
     private List<String> sourceClassFilePaths = new ArrayList<String>();
     private List<String> testClassFilePaths = new ArrayList<String>();
-    private List<FullyQualifiedName> sourceClass = new ArrayList<FullyQualifiedName>();
-	private List<FullyQualifiedName> testClass = new ArrayList<FullyQualifiedName>();
     private TestResults testResults = new TestResults();
-    private int SCFPsize;
-    private int TCFPsize;
 
 
     @Before public void setup(){
@@ -42,17 +37,7 @@ public class StatementStatusTest{
         this.testClassFilePaths.add("testFLProject.ForstatementTest");
         this.testClassFilePaths.add("testFLProject.IfstatementTest");
 
-        SCFPsize = sourceClassFilePaths.size();
-        TCFPsize = testClassFilePaths.size();
-
         projectBuilder.build(project);
-         
-        for(int k = 0; k < SCFPsize; k++){
-			sourceClass.add(new FullyQualifiedName(sourceClassFilePaths.get(k)));
-		}
-		for(int k = 0; k < TCFPsize; k++){
-			testClass.add(new FullyQualifiedName(testClassFilePaths.get(k)));
-        }
     
     }
 
@@ -65,7 +50,8 @@ public class StatementStatusTest{
         CoverageCollector coverageCollector = new CoverageCollector("LStmp");
         
         try{
-            testResults = coverageCollector.exec(sourceClass, testClass);
+            //testResults = coverageCollector.exec(sourceClass, testClass);
+            testResults = coverageCollector.exec(sourceClassFilePaths, testClassFilePaths);
         }catch (Exception e){
 			System.out.println("例外");
         }

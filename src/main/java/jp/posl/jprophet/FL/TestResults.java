@@ -45,7 +45,7 @@ public class TestResults {
 		return testResults.get(num);
 	}
 	
-	public List<FullyQualifiedName> getFailedTestNames() {
+	public List<String> getFailedTestNames() {
 		return getFailedTestResults().stream().map(r -> r.getMethodName()).collect(Collectors.toList());
 	}
 

@@ -4,7 +4,7 @@ import java.util.List;
 
 public class TestResult {
 
-	private FullyQualifiedName methodName;
+	private String methodName;
 	private boolean failed;
 	private List<Coverage> coverages;
 
@@ -16,7 +16,7 @@ public class TestResult {
 	 * @param failed テストの結果
 	 * @param coverages テスト対象それぞれの行ごとのCoverage計測結果
 	 */
-	public TestResult(FullyQualifiedName methodName, boolean failed, List<Coverage> coverages) {
+	public TestResult(String methodName, boolean failed, List<Coverage> coverages) {
 		this.methodName = methodName;
 		this.failed = failed;
 		this.coverages = coverages;
@@ -26,7 +26,7 @@ public class TestResult {
 		return failed;
 	}
 
-	public FullyQualifiedName getMethodName() {
+	public String getMethodName() {
 		return methodName;
 	}
 
