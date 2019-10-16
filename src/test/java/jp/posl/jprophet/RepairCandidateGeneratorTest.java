@@ -44,6 +44,5 @@ public class RepairCandidateGeneratorTest {
         // 各operationが呼ばれて修正パッチ候補を生成しているかテスト
         // 現状VariableReplacementOperationだけが修正パッチ候補を一つ生成する
         assertThat(candidates.size()).isEqualTo(1);
-
     }
 }
