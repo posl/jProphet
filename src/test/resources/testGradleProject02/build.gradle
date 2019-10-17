@@ -9,20 +9,9 @@
 plugins {
     // Apply the java plugin to add support for Java
     id 'java'
-    id 'eclipse'
-    id "com.github.spotbugs" version "1.6.9"
-    id 'pmd'
 
     // Apply the application plugin to add support for building an application
     id 'application'
-}
-
-pmd {
-    ignoreFailures = true
-}
-
-spotbugs {
-    ignoreFailures = true
 }
 
 repositories {
@@ -34,25 +23,10 @@ repositories {
 dependencies {
     // This dependency is found on compile classpath of this component and consumers.
     implementation 'com.google.guava:guava:27.0.1-jre'
-    implementation 'junit:junit:4.12'
 
+    // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
-    testImplementation 'org.assertj:assertj-core:3.2.0'
-    testImplementation "org.mockito:mockito-core:2.+"
-
-    compile group: 'com.github.javaparser', name: 'javaparser-symbol-solver-core', version: '3.5.15'
 }
 
 // Define the main class for the application
-mainClassName = 'jp.posl.jprophet.JProphetMain'
-
-run {
-    if (project.hasProperty('args')) {    // "args" というプロパティが渡されていたら
-        args project.args.split('\\s+')   // 空白文字で split して、 run タスクの args オプションにセットする
-    }
-}
-
-// task javadocPrivate(type: Javadoc){
-//     source = sourceSets.main.allJava
-//     options.showFromPrivate()
-// }
+mainClassName = 'testGradleProject02.App'
