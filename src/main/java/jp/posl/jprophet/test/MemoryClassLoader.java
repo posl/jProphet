@@ -10,8 +10,8 @@ import java.util.Map;
 public class MemoryClassLoader extends URLClassLoader {
 
     public MemoryClassLoader(URL[] urls) {
-		super(urls);
-	}
+        super(urls);
+    }
     private final Map<String, byte[]> definitions = new HashMap<String, byte[]>();
 
     /**
