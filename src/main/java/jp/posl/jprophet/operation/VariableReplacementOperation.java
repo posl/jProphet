@@ -28,7 +28,6 @@ public class VariableReplacementOperation implements AstOperation {
     private final int varNameIndexInSimpleName = 1;
     private final List<String> fieldNames;
     private final List<String> localVarNames;
-    private List<RepairUnit> candidates = new ArrayList<RepairUnit>();
 
     public VariableReplacementOperation(final RepairUnit repairUnit){
         this.repairUnit = repairUnit;
@@ -67,46 +66,60 @@ public class VariableReplacementOperation implements AstOperation {
         return localVarNames;
     }
 
-    public List<RepairUnit> exec() {
-        // 代入文の置換
-        if (targetNode instanceof AssignExpr) {
-            // メンバ変数で置換
-            for(String fieldName: this.fieldNames){
+    private List<RepairUnit> replaceInAssignExpr(){
+        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
+        // メンバ変数で置換
+        for(String fieldName: this.fieldNames){
+            RepairUnit newCandidate = RepairUnit.copy(this.repairUnit);
+            ((AssignExpr) newCandidate.getTargetNode()).setValue(new FieldAccessExpr(
+                new ThisExpr(), fieldName
+            ));
+            candidates.add(newCandidate);
+        }
+        // ローカル変数で置換
+        for(String localVarName: this.localVarNames){
+            RepairUnit newCandidate = RepairUnit.copy(this.repairUnit);
+            ((AssignExpr) newCandidate.getTargetNode()).setValue(new NameExpr(localVarName));
+            candidates.add(newCandidate);
+        }
+
+        return candidates;
+    }
+
+    public List<RepairUnit> replaceInArgs(){
+        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
+        final int argc = ((MethodCallExpr)targetNode).getArguments().size(); 
+        // 各引数をメンバ変数で置換   
+        for(String fieldName: this.fieldNames){
+            for(int i = 0; i < argc; i++){
                 RepairUnit newCandidate = RepairUnit.copy(this.repairUnit);
-                ((AssignExpr) newCandidate.getTargetNode()).setValue(new FieldAccessExpr(
-                    new ThisExpr(), fieldName
-                ));
+                MethodCallExpr methodCallExpr = (MethodCallExpr)newCandidate.getTargetNode();
+                methodCallExpr.setArgument(i, new FieldAccessExpr(new ThisExpr(), fieldName));
                 candidates.add(newCandidate);
             }
-            // ローカル変数で置換
-            for(String localVarName: this.localVarNames){
+        }
+        // 各引数をローカル変数で置換   
+        for(String localVarName: this.localVarNames){
+            for(int i = 0; i < argc; i++){
                 RepairUnit newCandidate = RepairUnit.copy(this.repairUnit);
-                ((AssignExpr) newCandidate.getTargetNode()).setValue(new NameExpr(localVarName));
+                MethodCallExpr methodCallExpr = (MethodCallExpr)newCandidate.getTargetNode();
+                methodCallExpr.setArgument(i, new NameExpr(localVarName));
                 candidates.add(newCandidate);
             }
         }
 
+        return candidates;
+    }
+
+    public List<RepairUnit> exec() {
+        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
+        // 代入文の置換
+        if (targetNode instanceof AssignExpr) {
+            candidates.addAll(this.replaceInAssignExpr());
+        }
         // メソッドの引数の置換
         if (targetNode instanceof MethodCallExpr){
-            final int argc = ((MethodCallExpr)targetNode).getArguments().size(); 
-            // 各引数をメンバ変数で置換   
-            for(String fieldName: this.fieldNames){
-                for(int i = 0; i < argc; i++){
-                    RepairUnit newCandidate = RepairUnit.copy(this.repairUnit);
-                    MethodCallExpr methodCallExpr = (MethodCallExpr)newCandidate.getTargetNode();
-                    methodCallExpr.setArgument(i, new FieldAccessExpr(new ThisExpr(), fieldName));
-                    candidates.add(newCandidate);
-                }
-            }
-            // 各引数をローカル変数で置換   
-            for(String localVarName: this.localVarNames){
-                for(int i = 0; i < argc; i++){
-                    RepairUnit newCandidate = RepairUnit.copy(this.repairUnit);
-                    MethodCallExpr methodCallExpr = (MethodCallExpr)newCandidate.getTargetNode();
-                    methodCallExpr.setArgument(i, new NameExpr(localVarName));
-                    candidates.add(newCandidate);
-                }
-            }
+            candidates.addAll(this.replaceInArgs());
         }
         return candidates;
     }
