@@ -12,59 +12,58 @@ import java.nio.file.Path;
 
 
 public class FaultLocalization {
-	ProjectBuilder projectBuilder = new ProjectBuilder();
-	Path classDir;
-	String buildPath;
-	List<String> classFilePaths;
-	List<String> sourceClassFilePaths = new ArrayList<String>();
-	List<String> testClassFilePaths = new ArrayList<String>();
+    ProjectBuilder projectBuilder = new ProjectBuilder();
+    Path classDir;
+    String buildPath;
+    List<String> classFilePaths;
+    List<String> sourceClassFilePaths = new ArrayList<String>();
+    List<String> testClassFilePaths = new ArrayList<String>();
 
-	/**
-	 * ソースファイルとテストファイルをビルドして,ビルドされたクラスのFQDNを取得
-	 * @param project
-	 */
-	public FaultLocalization(ProjectConfiguration project) {
-		this.projectBuilder.build(project);
-		this.buildPath = project.getBuildPath();
-		getFQN(project);
-	}
+    /**
+     * ソースファイルとテストファイルをビルドして,ビルドされたクラスのFQDNを取得
+     * @param project
+     */
+    public FaultLocalization(ProjectConfiguration project) {
+        this.projectBuilder.build(project);
+        this.buildPath = project.getBuildPath();
+        getFQN(project);
+    }
+    /**
+     * テスト対象の全てのソースファイルの行ごとの疑惑値を算出する
+     * @return List[ファイルのFQDN, 行, 疑惑値]
+     */
+    public List<Suspiciousness> exec() {
+        List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
+        TestResults testResults;
+        CoverageCollector collector = new CoverageCollector(buildPath);
+        try{
+            testResults = collector.exec(sourceClassFilePaths, testClassFilePaths);
+            SuspiciousnessCalculator suspiciousnessCalculator = new SuspiciousnessCalculator(testResults);
+            suspiciousnessCalculator.exec();
+            suspiciousnessList = suspiciousnessCalculator.getSuspiciousnessList();
+        }catch (Exception e){
+            System.err.println(e.getMessage());
+            System.exit(-1);
+        }
+        return suspiciousnessList;
+    }
 
-	/**
-	 * テスト対象の全てのソースファイルの行ごとの疑惑値を算出する
-	 * @return List[ファイルのFQDN, 行, 疑惑値]
-	 */
-	public List<Suspiciousness> exec() {
-		List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
-		TestResults testResults = new TestResults();
-		CoverageCollector collector = new CoverageCollector(buildPath);
-		try{
-			testResults = collector.exec(sourceClassFilePaths, testClassFilePaths);
-			SuspiciousnessCalculator suspiciousnessCalculator = new SuspiciousnessCalculator(testResults);
-			suspiciousnessCalculator.run();
-			suspiciousnessList = suspiciousnessCalculator.getSuspiciousnessList();
-		}catch (Exception e){
-			System.out.println("例外");
-		}
+    /**
+     * ファイルパスからFQNを取得する
+     * @param project
+     */
+    private void getFQN(ProjectConfiguration project){
+        String gradleTestPath = "/src/test/java/";
+        String gradleSourcePath = "/src/main/java/";
+        String testFolderPath = project.getProjectPath() + gradleTestPath;
+        String sourceFolderPath = project.getProjectPath() + gradleSourcePath;
+        for (String testPath : project.getTestFilePaths()){
+            testClassFilePaths.add(testPath.replace(testFolderPath, "").replace("/", ".").replace(".java", ""));
+        }
+        for (String sourcePath : project.getSourceFilePaths()){
+            sourceClassFilePaths.add(sourcePath.replace(sourceFolderPath, "").replace("/", ".").replace(".java", ""));
+        }
 
-		return suspiciousnessList;
-	}
-
-	/**
-	 * ファイルパスからFQNを取得する
-	 * @param project
-	 */
-	private void getFQN(ProjectConfiguration project){
-		String gradleTestPath = "/src/test/java/";
-		String gradleSourcePath = "/src/main/java/";
-		String testFolderPath = project.getProjectPath() + gradleTestPath;
-		String sourceFolderPath = project.getProjectPath() + gradleSourcePath;
-		for (String testPath : project.getTestFilePaths()){
-			testClassFilePaths.add(testPath.replace(testFolderPath, "").replace("/", ".").replace(".java", ""));
-		}
-		for (String sourcePath : project.getSourceFilePaths()){
-			sourceClassFilePaths.add(sourcePath.replace(sourceFolderPath, "").replace("/", ".").replace(".java", ""));
-		}
-
-	}
-	
+    }
+    
 }

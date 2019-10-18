@@ -51,8 +51,8 @@ spotbugs {
 }
 
 tasks.withType(com.github.spotbugs.SpotBugsTask) {
-  reports.xml.enabled = false
-  reports.html.enabled = true
+    reports.xml.enabled = false
+    reports.html.enabled = true
 }
 
 repositories {

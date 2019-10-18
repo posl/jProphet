@@ -28,11 +28,11 @@ import com.github.javaparser.ast.CompilationUnit;
 public class RepairCandidateGeneratorTest {
     
     @Mock private CondRefinementOperation condRefinementOperation = new CondRefinementOperation();
-	@Mock private CondIntroductionOperation condIntroductionOperation = new CondIntroductionOperation(); 
-	@Mock private CtrlFlowIntroductionOperation ctrlFlowIntroductionOperation = new CtrlFlowIntroductionOperation(); 
-	@Mock private InsertInitOperation insertInitOperation = new InsertInitOperation(); 
-	@Mock private ValueReplacementOperation valueReplacementOperation =  new ValueReplacementOperation();
-	@Mock private CopyReplaceOperation copyReplaceOperation = new CopyReplaceOperation();
+    @Mock private CondIntroductionOperation condIntroductionOperation = new CondIntroductionOperation(); 
+    @Mock private CtrlFlowIntroductionOperation ctrlFlowIntroductionOperation = new CtrlFlowIntroductionOperation(); 
+    @Mock private InsertInitOperation insertInitOperation = new InsertInitOperation(); 
+    @Mock private ValueReplacementOperation valueReplacementOperation =  new ValueReplacementOperation();
+    @Mock private CopyReplaceOperation copyReplaceOperation = new CopyReplaceOperation();
     @InjectMocks
     private RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
     @Before public void setUp(){

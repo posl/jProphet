@@ -23,7 +23,7 @@ public class RepairUnit {
         this.targetNode = targetNode;
         this.targetNodeIndex = targetNodeIndex;
         this.compilationUnit = compilationUnit;
-	    LexicalPreservingPrinter.setup(this.compilationUnit);
+        LexicalPreservingPrinter.setup(this.compilationUnit);
     }
 
     /**

@@ -1,15 +1,13 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.FL;
 
 import jp.posl.jprophet.ProjectConfiguration;
+import jp.posl.jprophet.ProjectBuilder;
 
 import org.junit.Before;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
-import jp.posl.jprophet.FL.TestResults;
-import jp.posl.jprophet.FL.CoverageCollector;
-import jp.posl.jprophet.FL.StatementStatus;
 import java.io.File;
 
 public class StatementStatusTest{
@@ -53,7 +51,7 @@ public class StatementStatusTest{
             //testResults = coverageCollector.exec(sourceClass, testClass);
             testResults = coverageCollector.exec(sourceClassFilePaths, testClassFilePaths);
         }catch (Exception e){
-			System.out.println("例外");
+            System.out.println("例外");
         }
 
         //testFLProject.Ifstatementの12行目,9行目のカバレッジが正しいか確認

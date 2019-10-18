@@ -2,8 +2,8 @@ package jp.posl.jprophet.FL;
 
 public class SuspiciousnessStrategy {
     private StatementStatus statementStatus;
-    private int numberOfSuccessedTests;
-    private int numberOfFailedTests;
+    final private int numberOfSuccessedTests;
+    final private int numberOfFailedTests;
 
     public SuspiciousnessStrategy(int numberOfSuccessedTests, int numberOfFailedTests){
         this.numberOfSuccessedTests = numberOfSuccessedTests;
@@ -14,7 +14,7 @@ public class SuspiciousnessStrategy {
         this.statementStatus = statementStatus;
     }
 
-    public Double jaccard(){
+    public double jaccard(){
         double suspiciousenesses;
         double NCF = (double)statementStatus.getNumberOfFailedTestsCoveringStatement();
         double NUF = (double)statementStatus.getNumberOfFailedTestsNotCoveringStatement();
@@ -24,7 +24,7 @@ public class SuspiciousnessStrategy {
         return suspiciousenesses;
     }
 
-    public Double tarantula(){
+    public double tarantula(){
         double suspiciousenesses;
         double NCF = (double)statementStatus.getNumberOfFailedTestsCoveringStatement();
         double NCS = (double)statementStatus.getNumberOfSuccessedTestsCoveringStatement();
@@ -35,7 +35,7 @@ public class SuspiciousnessStrategy {
         return suspiciousenesses;
     }
 
-    public Double ochiai(){
+    public double ochiai(){
         double suspiciousenesses;
         double NCF = (double)statementStatus.getNumberOfFailedTestsCoveringStatement();
         double NCS = (double)statementStatus.getNumberOfSuccessedTestsCoveringStatement();

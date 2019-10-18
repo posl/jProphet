@@ -2,41 +2,39 @@ package jp.posl.jprophet.FL;
 
 
 public class StatementStatus{
-    /**
-     * NCF : number of failed test cases that cover a statement <br>
-     * NUF : number of failed test cases that do not cover a statement <br>
-     * NCS : number of successful test cases that cover a statement <br>
-     * NUS : number of successful test cases that do not cover a statement <br>
-     * NC  : total number of test cases that cover a statement
-     * NU  : total number of test cases that do not cover 
-     */
-    private int NCF, NUF, NCS, NUS, NC, NU;
+
+    private int numberOfFailedTestsCoveringStatement;
+    private int numberOfFailedTestsNotCoveringStatement;
+    private int numberOfSuccessedTestsCoveringStatement;
+    private int numberOfSuccessedTestsNotCoveringStatement;
+    private int numberOfTestsCoveringStatement;
+    private int numberOfTestsNotCoveringStatement;
 
     /**
-     * filenumで指定されたソースファイルの「line」行のNCF, NUF, NCS, NUSを取得
+     * filenumで指定されたソースファイルの「line」行の,失敗(成功)してその行を通った(通ってない)テストの数を取得
      * @param testResulets
      * @param line          テストファイルの行番号
      * @param fileNum       Coverlageのリストの何番目のテストファイルかを表す(できればstream()をうまく使ってString filenameにしたい)
      */
     public StatementStatus(TestResults testResulets, int line, int fileNum){
-        this.NCF = calculateNCF(testResulets, line, fileNum);
-        this.NUF = calculateNUF(testResulets, line, fileNum);
-        this.NCS = calculateNCS(testResulets, line, fileNum);
-        this.NUS = calculateNUS(testResulets, line, fileNum);
-        this.NC = this.NCF + this.NCS;
-        this.NU = this.NUF + this.NUS;
+        this.numberOfFailedTestsCoveringStatement = calculateNumberOfFailedTestsCoveringStatement(testResulets, line, fileNum);
+        this.numberOfFailedTestsNotCoveringStatement = calculateNumberOfFailedTestsNotCoveringStatement(testResulets, line, fileNum);
+        this.numberOfSuccessedTestsCoveringStatement = calculateNumberOfSuccessedTestsCoveringStatement(testResulets, line, fileNum);
+        this.numberOfSuccessedTestsNotCoveringStatement = calculateNumberOfSuccessedTestsNotCoveringStatement(testResulets, line, fileNum);
+        this.numberOfTestsCoveringStatement = this.numberOfFailedTestsCoveringStatement + this.numberOfSuccessedTestsCoveringStatement;
+        this.numberOfTestsNotCoveringStatement = this.numberOfFailedTestsNotCoveringStatement + this.numberOfSuccessedTestsNotCoveringStatement;
     }
 
     //TODO 以下4つの関数でカバレッジ結果が2(COVERD)の時のみその行を通ったことにしているが,3(PARTLY_COVERED)のときどうするか要検討
     
     /**
-     * fileNumで指定されたline行目のNCFを取得
+     * fileNumで指定されたline行目のnumberOfFailedTestsCoveringStatementを計算
      * @param testResulets
      * @param line
      * @param fileNum
      * @return
      */
-    private Integer calculateNCF(TestResults testResulets, int line, int fileNum) {
+    private int calculateNumberOfFailedTestsCoveringStatement(TestResults testResulets, int line, int fileNum) {
         int size = testResulets.getFailedTestResults().size();
         int ncf = 0;
         for(int k = 0; k < size; k++){
@@ -48,13 +46,13 @@ public class StatementStatus{
     }
 
     /**
-     * fileNumで指定されたline行目のNUFを取得
+     * fileNumで指定されたline行目のnumberOfFailedTestsNotCoveringStatementを計算
      * @param testResulets
      * @param line
      * @param fileNum
      * @return
      */
-    private Integer calculateNUF(TestResults testResulets, int line, int fileNum) {
+    private int calculateNumberOfFailedTestsNotCoveringStatement(TestResults testResulets, int line, int fileNum) {
         int size = testResulets.getFailedTestResults().size();
         int nuf = 0;
         for(int k = 0; k < size; k++){
@@ -66,13 +64,13 @@ public class StatementStatus{
     }
 
     /**
-     * fileNumで指定されたline行目のNCSを取得
+     * fileNumで指定されたline行目のnumberOfSuccessedTestsCoveringStatementを計算
      * @param testResulets
      * @param line
      * @param fileNum
      * @return
      */
-    private Integer calculateNCS(TestResults testResulets, int line, int fileNum) {
+    private int calculateNumberOfSuccessedTestsCoveringStatement(TestResults testResulets, int line, int fileNum) {
         int size = testResulets.getSuccessedTestResults().size();
         int ncs = 0;
         for(int k = 0; k < size; k++){
@@ -84,13 +82,13 @@ public class StatementStatus{
     }
 
     /**
-     * fileNumで指定されたline行目のNUFを取得
+     * fileNumで指定されたline行目のnumberOfSuccessedTestsNotCoveringStatementを計算
      * @param testResulets
      * @param line
      * @param fileNum
      * @return
      */
-    private Integer calculateNUS(TestResults testResulets, int line, int fileNum) {
+    private int calculateNumberOfSuccessedTestsNotCoveringStatement(TestResults testResulets, int line, int fileNum) {
         int size = testResulets.getSuccessedTestResults().size();
         int nus = 0;
         for(int k = 0; k < size; k++){
@@ -101,28 +99,28 @@ public class StatementStatus{
         return nus;
     }
 
-    public Integer getNumberOfFailedTestsCoveringStatement(){
-        return this.NCF;
+    public int getNumberOfFailedTestsCoveringStatement(){
+        return this.numberOfFailedTestsCoveringStatement;
     }
 
-    public Integer getNumberOfFailedTestsNotCoveringStatement(){
-        return this.NUF;
+    public int getNumberOfFailedTestsNotCoveringStatement(){
+        return this.numberOfFailedTestsNotCoveringStatement;
     }
 
-    public Integer getNumberOfSuccessedTestsCoveringStatement(){
-        return this.NCS;
+    public int getNumberOfSuccessedTestsCoveringStatement(){
+        return this.numberOfSuccessedTestsCoveringStatement;
     }
 
-    public Integer getNumberOfSuccessedTestsNotCoveringStatement(){
-        return this.NUS;
+    public int getNumberOfSuccessedTestsNotCoveringStatement(){
+        return this.numberOfSuccessedTestsNotCoveringStatement;
     }
 
-    public Integer getNumberOfTestsCoveringStatement(){
-        return this.NC;
+    public int getNumberOfTestsCoveringStatement(){
+        return this.numberOfTestsCoveringStatement;
     }
 
-    public Integer getNumberOfTestsNotCoveringStatement(){
-        return this.NU;
+    public int getNumberOfTestsNotCoveringStatement(){
+        return this.numberOfTestsNotCoveringStatement;
     }
 
 }
