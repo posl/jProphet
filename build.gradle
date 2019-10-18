@@ -66,7 +66,6 @@ dependencies {
     implementation 'com.google.guava:guava:27.0.1-jre'
     implementation 'junit:junit:4.12'
 
-    implementation 'junit:junit:4.12'
     implementation 'org.jacoco:org.jacoco.core:0.8.3'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.assertj:assertj-core:3.2.0'
