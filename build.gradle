@@ -15,6 +15,31 @@ plugins {
 
     // Apply the application plugin to add support for building an application
     id 'application'
+
+    id 'jacoco'
+
+}
+
+jacoco {
+    toolVersion = "0.8.3"
+
+    //report結果の出力場所
+    reportsDir = file("$buildDir/customJacocoReportDir")
+}
+
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.enabled true
+
+        //これを書かなかったらbuildDir/customJacocoDirに結果が出力される
+        html.destination file("${buildDir}/jacocoHtml")
+
+        //これを書いたらbuildDir直下にxmlreport.xmlという名前で出力される
+        //xml.destination file("${buildDir}/xmlreport.xml")
+    }
 }
 
 pmd {
@@ -23,6 +48,11 @@ pmd {
 
 spotbugs {
     ignoreFailures = true
+}
+
+tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    reports.xml.enabled = false
+    reports.html.enabled = true
 }
 
 repositories {
@@ -36,6 +66,7 @@ dependencies {
     implementation 'com.google.guava:guava:27.0.1-jre'
     implementation 'junit:junit:4.12'
 
+    implementation 'org.jacoco:org.jacoco.core:0.8.3'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.assertj:assertj-core:3.2.0'
     testImplementation "org.mockito:mockito-core:2.+"
