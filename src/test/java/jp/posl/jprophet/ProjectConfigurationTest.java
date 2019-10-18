@@ -19,7 +19,7 @@ public class ProjectConfigurationTest{
             "src/test/resources/testGradleProject01/src/main/java/testGradleProject01/App.java",
             "src/test/resources/testGradleProject01/src/main/java/testGradleProject01/App2.java"
          ));
-
+         
         assertThat(this.project.getSourceFilePaths()).containsOnlyElementsOf(expectedSourceFilePaths);
     }
 

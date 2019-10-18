@@ -2,7 +2,16 @@ package jp.posl.jprophet;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
+import jp.posl.jprophet.ProjectConfiguration;
+import jp.posl.jprophet.FaultLocalization;
+import jp.posl.jprophet.AbstractRepairCandidate;
+import jp.posl.jprophet.ConcreteRepairCandidate;
+import jp.posl.jprophet.RepairCandidateGenerator;
+import jp.posl.jprophet.PlausibilityAnalyzer;
+import jp.posl.jprophet.StagedCondGenerator;
+import jp.posl.jprophet.FL.Suspiciousness;
+
+import jp.posl.jprophet.test.TestExecutor;
 
 
 public class JProphetMain {   
@@ -24,8 +33,8 @@ public class JProphetMain {
 
     private void run(ProjectConfiguration project){
         // フォルトローカライゼーション
-        FaultLocalization faultLocalization = new FaultLocalization();
-        HashMap<Integer, Integer> suspiciousenesses = faultLocalization.exec(project);
+        FaultLocalization faultLocalization = new FaultLocalization(project);
+        List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
         RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
@@ -45,7 +54,7 @@ public class JProphetMain {
             List<ConcreteRepairCandidate> concreteRepairCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
             for(ConcreteRepairCandidate concreteRepairCandidate: concreteRepairCandidates) {
                 ProjectConfiguration modifiedProject = programGenerator.applyPatch(concreteRepairCandidate);
-                if(testExecutor.test(modifiedProject)) {
+                if(testExecutor.run(modifiedProject)) {
                     return;
                 }
             }
