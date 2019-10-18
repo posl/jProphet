@@ -3,6 +3,9 @@ package jp.posl.jprophet.FL;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * ステートメント(行)ごとの疑惑値の計算
+ */
 public class SuspiciousnessCalculator {
 
     private List<Suspiciousness> suspiciousnessList;

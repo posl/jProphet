@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * TestResultのリスト
+ * 全てのテストの実行結果とカバレッジを生成
+ */
 public class TestResults {
 
     private final List<TestResult> testResults;
@@ -41,8 +45,8 @@ public class TestResults {
         return testResults;
     }
 
-    public TestResult getTestResult(int num){
-        return testResults.get(num);
+    public TestResult getTestResult(int index){
+        return testResults.get(index);
     }
     
     public List<String> getFailedTestNames() {

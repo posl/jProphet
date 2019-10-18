@@ -2,6 +2,9 @@ package jp.posl.jprophet.FL;
 
 import java.util.List;
 
+/**
+ * テストの結果(成功or失敗)とカバレッジをテストのメソッドごとに生成
+ */
 public class TestResult {
 
     private String methodName;

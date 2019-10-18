@@ -1,6 +1,8 @@
 package jp.posl.jprophet.FL;
 
-
+/**
+ * テスト対象のソースファイルのステートメント(行)の失敗(成功)してその行を通った(通ってない)テストの数を格納
+ */
 public class StatementStatus{
 
     private int numberOfFailedTestsCoveringStatement;

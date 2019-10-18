@@ -7,6 +7,10 @@ import java.util.HashMap;
 import org.jacoco.core.analysis.IClassCoverage;
 import org.jacoco.core.analysis.ICounter;
 
+
+/**
+ * 1つのテストメソッドに対する1つのソースコードのカバレッジを格納
+ */
 public class Coverage {
 
     public enum Status {
@@ -109,7 +113,7 @@ public class Coverage {
      * テスト対象のソースコードの行数を取得
      * @return テスト対象のソースコードの行数
      */
-    public Integer getLength(){
+    public int getLength(){
         return statuses.size();
     }
 }

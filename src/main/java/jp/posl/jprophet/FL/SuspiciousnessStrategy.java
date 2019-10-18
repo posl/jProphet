@@ -1,10 +1,19 @@
 package jp.posl.jprophet.FL;
 
+/**
+ * 疑惑値の計算手法をまとめておくクラス
+ */
 public class SuspiciousnessStrategy {
     private StatementStatus statementStatus;
     final private int numberOfSuccessedTests;
     final private int numberOfFailedTests;
 
+    /**
+     * コンストラクタ
+     * 成功したテストの数と失敗したテストの数の初期化
+     * @param numberOfSuccessedTests
+     * @param numberOfFailedTests
+     */
     public SuspiciousnessStrategy(int numberOfSuccessedTests, int numberOfFailedTests){
         this.numberOfSuccessedTests = numberOfSuccessedTests;
         this.numberOfFailedTests = numberOfFailedTests;

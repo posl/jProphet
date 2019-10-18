@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.nio.file.Path;
 
-
+/**
+ * FaultLocalizationの実行
+ */
 public class FaultLocalization {
     ProjectBuilder projectBuilder = new ProjectBuilder();
     Path classDir;

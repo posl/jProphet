@@ -21,6 +21,9 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
+/**
+ * junit+jacocoでテスト対象プロジェクトのカバレッジを回収する
+ */
 public class CoverageCollector {
     private MemoryClassLoader memoryClassLoader;
     private final IRuntime jacocoRuntime;
