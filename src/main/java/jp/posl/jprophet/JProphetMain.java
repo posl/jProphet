@@ -11,6 +11,8 @@ import jp.posl.jprophet.PlausibilityAnalyzer;
 import jp.posl.jprophet.StagedCondGenerator;
 import jp.posl.jprophet.FL.Suspiciousness;
 
+import jp.posl.jprophet.test.TestExecutor;
+
 
 public class JProphetMain {   
     public static void main(String[] args) {
@@ -52,7 +54,7 @@ public class JProphetMain {
             List<ConcreteRepairCandidate> concreteRepairCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
             for(ConcreteRepairCandidate concreteRepairCandidate: concreteRepairCandidates) {
                 ProjectConfiguration modifiedProject = programGenerator.applyPatch(concreteRepairCandidate);
-                if(testExecutor.test(modifiedProject)) {
+                if(testExecutor.run(modifiedProject)) {
                     return;
                 }
             }

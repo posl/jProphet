@@ -88,10 +88,10 @@ public class ProjectConfiguration {
     }
 
     /**
-      * プロジェクトのパスを取得
-      * @return プロジェクトのパス
-      */
-      public String getProjectPath(){
+     * プロジェクトのパスを取得
+     * @return プロジェクトのパス
+     */
+    public String getProjectPath(){
         return this.projectPath;
     }
 }
