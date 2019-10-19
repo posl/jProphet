@@ -5,6 +5,7 @@ import jp.posl.jprophet.FL.Suspiciousness;
 import jp.posl.jprophet.FL.CoverageCollector;
 import jp.posl.jprophet.FL.TestResults;
 import jp.posl.jprophet.FL.SuspiciousnessCalculator;
+import jp.posl.jprophet.FL.strategy.Coefficient;
 import jp.posl.jprophet.ProjectBuilder;
 import java.util.List;
 import java.util.ArrayList;
@@ -20,14 +21,16 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
     List<String> classFilePaths;
     List<String> sourceClassFilePaths = new ArrayList<String>();
     List<String> testClassFilePaths = new ArrayList<String>();
+    Coefficient coefficient;
 
     /**
      * ソースファイルとテストファイルをビルドして,ビルドされたクラスのFQDNを取得
      * @param project
      */
-    public SpectrumBasedFaultLocalization(ProjectConfiguration project) {
+    public SpectrumBasedFaultLocalization(ProjectConfiguration project, Coefficient coefficient) {
         this.projectBuilder.build(project);
         this.buildPath = project.getBuildPath();
+        this.coefficient = coefficient;
         getFQN(project);
     }
     /**
@@ -40,7 +43,7 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
         CoverageCollector collector = new CoverageCollector(buildPath);
         try{
             testResults = collector.exec(sourceClassFilePaths, testClassFilePaths);
-            SuspiciousnessCalculator suspiciousnessCalculator = new SuspiciousnessCalculator(testResults);
+            SuspiciousnessCalculator suspiciousnessCalculator = new SuspiciousnessCalculator(testResults, coefficient);
             suspiciousnessCalculator.exec();
             suspiciousnessList = suspiciousnessCalculator.getSuspiciousnessList();
         }catch (Exception e){

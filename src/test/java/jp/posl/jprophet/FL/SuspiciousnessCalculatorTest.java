@@ -2,6 +2,8 @@ package jp.posl.jprophet.FL;
 
 import jp.posl.jprophet.ProjectConfiguration;
 import jp.posl.jprophet.ProjectBuilder;
+import jp.posl.jprophet.FL.strategy.Coefficient;
+import jp.posl.jprophet.FL.strategy.Jaccard;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +21,7 @@ public class SuspiciousnessCalculatorTest{
     private List<String> SourceClassFilePaths = new ArrayList<String>();
     private List<String> TestClassFilePaths = new ArrayList<String>();
     private TestResults testResults = new TestResults();
+    private Coefficient coefficient = new Jaccard();
 
 
 
@@ -58,7 +61,7 @@ public class SuspiciousnessCalculatorTest{
             System.out.println("例外");
         }
 
-        SuspiciousnessCalculator suspiciousnessCalculator = new SuspiciousnessCalculator(testResults);
+        SuspiciousnessCalculator suspiciousnessCalculator = new SuspiciousnessCalculator(testResults, coefficient);
         suspiciousnessCalculator.exec();
 
         //Ifstatementの3行目の疑惑値 (Jaccard)

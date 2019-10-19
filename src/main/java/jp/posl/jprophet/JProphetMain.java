@@ -10,6 +10,8 @@ import jp.posl.jprophet.RepairCandidateGenerator;
 import jp.posl.jprophet.PlausibilityAnalyzer;
 import jp.posl.jprophet.StagedCondGenerator;
 import jp.posl.jprophet.FL.Suspiciousness;
+import jp.posl.jprophet.FL.strategy.Coefficient;
+import jp.posl.jprophet.FL.strategy.Jaccard;
 
 import jp.posl.jprophet.test.TestExecutor;
 
@@ -33,7 +35,8 @@ public class JProphetMain {
 
     private void run(ProjectConfiguration project){
         // フォルトローカライゼーション
-        SpectrumBasedFaultLocalization faultLocalization = new SpectrumBasedFaultLocalization(project);
+        Coefficient coefficient = new Jaccard();
+        SpectrumBasedFaultLocalization faultLocalization = new SpectrumBasedFaultLocalization(project, coefficient);
         List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
