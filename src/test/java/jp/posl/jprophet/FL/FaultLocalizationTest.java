@@ -1,7 +1,7 @@
 package jp.posl.jprophet.FL;
 
 import jp.posl.jprophet.ProjectConfiguration;
-import jp.posl.jprophet.FaultLocalization;
+import jp.posl.jprophet.SpectrumBasedFaultLocalization;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class FaultLocalizationTest{
      */
     @Test public void testForSourceFilePaths(){
         List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
-        FaultLocalization faultLocalization = new FaultLocalization(project);
+        SpectrumBasedFaultLocalization faultLocalization = new SpectrumBasedFaultLocalization(project);
         suspiciousnessList = faultLocalization.exec();
 
         //疑惑値のリストの中にテスト対象のファイルのFQDNが存在するかチェック

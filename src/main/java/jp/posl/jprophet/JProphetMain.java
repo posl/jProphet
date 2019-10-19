@@ -3,7 +3,7 @@ package jp.posl.jprophet;
 import java.util.ArrayList;
 import java.util.List;
 import jp.posl.jprophet.ProjectConfiguration;
-import jp.posl.jprophet.FaultLocalization;
+import jp.posl.jprophet.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.AbstractRepairCandidate;
 import jp.posl.jprophet.ConcreteRepairCandidate;
 import jp.posl.jprophet.RepairCandidateGenerator;
@@ -33,7 +33,7 @@ public class JProphetMain {
 
     private void run(ProjectConfiguration project){
         // フォルトローカライゼーション
-        FaultLocalization faultLocalization = new FaultLocalization(project);
+        SpectrumBasedFaultLocalization faultLocalization = new SpectrumBasedFaultLocalization(project);
         List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
