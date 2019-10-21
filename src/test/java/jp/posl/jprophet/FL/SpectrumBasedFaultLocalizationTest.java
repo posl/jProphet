@@ -14,7 +14,7 @@ import jp.posl.jprophet.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.FL.strategy.Coefficient;
 import jp.posl.jprophet.FL.strategy.Jaccard;
 
-public class FaultLocalizationTest{
+public class SpectrumBasedFaultLocalizationTest{
     // 入力として用意するテスト用のプロジェクト
     private String projectPath = "src/test/resources/testFLProject";
     private ProjectConfiguration project = new ProjectConfiguration(this.projectPath, "FLtmp");

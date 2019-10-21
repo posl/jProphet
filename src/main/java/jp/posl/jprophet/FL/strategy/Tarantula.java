@@ -4,6 +4,12 @@ import jp.posl.jprophet.FL.StatementStatus;
 
 public class Tarantula implements Coefficient {
 
+    /**
+     * Tarantulaで疑惑値算出
+     * @param statementStatus
+     * @param numberOfSuccessedTests
+     * @param numberOfFailedTests
+     */
     public double calculate(StatementStatus statementStatus, int numberOfSuccessedTests, int numberOfFailedTests) {
         double suspiciousenesses;
         double ncf = (double)statementStatus.getNumberOfFailedTestsCoveringStatement();

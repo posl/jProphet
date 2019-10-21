@@ -36,7 +36,7 @@ public class JProphetMain {
     private void run(ProjectConfiguration project){
         // フォルトローカライゼーション
         Coefficient coefficient = new Jaccard();
-        SpectrumBasedFaultLocalization faultLocalization = new SpectrumBasedFaultLocalization(project, coefficient);
+        FaultLocalization faultLocalization = new SpectrumBasedFaultLocalization(project, coefficient);
         List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成

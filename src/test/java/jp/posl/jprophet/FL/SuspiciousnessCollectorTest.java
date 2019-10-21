@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.io.File;
 
-public class SuspiciousnessCalculatorTest{
+public class SuspiciousnessCollectorTest{
     // 入力として用意するテスト用のプロジェクト
     private String projectPath;
     private ProjectConfiguration project;
@@ -61,7 +61,7 @@ public class SuspiciousnessCalculatorTest{
             System.out.println("例外");
         }
 
-        SuspiciousnessCalculator suspiciousnessCalculator = new SuspiciousnessCalculator(testResults, coefficient);
+        SuspiciousnessCollector suspiciousnessCalculator = new SuspiciousnessCollector(testResults, coefficient);
         suspiciousnessCalculator.exec();
 
         //Ifstatementの3行目の疑惑値 (Jaccard)

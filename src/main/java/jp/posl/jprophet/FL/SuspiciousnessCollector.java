@@ -7,7 +7,7 @@ import jp.posl.jprophet.FL.strategy.Coefficient;
 /**
  * ステートメント(行)ごとの疑惑値の計算
  */
-public class SuspiciousnessCalculator {
+public class SuspiciousnessCollector {
 
     private List<Suspiciousness> suspiciousnessList;
     final private int fileNum;
@@ -20,7 +20,7 @@ public class SuspiciousnessCalculator {
      * テスト結果(カバレッジ情報を含む)から,全てのテスト対象ファイルの各行ごとの疑惑値を計算
      * @param testResults テスト結果
      */
-    public SuspiciousnessCalculator(TestResults testResults, Coefficient coefficient){
+    public SuspiciousnessCollector(TestResults testResults, Coefficient coefficient){
         this.fileNum = testResults.getTestResult(0).getCoverages().size();
         this.suspiciousnessList = new ArrayList<Suspiciousness>();
         this.numberOfSuccessedTests = testResults.getSuccessedTestResults().size();

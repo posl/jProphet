@@ -4,7 +4,7 @@ import jp.posl.jprophet.ProjectConfiguration;
 import jp.posl.jprophet.FL.Suspiciousness;
 import jp.posl.jprophet.FL.CoverageCollector;
 import jp.posl.jprophet.FL.TestResults;
-import jp.posl.jprophet.FL.SuspiciousnessCalculator;
+import jp.posl.jprophet.FL.SuspiciousnessCollector;
 import jp.posl.jprophet.FL.strategy.Coefficient;
 import jp.posl.jprophet.ProjectBuilder;
 import java.util.List;
@@ -40,12 +40,12 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
     public List<Suspiciousness> exec() {
         List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
         TestResults testResults;
-        CoverageCollector collector = new CoverageCollector(buildPath);
+        CoverageCollector coverageCollector = new CoverageCollector(buildPath);
         try{
-            testResults = collector.exec(sourceClassFilePaths, testClassFilePaths);
-            SuspiciousnessCalculator suspiciousnessCalculator = new SuspiciousnessCalculator(testResults, coefficient);
-            suspiciousnessCalculator.exec();
-            suspiciousnessList = suspiciousnessCalculator.getSuspiciousnessList();
+            testResults = coverageCollector.exec(sourceClassFilePaths, testClassFilePaths);
+            SuspiciousnessCollector suspiciousnessCollector = new SuspiciousnessCollector(testResults, coefficient);
+            suspiciousnessCollector.exec();
+            suspiciousnessList = suspiciousnessCollector.getSuspiciousnessList();
         }catch (Exception e){
             System.err.println(e.getMessage());
             System.exit(-1);
