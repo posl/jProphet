@@ -6,11 +6,15 @@ public class Ochiai implements Coefficient {
 
     public double calculate(StatementStatus statementStatus, int numberOfSuccessedTests, int numberOfFailedTests) {
         double suspiciousenesses;
-        double NCF = (double)statementStatus.getNumberOfFailedTestsCoveringStatement();
-        double NCS = (double)statementStatus.getNumberOfSuccessedTestsCoveringStatement();
-        double NF = (double)numberOfFailedTests;
+        double ncf = (double)statementStatus.getNumberOfFailedTestsCoveringStatement();
+        double ncs = (double)statementStatus.getNumberOfSuccessedTestsCoveringStatement();
+        double nf = (double)numberOfFailedTests;
 
-        suspiciousenesses = NCF / Math.sqrt(NF * (NCF + NCS));
+        if (Math.sqrt(nf * (ncf + ncs)) == 0){
+            suspiciousenesses = 0;
+        }else{
+            suspiciousenesses = ncf / Math.sqrt(nf * (ncf + ncs));
+        }
         return suspiciousenesses;
     }
 }

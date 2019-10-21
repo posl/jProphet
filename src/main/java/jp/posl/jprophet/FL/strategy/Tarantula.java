@@ -6,12 +6,16 @@ public class Tarantula implements Coefficient {
 
     public double calculate(StatementStatus statementStatus, int numberOfSuccessedTests, int numberOfFailedTests) {
         double suspiciousenesses;
-        double NCF = (double)statementStatus.getNumberOfFailedTestsCoveringStatement();
-        double NCS = (double)statementStatus.getNumberOfSuccessedTestsCoveringStatement();
-        double NF = (double)numberOfFailedTests;
-        double NS = (double)numberOfSuccessedTests;
+        double ncf = (double)statementStatus.getNumberOfFailedTestsCoveringStatement();
+        double ncs = (double)statementStatus.getNumberOfSuccessedTestsCoveringStatement();
+        double nf = (double)numberOfFailedTests;
+        double ns = (double)numberOfSuccessedTests;
 
-        suspiciousenesses = (NCF / NF) / (NCF / NF + NCS / NS);
+        if (nf == 0 || ns == 0 || ncf / nf + ncs / ns == 0){
+            suspiciousenesses = 0;
+        }else{
+            suspiciousenesses = (ncf / nf) / (ncf / nf + ncs / ns);
+        }
         return suspiciousenesses;
     }
 }
