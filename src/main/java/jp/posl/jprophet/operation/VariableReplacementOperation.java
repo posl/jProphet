@@ -37,7 +37,7 @@ public class VariableReplacementOperation implements AstOperation {
      */
     public VariableReplacementOperation(final RepairUnit repairUnit){
         this.repairUnit = repairUnit;
-        this.targetNode = repairUnit.getTargetNode();
+        this.targetNode = this.repairUnit.getTargetNode();
         this.fieldNames = this.collectFieldNames();
         this.localVarNames = this.collectLocalVarNames();
     }
@@ -78,7 +78,7 @@ public class VariableReplacementOperation implements AstOperation {
         }
         final List<FieldDeclaration> fields = classNode.findAll(FieldDeclaration.class);
         final List<String> fieldNames = fields.stream()
-                                              .map(field -> field.findAll(SimpleName.class).get(varNameIndexInSimpleName).asString())
+                                              .map(field -> field.findAll(SimpleName.class).get(this.varNameIndexInSimpleName).asString())
                                               .collect(Collectors.toList());
         
         return fieldNames;
@@ -98,7 +98,7 @@ public class VariableReplacementOperation implements AstOperation {
         }
         final List<VariableDeclarationExpr> localVars = methodNode.findAll(VariableDeclarationExpr.class);
         final List<String> localVarNames = localVars.stream()
-                                                    .map(localVar -> localVar.findAll(SimpleName.class).get(varNameIndexInSimpleName).asString())
+                                                    .map(localVar -> localVar.findAll(SimpleName.class).get(this.varNameIndexInSimpleName).asString())
                                                     .collect(Collectors.toList());
         return localVarNames;
     }
@@ -114,6 +114,16 @@ public class VariableReplacementOperation implements AstOperation {
 
         if (targetNode instanceof AssignExpr) {
             for(String varName: varNames){
+                Expression originalAssignedValue = ((AssignExpr)this.targetNode).getValue();
+                String originalAssignedValueName; 
+                try {
+                    originalAssignedValueName = originalAssignedValue.findFirst(SimpleName.class).orElseThrow().asString();
+                } catch (NoSuchElementException e) {
+                    originalAssignedValueName = originalAssignedValue.toString();
+                }
+                if(originalAssignedValueName.equals(varName)){
+                    continue;
+                }
                 RepairUnit newCandidate = RepairUnit.copy(this.repairUnit);
                 ((AssignExpr) newCandidate.getTargetNode()).setValue(constructExpr.apply(varName));
                 candidates.add(newCandidate);
@@ -132,10 +142,14 @@ public class VariableReplacementOperation implements AstOperation {
     private List<RepairUnit> replaceArgsWith(List<String> varNames, Function<String, Expression> constructExpr){
         List<RepairUnit> candidates = new ArrayList<RepairUnit>();
 
-        if (targetNode instanceof MethodCallExpr){
+        if (this.targetNode instanceof MethodCallExpr){
             final int argc = ((MethodCallExpr)(this.targetNode)).getArguments().size(); 
             for(String varName: varNames){
                 for(int i = 0; i < argc; i++){
+                    String originalArgValue = ((MethodCallExpr)this.targetNode).getArgument(i).toString();
+                    if(originalArgValue.equals(varName)){
+                        continue;
+                    }
                     RepairUnit newCandidate = RepairUnit.copy(this.repairUnit);
                     MethodCallExpr methodCallExpr = (MethodCallExpr)newCandidate.getTargetNode();
                     methodCallExpr.setArgument(i, constructExpr.apply(varName));

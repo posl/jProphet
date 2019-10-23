@@ -110,7 +110,7 @@ public class VariableReplacementOperationTest{
     /**
      * 生成した修正パッチ候補に元のステートメントと同じものが含まれていないことをテスト
      */
-    @Test public void testThatCandidatesDoesNotContainOriginal(){
+    @Test public void testThatCandidatesDoesNotContainOriginalInAssignExpr(){
         final String targetStatement = 
                 "       la = lb;\n"; 
 
@@ -125,6 +125,36 @@ public class VariableReplacementOperationTest{
         .toString();
 
         final String targetStatementAsRepairUnitToString = "la = lb"; 
+
+        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
+        List<String> candidateSources = new ArrayList<String>();
+        for(RepairUnit repairUnit : repairUnits){
+            VariableReplacementOperation vr = new VariableReplacementOperation(repairUnit);
+            candidateSources.addAll(vr.exec().stream()
+                .map(ru -> ru.toString())
+                .collect(Collectors.toList())
+            );
+        }
+
+        assertThat(candidateSources).doesNotContain(targetStatementAsRepairUnitToString);
+        return;
+    }
+
+    @Test public void testThatCandidatesDoesNotContainOriginalInArgs(){
+        final String targetStatement = 
+                "       hoge(la);\n"; 
+
+        final String source = new StringBuilder().append("")
+        .append("public class A {\n")
+        .append("   private void ma() {\n")
+        .append("       String la = \"a\";\n")
+        .append("       String lb = \"b\";\n")
+        .append(targetStatement)
+        .append("   }\n")
+        .append("}\n")
+        .toString();
+
+        final String targetStatementAsRepairUnitToString = "hoge(la)"; 
 
         List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
         List<String> candidateSources = new ArrayList<String>();
