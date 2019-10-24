@@ -10,6 +10,7 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
@@ -30,6 +31,7 @@ public class VariableReplacementOperation implements AstOperation {
     private final int varNameIndexInSimpleName = 1;
     private final List<String> fieldNames;
     private final List<String> localVarNames;
+    private final List<String> parameterNames;
 
     /**
      * 修正対象のRepairUnitによって新しいVariableReplacementOperationを生成
@@ -40,11 +42,12 @@ public class VariableReplacementOperation implements AstOperation {
         this.targetNode = this.repairUnit.getTargetNode();
         this.fieldNames = this.collectFieldNames();
         this.localVarNames = this.collectLocalVarNames();
+        this.parameterNames = this.collectParameterNames();
     }
 
     /**
      * 変数の置換操作を行い修正パッチ候補を生成する
-     * 代入文の右辺の値と，メソッド呼び出しの引数を対象に，クラスのメンバ変数及びローカル変数で置換を行う
+     * 代入文の右辺の値と，メソッド呼び出しの引数を対象に，クラスのメンバ変数及びメソッドのローカル変数，仮引数で置換を行う
      * 一つの修正パッチ候補につき一箇所の置換
      * @return 生成された修正パッチ候補のリスト
      */
@@ -52,19 +55,31 @@ public class VariableReplacementOperation implements AstOperation {
         List<RepairUnit> candidates = new ArrayList<RepairUnit>();
 
         Function<String, Expression> constructField = fieldName -> new FieldAccessExpr(new ThisExpr(), fieldName);
-        List<RepairUnit> candidatesWithAssignExprReplacedByFields = this.replaceAssignExprWith(this.fieldNames, constructField);
-        candidates.addAll(candidatesWithAssignExprReplacedByFields);
-        List<RepairUnit> candidatesWithArgsReplacedByFields = this.replaceArgsWith(this.fieldNames, constructField);
-        candidates.addAll(candidatesWithArgsReplacedByFields);
+        candidates.addAll(this.replaceAssingExprAndArgsWith(constructField, this.fieldNames));
 
-        Function<String, Expression> constructLocalVar = localVarName -> new NameExpr(localVarName);
-        List<RepairUnit> candidatesWithAssignExprReplacedByLocalVars = this.replaceAssignExprWith(this.localVarNames, constructLocalVar);
-        candidates.addAll(candidatesWithAssignExprReplacedByLocalVars);
-        List<RepairUnit> candidatesWithArgsReplacedByLocalVars = this.replaceArgsWith(this.localVarNames, constructLocalVar);
-        candidates.addAll(candidatesWithArgsReplacedByLocalVars);
+        Function<String, Expression> constructVar = varName -> new NameExpr(varName);
+        candidates.addAll(this.replaceAssingExprAndArgsWith(constructVar, this.localVarNames));
+        candidates.addAll(this.replaceAssingExprAndArgsWith(constructVar, this.parameterNames));
 
         return candidates;
     }
+
+    /**
+     * 代入式の右辺とメソッド呼び出しの実引数を置換する
+     * 
+     * @param constructVar 変数名からExpressionノードを作成する関数
+     * @param varNames 置換先の変数名のリスト
+     * @return 生成された修正パッチ候補のリスト
+     */
+    private List<RepairUnit> replaceAssingExprAndArgsWith(Function<String, Expression> constructVar, List<String> varNames){
+        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
+
+        candidates.addAll(this.replaceAssignExprWith(varNames, constructVar));
+        candidates.addAll(this.replaceArgsWith(varNames, constructVar));
+
+        return candidates;
+    }
+
 
     /**
      * 修正対象のステートメントが属するクラスのフィールドを集める   
@@ -104,6 +119,26 @@ public class VariableReplacementOperation implements AstOperation {
                                                     .collect(Collectors.toList());
         return localVarNames;
     }
+
+    /**
+     * 修正対象のステートメントが書かれているメソッドの仮引数を集める 
+     * @return 仮引数の変数名のリスト
+     */
+    private List<String> collectParameterNames(){
+        MethodDeclaration methodNode;
+        try {
+            methodNode =  this.targetNode.findParent(MethodDeclaration.class).orElseThrow();
+        }
+        catch (NoSuchElementException e) {
+            return new ArrayList<String>();
+        }
+        final List<Parameter> parameters = methodNode.findAll(Parameter.class);
+        final List<String> parameterNames = parameters.stream()
+                                                    .map(localVar -> localVar.findAll(SimpleName.class).get(this.varNameIndexInSimpleName).asString())
+                                                    .collect(Collectors.toList());
+        return parameterNames;
+    }
+
 
     /**
      * 代入文における右辺の変数を置換する 

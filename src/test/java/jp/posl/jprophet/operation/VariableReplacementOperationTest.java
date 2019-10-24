@@ -23,7 +23,8 @@ public class VariableReplacementOperationTest{
         final String source = new StringBuilder().append("")
         .append("public class A {\n")
         .append("   private String fa = \"a\";\n")
-        .append("   private void ma() {\n")
+        .append("   private String fb = \"a\";\n")
+        .append("   private void ma(String pa, String pb) {\n")
         .append("       String la = \"b\";\n")
         .append(targetStatement)
         .append("   }\n")
@@ -35,8 +36,14 @@ public class VariableReplacementOperationTest{
         List<String> expectedTargetSources = new ArrayList<String>();
         expectedTargetSources.add("this.mb(this.fa, \"fuga\")");
         expectedTargetSources.add("this.mb(\"hoge\", this.fa)");
+        expectedTargetSources.add("this.mb(this.fb, \"fuga\")");
+        expectedTargetSources.add("this.mb(\"hoge\", this.fb)");
         expectedTargetSources.add("this.mb(la, \"fuga\")");
         expectedTargetSources.add("this.mb(\"hoge\", la)");
+        expectedTargetSources.add("this.mb(pa, \"fuga\")");
+        expectedTargetSources.add("this.mb(\"hoge\", pa)");
+        expectedTargetSources.add("this.mb(pb, \"fuga\")");
+        expectedTargetSources.add("this.mb(\"hoge\", pb)");
 
         List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
         List<String> candidateSources = new ArrayList<String>();
@@ -61,7 +68,7 @@ public class VariableReplacementOperationTest{
         final String source = new StringBuilder().append("")
         .append("public class A {\n")
         .append("   private String fa = \"a\";\n")
-        .append("   private void ma() {\n")
+        .append("   private void ma(String pa) {\n")
         .append("       String la = \"a\";\n")
         .append("       String lb = \"b\";\n")
         .append(targetStatement)
@@ -73,6 +80,7 @@ public class VariableReplacementOperationTest{
         expectedTargetSources.add("la = la");
         expectedTargetSources.add("la = lb");
         expectedTargetSources.add("la = this.fa");
+        expectedTargetSources.add("la = pa");
 
         List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
         List<String> candidateSources = new ArrayList<String>();
