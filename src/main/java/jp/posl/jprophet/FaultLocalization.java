@@ -38,12 +38,12 @@ public class FaultLocalization {
         List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
         TestResults testResults;
         CoverageCollector collector = new CoverageCollector(buildPath);
-        try{
+        try {
             testResults = collector.exec(sourceClassFilePaths, testClassFilePaths);
             SuspiciousnessCalculator suspiciousnessCalculator = new SuspiciousnessCalculator(testResults);
             suspiciousnessCalculator.exec();
             suspiciousnessList = suspiciousnessCalculator.getSuspiciousnessList();
-        }catch (Exception e){
+        } catch (Exception e){
             System.err.println(e.getMessage());
             e.printStackTrace();
             System.exit(-1);

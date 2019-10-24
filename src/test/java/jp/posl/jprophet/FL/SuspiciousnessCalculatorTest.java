@@ -52,11 +52,12 @@ public class SuspiciousnessCalculatorTest{
 
         CoverageCollector coverageCollector = new CoverageCollector("SCtmp");
 
-        try{
+        try {
             //testResults = coverageCollector.exec(sourceClass, testClass);
             testResults = coverageCollector.exec(SourceClassFilePaths, TestClassFilePaths);
-        }catch (Exception e){
-            System.out.println("例外");
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
 
         SuspiciousnessCalculator suspiciousnessCalculator = new SuspiciousnessCalculator(testResults);

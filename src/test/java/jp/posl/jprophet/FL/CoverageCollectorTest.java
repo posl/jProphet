@@ -49,10 +49,12 @@ public class CoverageCollectorTest{
 
         CoverageCollector coverageCollector = new CoverageCollector("TEtmp");
 
-        try{
+        try {
             testResults = coverageCollector.exec(SourceClassFilePaths, TestClassFilePaths);
-        }catch (Exception e){
-            System.out.println("例外");
+        } 
+        catch (Exception e){
+            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
         
         //失敗,成功したテストの個数が正しいか確認

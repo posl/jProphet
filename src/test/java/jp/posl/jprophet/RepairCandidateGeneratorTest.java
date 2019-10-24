@@ -48,7 +48,7 @@ public class RepairCandidateGeneratorTest {
 
         // 全てのRepairUnitに対して各テンプレート適用操作につきが一つのRepairUnitを返すようにモックを生成
         CompilationUnit compilationUnit;
-        try{
+        try {
             compilationUnit = JavaParser.parse(Paths.get(filePath));
         }
         catch (IOException e){

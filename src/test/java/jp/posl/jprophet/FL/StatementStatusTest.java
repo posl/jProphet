@@ -48,11 +48,12 @@ public class StatementStatusTest{
 
         CoverageCollector coverageCollector = new CoverageCollector("LStmp");
         
-        try{
+        try {
             //testResults = coverageCollector.exec(sourceClass, testClass);
             testResults = coverageCollector.exec(sourceClassFilePaths, testClassFilePaths);
-        }catch (Exception e){
-            System.out.println("例外");
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
 
         //testFLProject.Ifstatementの12行目,9行目のカバレッジが正しいか確認
