@@ -19,14 +19,15 @@ public class JProphetMain {
         if(args.length > 0){
             projectPath = args[0];
         }
-        final ProjectConfiguration project = new ProjectConfiguration(projectPath, OUT_DIR);
-        final JProphetMain jprophet = new JProphetMain();
-        final FaultLocalization faultLocalization = new FaultLocalization(project);
+        final ProjectConfiguration     project                  = new ProjectConfiguration(projectPath, OUT_DIR);
+        final FaultLocalization        faultLocalization        = new FaultLocalization(project);
         final RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
-        final PlausibilityAnalyzer plausibilityAnalyzer = new PlausibilityAnalyzer();  
-        final StagedCondGenerator stagedCondGenerator = new StagedCondGenerator();
-        final TestExecutor        testExecutor        = new TestExecutor();
-        final ProgramGenerator    programGenerator    = new ProgramGenerator();
+        final PlausibilityAnalyzer     plausibilityAnalyzer     = new PlausibilityAnalyzer();  
+        final StagedCondGenerator      stagedCondGenerator      = new StagedCondGenerator();
+        final TestExecutor             testExecutor             = new TestExecutor();
+        final ProgramGenerator         programGenerator         = new ProgramGenerator();
+
+        final JProphetMain jprophet = new JProphetMain();
         jprophet.run(project, faultLocalization, repairCandidateGenerator, plausibilityAnalyzer, stagedCondGenerator, testExecutor, programGenerator);
     }
 
