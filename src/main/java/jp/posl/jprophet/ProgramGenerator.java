@@ -7,7 +7,7 @@ public class ProgramGenerator {
         
     }
     
-    public ProjectConfiguration applyPatch(ConcreteRepairCandidate repairCandidate) {
+    public ProjectConfiguration applyPatch(RepairCandidate repairCandidate) {
         return new ProjectConfiguration(null, null);
     }
 

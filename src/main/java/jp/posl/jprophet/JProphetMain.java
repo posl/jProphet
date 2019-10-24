@@ -36,17 +36,17 @@ public class JProphetMain {
         List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
-        List<AbstractRepairCandidate> abstractRepairCandidates = new ArrayList<AbstractRepairCandidate>();
+        List<RepairCandidate> abstractRepairCandidates = new ArrayList<RepairCandidate>();
         abstractRepairCandidates.addAll(repairCandidateGenerator.exec(project));
         
         // 学習モデルとフォルトローカライゼーションのスコアによってソート
-        List<AbstractRepairCandidate> sortedAbstractRepairCandidate = plausibilityAnalyzer.sortRepairCandidates(abstractRepairCandidates, suspiciousenesses);
+        List<RepairCandidate> sortedAbstractRepairCandidate = plausibilityAnalyzer.sortRepairCandidates(abstractRepairCandidates, suspiciousenesses);
         
         // 抽象修正候補中の条件式の生成
-        for(AbstractRepairCandidate abstractRepairCandidate: sortedAbstractRepairCandidate) {
-            List<ConcreteRepairCandidate> concreteRepairCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
-            for(ConcreteRepairCandidate concreteRepairCandidate: concreteRepairCandidates) {
-                ProjectConfiguration modifiedProject = programGenerator.applyPatch(concreteRepairCandidate);
+        for(RepairCandidate abstractRepairCandidate: sortedAbstractRepairCandidate) {
+            List<RepairCandidate> repairCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
+            for(RepairCandidate repairCandidate: repairCandidates) {
+                ProjectConfiguration modifiedProject = programGenerator.applyPatch(repairCandidate);
                 if(testExecutor.run(modifiedProject)) {
                     return;
                 }

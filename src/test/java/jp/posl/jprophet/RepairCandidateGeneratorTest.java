@@ -64,7 +64,7 @@ public class RepairCandidateGeneratorTest {
         when(copyReplaceOperation.exec(Mockito.any(RepairUnit.class))).thenReturn(units);
 
         // stubProject(6個のASTノードを持つソースファイル一つ)を入力にとり，各operationが6回ずつ呼び出されているかをテスト
-        List<AbstractRepairCandidate> candidates = repairCandidateGenerator.exec(stubProject);
+        List<RepairCandidate> candidates = repairCandidateGenerator.exec(stubProject);
         Mockito.verify(condRefinementOperation, times(6)).exec(Mockito.any(RepairUnit.class));
         Mockito.verify(condIntroductionOperation, times(6)).exec(Mockito.any(RepairUnit.class));
         Mockito.verify(ctrlFlowIntroductionOperation, times(6)).exec(Mockito.any(RepairUnit.class));
