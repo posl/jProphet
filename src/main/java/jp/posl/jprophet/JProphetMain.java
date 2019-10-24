@@ -1,25 +1,21 @@
 package jp.posl.jprophet;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import jp.posl.jprophet.ProjectConfiguration;
-import jp.posl.jprophet.FaultLocalization;
-import jp.posl.jprophet.RepairCandidateGenerator;
-import jp.posl.jprophet.PlausibilityAnalyzer;
-import jp.posl.jprophet.StagedCondGenerator;
 import jp.posl.jprophet.FL.Suspiciousness;
 
 import jp.posl.jprophet.test.TestExecutor;
+import jp.posl.jprophet.util.Directory;
 
-
-public class JProphetMain {   
+public class JProphetMain {
     public static void main(String[] args) {
-        final String OUT_DIR = "./tmp/"; 
+        final String outDir = "./tmp/"; 
         String projectPath = "src/test/resources/testGradleProject01";
         if(args.length > 0){
             projectPath = args[0];
         }
-        final ProjectConfiguration     project                  = new ProjectConfiguration(projectPath, OUT_DIR);
+        final ProjectConfiguration     project                  = new ProjectConfiguration(projectPath, outDir);
         final FaultLocalization        faultLocalization        = new FaultLocalization(project);
         final RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
         final PlausibilityAnalyzer     plausibilityAnalyzer     = new PlausibilityAnalyzer();  
@@ -29,9 +25,12 @@ public class JProphetMain {
 
         final JProphetMain jprophet = new JProphetMain();
         jprophet.run(project, faultLocalization, repairCandidateGenerator, plausibilityAnalyzer, stagedCondGenerator, testExecutor, programGenerator);
+        Directory.delete(new File(outDir));
     }
 
-    private void run(ProjectConfiguration project, FaultLocalization faultLocalization, RepairCandidateGenerator repairCandidateGenerator, PlausibilityAnalyzer plausibilityAnalyzer, StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, ProgramGenerator programGenerator){
+    private void run(ProjectConfiguration project, FaultLocalization faultLocalization,
+            RepairCandidateGenerator repairCandidateGenerator, PlausibilityAnalyzer plausibilityAnalyzer,
+            StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, ProgramGenerator programGenerator) {
         // フォルトローカライゼーション
         List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         

@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import jp.posl.jprophet.test.TestExecutor;
+import jp.posl.jprophet.util.Directory;
 
 public class TestExecutorTest {
 
@@ -34,28 +35,10 @@ public class TestExecutorTest {
 
         boolean isSuccess01 = this.testExecutor.run(correctProject);
         assertThat(isSuccess01).isTrue();
-        deleteDirectory(this.outDir);
+        Directory.delete(this.outDir);
 
         boolean isSuccess02 = this.testExecutor.run(errorProject);
         assertThat(isSuccess02).isFalse();
-        deleteDirectory(this.outDir);
+        Directory.delete(this.outDir);
     }
-
-    /**
-     * ディレクトリをディレクトリの中のファイルごと再帰的に削除する
-     * @param dir 削除対象ディレクトリ
-     */
-    private void deleteDirectory(File dir){
-        if(dir.listFiles() != null){
-            for(File file : dir.listFiles()){
-                if(file.isFile())
-                    file.delete();
-                else
-                    deleteDirectory(file);
-            }
-        }
-        dir.delete();
-    }
-
-
 }

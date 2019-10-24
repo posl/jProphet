@@ -1,6 +1,7 @@
 package jp.posl.jprophet.FL;
 
 import jp.posl.jprophet.ProjectConfiguration;
+import jp.posl.jprophet.util.Directory;
 import jp.posl.jprophet.ProjectBuilder;
 
 import org.junit.Before;
@@ -77,24 +78,6 @@ public class SuspiciousnessCalculatorTest{
         double sus6 = 0; //0/(0+1+1)
         assertThat(ifline6.get(0).getValue()).isEqualTo(sus6);
 
-        deleteDirectory(new File("./SCtmp/"));
-
+        Directory.delete(new File("./SCtmp/"));
     }
-
-    /**
-     * ディレクトリをディレクトリの中のファイルごと再帰的に削除する 
-     * @param dir 削除対象ディレクトリ
-     */
-    private void deleteDirectory(File dir){
-        if(dir.listFiles() != null){
-            for(File file : dir.listFiles()){
-                if(file.isFile())
-                    file.delete();
-                else
-                    deleteDirectory(file);
-            }
-        }
-        dir.delete();
-    }
-
 }

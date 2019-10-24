@@ -1,6 +1,7 @@
 package jp.posl.jprophet.FL;
 
 import jp.posl.jprophet.ProjectConfiguration;
+import jp.posl.jprophet.util.Directory;
 import jp.posl.jprophet.FaultLocalization;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
@@ -65,23 +66,8 @@ public class FaultLocalizationTest{
         double sus9 = (double)1/(double)3; // 1/(1+2+0)
         assertThat(ifline9.get(0).getValue()).isEqualTo(sus9);
 
-        deleteDirectory(new File("./FLtmp/"));
+        Directory.delete(new File("./FLtmp/"));
     }
 
-    /**
-     * ディレクトリをディレクトリの中のファイルごと再帰的に削除する 
-     * @param dir 削除対象ディレクトリ
-     */
-    private void deleteDirectory(File dir){
-        if(dir.listFiles() != null){
-            for(File file : dir.listFiles()){
-                if(file.isFile())
-                    file.delete();
-                else
-                    deleteDirectory(file);
-            }
-        }
-        dir.delete();
-    }
 
 }

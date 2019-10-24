@@ -1,7 +1,10 @@
 package jp.posl.jprophet;
 
 import org.junit.Before;
-import org.junit.Test;                                                                                                                                                                  
+import org.junit.Test;
+
+import jp.posl.jprophet.util.Directory;
+
 import static org.assertj.core.api.Assertions.*;
 import java.io.File;
 
@@ -26,7 +29,7 @@ public class ProjectBuilderTest {
     @Test public void testForBuild() {
         boolean isSuccess = this.builder.build(project);
         assertThat(isSuccess).isTrue();
-        deleteDirectory(this.outDir);
+        Directory.delete(this.outDir);
     }
 
     /**
@@ -39,22 +42,7 @@ public class ProjectBuilderTest {
         assertThat(new File("./tmp/testGradleProject01/AppTest.class").exists()).isTrue();
         assertThat(new File("./tmp/testGradleProject01/App2.class").exists()).isTrue();
         assertThat(new File("./tmp/testGradleProject01/App2Test.class").exists()).isTrue();
-        deleteDirectory(this.outDir);
+        Directory.delete(this.outDir);
     }
 
-    /**
-     * ディレクトリをディレクトリの中のファイルごと再帰的に削除する 
-     * @param dir 削除対象ディレクトリ
-     */
-    private void deleteDirectory(File dir){
-        if(dir.listFiles() != null){
-            for(File file : dir.listFiles()){
-                if(file.isFile())
-                    file.delete();
-                else
-                    deleteDirectory(file);
-            }
-        }
-        dir.delete();
-    }
 }
