@@ -41,6 +41,8 @@ public class CoverageCollector {
             this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./" + buildpath + "/") });
         } catch (MalformedURLException e){
             System.err.println(e.getMessage());
+            e.printStackTrace();
+            System.exit(-1);
         }
     }
 

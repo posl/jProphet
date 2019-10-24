@@ -81,6 +81,9 @@ run {
     if (project.hasProperty('args')) {    // "args" というプロパティが渡されていたら
         args project.args.split('\\s+')   // 空白文字で split して、 run タスクの args オプションにセットする
     }
+    else {
+        args []
+    }
 }
 
 // task javadocPrivate(type: Javadoc){

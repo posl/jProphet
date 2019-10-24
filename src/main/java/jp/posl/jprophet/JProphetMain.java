@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import jp.posl.jprophet.ProjectConfiguration;
 import jp.posl.jprophet.FaultLocalization;
-import jp.posl.jprophet.AbstractRepairCandidate;
-import jp.posl.jprophet.ConcreteRepairCandidate;
 import jp.posl.jprophet.RepairCandidateGenerator;
 import jp.posl.jprophet.PlausibilityAnalyzer;
 import jp.posl.jprophet.StagedCondGenerator;
@@ -16,10 +14,11 @@ import jp.posl.jprophet.test.TestExecutor;
 
 public class JProphetMain {   
     public static void main(String[] args) {
-        final String OUT_DIR = System.getProperty("java.io.tmpdir");
+        final String OUT_DIR = "./tmp/"; 
         String projectPath = "src/test/resources/testGradleProject01";
-        if(args.length > 0)
+        if(args.length > 0){
             projectPath = args[0];
+        }
         final ProjectConfiguration project = new ProjectConfiguration(projectPath, OUT_DIR);
         final JProphetMain jprophet = new JProphetMain();
         final FaultLocalization faultLocalization = new FaultLocalization(project);
