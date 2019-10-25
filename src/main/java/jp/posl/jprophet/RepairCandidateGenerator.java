@@ -29,7 +29,7 @@ public class RepairCandidateGenerator{
                 for(RepairUnit repairUnit : repairUnits){
                     List<RepairUnit> appliedUnits = this.applyTemplate(repairUnit);
                     for(RepairUnit appliedUnit : appliedUnits){
-                        candidates.add(new AbstractRepairCandidate(appliedUnit.getCompilationUnit(), new ArrayList<>(Arrays.asList(filePath))));
+                        candidates.add(new AbstractRepairCandidate(appliedUnit.getCompilationUnit(), filePath));
                     }
                 }
             } catch (IOException e) {

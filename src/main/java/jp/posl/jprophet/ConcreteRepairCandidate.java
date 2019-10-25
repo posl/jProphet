@@ -1,18 +1,17 @@
 package jp.posl.jprophet;
 
 import com.github.javaparser.ast.CompilationUnit;
-import java.util.List;
 
 public class ConcreteRepairCandidate implements RepairCandidate {
     private CompilationUnit compilationUnit;
-    private List<String> fixedFilePaths;
-    public ConcreteRepairCandidate(CompilationUnit compilationUnit, List<String> fixedFilePaths) {
+    private String fixedFilePath;
+    public ConcreteRepairCandidate(CompilationUnit compilationUnit, String fixedFilePath) {
         this.compilationUnit = compilationUnit;
-        this.fixedFilePaths = fixedFilePaths;
+        this.fixedFilePath = fixedFilePath;
     }
 
-    public List<String> getFixedFilePaths(){
-        return this.fixedFilePaths;
+    public String getFixedFilePath(){
+        return this.fixedFilePath;
     }
 
     public CompilationUnit getCompilationUnit(){

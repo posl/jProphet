@@ -1,7 +1,10 @@
 package jp.posl.jprophet;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,10 +22,17 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.apache.commons.io.FileUtils;
 
 public class ProgramGeneratorTest{
-    @Test public void test(){
-        final String projectPath = "src/test/resources/testGradleProject01";
-        final String targetFilePath = "src/test/resources/testGradleProject01/src/main/java/testGradleProject01/App.java";
-        final List<String> projectFilePaths = new ArrayList<String>(Arrays.asList(
+    private String projectPath;
+    private String targetFilePath;
+    private List<String> projectFilePaths; 
+    private String outDir;
+    private ProjectConfiguration project;
+    private ProgramGenerator programGenerator;
+
+    @Before public void setUp(){
+        this.projectPath = "src/test/resources/testGradleProject01";
+        this.targetFilePath = "src/test/resources/testGradleProject01/src/main/java/testGradleProject01/App.java";
+        this.projectFilePaths = new ArrayList<String>(Arrays.asList(
             "testGradleProject01/src/main/java/testGradleProject01/App.java",
             "testGradleProject01/src/main/java/testGradleProject01/App2.java",
             "testGradleProject01/src/test/java/testGradleProject01/AppTest.java",
@@ -35,26 +45,47 @@ public class ProgramGeneratorTest{
             "testGradleProject01/gradlew.bat",
             "testGradleProject01/settings.gradle"
         ));
-        final String outDir = "./output/";
-        final ProjectConfiguration project = new ProjectConfiguration(projectPath, outDir);
-        ProgramGenerator programGenerator = new ProgramGenerator();
+        this.outDir = "./output/";
+        this.project = new ProjectConfiguration(projectPath, outDir);
+        this.programGenerator = new ProgramGenerator();
         CompilationUnit compilationUnit;
         try {
-            compilationUnit = JavaParser.parse(Paths.get(targetFilePath));
+            compilationUnit = JavaParser.parse(Paths.get(this.targetFilePath));
         }
         catch (IOException e){
             e.printStackTrace();
+            fail(e.getMessage());
             return;
         }
         ((ClassOrInterfaceDeclaration)compilationUnit.findRootNode().getChildNodes().get(1)).setModifier(Modifier.STATIC, true);
-        RepairCandidate repairCandidate = new ConcreteRepairCandidate(compilationUnit, new ArrayList<String>(Arrays.asList("targetFilePath")));
-        programGenerator.applyPatch(project, repairCandidate);
+        RepairCandidate repairCandidate = new ConcreteRepairCandidate(compilationUnit, this.targetFilePath);
+        this.programGenerator.applyPatch(project, repairCandidate);
+        
+    }
 
-        for(String projectFilePath: projectFilePaths){
-            assertThat(Files.exists(Paths.get(outDir + projectFilePath))).isTrue();
+    @Test public void testIfFilesIsGenerated(){
+        for(String projectFilePath: this.projectFilePaths){
+            assertThat(Files.exists(Paths.get(this.outDir + projectFilePath))).isTrue();
         }
+    }
+
+    @Test public void testIfGeneratedProjectIsPatched(){
+        List<String> lines;
         try {
-            FileUtils.deleteDirectory(new File(outDir));
+            lines = FileUtils.readLines(new File(outDir + projectFilePaths.get(0)), "utf-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+            return;
+        }
+
+        final int modifiedLineNumber = 5;
+         assertThat(lines.get(modifiedLineNumber)).contains("static");
+    }
+
+    @After public void cleanUp(){
+        try {
+            FileUtils.deleteDirectory(new File(this.outDir));
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
