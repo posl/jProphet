@@ -28,7 +28,7 @@ public class VariableReplacementOperationTest{
         .append("       String la = \"b\";\n")
         .append(targetStatement)
         .append("   }\n")
-        .append("   private void mb(String a) {\n")
+        .append("   private void mb(String a, String b) {\n")
         .append("   }\n")
         .append("}\n")
         .toString();
