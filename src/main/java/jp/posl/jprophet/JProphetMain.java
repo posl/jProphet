@@ -45,7 +45,7 @@ public class JProphetMain {
         for(RepairCandidate abstractRepairCandidate: sortedAbstractRepairCandidate) {
             List<RepairCandidate> repairCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
             for(RepairCandidate repairCandidate: repairCandidates) {
-                ProjectConfiguration modifiedProject = programGenerator.applyPatch(repairCandidate);
+                ProjectConfiguration modifiedProject = programGenerator.applyPatch(project, repairCandidate);
                 if(testExecutor.run(modifiedProject)) {
                     return;
                 }
