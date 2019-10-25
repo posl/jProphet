@@ -72,6 +72,9 @@ dependencies {
     testImplementation "org.mockito:mockito-core:2.+"
 
     compile group: 'com.github.javaparser', name: 'javaparser-symbol-solver-core', version: '3.5.15'
+    // https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs
+    compile group: 'com.github.spotbugs', name: 'spotbugs', version: '3.1.12'
+
 }
 
 // Define the main class for the application

@@ -16,8 +16,8 @@ public class SpotBugsExecutorTest {
 
     @Before
     public void setUpProject() {
-        this.outDir = new File("./tmp");
-        this.resultDir = new File("./result/");
+        this.outDir = new File("./src/test/resources/testSBproject01/build/classes");
+        this.resultDir = new File("./src/test/resources/testSBproject01/build/reports/spotbugs");
         this.testProject = new ProjectConfiguration("src/test/resources/testSBProject01", outDir.getPath());
     }
 
@@ -26,10 +26,15 @@ public class SpotBugsExecutorTest {
         
         SpotBugsExecutor executor = new SpotBugsExecutor(testProject, resultDir);
         executor.exec();
+
+        /*
         assertThat(new File("./result/App-warnings.txt").exists()).isTrue();    //ソースファイルは実行対象         assertThat(new File("./result/App-warnings.txt").exists()).isTrue();    //ソースファイルは実行対象 
         assertThat(new File("./result/App2-warnings.txt").exists()).isTrue();
         assertThat(new File("./result/App3-warnings.txt").exists()).isTrue(); 
         assertThat(new File("./result/AppTest-warnings.txt").exists()).isFalse();   //テストファイルは実行対象外
+        */
+
+        assertThat(new File(executor.getResultFilePath()).exists()).isTrue();
         deleteDirectory(resultDir);
         deleteDirectory(outDir);
 

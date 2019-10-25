@@ -4,11 +4,11 @@
 package testSBProject01;
 
 public class App2 {
-    public String getGreeting() {
+    public String GetGreeting() {
         return "Hello world.";
     }
 
     public static void main(String[] args) {
-        System.out.println(new App2().getGreeting());
+        System.out.println(new App2().GetGreeting());
     }
 }
