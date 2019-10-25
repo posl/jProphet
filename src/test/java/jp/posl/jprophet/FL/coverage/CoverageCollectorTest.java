@@ -1,16 +1,17 @@
-package jp.posl.jprophet.FL;
+package jp.posl.jprophet.FL.coverage;
 
 import jp.posl.jprophet.ProjectConfiguration;
-import jp.posl.jprophet.util.Directory;
 import jp.posl.jprophet.ProjectBuilder;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.io.File;
+import java.io.IOException;
 
 public class CoverageCollectorTest{
     // 入力として用意するテスト用のプロジェクト
@@ -83,6 +84,11 @@ public class CoverageCollectorTest{
         assertThat(Smethodlist).contains("testFLProject.IfstatementTest4.test0_0");
         assertThat(Fmethodlist).contains("testFLProject.IfstatementTest3.test4_5");
 
-        Directory.delete(new File("./TEtmp/"));
+        try {
+            FileUtils.deleteDirectory(new File("./TEtmp/"));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

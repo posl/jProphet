@@ -1,4 +1,4 @@
-package jp.posl.jprophet.FL;
+package jp.posl.jprophet.FL.coverage;
 
 import java.util.Map;
 import java.net.URL;

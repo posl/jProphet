@@ -1,9 +1,9 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.FL;
 
 import java.util.List;
 
 import jp.posl.jprophet.FL.Suspiciousness;
 
-public interface BugSearcher{
+public interface FaultLocalization{
     public List<Suspiciousness> exec();
 }

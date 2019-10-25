@@ -1,15 +1,18 @@
 package jp.posl.jprophet.FL;
 
 import jp.posl.jprophet.ProjectConfiguration;
-import jp.posl.jprophet.util.Directory;
 import jp.posl.jprophet.ProjectBuilder;
+import jp.posl.jprophet.FL.coverage.TestResults;
+import jp.posl.jprophet.FL.coverage.CoverageCollector;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
+import java.io.IOException;
 
 public class StatementStatusTest{
     // 入力として用意するテスト用のプロジェクト
@@ -72,8 +75,12 @@ public class StatementStatusTest{
         assertThat(line9.getNumberOfSuccessedTestsNotCoveringStatement()).isEqualTo(7);
         
         
-        Directory.delete(new File("./LStmp/"));
-
+        try {
+            FileUtils.deleteDirectory(new File("./LStmp/"));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 }

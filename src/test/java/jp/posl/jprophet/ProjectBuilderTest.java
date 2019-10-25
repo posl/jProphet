@@ -1,12 +1,12 @@
 package jp.posl.jprophet;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import jp.posl.jprophet.util.Directory;
-
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
+import java.io.IOException;
 
 
 public class ProjectBuilderTest {
@@ -29,7 +29,12 @@ public class ProjectBuilderTest {
     @Test public void testForBuild() {
         boolean isSuccess = this.builder.build(project);
         assertThat(isSuccess).isTrue();
-        Directory.delete(this.outDir);
+        try {
+            FileUtils.deleteDirectory(this.outDir);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -42,7 +47,12 @@ public class ProjectBuilderTest {
         assertThat(new File("./tmp/testGradleProject01/AppTest.class").exists()).isTrue();
         assertThat(new File("./tmp/testGradleProject01/App2.class").exists()).isTrue();
         assertThat(new File("./tmp/testGradleProject01/App2Test.class").exists()).isTrue();
-        Directory.delete(this.outDir);
+        try {
+            FileUtils.deleteDirectory(this.outDir);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 }

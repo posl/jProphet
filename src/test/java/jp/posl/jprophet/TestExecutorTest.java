@@ -1,14 +1,15 @@
 package jp.posl.jprophet;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import jp.posl.jprophet.test.TestExecutor;
-import jp.posl.jprophet.util.Directory;
 
 public class TestExecutorTest {
 
@@ -35,10 +36,20 @@ public class TestExecutorTest {
 
         boolean isSuccess01 = this.testExecutor.run(correctProject);
         assertThat(isSuccess01).isTrue();
-        Directory.delete(this.outDir);
+        try {
+            FileUtils.deleteDirectory(this.outDir);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
 
         boolean isSuccess02 = this.testExecutor.run(errorProject);
         assertThat(isSuccess02).isFalse();
-        Directory.delete(this.outDir);
+        try {
+            FileUtils.deleteDirectory(this.outDir);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
