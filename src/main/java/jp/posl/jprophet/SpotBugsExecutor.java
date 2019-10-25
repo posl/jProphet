@@ -57,7 +57,7 @@ public class SpotBugsExecutor {
 
     }
 
-    
+
     /**
      * ソースファイル名からクラスファイル名に変換する
      * @return クラスファイルのリスト
@@ -83,7 +83,7 @@ public class SpotBugsExecutor {
         //APIをいじって処理を書くのが難しいので、とりあえず対象プロジェクトにspotbugsのプラグインを入れておいてそれを実行する
 
         Runtime runtime = Runtime.getRuntime();
-        String[] commands = { "gradle", "spotbugsMain" };
+        String[] commands = { "./gradlew", "spotbugsMain" };
         try {
             Process process = runtime.exec(commands, null, new File(projectConfiguration.getProjectPath()));
             process.waitFor();
