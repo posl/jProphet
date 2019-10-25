@@ -74,7 +74,7 @@ public class SpectrumBasedFaultLocalizationTest{
         assertThat(ifline9.get(0).getValue()).isEqualTo(sus9);
 
         try {
-            FileUtils.deleteDirectory(new File("./TEtmp/"));
+            FileUtils.deleteDirectory(new File("./FLtmp/"));
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
