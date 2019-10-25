@@ -3,6 +3,8 @@ package jp.posl.jprophet.FL;
 import jp.posl.jprophet.ProjectConfiguration;
 import jp.posl.jprophet.util.Directory;
 import jp.posl.jprophet.ProjectBuilder;
+import jp.posl.jprophet.FL.coverage.TestResults;
+import jp.posl.jprophet.FL.coverage.CoverageCollector;
 
 import org.junit.Before;
 import org.junit.Test;

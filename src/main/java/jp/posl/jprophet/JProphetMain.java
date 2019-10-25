@@ -3,7 +3,10 @@ package jp.posl.jprophet;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import jp.posl.jprophet.FL.SpectrumBasedFaultLocalization;
+import jp.posl.jprophet.FL.FaultLocalization;
 import jp.posl.jprophet.FL.Suspiciousness;
+import jp.posl.jprophet.FL.strategy.*;
 
 import jp.posl.jprophet.test.TestExecutor;
 import jp.posl.jprophet.util.Directory;
@@ -16,7 +19,8 @@ public class JProphetMain {
             projectPath = args[0];
         }
         final ProjectConfiguration     project                  = new ProjectConfiguration(projectPath, outDir);
-        final FaultLocalization        faultLocalization        = new FaultLocalization(project);
+        final Coefficient              coefficient              = new Jaccard();
+        final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(project, coefficient);
         final RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
         final PlausibilityAnalyzer     plausibilityAnalyzer     = new PlausibilityAnalyzer();  
         final StagedCondGenerator      stagedCondGenerator      = new StagedCondGenerator();

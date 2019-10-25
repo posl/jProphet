@@ -3,6 +3,10 @@ package jp.posl.jprophet.FL;
 import jp.posl.jprophet.ProjectConfiguration;
 import jp.posl.jprophet.util.Directory;
 import jp.posl.jprophet.ProjectBuilder;
+import jp.posl.jprophet.FL.strategy.Coefficient;
+import jp.posl.jprophet.FL.strategy.Jaccard;
+import jp.posl.jprophet.FL.coverage.TestResults;
+import jp.posl.jprophet.FL.coverage.CoverageCollector;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.io.File;
 
-public class SuspiciousnessCalculatorTest{
+public class SuspiciousnessCollectorTest{
     // 入力として用意するテスト用のプロジェクト
     private String projectPath;
     private ProjectConfiguration project;
@@ -20,6 +24,7 @@ public class SuspiciousnessCalculatorTest{
     private List<String> SourceClassFilePaths = new ArrayList<String>();
     private List<String> TestClassFilePaths = new ArrayList<String>();
     private TestResults testResults = new TestResults();
+    private Coefficient coefficient = new Jaccard();
 
 
 
@@ -60,7 +65,7 @@ public class SuspiciousnessCalculatorTest{
             e.printStackTrace();
         }
 
-        SuspiciousnessCalculator suspiciousnessCalculator = new SuspiciousnessCalculator(testResults);
+        SuspiciousnessCollector suspiciousnessCalculator = new SuspiciousnessCollector(testResults, coefficient);
         suspiciousnessCalculator.exec();
 
         //Ifstatementの3行目の疑惑値 (Jaccard)
