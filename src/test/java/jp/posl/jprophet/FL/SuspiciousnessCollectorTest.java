@@ -1,13 +1,13 @@
 package jp.posl.jprophet.FL;
 
 import jp.posl.jprophet.ProjectConfiguration;
-import jp.posl.jprophet.util.Directory;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.FL.strategy.Coefficient;
 import jp.posl.jprophet.FL.strategy.Jaccard;
 import jp.posl.jprophet.FL.coverage.TestResults;
 import jp.posl.jprophet.FL.coverage.CoverageCollector;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.io.File;
+import java.io.IOException;
 
 public class SuspiciousnessCollectorTest{
     // 入力として用意するテスト用のプロジェクト
@@ -84,6 +85,11 @@ public class SuspiciousnessCollectorTest{
         double sus6 = 0; //0/(0+1+1)
         assertThat(ifline6.get(0).getValue()).isEqualTo(sus6);
 
-        Directory.delete(new File("./SCtmp/"));
+        try {
+            FileUtils.deleteDirectory(new File("./SCtmp/"));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

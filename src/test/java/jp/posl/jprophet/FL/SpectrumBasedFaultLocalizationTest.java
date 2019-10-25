@@ -1,12 +1,14 @@
 package jp.posl.jprophet.FL;
 
 import jp.posl.jprophet.ProjectConfiguration;
-import jp.posl.jprophet.util.Directory;
+
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,7 +74,12 @@ public class SpectrumBasedFaultLocalizationTest{
         double sus9 = (double)1/(double)3; // 1/(1+2+0)
         assertThat(ifline9.get(0).getValue()).isEqualTo(sus9);
 
-        Directory.delete(new File("./FLtmp/"));
+        try {
+            FileUtils.deleteDirectory(new File("./TEtmp/"));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 
