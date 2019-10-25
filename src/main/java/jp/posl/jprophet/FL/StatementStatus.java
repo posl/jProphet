@@ -1,5 +1,7 @@
 package jp.posl.jprophet.FL;
 
+import jp.posl.jprophet.FL.coverage.TestResults;
+
 /**
  * テスト対象のソースファイルのステートメント(行)の失敗(成功)してその行を通った(通ってない)テストの数を格納
  */

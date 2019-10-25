@@ -3,13 +3,15 @@ package jp.posl.jprophet;
 import java.util.ArrayList;
 import java.util.List;
 import jp.posl.jprophet.ProjectConfiguration;
-import jp.posl.jprophet.FaultLocalization;
+import jp.posl.jprophet.FL.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.AbstractRepairCandidate;
 import jp.posl.jprophet.ConcreteRepairCandidate;
 import jp.posl.jprophet.RepairCandidateGenerator;
 import jp.posl.jprophet.PlausibilityAnalyzer;
 import jp.posl.jprophet.StagedCondGenerator;
+import jp.posl.jprophet.FL.FaultLocalization;
 import jp.posl.jprophet.FL.Suspiciousness;
+import jp.posl.jprophet.FL.strategy.*;
 
 import jp.posl.jprophet.test.TestExecutor;
 
@@ -33,7 +35,8 @@ public class JProphetMain {
 
     private void run(ProjectConfiguration project){
         // フォルトローカライゼーション
-        FaultLocalization faultLocalization = new FaultLocalization(project);
+        Coefficient coefficient = new Jaccard();
+        FaultLocalization faultLocalization = new SpectrumBasedFaultLocalization(project, coefficient);
         List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
