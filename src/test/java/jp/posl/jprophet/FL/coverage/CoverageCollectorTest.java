@@ -1,4 +1,4 @@
-package jp.posl.jprophet.FL;
+package jp.posl.jprophet.FL.coverage;
 
 import jp.posl.jprophet.ProjectConfiguration;
 import jp.posl.jprophet.ProjectBuilder;

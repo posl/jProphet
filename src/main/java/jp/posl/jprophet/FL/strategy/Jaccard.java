@@ -11,10 +11,10 @@ public class Jaccard implements Coefficient {
      * @param numberOfFailedTests
      */
     public double calculate(StatementStatus statementStatus, int numberOfSuccessedTests, int numberOfFailedTests) {
-        double suspiciousenesses;
-        double ncf = (double) statementStatus.getNumberOfFailedTestsCoveringStatement();
-        double nuf = (double) statementStatus.getNumberOfFailedTestsNotCoveringStatement();
-        double ncs = (double) statementStatus.getNumberOfSuccessedTestsCoveringStatement();
+        final double suspiciousenesses;
+        final double ncf = (double) statementStatus.getNumberOfFailedTestsCoveringStatement();
+        final double nuf = (double) statementStatus.getNumberOfFailedTestsNotCoveringStatement();
+        final double ncs = (double) statementStatus.getNumberOfSuccessedTestsCoveringStatement();
 
         if (ncf + nuf + ncs == 0){
             suspiciousenesses = 0;

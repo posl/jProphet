@@ -4,6 +4,8 @@ import jp.posl.jprophet.ProjectConfiguration;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.FL.strategy.Coefficient;
 import jp.posl.jprophet.FL.strategy.Jaccard;
+import jp.posl.jprophet.FL.coverage.TestResults;
+import jp.posl.jprophet.FL.coverage.CoverageCollector;
 
 import org.junit.Before;
 import org.junit.Test;

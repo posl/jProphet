@@ -1,10 +1,8 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.FL;
 
 import jp.posl.jprophet.ProjectConfiguration;
-import jp.posl.jprophet.FL.Suspiciousness;
-import jp.posl.jprophet.FL.CoverageCollector;
-import jp.posl.jprophet.FL.TestResults;
-import jp.posl.jprophet.FL.SuspiciousnessCollector;
+import jp.posl.jprophet.FL.coverage.CoverageCollector;
+import jp.posl.jprophet.FL.coverage.TestResults;
 import jp.posl.jprophet.FL.strategy.Coefficient;
 import jp.posl.jprophet.ProjectBuilder;
 import java.util.List;
@@ -58,10 +56,10 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
      * @param project
      */
     private void getFQN(ProjectConfiguration project){
-        String gradleTestPath = "/src/test/java/";
-        String gradleSourcePath = "/src/main/java/";
-        String testFolderPath = project.getProjectPath() + gradleTestPath;
-        String sourceFolderPath = project.getProjectPath() + gradleSourcePath;
+        final String gradleTestPath = "/src/test/java/";
+        final String gradleSourcePath = "/src/main/java/";
+        final String testFolderPath = project.getProjectPath() + gradleTestPath;
+        final String sourceFolderPath = project.getProjectPath() + gradleSourcePath;
         for (String testPath : project.getTestFilePaths()){
             testClassFilePaths.add(testPath.replace(testFolderPath, "").replace("/", ".").replace(".java", ""));
         }

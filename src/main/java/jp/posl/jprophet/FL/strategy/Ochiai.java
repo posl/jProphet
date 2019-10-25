@@ -11,10 +11,10 @@ public class Ochiai implements Coefficient {
      * @param numberOfFailedTests
      */
     public double calculate(StatementStatus statementStatus, int numberOfSuccessedTests, int numberOfFailedTests) {
-        double suspiciousenesses;
-        double ncf = (double)statementStatus.getNumberOfFailedTestsCoveringStatement();
-        double ncs = (double)statementStatus.getNumberOfSuccessedTestsCoveringStatement();
-        double nf = (double)numberOfFailedTests;
+        final double suspiciousenesses;
+        final double ncf = (double)statementStatus.getNumberOfFailedTestsCoveringStatement();
+        final double ncs = (double)statementStatus.getNumberOfSuccessedTestsCoveringStatement();
+        final double nf = (double)numberOfFailedTests;
 
         if (Math.sqrt(nf * (ncf + ncs)) == 0){
             suspiciousenesses = 0;

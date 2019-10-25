@@ -11,11 +11,11 @@ public class Tarantula implements Coefficient {
      * @param numberOfFailedTests
      */
     public double calculate(StatementStatus statementStatus, int numberOfSuccessedTests, int numberOfFailedTests) {
-        double suspiciousenesses;
-        double ncf = (double)statementStatus.getNumberOfFailedTestsCoveringStatement();
-        double ncs = (double)statementStatus.getNumberOfSuccessedTestsCoveringStatement();
-        double nf = (double)numberOfFailedTests;
-        double ns = (double)numberOfSuccessedTests;
+        final double suspiciousenesses;
+        final double ncf = (double)statementStatus.getNumberOfFailedTestsCoveringStatement();
+        final double ncs = (double)statementStatus.getNumberOfSuccessedTestsCoveringStatement();
+        final double nf = (double)numberOfFailedTests;
+        final double ns = (double)numberOfSuccessedTests;
 
         if (nf == 0 || ns == 0 || ncf / nf + ncs / ns == 0){
             suspiciousenesses = 0;

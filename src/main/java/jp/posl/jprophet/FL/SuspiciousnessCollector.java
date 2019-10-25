@@ -3,6 +3,7 @@ package jp.posl.jprophet.FL;
 import java.util.List;
 import java.util.ArrayList;
 import jp.posl.jprophet.FL.strategy.Coefficient;
+import jp.posl.jprophet.FL.coverage.TestResults;
 
 /**
  * ステートメント(行)ごとの疑惑値の計算

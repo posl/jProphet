@@ -10,14 +10,14 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 import jp.posl.jprophet.ProjectConfiguration;
-import jp.posl.jprophet.SpectrumBasedFaultLocalization;
+import jp.posl.jprophet.FL.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.FL.strategy.Coefficient;
 import jp.posl.jprophet.FL.strategy.Jaccard;
 
 public class SpectrumBasedFaultLocalizationTest{
     // 入力として用意するテスト用のプロジェクト
-    private String projectPath = "src/test/resources/testFLProject";
-    private ProjectConfiguration project = new ProjectConfiguration(this.projectPath, "FLtmp");
+    final private String projectPath = "src/test/resources/testFLProject";
+    final private ProjectConfiguration project = new ProjectConfiguration(this.projectPath, "FLtmp");
     private Coefficient coefficient = new Jaccard();
 
     /**
