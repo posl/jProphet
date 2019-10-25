@@ -46,6 +46,7 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
             suspiciousnessList = suspiciousnessCollector.getSuspiciousnessList();
         }catch (Exception e){
             System.err.println(e.getMessage());
+            e.printStackTrace();
             System.exit(-1);
         }
         return suspiciousnessList;

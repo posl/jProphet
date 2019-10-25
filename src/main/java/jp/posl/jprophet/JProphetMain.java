@@ -1,67 +1,67 @@
 package jp.posl.jprophet;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import jp.posl.jprophet.ProjectConfiguration;
+
+import org.apache.commons.io.FileUtils;
+
 import jp.posl.jprophet.FL.SpectrumBasedFaultLocalization;
-import jp.posl.jprophet.AbstractRepairCandidate;
-import jp.posl.jprophet.ConcreteRepairCandidate;
-import jp.posl.jprophet.RepairCandidateGenerator;
-import jp.posl.jprophet.PlausibilityAnalyzer;
-import jp.posl.jprophet.StagedCondGenerator;
 import jp.posl.jprophet.FL.FaultLocalization;
 import jp.posl.jprophet.FL.Suspiciousness;
 import jp.posl.jprophet.FL.strategy.*;
 
 import jp.posl.jprophet.test.TestExecutor;
 
-
-public class JProphetMain {   
+public class JProphetMain {
     public static void main(String[] args) {
-        final String OUT_DIR = System.getProperty("java.io.tmpdir");
-        try {
-            String projectPath = "src/test/resources/testGradleProject01";
-            if(args.length > 0)
-                projectPath = args[0];
-            final ProjectConfiguration project = new ProjectConfiguration(projectPath, OUT_DIR);
-            final JProphetMain jprophet = new JProphetMain();
-            jprophet.run(project);
+        final String outDir = "./tmp/"; 
+        String projectPath = "src/test/resources/testGradleProject01";
+        if(args.length > 0){
+            projectPath = args[0];
         }
-        catch(IllegalArgumentException e){
+        final ProjectConfiguration     project                  = new ProjectConfiguration(projectPath, outDir);
+        final Coefficient              coefficient              = new Jaccard();
+        final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(project, coefficient);
+        final RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
+        final PlausibilityAnalyzer     plausibilityAnalyzer     = new PlausibilityAnalyzer();  
+        final StagedCondGenerator      stagedCondGenerator      = new StagedCondGenerator();
+        final TestExecutor             testExecutor             = new TestExecutor();
+        final ProgramGenerator         programGenerator         = new ProgramGenerator();
+
+        final JProphetMain jprophet = new JProphetMain();
+        jprophet.run(project, faultLocalization, repairCandidateGenerator, plausibilityAnalyzer, stagedCondGenerator, testExecutor, programGenerator);
+        try {
+            FileUtils.deleteDirectory(new File(outDir));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
             e.printStackTrace();
-            System.exit(-1);
         }
     }
 
-    private void run(ProjectConfiguration project){
+    private void run(ProjectConfiguration project, FaultLocalization faultLocalization,
+            RepairCandidateGenerator repairCandidateGenerator, PlausibilityAnalyzer plausibilityAnalyzer,
+            StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, ProgramGenerator programGenerator) {
         // フォルトローカライゼーション
-        Coefficient coefficient = new Jaccard();
-        FaultLocalization faultLocalization = new SpectrumBasedFaultLocalization(project, coefficient);
         List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
-        RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
-        List<AbstractRepairCandidate> abstractRepairCandidates = new ArrayList<AbstractRepairCandidate>();
+        List<RepairCandidate> abstractRepairCandidates = new ArrayList<RepairCandidate>();
         abstractRepairCandidates.addAll(repairCandidateGenerator.exec(project));
         
         // 学習モデルとフォルトローカライゼーションのスコアによってソート
-        PlausibilityAnalyzer plausibilityAnalyzer = new PlausibilityAnalyzer();  
-        List<AbstractRepairCandidate> sortedAbstractRepairCandidate = plausibilityAnalyzer.sortRepairCandidates(abstractRepairCandidates, suspiciousenesses);
-        
+        List<RepairCandidate> sortedAbstractRepairCandidate = plausibilityAnalyzer.sortRepairCandidates(abstractRepairCandidates, suspiciousenesses);
         
         // 抽象修正候補中の条件式の生成
-        StagedCondGenerator stagedCondGenerator = new StagedCondGenerator();
-        TestExecutor        testExecutor        = new TestExecutor();
-        ProgramGenerator    programGenerator    = new ProgramGenerator();
-        for(AbstractRepairCandidate abstractRepairCandidate: sortedAbstractRepairCandidate) {
-            List<ConcreteRepairCandidate> concreteRepairCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
-            for(ConcreteRepairCandidate concreteRepairCandidate: concreteRepairCandidates) {
-                ProjectConfiguration modifiedProject = programGenerator.applyPatch(concreteRepairCandidate);
+        for(RepairCandidate abstractRepairCandidate: sortedAbstractRepairCandidate) {
+            List<RepairCandidate> repairCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
+            for(RepairCandidate repairCandidate: repairCandidates) {
+                ProjectConfiguration modifiedProject = programGenerator.applyPatch(repairCandidate);
                 if(testExecutor.run(modifiedProject)) {
                     return;
                 }
             }
         }
-
     }
 }

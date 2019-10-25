@@ -1,15 +1,17 @@
 package jp.posl.jprophet.FL;
 
+import jp.posl.jprophet.ProjectConfiguration;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
-
-import jp.posl.jprophet.ProjectConfiguration;
 import jp.posl.jprophet.FL.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.FL.strategy.Coefficient;
 import jp.posl.jprophet.FL.strategy.Jaccard;
@@ -71,23 +73,13 @@ public class SpectrumBasedFaultLocalizationTest{
         double sus9 = (double)1/(double)3; // 1/(1+2+0)
         assertThat(ifline9.get(0).getValue()).isEqualTo(sus9);
 
-        deleteDirectory(new File("./FLtmp/"));
+        try {
+            FileUtils.deleteDirectory(new File("./TEtmp/"));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * ディレクトリをディレクトリの中のファイルごと再帰的に削除する 
-     * @param dir 削除対象ディレクトリ
-     */
-    private void deleteDirectory(File dir){
-        if(dir.listFiles() != null){
-            for(File file : dir.listFiles()){
-                if(file.isFile())
-                    file.delete();
-                else
-                    deleteDirectory(file);
-            }
-        }
-        dir.delete();
-    }
 
 }

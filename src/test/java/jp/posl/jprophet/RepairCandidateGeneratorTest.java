@@ -2,7 +2,7 @@ package jp.posl.jprophet;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -48,7 +48,7 @@ public class RepairCandidateGeneratorTest {
 
         // 全てのRepairUnitに対して各テンプレート適用操作につきが一つのRepairUnitを返すようにモックを生成
         CompilationUnit compilationUnit;
-        try{
+        try {
             compilationUnit = JavaParser.parse(Paths.get(filePath));
         }
         catch (IOException e){
@@ -64,7 +64,7 @@ public class RepairCandidateGeneratorTest {
         when(copyReplaceOperation.exec(Mockito.any(RepairUnit.class))).thenReturn(units);
 
         // stubProject(6個のASTノードを持つソースファイル一つ)を入力にとり，各operationが6回ずつ呼び出されているかをテスト
-        List<AbstractRepairCandidate> candidates = repairCandidateGenerator.exec(stubProject);
+        List<RepairCandidate> candidates = repairCandidateGenerator.exec(stubProject);
         Mockito.verify(condRefinementOperation, times(6)).exec(Mockito.any(RepairUnit.class));
         Mockito.verify(condIntroductionOperation, times(6)).exec(Mockito.any(RepairUnit.class));
         Mockito.verify(ctrlFlowIntroductionOperation, times(6)).exec(Mockito.any(RepairUnit.class));

@@ -5,12 +5,14 @@ import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.FL.coverage.TestResults;
 import jp.posl.jprophet.FL.coverage.CoverageCollector;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
+import java.io.IOException;
 
 public class StatementStatusTest{
     // 入力として用意するテスト用のプロジェクト
@@ -49,11 +51,12 @@ public class StatementStatusTest{
 
         CoverageCollector coverageCollector = new CoverageCollector("LStmp");
         
-        try{
+        try {
             //testResults = coverageCollector.exec(sourceClass, testClass);
             testResults = coverageCollector.exec(sourceClassFilePaths, testClassFilePaths);
-        }catch (Exception e){
-            System.out.println("例外");
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
 
         //testFLProject.Ifstatementの12行目,9行目のカバレッジが正しいか確認
@@ -72,23 +75,12 @@ public class StatementStatusTest{
         assertThat(line9.getNumberOfSuccessedTestsNotCoveringStatement()).isEqualTo(7);
         
         
-        deleteDirectory(new File("./LStmp/"));
-
-    }
-
-    /**
-     * ディレクトリをディレクトリの中のファイルごと再帰的に削除する 
-     * @param dir 削除対象ディレクトリ
-     */
-    private void deleteDirectory(File dir){
-        if(dir.listFiles() != null){
-            for(File file : dir.listFiles()){
-                if(file.isFile())
-                    file.delete();
-                else
-                    deleteDirectory(file);
-            }
+        try {
+            FileUtils.deleteDirectory(new File("./LStmp/"));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
-        dir.delete();
     }
+
 }

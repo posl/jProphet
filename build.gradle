@@ -72,6 +72,7 @@ dependencies {
     testImplementation "org.mockito:mockito-core:2.+"
 
     compile group: 'com.github.javaparser', name: 'javaparser-symbol-solver-core', version: '3.5.15'
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
 }
 
 // Define the main class for the application
@@ -80,6 +81,9 @@ mainClassName = 'jp.posl.jprophet.JProphetMain'
 run {
     if (project.hasProperty('args')) {    // "args" というプロパティが渡されていたら
         args project.args.split('\\s+')   // 空白文字で split して、 run タスクの args オプションにセットする
+    }
+    else {
+        args []
     }
 }
 
