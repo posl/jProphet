@@ -3,6 +3,7 @@ package jp.posl.jprophet;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -26,13 +27,13 @@ public class ProgramGeneratorTest{
             "testGradleProject01/src/main/java/testGradleProject01/App2.java",
             "testGradleProject01/src/test/java/testGradleProject01/AppTest.java",
             "testGradleProject01/src/test/java/testGradleProject01/App2Test.java",
-            "gradle/wrapper/gradle-wrapper.jar",
-            "gradle/wrapper/gradle-wrapper.properties",
-            ".gitignore",
-            "build.gradle",
-            "gradlew",
-            "gradle.bat",
-            "settings.gradle"
+            "testGradleProject01/gradle/wrapper/gradle-wrapper.jar",
+            "testGradleProject01/gradle/wrapper/gradle-wrapper.properties",
+            "testGradleProject01/.gitignore",
+            "testGradleProject01/build.gradle",
+            "testGradleProject01/gradlew",
+            "testGradleProject01/gradlew.bat",
+            "testGradleProject01/settings.gradle"
         ));
         final String outDir = "./output/";
         final ProjectConfiguration project = new ProjectConfiguration(projectPath, outDir);
@@ -50,7 +51,13 @@ public class ProgramGeneratorTest{
         programGenerator.applyPatch(project, repairCandidate);
 
         for(String projectFilePath: projectFilePaths){
-            //assertThat(Files.exists(Paths.get(outDir + projectFilePath))).isTrue();
+            assertThat(Files.exists(Paths.get(outDir + projectFilePath))).isTrue();
+        }
+        try {
+            FileUtils.deleteDirectory(new File(outDir));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 }
