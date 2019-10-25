@@ -9,10 +9,10 @@ public class ProgramGenerator {
         
     }
     
-    public ProjectConfiguration applyPatch(ProjectConfiguration project, RepairCandidate repairCandidate) {
+    public ProjectConfiguration applyPatch(ProjectConfiguration projectConfiguration, RepairCandidate repairCandidate) {
         // List<String> fixedFilePaths = repairCandidate.getFixedFilePaths();
         // FileUtils.copyDirectory(project, "./output/");
-        return new ProjectConfiguration(null, null);
+        return new ProjectConfiguration(projectConfiguration.getProjectPath() , projectConfiguration.getBuildPath());
     }
 
 }
