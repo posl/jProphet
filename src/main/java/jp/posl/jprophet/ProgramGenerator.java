@@ -7,8 +7,8 @@ public class ProgramGenerator {
         
     }
     
-    public ProjectConfiguration applyPatch(ConcreteRepairCandidate repairCandidate) {
-        return new ProjectConfiguration(null, null);
+    public ProjectConfiguration applyPatch(ProjectConfiguration projectConfiguration, RepairCandidate repairCandidate) {
+        return new ProjectConfiguration(projectConfiguration.getProjectPath() , projectConfiguration.getBuildPath());
     }
 
 }

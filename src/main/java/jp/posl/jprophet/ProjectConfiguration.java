@@ -46,12 +46,9 @@ public class ProjectConfiguration {
             this.classPaths = new ArrayList<String>(Arrays.asList("src/main/resources/junit-4.11.jar"));
 
         } catch (NullPointerException | IOException e) {
+            System.err.println(e.getMessage());
             e.printStackTrace();
-            this.sourceFilePaths = new ArrayList<String>();
-            this.testFilePaths = new ArrayList<String>();
-            this.classPaths = new ArrayList<String>();
-            this.buildPath = "";
-            return;
+            System.exit(-1);
         }
     }
 

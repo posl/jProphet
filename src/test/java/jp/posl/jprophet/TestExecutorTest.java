@@ -1,9 +1,11 @@
 package jp.posl.jprophet;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,28 +36,20 @@ public class TestExecutorTest {
 
         boolean isSuccess01 = this.testExecutor.run(correctProject);
         assertThat(isSuccess01).isTrue();
-        deleteDirectory(this.outDir);
+        try {
+            FileUtils.deleteDirectory(this.outDir);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
 
         boolean isSuccess02 = this.testExecutor.run(errorProject);
         assertThat(isSuccess02).isFalse();
-        deleteDirectory(this.outDir);
-    }
-
-    /**
-     * ディレクトリをディレクトリの中のファイルごと再帰的に削除する
-     * @param dir 削除対象ディレクトリ
-     */
-    private void deleteDirectory(File dir){
-        if(dir.listFiles() != null){
-            for(File file : dir.listFiles()){
-                if(file.isFile())
-                    file.delete();
-                else
-                    deleteDirectory(file);
-            }
+        try {
+            FileUtils.deleteDirectory(this.outDir);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
-        dir.delete();
     }
-
-
 }

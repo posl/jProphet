@@ -1,17 +1,18 @@
 package jp.posl.jprophet;
 
 import com.github.javaparser.ast.CompilationUnit;
+import java.util.List;
 
-public class AbstractRepairCandidate extends RepairCandidate {
+public class AbstractRepairCandidate implements RepairCandidate {
     private CompilationUnit compilationUnit;
-    private String filePath;
-    public AbstractRepairCandidate(CompilationUnit compilationUnit, String filePath){
+    private List<String> fixedFilePaths;
+    public AbstractRepairCandidate(CompilationUnit compilationUnit, List<String> fixedFilePaths) {
         this.compilationUnit = compilationUnit;
-        this.filePath = filePath;
+        this.fixedFilePaths = fixedFilePaths;
     }
 
-    public String getFilePath(){
-        return this.filePath;
+    public List<String> getFixedFilePaths(){
+        return this.fixedFilePaths;
     }
 
     public CompilationUnit getCompilationUnit(){

@@ -2,7 +2,7 @@ package jp.posl.jprophet;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -39,7 +39,7 @@ public class RepairCandidateGeneratorTest {
         ProjectConfiguration stubProject = mock(ProjectConfiguration.class);
         when(stubProject.getSourceFilePaths()).thenReturn(filePathsForTest);
 
-        List<AbstractRepairCandidate> candidates = this.repairCandidateGenerator.exec(stubProject);
+        List<RepairCandidate> candidates = this.repairCandidateGenerator.exec(stubProject);
 
         // 各operationが呼ばれて修正パッチ候補を生成しているかテスト
         // 現状VariableReplacementOperationだけが修正パッチ候補を一つ生成する
