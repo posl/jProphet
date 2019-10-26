@@ -7,10 +7,16 @@ import org.apache.commons.io.FilenameUtils;
 import com.github.javaparser.printer.*;
 
 /**
- * 修正パッチ候補を元にプロジェクト全体を生成する
- * TODO:修正パッチ候補ごとにプロジェクト全体を生成しなおす仕様になっているので効率が悪い
+ * 修正パッチ候補を元にプロジェクト全体の生成を行うクラス
  */
 public class FixedProjectGenerator {
+    /**
+     * 修正パッチ候補を元にプロジェクト全体の生成を行うクラス
+     * TODO:修正パッチ候補ごとにプロジェクト全体を生成し直す仕様になっているので効率が悪い
+     * @param config 修正設定. 生成先パスなど含む
+     * @param repairCandidate 修正パッチ候補
+     * @return 修正パッチ適用後のプロジェクト
+     */
     public Project exec(RepairConfiguration config, RepairCandidate repairCandidate) {
         final String originalProjectPath = config.getTargetProject().getProjectPath();
         final String fixedProjectPath    = config.getFixedProjectDirPath() + FilenameUtils.getBaseName(originalProjectPath);
