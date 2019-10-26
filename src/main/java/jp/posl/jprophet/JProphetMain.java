@@ -26,14 +26,15 @@ public class JProphetMain {
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
         final Coefficient              coefficient              = new Jaccard();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
-        final PatchCandidateGenerator patchCandidateGenerator = new PatchCandidateGenerator();
+        final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
         final PlausibilityAnalyzer     plausibilityAnalyzer     = new PlausibilityAnalyzer();  
+        final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
         final StagedCondGenerator      stagedCondGenerator      = new StagedCondGenerator();
         final TestExecutor             testExecutor             = new TestExecutor();
         final FixedProjectGenerator    fixedProjectGenerator    = new FixedProjectGenerator();
 
         final JProphetMain jprophet = new JProphetMain();
-        jprophet.run(config, faultLocalization, patchCandidateGenerator, plausibilityAnalyzer, stagedCondGenerator, testExecutor, fixedProjectGenerator);
+        jprophet.run(config, faultLocalization, patchCandidateGenerator, plausibilityAnalyzer, patchEvaluator, stagedCondGenerator, testExecutor, fixedProjectGenerator);
 
         try {
             FileUtils.deleteDirectory(new File(buildDir));
@@ -45,18 +46,18 @@ public class JProphetMain {
     }
 
     private void run(RepairConfiguration config, FaultLocalization faultLocalization,
-            PatchCandidateGenerator patchCandidateGenerator, PlausibilityAnalyzer plausibilityAnalyzer,
+            PatchCandidateGenerator patchCandidateGenerator, PlausibilityAnalyzer plausibilityAnalyzer, PatchEvaluator patchEvaluator,
             StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, FixedProjectGenerator fixedProjectGenerator
             ) {
         // フォルトローカライゼーション
         List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
-        List<PatchCandidate> abstractRepairCandidates = new ArrayList<PatchCandidate>();
-        abstractRepairCandidates.addAll(patchCandidateGenerator.exec(config.getTargetProject()));
+        List<PatchCandidate> abstractPatchCandidates = new ArrayList<PatchCandidate>();
+        abstractPatchCandidates.addAll(patchCandidateGenerator.exec(config.getTargetProject()));
         
         // 学習モデルとフォルトローカライゼーションのスコアによってソート
-        List<PatchCandidate> sortedAbstractPatchCandidate = plausibilityAnalyzer.sortRepairCandidates(abstractRepairCandidates, suspiciousenesses);
+        List<PatchCandidate> sortedAbstractPatchCandidate = patchEvaluator.sortPatchCandidates(abstractPatchCandidates, suspiciousenesses);
         
         // 抽象修正候補中の条件式の生成
         for(PatchCandidate abstractRepairCandidate: sortedAbstractPatchCandidate) {
