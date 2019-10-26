@@ -65,12 +65,20 @@ public class FixedProjectGeneratorTest{
        
     }
 
+    
+    /**
+     * ファイルが全て生成されているかテスト
+     * パッチが適用されているかは見ない
+     */
     @Test public void testIfFilesIsGenerated(){
         for(String projectFilePath: this.projectFilePaths){
             assertThat(Files.exists(Paths.get(this.resultDir + projectFilePath))).isTrue();
         }
     }
 
+    /**
+     * 生成されたプロジェクトにてパッチが適用されているかテスト
+     */
     @Test public void testIfGeneratedProjectIsPatched(){
         List<String> lines;
         try {

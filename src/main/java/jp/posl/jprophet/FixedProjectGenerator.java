@@ -6,14 +6,18 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import com.github.javaparser.printer.*;
 
+/**
+ * 修正パッチ候補を元にプロジェクト全体を生成する
+ * TODO:修正パッチ候補ごとにプロジェクト全体を生成しなおす仕様になっているので効率が悪い
+ */
 public class FixedProjectGenerator {
     public Project exec(RepairConfiguration config, RepairCandidate repairCandidate) {
         final String originalProjectPath = config.getTargetProject().getProjectPath();
-        final File originalProjectDir = new File(originalProjectPath);
-        final String outputDirPath = config.getFixedProjectDirPath() + FilenameUtils.getBaseName(originalProjectPath);
-        final File outputDir = new File(outputDirPath);
+        final String fixedProjectPath       = config.getFixedProjectDirPath() + FilenameUtils.getBaseName(originalProjectPath);
+        final File   originalProjectDir  = new File(originalProjectPath);
+        final File   fixedProjectDir           = new File(fixedProjectPath);
         try {
-            FileUtils.copyDirectory(originalProjectDir, outputDir);
+            FileUtils.copyDirectory(originalProjectDir, fixedProjectDir);
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
@@ -21,7 +25,7 @@ public class FixedProjectGenerator {
         }
 
         final String fixedFilePath = repairCandidate.getFixedFilePath();
-        final File fixedFile = new File(outputDir + fixedFilePath.replace(originalProjectPath, ""));
+        final File fixedFile = new File(fixedProjectDir + fixedFilePath.replace(originalProjectPath, ""));
         final String fixedSourceCode = new PrettyPrinter(new PrettyPrinterConfiguration()).print(repairCandidate.getCompilationUnit());
 
         try {
@@ -32,7 +36,7 @@ public class FixedProjectGenerator {
             System.exit(-1);
         }
 
-        return new Project(outputDirPath);
+        final Project fixedProject = new Project(fixedProjectPath);
+        return fixedProject;
     }
-
 }
