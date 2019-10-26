@@ -21,12 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ast.CompilationUnit;
 
-
-public class RepairCandidateGeneratorTest {
-    private RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
+public class PatchCandidateGeneratorTest {
+    private PatchCandidateGenerator patchCandidateGenerator = new PatchCandidateGenerator();
 
     /**
      * テスト用のプロジェクトを用意し
@@ -39,7 +36,7 @@ public class RepairCandidateGeneratorTest {
         Project stubProject = mock(Project.class);
         when(stubProject.getSourceFilePaths()).thenReturn(filePathsForTest);
 
-        List<PatchCandidate> candidates = this.repairCandidateGenerator.exec(stubProject);
+        List<PatchCandidate> candidates = this.patchCandidateGenerator.exec(stubProject);
 
         // 各operationが呼ばれて修正パッチ候補を生成しているかテスト
         // 現状VariableReplacementOperationだけが修正パッチ候補を一つ生成する

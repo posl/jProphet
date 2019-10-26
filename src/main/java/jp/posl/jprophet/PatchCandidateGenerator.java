@@ -11,7 +11,7 @@ import java.util.List;
 import jp.posl.jprophet.operation.*;
 
 
-public class RepairCandidateGenerator{
+public class PatchCandidateGenerator{
     /**
      * バグのあるソースコード群から修正パッチ候補を生成する 
      * 

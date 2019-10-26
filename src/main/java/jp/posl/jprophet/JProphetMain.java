@@ -26,14 +26,14 @@ public class JProphetMain {
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
         final Coefficient              coefficient              = new Jaccard();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
-        final RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
+        final PatchCandidateGenerator patchCandidateGenerator = new PatchCandidateGenerator();
         final PlausibilityAnalyzer     plausibilityAnalyzer     = new PlausibilityAnalyzer();  
         final StagedCondGenerator      stagedCondGenerator      = new StagedCondGenerator();
         final TestExecutor             testExecutor             = new TestExecutor();
         final FixedProjectGenerator    fixedProjectGenerator    = new FixedProjectGenerator();
 
         final JProphetMain jprophet = new JProphetMain();
-        jprophet.run(config, faultLocalization, repairCandidateGenerator, plausibilityAnalyzer, stagedCondGenerator, testExecutor, fixedProjectGenerator);
+        jprophet.run(config, faultLocalization, patchCandidateGenerator, plausibilityAnalyzer, stagedCondGenerator, testExecutor, fixedProjectGenerator);
 
         try {
             FileUtils.deleteDirectory(new File(buildDir));
@@ -45,7 +45,7 @@ public class JProphetMain {
     }
 
     private void run(RepairConfiguration config, FaultLocalization faultLocalization,
-            RepairCandidateGenerator repairCandidateGenerator, PlausibilityAnalyzer plausibilityAnalyzer,
+            PatchCandidateGenerator patchCandidateGenerator, PlausibilityAnalyzer plausibilityAnalyzer,
             StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, FixedProjectGenerator fixedProjectGenerator
             ) {
         // フォルトローカライゼーション
@@ -53,15 +53,15 @@ public class JProphetMain {
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
         List<PatchCandidate> abstractRepairCandidates = new ArrayList<PatchCandidate>();
-        abstractRepairCandidates.addAll(repairCandidateGenerator.exec(config.getTargetProject()));
+        abstractRepairCandidates.addAll(patchCandidateGenerator.exec(config.getTargetProject()));
         
         // 学習モデルとフォルトローカライゼーションのスコアによってソート
         List<PatchCandidate> sortedAbstractPatchCandidate = plausibilityAnalyzer.sortRepairCandidates(abstractRepairCandidates, suspiciousenesses);
         
         // 抽象修正候補中の条件式の生成
         for(PatchCandidate abstractRepairCandidate: sortedAbstractPatchCandidate) {
-            List<PatchCandidate> repairCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
-            for(PatchCandidate patchCandidate: repairCandidates) {
+            List<PatchCandidate> patchCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
+            for(PatchCandidate patchCandidate: patchCandidates) {
                 Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
                 if(testExecutor.run(fixedProject, config)) {
                     return;
