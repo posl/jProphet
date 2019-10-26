@@ -21,13 +21,14 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 
 import org.apache.commons.io.FileUtils;
 
-public class ProgramGeneratorTest{
+public class FixedProjectGeneratorTest{
     private String projectPath;
     private String targetFilePath;
     private List<String> projectFilePaths; 
-    private String outDir;
-    private ProjectConfiguration project;
-    private ProgramGenerator programGenerator;
+    private String buildDir;
+    private String resultDir;
+    private RepairConfiguration config;
+    private FixedProjectGenerator fixedProjectGenerator;
 
     @Before public void setUp(){
         this.projectPath = "src/test/resources/testGradleProject01";
@@ -45,9 +46,10 @@ public class ProgramGeneratorTest{
             "testGradleProject01/gradlew.bat",
             "testGradleProject01/settings.gradle"
         ));
-        this.outDir = "./output/";
-        this.project = new ProjectConfiguration(projectPath, outDir);
-        this.programGenerator = new ProgramGenerator();
+        this.buildDir = "./temp/";
+        this.resultDir = "./result/";
+        this.config = new RepairConfiguration(this.buildDir, this.resultDir, new Project(this.projectPath));
+        this.fixedProjectGenerator = new FixedProjectGenerator();
         CompilationUnit compilationUnit;
         try {
             compilationUnit = JavaParser.parse(Paths.get(this.targetFilePath));
@@ -59,20 +61,20 @@ public class ProgramGeneratorTest{
         }
         ((ClassOrInterfaceDeclaration)compilationUnit.findRootNode().getChildNodes().get(1)).setModifier(Modifier.STATIC, true);
         RepairCandidate repairCandidate = new ConcreteRepairCandidate(compilationUnit, this.targetFilePath);
-        this.programGenerator.applyPatch(project, repairCandidate);
-        
+        this.fixedProjectGenerator.exec(config, repairCandidate);
+       
     }
 
     @Test public void testIfFilesIsGenerated(){
         for(String projectFilePath: this.projectFilePaths){
-            assertThat(Files.exists(Paths.get(this.outDir + projectFilePath))).isTrue();
+            assertThat(Files.exists(Paths.get(this.resultDir + projectFilePath))).isTrue();
         }
     }
 
     @Test public void testIfGeneratedProjectIsPatched(){
         List<String> lines;
         try {
-            lines = FileUtils.readLines(new File(outDir + projectFilePaths.get(0)), "utf-8");
+            lines = FileUtils.readLines(new File(resultDir + projectFilePaths.get(0)), "utf-8");
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -85,7 +87,8 @@ public class ProgramGeneratorTest{
 
     @After public void cleanUp(){
         try {
-            FileUtils.deleteDirectory(new File(this.outDir));
+            FileUtils.deleteDirectory(new File(this.resultDir));
+            FileUtils.deleteDirectory(new File(this.resultDir));
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();

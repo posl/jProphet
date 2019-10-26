@@ -36,7 +36,7 @@ public class RepairCandidateGeneratorTest {
         // 一つのファイルを持ったプロジェクトのスタブを生成
         String filePath = "src/test/resources/test01.java";
         List<String> filePathsForTest = new ArrayList<String>(Arrays.asList(filePath));
-        ProjectConfiguration stubProject = mock(ProjectConfiguration.class);
+        Project stubProject = mock(Project.class);
         when(stubProject.getSourceFilePaths()).thenReturn(filePathsForTest);
 
         List<RepairCandidate> candidates = this.repairCandidateGenerator.exec(stubProject);

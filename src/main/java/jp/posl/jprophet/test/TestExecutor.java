@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.ArrayList;
 import org.junit.runner.JUnitCore;
 
+import jp.posl.jprophet.Project;
 import jp.posl.jprophet.ProjectBuilder;
-import jp.posl.jprophet.ProjectConfiguration;
+import jp.posl.jprophet.RepairConfiguration;
 
 import java.io.File;
 
@@ -42,11 +43,11 @@ public class TestExecutor {
      * @return 全てのテスト実行が通ったかどうか
      */
 
-    public boolean run(ProjectConfiguration projectConfiguration)  {
+    public boolean run(Project fixedProject, RepairConfiguration config)  {
         try {
-            builder.build(projectConfiguration);
-            getClassLoader(projectConfiguration);
-            testClasses = loadTestClass(projectConfiguration);
+            builder.build(config);
+            getClassLoader(config.getBuildPath());
+            testClasses = loadTestClass(fixedProject);
             return runAllTestClass(testClasses);
         }
         catch (MalformedURLException | ClassNotFoundException e) {
@@ -61,8 +62,8 @@ public class TestExecutor {
      * 
      * @param project 対象プロジェクト
      */
-    private void getClassLoader(ProjectConfiguration project) throws MalformedURLException {
-        File file = new File(project.getBuildPath());
+    private void getClassLoader(String buildPath) throws MalformedURLException {
+        File file = new File(buildPath);
         loader = new MemoryClassLoader(new URL[] { file.toURI().toURL() });
     }
 
@@ -73,7 +74,7 @@ public class TestExecutor {
      * @param project 対象プロジェクト
      * @return テストクラスのリスト
      */
-    private List<Class<?>> loadTestClass(ProjectConfiguration project) throws ClassNotFoundException {
+    private List<Class<?>> loadTestClass(Project project) throws ClassNotFoundException {
         List<Class<?>> classes = new ArrayList<Class<?>>();
         final String testFolderPath = project.getProjectPath() + gradleTestPath;
         for (String source : project.getTestFilePaths()) {

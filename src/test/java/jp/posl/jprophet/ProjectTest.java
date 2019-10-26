@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ProjectConfigurationTest{
+public class ProjectTest{
     // 入力として用意するテスト用のプロジェクト
-    private String projectPath = "src/test/resources/testGradleProject01";
-    private ProjectConfiguration project = new ProjectConfiguration(this.projectPath, "temp");
+    private final String projectPath = "src/test/resources/testGradleProject01";
+    private final Project project = new Project(this.projectPath);
 
     /**
      * ソースファイルを正しく取得できているかの検証
@@ -41,12 +41,5 @@ public class ProjectConfigurationTest{
     @Test public void testForClasspaths(){
         List<String> expectedClassPaths = new ArrayList<String>(Arrays.asList("src/main/resources/junit-4.11.jar"));
         assertThat(this.project.getClassPaths()).containsOnlyElementsOf(expectedClassPaths);
-    }
-
-    /**
-     * ビルド時のクラスファイル出力先のパスを正しく取得できているかの検証
-     */
-    @Test public void testForBuildPath(){
-        assertThat(this.project.getBuildPath()).isEqualTo("temp");
     }
 }

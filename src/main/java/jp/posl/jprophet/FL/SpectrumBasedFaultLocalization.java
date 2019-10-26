@@ -1,9 +1,10 @@
 package jp.posl.jprophet.FL;
 
-import jp.posl.jprophet.ProjectConfiguration;
+import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.FL.coverage.CoverageCollector;
 import jp.posl.jprophet.FL.coverage.TestResults;
 import jp.posl.jprophet.FL.strategy.Coefficient;
+import jp.posl.jprophet.Project;
 import jp.posl.jprophet.ProjectBuilder;
 import java.util.List;
 import java.util.ArrayList;
@@ -25,11 +26,11 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
      * ソースファイルとテストファイルをビルドして,ビルドされたクラスのFQDNを取得
      * @param project
      */
-    public SpectrumBasedFaultLocalization(ProjectConfiguration project, Coefficient coefficient) {
-        this.projectBuilder.build(project);
-        this.buildPath = project.getBuildPath();
+    public SpectrumBasedFaultLocalization(RepairConfiguration config, Coefficient coefficient) {
+        this.projectBuilder.build(config);
+        this.buildPath = config.getBuildPath();
         this.coefficient = coefficient;
-        getFQN(project);
+        getFQN(config.getTargetProject());
     }
     /**
      * テスト対象の全てのソースファイルの行ごとの疑惑値を算出する
@@ -56,7 +57,7 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
      * ファイルパスからFQNを取得する
      * @param project
      */
-    private void getFQN(ProjectConfiguration project){
+    private void getFQN(Project project){
         final String gradleTestPath = "/src/test/java/";
         final String gradleSourcePath = "/src/main/java/";
         final String testFolderPath = project.getProjectPath() + gradleTestPath;

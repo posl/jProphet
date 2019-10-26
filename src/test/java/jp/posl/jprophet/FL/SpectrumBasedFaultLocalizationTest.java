@@ -1,6 +1,7 @@
 package jp.posl.jprophet.FL;
 
-import jp.posl.jprophet.ProjectConfiguration;
+import jp.posl.jprophet.Project;
+import jp.posl.jprophet.RepairConfiguration;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -19,7 +20,7 @@ import jp.posl.jprophet.FL.strategy.Jaccard;
 public class SpectrumBasedFaultLocalizationTest{
     // 入力として用意するテスト用のプロジェクト
     final private String projectPath = "src/test/resources/testFLProject";
-    final private ProjectConfiguration project = new ProjectConfiguration(this.projectPath, "FLtmp");
+    final private RepairConfiguration config = new RepairConfiguration("FLtmp", null, new Project(projectPath));
     private Coefficient coefficient = new Jaccard();
 
     /**
@@ -27,7 +28,7 @@ public class SpectrumBasedFaultLocalizationTest{
      */
     @Test public void testForSourceFilePaths(){
         List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
-        SpectrumBasedFaultLocalization faultLocalization = new SpectrumBasedFaultLocalization(project, coefficient);
+        SpectrumBasedFaultLocalization faultLocalization = new SpectrumBasedFaultLocalization(config, coefficient);
         suspiciousnessList = faultLocalization.exec();
 
         //疑惑値のリストの中にテスト対象のファイルのFQDNが存在するかチェック

@@ -1,6 +1,7 @@
 package jp.posl.jprophet.FL;
 
-import jp.posl.jprophet.ProjectConfiguration;
+import jp.posl.jprophet.RepairConfiguration;
+import jp.posl.jprophet.Project;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.FL.coverage.TestResults;
 import jp.posl.jprophet.FL.coverage.CoverageCollector;
@@ -17,7 +18,7 @@ import java.io.IOException;
 public class StatementStatusTest{
     // 入力として用意するテスト用のプロジェクト
     private String projectPath;
-    private ProjectConfiguration project;
+    private RepairConfiguration config;
     private ProjectBuilder projectBuilder = new ProjectBuilder();
     private List<String> sourceClassFilePaths = new ArrayList<String>();
     private List<String> testClassFilePaths = new ArrayList<String>();
@@ -26,7 +27,7 @@ public class StatementStatusTest{
 
     @Before public void setup(){
         this.projectPath = "src/test/resources/testFLProject";
-        this.project = new ProjectConfiguration(this.projectPath, "./LStmp/");
+        this.config = new RepairConfiguration("./LStmp/", null, new Project(this.projectPath));
         this.sourceClassFilePaths.add("testFLProject.Forstatement");
         this.sourceClassFilePaths.add("testFLProject.Ifstatement");
         this.sourceClassFilePaths.add("testFLProject.App");
@@ -39,7 +40,7 @@ public class StatementStatusTest{
         this.testClassFilePaths.add("testFLProject.ForstatementTest");
         this.testClassFilePaths.add("testFLProject.IfstatementTest");
 
-        projectBuilder.build(project);
+        projectBuilder.build(config);
     
     }
 
