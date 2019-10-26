@@ -60,8 +60,8 @@ public class FixedProjectGeneratorTest{
             return;
         }
         ((ClassOrInterfaceDeclaration)compilationUnit.findRootNode().getChildNodes().get(1)).setModifier(Modifier.STATIC, true);
-        RepairCandidate repairCandidate = new ConcreteRepairCandidate(compilationUnit, this.targetFilePath);
-        this.fixedProjectGenerator.exec(config, repairCandidate);
+        PatchCandidate patchCandidate = new ConcretePatchCandidate(compilationUnit, this.targetFilePath);
+        this.fixedProjectGenerator.exec(config, patchCandidate);
        
     }
 

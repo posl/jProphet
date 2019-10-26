@@ -18,9 +18,9 @@ public class RepairCandidateGenerator{
      * @param project 修正パッチ候補を生成する対象のプロジェクト 
      * @return 条件式が抽象化された修正パッチ候補のリスト
      */
-    public List<RepairCandidate> exec(Project project){
+    public List<PatchCandidate> exec(Project project){
         List<String> filePaths = project.getSourceFilePaths();                
-        List<RepairCandidate> candidates = new ArrayList<RepairCandidate>();
+        List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
         for(String filePath : filePaths){
             try {
                 List<String> lines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
@@ -29,7 +29,7 @@ public class RepairCandidateGenerator{
                 for(RepairUnit repairUnit : repairUnits){
                     List<RepairUnit> appliedUnits = this.applyTemplate(repairUnit);
                     for(RepairUnit appliedUnit : appliedUnits){
-                        candidates.add(new AbstractRepairCandidate(appliedUnit.getCompilationUnit(), filePath));
+                        candidates.add(new AbstractPatchCandidate(appliedUnit.getCompilationUnit(), filePath));
                     }
                 }
             } catch (IOException e) {

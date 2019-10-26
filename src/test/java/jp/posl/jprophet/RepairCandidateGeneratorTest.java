@@ -39,7 +39,7 @@ public class RepairCandidateGeneratorTest {
         Project stubProject = mock(Project.class);
         when(stubProject.getSourceFilePaths()).thenReturn(filePathsForTest);
 
-        List<RepairCandidate> candidates = this.repairCandidateGenerator.exec(stubProject);
+        List<PatchCandidate> candidates = this.repairCandidateGenerator.exec(stubProject);
 
         // 各operationが呼ばれて修正パッチ候補を生成しているかテスト
         // 現状VariableReplacementOperationだけが修正パッチ候補を一つ生成する

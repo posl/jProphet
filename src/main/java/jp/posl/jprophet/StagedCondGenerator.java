@@ -8,8 +8,8 @@ public class StagedCondGenerator {
     public StagedCondGenerator() {
         
     }
-    public List<RepairCandidate> applyConditionTemplate(RepairCandidate repairCandidate){
-        return new ArrayList<>(Arrays.asList(repairCandidate));
+    public List<PatchCandidate> applyConditionTemplate(PatchCandidate patchCandidate){
+        return new ArrayList<>(Arrays.asList(patchCandidate));
     }
     
 }

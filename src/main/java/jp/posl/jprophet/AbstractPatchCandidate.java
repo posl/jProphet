@@ -2,10 +2,10 @@ package jp.posl.jprophet;
 
 import com.github.javaparser.ast.CompilationUnit;
 
-public class ConcreteRepairCandidate implements RepairCandidate {
+public class AbstractPatchCandidate implements PatchCandidate {
     private CompilationUnit compilationUnit;
     private String fixedFilePath;
-    public ConcreteRepairCandidate(CompilationUnit compilationUnit, String fixedFilePath) {
+    public AbstractPatchCandidate(CompilationUnit compilationUnit, String fixedFilePath) {
         this.compilationUnit = compilationUnit;
         this.fixedFilePath = fixedFilePath;
     }
