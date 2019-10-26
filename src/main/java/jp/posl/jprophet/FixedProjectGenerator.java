@@ -13,9 +13,10 @@ import com.github.javaparser.printer.*;
 public class FixedProjectGenerator {
     public Project exec(RepairConfiguration config, RepairCandidate repairCandidate) {
         final String originalProjectPath = config.getTargetProject().getProjectPath();
-        final String fixedProjectPath       = config.getFixedProjectDirPath() + FilenameUtils.getBaseName(originalProjectPath);
+        final String fixedProjectPath    = config.getFixedProjectDirPath() + FilenameUtils.getBaseName(originalProjectPath);
         final File   originalProjectDir  = new File(originalProjectPath);
-        final File   fixedProjectDir           = new File(fixedProjectPath);
+        final File   fixedProjectDir     = new File(fixedProjectPath);
+
         try {
             FileUtils.copyDirectory(originalProjectDir, fixedProjectDir);
         } catch (IOException e) {
@@ -24,8 +25,21 @@ public class FixedProjectGenerator {
             System.exit(-1);
         }
 
-        final String fixedFilePath = repairCandidate.getFixedFilePath();
-        final File fixedFile = new File(fixedProjectDir + fixedFilePath.replace(originalProjectPath, ""));
+        this.generateFixedFile(repairCandidate, fixedProjectPath, originalProjectPath);
+
+        final Project fixedProject = new Project(fixedProjectPath);
+        return fixedProject;
+    }
+
+    /**
+     * 修正パッチ候補が適用されたファイルを生成する 
+     * @param repairCandidate 修正パッチ候補
+     * @param fixedProjectPath 生成先のプロジェクトのパス
+     * @param originalProjectPath 生成元のプロジェクトのパス
+     */
+    private void generateFixedFile(RepairCandidate repairCandidate, String fixedProjectPath, String originalProjectPath){
+        final String fixedFilePath   = repairCandidate.getFixedFilePath();
+        final File   fixedFile       = new File(fixedProjectPath + fixedFilePath.replace(originalProjectPath, ""));
         final String fixedSourceCode = new PrettyPrinter(new PrettyPrinterConfiguration()).print(repairCandidate.getCompilationUnit());
 
         try {
@@ -35,8 +49,6 @@ public class FixedProjectGenerator {
             e.printStackTrace();
             System.exit(-1);
         }
-
-        final Project fixedProject = new Project(fixedProjectPath);
-        return fixedProject;
     }
 }
+
