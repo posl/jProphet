@@ -76,16 +76,6 @@ public class RepairUnit {
     }
 
     /**
-     * 修正対象のステートメントのソースファイル全体における行番号を返す 
-     * @return 修正対象のステートメントのソースファイル全体における行番号
-     */
-    public int getLineNumber(){
-        // TODO ASTから行番号を返す．未実装
-        TokenRange range = this.targetNode.getTokenRange().get();
-        return 0;
-    }
-
-    /**
      * ソースファイル全体のASTノードをレベル順にソートした場合の修正対象ステートメントのASTのインデックスを返す
      * @return ソースファイル全体のASTノードをレベル順にソートした場合の修正対象ステートメントのASTのインデックス 
      */

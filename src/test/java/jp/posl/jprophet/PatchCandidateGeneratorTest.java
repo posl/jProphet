@@ -1,22 +1,12 @@
 package jp.posl.jprophet;
 
-import org.junit.Before;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-
-import jp.posl.jprophet.operation.*;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

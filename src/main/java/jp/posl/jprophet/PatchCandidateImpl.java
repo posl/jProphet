@@ -10,12 +10,16 @@ public class PatchCandidateImpl implements PatchCandidate {
         this.fixedFilePath = fixedFilePath;
     }
 
-    public String getFixedFilePath(){
+    public String getFilePath(){
         return this.fixedFilePath;
     }
 
     public CompilationUnit getCompilationUnit(){
         return this.compilationUnit;
+    }
+
+    public int getLineNumber() {
+        return 0;
     }
 
     public String toString(){

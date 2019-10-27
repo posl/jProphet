@@ -8,12 +8,16 @@ public class PatchCandidateWithAbstHole implements PatchCandidate {
         this.patchCandidate = new PatchCandidateImpl(repairUnit, fixedFilePath);
     }
 
-    public String getFixedFilePath(){
-        return this.patchCandidate.getFixedFilePath();
+    public String getFilePath(){
+        return this.patchCandidate.getFilePath();
     }
 
     public CompilationUnit getCompilationUnit(){
         return this.patchCandidate.getCompilationUnit();
+    }
+
+    public int getLineNumber() {
+        return this.patchCandidate.getLineNumber();
     }
 
     public String toString(){

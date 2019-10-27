@@ -44,7 +44,7 @@ public class FixedProjectGenerator {
      * @param originalProjectPath 生成元のプロジェクトのパス
      */
     private void generateFixedFile(PatchCandidate patchCandidate, String fixedProjectPath, String originalProjectPath){
-        final String fixedFilePath   = patchCandidate.getFixedFilePath();
+        final String fixedFilePath   = patchCandidate.getFilePath();
         final File   fixedFile       = new File(fixedProjectPath + fixedFilePath.replace(originalProjectPath, ""));
         final String fixedSourceCode = new PrettyPrinter(new PrettyPrinterConfiguration()).print(patchCandidate.getCompilationUnit());
 
