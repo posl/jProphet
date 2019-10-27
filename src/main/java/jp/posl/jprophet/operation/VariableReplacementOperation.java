@@ -161,7 +161,7 @@ public class VariableReplacementOperation implements AstOperation {
                 if(originalAssignedValueName.equals(varName)){
                     continue;
                 }
-                RepairUnit newCandidate = RepairUnit.copy(this.repairUnit);
+                RepairUnit newCandidate = RepairUnit.deepCopy(this.repairUnit);
                 ((AssignExpr) newCandidate.getTargetNode()).setValue(constructExpr.apply(varName));
                 candidates.add(newCandidate);
             }
@@ -187,7 +187,7 @@ public class VariableReplacementOperation implements AstOperation {
                     if(originalArgValue.equals(varName)){
                         continue;
                     }
-                    RepairUnit newCandidate = RepairUnit.copy(this.repairUnit);
+                    RepairUnit newCandidate = RepairUnit.deepCopy(this.repairUnit);
                     MethodCallExpr methodCallExpr = (MethodCallExpr)newCandidate.getTargetNode();
                     methodCallExpr.setArgument(i, constructExpr.apply(varName));
                     candidates.add(newCandidate);

@@ -28,11 +28,12 @@ public class RepairUnit {
 
     /**
      * RepairUnitインスタンスのディープコピーを作成する
+     * （JavaParserのNodeクラスの提供するcloneメソッドが親ノードの参照をコピーしないためこのメソッドを作成した）
      *   
      * @param repairUnit コピー元のRepairUnitインスタンス
      * @return コピーされたRepairUnitインスタンス
      */
-    public static RepairUnit copy(RepairUnit repairUnit){
+    public static RepairUnit deepCopy(RepairUnit repairUnit){
         int targetNodeIndex = repairUnit.getTargetNodeIndex();
         CompilationUnit cu = repairUnit.getCompilationUnit();
         CompilationUnit newCu = cu.clone();

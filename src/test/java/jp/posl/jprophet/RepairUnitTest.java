@@ -33,7 +33,7 @@ public class RepairUnitTest {
     @Test public void testForCopiedTargetIndex() {
         int expectedIndex = 2;
         RepairUnit repairUnit = this.repairUnits.get(expectedIndex); 
-        RepairUnit copiedRepairUnit = RepairUnit.copy(repairUnit);
+        RepairUnit copiedRepairUnit = RepairUnit.deepCopy(repairUnit);
 
         assertThat(copiedRepairUnit.getTargetNodeIndex()).isEqualTo(expectedIndex);
     }   
@@ -43,7 +43,7 @@ public class RepairUnitTest {
      */
     @Test public void testForCopiedRepairUnit(){
         RepairUnit repairUnit = this.repairUnits.get(0); 
-        RepairUnit copiedRepairUnit = RepairUnit.copy(repairUnit);
+        RepairUnit copiedRepairUnit = RepairUnit.deepCopy(repairUnit);
 
         assertThat(repairUnit).isNotSameAs(copiedRepairUnit);
     }
@@ -53,7 +53,7 @@ public class RepairUnitTest {
      */
     @Test public void testForCopiedCompilationUnit() {
         RepairUnit repairUnit = this.repairUnits.get(0); 
-        RepairUnit copiedRepairUnit = RepairUnit.copy(repairUnit);
+        RepairUnit copiedRepairUnit = RepairUnit.deepCopy(repairUnit);
 
         Node nodeInCompilationUnit = repairUnit.getCompilationUnit().getChildNodes().get(0);
         Node copiedNodeInCompilationUnit = copiedRepairUnit.getCompilationUnit().getChildNodes().get(0);
@@ -69,7 +69,7 @@ public class RepairUnitTest {
      * compilationUnitの子ノードを参照しているかテスト 
      */
     @Test public void testForCopiedTargetNode() {
-        RepairUnit copiedRepairUnit = RepairUnit.copy(this.repairUnits.get(2));
+        RepairUnit copiedRepairUnit = RepairUnit.deepCopy(this.repairUnits.get(2));
 
         Node copiedTargetNode = copiedRepairUnit.getTargetNode();
         Node copiedTargetNodeFromCu = AstGenerator.findByLevelOrderIndex(copiedRepairUnit.getCompilationUnit(), 2).orElseThrow();
