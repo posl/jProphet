@@ -7,5 +7,4 @@ public interface PatchCandidate {
     public String getFixedFilePath();
     public CompilationUnit getCompilationUnit();
     public String toString();
-
 }

@@ -29,7 +29,7 @@ public class PatchCandidateGenerator{
                 for(RepairUnit repairUnit : repairUnits){
                     List<RepairUnit> appliedUnits = this.applyTemplate(repairUnit);
                     for(RepairUnit appliedUnit : appliedUnits){
-                        candidates.add(new AbstractPatchCandidate(appliedUnit.getCompilationUnit(), filePath));
+                        candidates.add(new PatchCandidateWithAbstHole(appliedUnit, filePath));
                     }
                 }
             } catch (IOException e) {

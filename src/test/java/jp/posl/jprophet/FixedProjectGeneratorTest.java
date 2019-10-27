@@ -17,6 +17,7 @@ import java.util.List;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 
 import org.apache.commons.io.FileUtils;
@@ -59,8 +60,9 @@ public class FixedProjectGeneratorTest{
             fail(e.getMessage());
             return;
         }
-        ((ClassOrInterfaceDeclaration)compilationUnit.findRootNode().getChildNodes().get(1)).setModifier(Modifier.STATIC, true);
-        PatchCandidate patchCandidate = new ConcretePatchCandidate(compilationUnit, this.targetFilePath);
+        Node targetNode = compilationUnit.findRootNode().getChildNodes().get(1);
+        ((ClassOrInterfaceDeclaration)targetNode).setModifier(Modifier.STATIC, true);
+        PatchCandidate patchCandidate = new PatchCandidateImpl(new RepairUnit(targetNode, 1, compilationUnit), this.targetFilePath);
         this.fixedProjectGenerator.exec(config, patchCandidate);
        
     }
