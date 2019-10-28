@@ -8,10 +8,27 @@ public class RepairConfiguration {
     private String fixedProjectDirPath;
     private Project targetProject;
 
+    /**
+     * ビルド先パス，修正済みプロジェクト生成先パス，対象プロジェクトを元に生成する
+     * @param buildDirPath
+     * @param fixedProjectDirPath
+     * @param targetProject
+     */
     public RepairConfiguration(String buildDirPath, String fixedProjectDirPath, Project targetProject) {
         this.buildDirPath = buildDirPath;
         this.fixedProjectDirPath = fixedProjectDirPath;
         this.targetProject = targetProject;
+    }
+
+    /**
+     * 既存のconfigと新しいProjectから生成する
+     * @param config
+     * @param newTargetProject
+     */
+    public RepairConfiguration(RepairConfiguration config, Project newTargetProject) {
+        this.buildDirPath = config.getBuildPath();
+        this.fixedProjectDirPath = config.getFixedProjectDirPath();
+        this.targetProject = newTargetProject;
     }
 
     /**

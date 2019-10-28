@@ -39,15 +39,15 @@ public class TestExecutor {
     /**
      * 対象のプロジェクトのテストを実行し、全て通るかどうかを判定
      * 
-     * @param projectConfiguration 対象プロジェクト
+     * @param config 対象プロジェクトの設定
      * @return 全てのテスト実行が通ったかどうか
      */
 
-    public boolean run(Project fixedProject, RepairConfiguration config)  {
+    public boolean run(RepairConfiguration config)  {
         try {
             builder.build(config);
             getClassLoader(config.getBuildPath());
-            testClasses = loadTestClass(fixedProject);
+            testClasses = loadTestClass(config.getTargetProject());
             return runAllTestClass(testClasses);
         }
         catch (MalformedURLException | ClassNotFoundException e) {

@@ -63,7 +63,7 @@ public class JProphetMain {
             List<RepairCandidate> repairCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
             for(RepairCandidate repairCandidate: repairCandidates) {
                 Project fixedProject = fixedProjectGenerator.exec(config, repairCandidate);
-                if(testExecutor.run(fixedProject, config)) {
+                if(testExecutor.run(new RepairConfiguration(config, fixedProject))) {
                     return;
                 }
             }

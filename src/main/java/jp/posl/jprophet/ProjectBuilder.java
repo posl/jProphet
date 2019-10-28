@@ -25,7 +25,7 @@ public class ProjectBuilder {
     /**
      * プロジェクトのソースコードとテストクラスをビルド
      * 
-     * @param projectConfiguration 対象プロジェクト
+     * @param config 対象プロジェクトの設定
      * @return ビルドが成功すれば true，失敗すれば false
      */
     public boolean build(RepairConfiguration config) {
