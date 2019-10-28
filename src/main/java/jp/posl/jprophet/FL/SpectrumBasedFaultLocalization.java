@@ -34,23 +34,24 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
     }
     /**
      * テスト対象の全てのソースファイルの行ごとの疑惑値を算出する
-     * @return List[ファイルのFQDN, 行, 疑惑値]
+     * @return SuspiciousnessList 
      */
-    public List<Suspiciousness> exec() {
-        List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
+    public SuspiciousnessList exec() {
+        List<Suspiciousness> suspiciousnesses = new ArrayList<Suspiciousness>();;
         TestResults testResults;
         CoverageCollector coverageCollector = new CoverageCollector(buildPath);
-        try{
+
+        try {
             testResults = coverageCollector.exec(sourceClassFilePaths, testClassFilePaths);
             SuspiciousnessCollector suspiciousnessCollector = new SuspiciousnessCollector(testResults, coefficient);
             suspiciousnessCollector.exec();
-            suspiciousnessList = suspiciousnessCollector.getSuspiciousnessList();
-        }catch (Exception e){
+            suspiciousnesses = suspiciousnessCollector.getSuspiciousnesses();
+        } catch (Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
             System.exit(-1);
         }
-        return suspiciousnessList;
+        return new SuspiciousnessList(suspiciousnesses);
     }
 
     /**

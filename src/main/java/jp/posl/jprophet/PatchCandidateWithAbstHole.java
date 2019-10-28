@@ -1,5 +1,7 @@
 package jp.posl.jprophet;
 
+import java.util.Optional;
+
 import com.github.javaparser.ast.CompilationUnit;
 
 public class PatchCandidateWithAbstHole implements PatchCandidate {
@@ -16,7 +18,7 @@ public class PatchCandidateWithAbstHole implements PatchCandidate {
         return this.patchCandidate.getCompilationUnit();
     }
 
-    public int getLineNumber() {
+    public Optional<Integer> getLineNumber() {
         return this.patchCandidate.getLineNumber();
     }
 

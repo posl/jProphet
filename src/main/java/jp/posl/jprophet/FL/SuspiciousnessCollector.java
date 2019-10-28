@@ -2,6 +2,7 @@ package jp.posl.jprophet.FL;
 
 import java.util.List;
 import java.util.ArrayList;
+
 import jp.posl.jprophet.FL.strategy.Coefficient;
 import jp.posl.jprophet.FL.coverage.TestResults;
 
@@ -10,7 +11,7 @@ import jp.posl.jprophet.FL.coverage.TestResults;
  */
 public class SuspiciousnessCollector {
 
-    private List<Suspiciousness> suspiciousnessList;
+    private List<Suspiciousness> suspiciousnesses;
     final private int fileNum;
     final private int numberOfSuccessedTests;
     final private int numberOfFailedTests;
@@ -23,12 +24,11 @@ public class SuspiciousnessCollector {
      */
     public SuspiciousnessCollector(TestResults testResults, Coefficient coefficient){
         this.fileNum = testResults.getTestResult(0).getCoverages().size();
-        this.suspiciousnessList = new ArrayList<Suspiciousness>();
+        this.suspiciousnesses = new ArrayList<Suspiciousness>();
         this.numberOfSuccessedTests = testResults.getSuccessedTestResults().size();
         this.numberOfFailedTests = testResults.getFailedTestResults().size();
         this.testResults = testResults;
         this.coefficient = coefficient;
-
     }
 
     /**
@@ -46,13 +46,13 @@ public class SuspiciousnessCollector {
             for (int k = 1; k <= lineLength; k++){
                 StatementStatus statementStatus = new StatementStatus(testResults, k, i);
                 Suspiciousness suspiciousness = new Suspiciousness(testName, k, coefficient.calculate(statementStatus, numberOfSuccessedTests, numberOfFailedTests));
-                this.suspiciousnessList.add(suspiciousness);
+                this.suspiciousnesses.add(suspiciousness);
             }
         }
     }
 
-    public List<Suspiciousness> getSuspiciousnessList(){
-        return this.suspiciousnessList;
+    public List<Suspiciousness> getSuspiciousnesses(){
+        return this.suspiciousnesses;
     }
 
 }

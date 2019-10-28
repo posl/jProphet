@@ -14,6 +14,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.io.File;
 import java.io.IOException;
@@ -63,20 +64,21 @@ public class SuspiciousnessCollectorTest{
             e.printStackTrace();
         }
 
-        SuspiciousnessCollector suspiciousnessCalculator = new SuspiciousnessCollector(testResults, coefficient);
-        suspiciousnessCalculator.exec();
+        SuspiciousnessCollector suspiciousnessCollector = new SuspiciousnessCollector(testResults, coefficient);
+        suspiciousnessCollector.exec();
+        List<Suspiciousness> suspiciousnesses = suspiciousnessCollector.getSuspiciousnesses();
 
         //Ifstatementの3行目の疑惑値 (Jaccard)
-        List<Suspiciousness> ifline3 = suspiciousnessCalculator.getSuspiciousnessList().stream()
-            .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLine() == 3)
+        List<Suspiciousness> ifline3 = suspiciousnesses.stream()
+            .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLineNumber() == 3)
             .collect(Collectors.toList());
         assertThat(ifline3.size()).isEqualTo(1);
         double sus3 = 0.2; //1/(1+0+4)
         assertThat(ifline3.get(0).getValue()).isEqualTo(sus3);
 
         //Ifstatementの6行目の疑惑値 (Jaccard)
-        List<Suspiciousness> ifline6 = suspiciousnessCalculator.getSuspiciousnessList().stream()
-            .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLine() == 6)
+        List<Suspiciousness> ifline6 = suspiciousnesses.stream()
+            .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLineNumber() == 6)
             .collect(Collectors.toList());
         assertThat(ifline6.size()).isEqualTo(1);
         double sus6 = 0; //0/(0+1+1)

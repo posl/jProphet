@@ -1,5 +1,6 @@
 package jp.posl.jprophet;
 
+import java.util.Optional;
 
 import com.github.javaparser.ast.CompilationUnit;
 
@@ -20,7 +21,7 @@ public interface PatchCandidate {
      * 修正対象のステートメントのソースファイル全体における行番号を返す 
      * @return 修正対象のステートメントのソースファイル全体における行番号
      */
-    public int getLineNumber();
+    public Optional<Integer> getLineNumber();
 
     /**
      * 修正されたAST部分のソースコードを返す 

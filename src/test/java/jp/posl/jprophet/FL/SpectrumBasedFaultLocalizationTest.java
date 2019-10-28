@@ -9,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,12 +26,11 @@ public class SpectrumBasedFaultLocalizationTest{
      * FaultLocalizationが動作しているかどうかのテスト
      */
     @Test public void testForSourceFilePaths(){
-        List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
         SpectrumBasedFaultLocalization faultLocalization = new SpectrumBasedFaultLocalization(config, coefficient);
-        suspiciousnessList = faultLocalization.exec();
+        SuspiciousnessList suspiciousnesses = faultLocalization.exec();
 
         //疑惑値のリストの中にテスト対象のファイルのFQDNが存在するかチェック
-        List<String> pathList = suspiciousnessList.stream()
+        List<String> pathList = suspiciousnesses.stream()
             .map(s -> s.getPath())
             .distinct()
             .collect(Collectors.toList());
@@ -41,17 +39,17 @@ public class SpectrumBasedFaultLocalizationTest{
         assertThat(pathList).contains("testFLProject.Forstatement");
 
         //それぞれのテスト対象ファイルの行数が正しいかチェック
-        List<Integer> iflineList = suspiciousnessList.stream()
+        List<Integer> iflineList = suspiciousnesses.stream()
             .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()))
-            .map(s -> s.getLine())
+            .map(s -> s.getLineNumber())
             .collect(Collectors.toList());
-        List<Integer> applineList = suspiciousnessList.stream()
+        List<Integer> applineList = suspiciousnesses.stream()
             .filter(s -> "testFLProject.App".equals(s.getPath()))
-            .map(s -> s.getLine())
+            .map(s -> s.getLineNumber())
             .collect(Collectors.toList());
-        List<Integer> forlineList = suspiciousnessList.stream()
+        List<Integer> forlineList = suspiciousnesses.stream()
             .filter(s -> "testFLProject.Forstatement".equals(s.getPath()))
-            .map(s -> s.getLine())
+            .map(s -> s.getLineNumber())
             .collect(Collectors.toList());
 
         assertThat(iflineList.size()).isEqualTo(14);
@@ -59,16 +57,16 @@ public class SpectrumBasedFaultLocalizationTest{
         assertThat(forlineList.size()).isEqualTo(9);
 
         //Ifstatementの12行目の疑惑値 (Jaccard)
-        List<Suspiciousness> ifline12 = suspiciousnessList.stream()
-            .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLine() == 12)
+        List<Suspiciousness> ifline12 = suspiciousnesses.stream()
+            .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLineNumber() == 12)
             .collect(Collectors.toList());
         assertThat(ifline12.size()).isEqualTo(1);
         double sus12 = 1; //1/(1+0+0)
         assertThat(ifline12.get(0).getValue()).isEqualTo(sus12);
 
         //Ifstatementの9行目の疑惑値 (Jaccard)
-        List<Suspiciousness> ifline9 = suspiciousnessList.stream()
-            .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLine() == 9)
+        List<Suspiciousness> ifline9 = suspiciousnesses.stream()
+            .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLineNumber() == 9)
             .collect(Collectors.toList());
         assertThat(ifline9.size()).isEqualTo(1);
         double sus9 = (double)1/(double)3; // 1/(1+2+0)
