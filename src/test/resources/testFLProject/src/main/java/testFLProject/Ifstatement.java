@@ -13,6 +13,5 @@ public class Ifstatement {
         }else{
             return 0;
         }
-
     }
 }
