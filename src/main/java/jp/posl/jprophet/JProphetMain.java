@@ -3,14 +3,12 @@ package jp.posl.jprophet;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
 import jp.posl.jprophet.FL.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.FL.FaultLocalization;
-import jp.posl.jprophet.FL.Suspiciousness;
 import jp.posl.jprophet.FL.SuspiciousnessList;
 import jp.posl.jprophet.FL.strategy.*;
 
