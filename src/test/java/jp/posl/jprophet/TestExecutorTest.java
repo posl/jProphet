@@ -39,7 +39,7 @@ public class TestExecutorTest {
     @Test
     public void testForExecute() {
 
-        boolean isSuccess01 = this.testExecutor.run(correctProject, correctConfig);
+        boolean isSuccess01 = this.testExecutor.run(correctConfig);
         assertThat(isSuccess01).isTrue();
         try {
             FileUtils.deleteDirectory(this.buildDir);
@@ -48,7 +48,7 @@ public class TestExecutorTest {
             e.printStackTrace();
         }
 
-        boolean isSuccess02 = this.testExecutor.run(errorProject, errorConfig);
+        boolean isSuccess02 = this.testExecutor.run(errorConfig);
         assertThat(isSuccess02).isFalse();
         try {
             FileUtils.deleteDirectory(this.buildDir);

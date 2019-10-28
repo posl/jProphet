@@ -19,7 +19,6 @@ public class Project{
     /**
      * graldeプロジェクトからソースファイルとテストファイルを収集 
      * @param projectPath Gradleプロジェクトのルートディレクトリのパス
-     * @param buildPath プロジェクトのビルド先のパス
      */
     public Project(String projectPath) {
         this.projectPath = projectPath;

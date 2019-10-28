@@ -24,7 +24,8 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
 
     /**
      * ソースファイルとテストファイルをビルドして,ビルドされたクラスのFQDNを取得
-     * @param project
+     * @param config
+     * @param coefficient
      */
     public SpectrumBasedFaultLocalization(RepairConfiguration config, Coefficient coefficient) {
         this.projectBuilder.build(config);
