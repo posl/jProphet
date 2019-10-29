@@ -5,6 +5,7 @@ import java.util.List;
 
 import jp.posl.jprophet.FL.Suspiciousness;
 import jp.posl.jprophet.ProjectConfiguration;
+import jp.posl.jprophet.FL.specification_strategy.SpecificationProcess;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -17,10 +18,12 @@ import java.util.stream.Collectors;
 public class BugSpecification implements FaultLocalization{
 
     private List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
+    final private List<SpecificationProcess> specificationProcessList;
     final private ProjectConfiguration config;
 
-    public BugSpecification(ProjectConfiguration config){
+    public BugSpecification(ProjectConfiguration config, List<SpecificationProcess> specificationProcessList){
         this.config = config;
+        this.specificationProcessList = specificationProcessList;
         init();
     }
 
@@ -28,6 +31,9 @@ public class BugSpecification implements FaultLocalization{
      * suspiciousnessListを返す関数
      */
     public List<Suspiciousness> exec(){
+        for (SpecificationProcess specificationProcess : specificationProcessList){
+            this.suspiciousnessList = specificationProcess.calculate(this.suspiciousnessList);
+        }
         return this.suspiciousnessList;
     }
 
