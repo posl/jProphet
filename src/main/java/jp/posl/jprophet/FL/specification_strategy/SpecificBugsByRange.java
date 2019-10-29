@@ -5,6 +5,9 @@ import java.util.List;
 import jp.posl.jprophet.FL.Suspiciousness;
 import java.util.stream.Collectors;
 
+/**
+ * ある範囲の疑惑値をまとめて変更する
+ */
 public class SpecificBugsByRange implements SpecificationProcess{
 
     final private String fqn;
@@ -13,6 +16,13 @@ public class SpecificBugsByRange implements SpecificationProcess{
     final private double value;
 
 
+    /**
+     * ある範囲の疑惑値をまとめて変更する
+     * @param fqn 変更したいファイルのfqn
+     * @param startLine 変更したい範囲の始めの行番号
+     * @param finishLine 変更したい範囲の終わりの行番号
+     * @param value 変更後の疑惑値
+     */
     public SpecificBugsByRange(String fqn, int startLine, int finishLine, double value){
         this.fqn = fqn;
         this.startLine = startLine;
@@ -20,6 +30,9 @@ public class SpecificBugsByRange implements SpecificationProcess{
         this.value = value;
     }
 
+    /**
+     * 受け取った疑惑値リストを上書きして返す
+     */
     public List<Suspiciousness> calculate(List<Suspiciousness> suspiciousnessList){
         List<Suspiciousness> startSuspiciousness = suspiciousnessList.stream()
             .filter(s -> fqn.equals(s.getPath()) && s.getLine() == startLine)
