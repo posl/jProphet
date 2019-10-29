@@ -18,7 +18,10 @@ public class BugSpecificationTest{
     @Test public void testForBugSpecification(){
         BugSpecification bugSpecification = new BugSpecification(config);
         bugSpecification.exec();
-        
+        bugSpecification.specificBug("testFLProject.Ifstatement", 7, 0.5);
+        bugSpecification.specificBugsByRange("testFLProject.Ifstatement", 8, 10, 0.7);
+        bugSpecification.specificBugsWavy("testFLProject.Ifstatement", 2, 1, 3, 0.1);
+        bugSpecification.specificBugsWavy("testFLProject.Ifstatement", 16, 1, 4, 0.2);
     }
 
 
