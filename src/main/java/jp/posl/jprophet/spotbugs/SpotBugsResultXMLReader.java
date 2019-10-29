@@ -14,7 +14,7 @@ public class SpotBugsResultXMLReader {
 
 
     /**
-     * SpotBugsの出力結果ファイルから全てのバグの情報を抜き取る
+     * SpotBugsの出力結果ファイルから全てのワーニングの情報を抜き取る
      * @param filePath 対象のXMLファイル
      * @return バグ情報クラスのリスト
      */
@@ -33,7 +33,6 @@ public class SpotBugsResultXMLReader {
         final List bugs = document.selectNodes("//BugInstance");
         for (Iterator i = bugs.iterator(); i.hasNext();) {
             final Element bug = (Element) i.next();
-            
             bugList.add(readBugInstance(bug));
         }
         return bugList;
