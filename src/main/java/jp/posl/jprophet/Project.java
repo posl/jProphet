@@ -10,20 +10,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ProjectConfiguration {
+public class Project{
     private List<String> sourceFilePaths;
     private List<String> testFilePaths;
     private List<String> classPaths;
-    private String buildPath;
     private String projectPath;
 
     /**
      * graldeプロジェクトからソースファイルとテストファイルを収集 
      * @param projectPath Gradleプロジェクトのルートディレクトリのパス
-     * @param buildPath プロジェクトのビルド先のパス
      */
-    public ProjectConfiguration(String projectPath, String buildPath) {
-        this.buildPath = buildPath;
+    public Project(String projectPath) {
         this.projectPath = projectPath;
         Path srcDir;
         Path testDir;
@@ -74,14 +71,6 @@ public class ProjectConfiguration {
      */
     public List<String> getClassPaths() {
         return this.classPaths;
-    }
-
-    /**
-     * プロジェクトのビルド時のクラスファイルの出力先のパスを取得
-     * @return ビルド先のパス
-     */
-    public String getBuildPath(){
-        return this.buildPath;
     }
 
     /**

@@ -16,39 +16,44 @@ import jp.posl.jprophet.test.TestExecutor;
 
 public class JProphetMain {
     public static void main(String[] args) {
-        final String outDir = "./tmp/"; 
+        final String buildDir = "./tmp/"; 
+        final String resultDir = "./result/"; 
         String projectPath = "src/test/resources/testGradleProject01";
         if(args.length > 0){
             projectPath = args[0];
         }
-        final ProjectConfiguration     project                  = new ProjectConfiguration(projectPath, outDir);
+        final Project                  project                  = new Project(projectPath);
+        final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
         final Coefficient              coefficient              = new Jaccard();
-        final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(project, coefficient);
+        final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
         final RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
         final PlausibilityAnalyzer     plausibilityAnalyzer     = new PlausibilityAnalyzer();  
         final StagedCondGenerator      stagedCondGenerator      = new StagedCondGenerator();
         final TestExecutor             testExecutor             = new TestExecutor();
-        final ProgramGenerator         programGenerator         = new ProgramGenerator();
+        final FixedProjectGenerator    fixedProjectGenerator    = new FixedProjectGenerator();
 
         final JProphetMain jprophet = new JProphetMain();
-        jprophet.run(project, faultLocalization, repairCandidateGenerator, plausibilityAnalyzer, stagedCondGenerator, testExecutor, programGenerator);
+        jprophet.run(config, faultLocalization, repairCandidateGenerator, plausibilityAnalyzer, stagedCondGenerator, testExecutor, fixedProjectGenerator);
+
         try {
-            FileUtils.deleteDirectory(new File(outDir));
+            FileUtils.deleteDirectory(new File(buildDir));
+            FileUtils.deleteDirectory(new File(resultDir));
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private void run(ProjectConfiguration project, FaultLocalization faultLocalization,
+    private void run(RepairConfiguration config, FaultLocalization faultLocalization,
             RepairCandidateGenerator repairCandidateGenerator, PlausibilityAnalyzer plausibilityAnalyzer,
-            StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, ProgramGenerator programGenerator) {
+            StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, FixedProjectGenerator fixedProjectGenerator
+            ) {
         // フォルトローカライゼーション
         List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
         List<RepairCandidate> abstractRepairCandidates = new ArrayList<RepairCandidate>();
-        abstractRepairCandidates.addAll(repairCandidateGenerator.exec(project));
+        abstractRepairCandidates.addAll(repairCandidateGenerator.exec(config.getTargetProject()));
         
         // 学習モデルとフォルトローカライゼーションのスコアによってソート
         List<RepairCandidate> sortedAbstractRepairCandidate = plausibilityAnalyzer.sortRepairCandidates(abstractRepairCandidates, suspiciousenesses);
@@ -57,8 +62,8 @@ public class JProphetMain {
         for(RepairCandidate abstractRepairCandidate: sortedAbstractRepairCandidate) {
             List<RepairCandidate> repairCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
             for(RepairCandidate repairCandidate: repairCandidates) {
-                ProjectConfiguration modifiedProject = programGenerator.applyPatch(project, repairCandidate);
-                if(testExecutor.run(modifiedProject)) {
+                Project fixedProject = fixedProjectGenerator.exec(config, repairCandidate);
+                if(testExecutor.run(new RepairConfiguration(config, fixedProject))) {
                     return;
                 }
             }

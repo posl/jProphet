@@ -25,12 +25,12 @@ public class ProjectBuilder {
     /**
      * プロジェクトのソースコードとテストクラスをビルド
      * 
-     * @param projectConfiguration 対象プロジェクト
+     * @param config 対象プロジェクトの設定
      * @return ビルドが成功すれば true，失敗すれば false
      */
-    public boolean build(ProjectConfiguration projectConfiguration) {
-
-        List<String> filePaths = Stream.concat(projectConfiguration.getSourceFilePaths().stream(), projectConfiguration.getTestFilePaths().stream()).collect(Collectors.toList());
+    public boolean build(RepairConfiguration config) {
+        final Project project = config.getTargetProject();
+        List<String> filePaths = Stream.concat(project.getSourceFilePaths().stream(), project.getTestFilePaths().stream()).collect(Collectors.toList());
         final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         final StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 
@@ -42,12 +42,12 @@ public class ProjectBuilder {
 
         final List<String> compilationOptions = new ArrayList<>();
         compilationOptions.add("-d");
-        compilationOptions.add(projectConfiguration.getBuildPath());
+        compilationOptions.add(config.getBuildPath());
         compilationOptions.add("-encoding");
         compilationOptions.add("UTF-8");
         compilationOptions.add("-classpath");
         compilationOptions.add(String.join(CLASSPATH_SEPARATOR,
-                projectConfiguration.getClassPaths()));
+                project.getClassPaths()));
 
         final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         final CompilationTask task = compiler.getTask(null, fileManager, diagnostics, compilationOptions, null,
