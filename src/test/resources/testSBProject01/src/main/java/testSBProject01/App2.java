@@ -3,8 +3,20 @@
  */
 package testSBProject01;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 public class App2 {
     public String GetGreeting() {
+        String text = null;
+        System.out.println("text.length=" + text.length());
+
+        try {
+            InputStream in = new FileInputStream(new File("./test"));
+        } catch (IOException e) {
+        }
         return "Hello world.";
     }
 

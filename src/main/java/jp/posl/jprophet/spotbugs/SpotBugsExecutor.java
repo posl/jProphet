@@ -1,4 +1,4 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.spotbugs;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +12,7 @@ import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.TextUICommandLine;
 import edu.umd.cs.findbugs.filter.FilterException;
+import jp.posl.jprophet.ProjectConfiguration;
 
 //import com.github.spotbugs.*;
 

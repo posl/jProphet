@@ -1,4 +1,4 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.spotbugs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -6,6 +6,8 @@ import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import jp.posl.jprophet.ProjectConfiguration;
 
 public class SpotBugsExecutorTest {
 
