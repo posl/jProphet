@@ -1,7 +1,8 @@
 package jp.posl.jprophet.FL;
 
 import jp.posl.jprophet.RepairConfiguration;
-import jp.posl.jprophet.Project;
+import jp.posl.jprophet.project.GradleProject;
+import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.FL.strategy.Coefficient;
 import jp.posl.jprophet.FL.strategy.Jaccard;
@@ -32,7 +33,7 @@ public class SuspiciousnessCollectorTest{
 
     @Before public void setup(){
         this.projectPath = "src/test/resources/testFLProject";
-        this.config = new RepairConfiguration("./SCtmp/", null, new Project(this.projectPath));
+        this.config = new RepairConfiguration("./SCtmp/", null, new GradleProject(this.projectPath));
         this.SourceClassFilePaths.add("testFLProject.Forstatement");
         this.SourceClassFilePaths.add("testFLProject.Ifstatement");
         this.SourceClassFilePaths.add("testFLProject.App");
@@ -56,7 +57,6 @@ public class SuspiciousnessCollectorTest{
         CoverageCollector coverageCollector = new CoverageCollector("SCtmp");
 
         try {
-            //testResults = coverageCollector.exec(sourceClass, testClass);
             testResults = coverageCollector.exec(SourceClassFilePaths, TestClassFilePaths);
         } catch (Exception e){
             System.err.println(e.getMessage());

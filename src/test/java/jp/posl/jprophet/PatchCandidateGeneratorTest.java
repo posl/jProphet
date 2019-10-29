@@ -1,6 +1,11 @@
 package jp.posl.jprophet;
 
 import org.junit.Test;
+
+import jp.posl.jprophet.project.FileLocator;
+import jp.posl.jprophet.project.GradleProject;
+import jp.posl.jprophet.project.Project;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -22,9 +27,11 @@ public class PatchCandidateGeneratorTest {
     @Test public void testForExec(){
         // 一つのファイルを持ったプロジェクトのスタブを生成
         String filePath = "src/test/resources/test01.java";
-        List<String> filePathsForTest = new ArrayList<String>(Arrays.asList(filePath));
-        Project stubProject = mock(Project.class);
-        when(stubProject.getSourceFilePaths()).thenReturn(filePathsForTest);
+        String fileFqn = "test01";
+        FileLocator fileLocator = new FileLocator(filePath, fileFqn);
+        List<FileLocator> fileLocators = new ArrayList<FileLocator>(Arrays.asList(fileLocator));
+        Project stubProject = mock(GradleProject.class);
+        when(stubProject.getSrcFileLocators()).thenReturn(fileLocators);
 
         List<PatchCandidate> candidates = this.patchCandidateGenerator.exec(stubProject);
 

@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import jp.posl.jprophet.operation.*;
+import jp.posl.jprophet.project.FileLocator;
+import jp.posl.jprophet.project.Project;
 
 
 public class PatchCandidateGenerator{
@@ -19,17 +21,17 @@ public class PatchCandidateGenerator{
      * @return 条件式が抽象化された修正パッチ候補のリスト
      */
     public List<PatchCandidate> exec(Project project){
-        List<String> filePaths = project.getSourceFilePaths();                
+        List<FileLocator> fileLocators = project.getSrcFileLocators();                
         List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
-        for(String filePath : filePaths){
+        for(FileLocator fileLocator : fileLocators){
             try {
-                List<String> lines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
+                List<String> lines = Files.readAllLines(Paths.get(fileLocator.getPath()), StandardCharsets.UTF_8);
                 String souceCode = String.join("\n", lines);
                 List<RepairUnit> repairUnits =  new AstGenerator().getAllRepairUnit(souceCode);
                 for(RepairUnit repairUnit : repairUnits){
                     List<RepairUnit> appliedUnits = this.applyTemplate(repairUnit);
                     for(RepairUnit appliedUnit : appliedUnits){
-                        candidates.add(new PatchCandidateWithAbstHole(appliedUnit, filePath));
+                        candidates.add(new PatchCandidateWithAbstHole(appliedUnit, fileLocator.getPath(), fileLocator.getFqn()));
                     }
                 }
             } catch (IOException e) {

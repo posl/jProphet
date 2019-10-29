@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+
+import jp.posl.jprophet.project.GradleProject;
+import jp.posl.jprophet.project.Project;
+
 import com.github.javaparser.printer.*;
 
 /**
@@ -18,7 +22,7 @@ public class FixedProjectGenerator {
      * @return 修正パッチ適用後のプロジェクト
      */
     public Project exec(RepairConfiguration config, PatchCandidate patchCandidate) {
-        final String originalProjectPath = config.getTargetProject().getProjectPath();
+        final String originalProjectPath = config.getTargetProject().getRootPath();
         final String fixedProjectPath    = config.getFixedProjectDirPath() + FilenameUtils.getBaseName(originalProjectPath);
         final File   originalProjectDir  = new File(originalProjectPath);
         final File   fixedProjectDir     = new File(fixedProjectPath);
@@ -33,7 +37,7 @@ public class FixedProjectGenerator {
 
         this.generateFixedFile(patchCandidate, fixedProjectPath, originalProjectPath);
 
-        final Project fixedProject = new Project(fixedProjectPath);
+        final Project fixedProject = new GradleProject(fixedProjectPath); //TODO: GradleProjetの生成は外部に投げる
         return fixedProject;
     }
 

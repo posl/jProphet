@@ -2,7 +2,6 @@ package jp.posl.jprophet;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -11,7 +10,8 @@ import jp.posl.jprophet.FL.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.FL.FaultLocalization;
 import jp.posl.jprophet.FL.SuspiciousnessList;
 import jp.posl.jprophet.FL.strategy.*;
-
+import jp.posl.jprophet.project.GradleProject;
+import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.test.TestExecutor;
 
 public class JProphetMain {
@@ -22,7 +22,7 @@ public class JProphetMain {
         if(args.length > 0){
             projectPath = args[0];
         }
-        final Project                  project                  = new Project(projectPath);
+        final Project                  project                  = new GradleProject(projectPath);
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
         final Coefficient              coefficient              = new Jaccard();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
@@ -53,8 +53,7 @@ public class JProphetMain {
         SuspiciousnessList suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
-        List<PatchCandidate> abstractPatchCandidates = new ArrayList<PatchCandidate>();
-        abstractPatchCandidates.addAll(patchCandidateGenerator.exec(config.getTargetProject()));
+        List<PatchCandidate> abstractPatchCandidates = patchCandidateGenerator.exec(config.getTargetProject());
         
         // 学習モデルとフォルトローカライゼーションのスコアによってソート
         List<PatchCandidate> sortedAbstractPatchCandidate = patchEvaluator.sortPatchCandidates(abstractPatchCandidates, suspiciousenesses);

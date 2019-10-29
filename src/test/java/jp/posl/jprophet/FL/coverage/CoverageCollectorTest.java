@@ -1,6 +1,7 @@
 package jp.posl.jprophet.FL.coverage;
 
-import jp.posl.jprophet.Project;
+import jp.posl.jprophet.project.GradleProject;
+import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
 
@@ -26,7 +27,7 @@ public class CoverageCollectorTest{
 
     @Before public void setup(){
         this.projectPath = "src/test/resources/testFLProject";
-        this.config = new RepairConfiguration("./TEtmp/", null, new Project(this.projectPath));
+        this.config = new RepairConfiguration("./TEtmp/", null, new GradleProject(this.projectPath));
         this.SourceClassFilePaths.add("testFLProject.Forstatement");
         this.SourceClassFilePaths.add("testFLProject.Ifstatement");
         this.SourceClassFilePaths.add("testFLProject.App");

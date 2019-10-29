@@ -3,6 +3,9 @@ package jp.posl.jprophet;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import jp.posl.jprophet.project.GradleProject;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.Assert.fail;
 
@@ -25,6 +28,7 @@ import org.apache.commons.io.FileUtils;
 public class FixedProjectGeneratorTest{
     private String projectPath;
     private String targetFilePath;
+    private String targetFileFqn;
     private List<String> projectFilePaths; 
     private String buildDir;
     private String resultDir;
@@ -34,6 +38,7 @@ public class FixedProjectGeneratorTest{
     @Before public void setUp(){
         this.projectPath = "src/test/resources/testGradleProject01";
         this.targetFilePath = "src/test/resources/testGradleProject01/src/main/java/testGradleProject01/App.java";
+        this.targetFileFqn = "testGradleProject01.App";
         this.projectFilePaths = new ArrayList<String>(Arrays.asList(
             "testGradleProject01/src/main/java/testGradleProject01/App.java",
             "testGradleProject01/src/main/java/testGradleProject01/App2.java",
@@ -49,7 +54,7 @@ public class FixedProjectGeneratorTest{
         ));
         this.buildDir = "./temp/";
         this.resultDir = "./result/";
-        this.config = new RepairConfiguration(this.buildDir, this.resultDir, new Project(this.projectPath));
+        this.config = new RepairConfiguration(this.buildDir, this.resultDir, new GradleProject(this.projectPath));
         this.fixedProjectGenerator = new FixedProjectGenerator();
         CompilationUnit compilationUnit;
         try {
@@ -62,7 +67,7 @@ public class FixedProjectGeneratorTest{
         }
         Node targetNode = compilationUnit.findRootNode().getChildNodes().get(1);
         ((ClassOrInterfaceDeclaration)targetNode).setModifier(Modifier.STATIC, true);
-        PatchCandidate patchCandidate = new PatchCandidateImpl(new RepairUnit(targetNode, 1, compilationUnit), this.targetFilePath);
+        PatchCandidate patchCandidate = new PatchCandidateImpl(new RepairUnit(targetNode, 1, compilationUnit), this.targetFilePath, this.targetFileFqn);
         this.fixedProjectGenerator.exec(config, patchCandidate);
        
     }

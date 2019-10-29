@@ -42,7 +42,7 @@ public class SuspiciousnessCollector {
             //TODO 1つめのメソッドのカバレッジ結果からソースファイルの行数とファイル名を取得している. 他にいい取得方法はないか
             final int lineLength = testResults.getTestResult(0).getCoverages().get(i).getLength();
             final String testName = testResults.getTestResult(0).getCoverages().get(i).getName();
-            
+
             for (int k = 1; k <= lineLength; k++){
                 StatementStatus statementStatus = new StatementStatus(testResults, k, i);
                 Suspiciousness suspiciousness = new Suspiciousness(testName, k, coefficient.calculate(statementStatus, numberOfSuccessedTests, numberOfFailedTests));

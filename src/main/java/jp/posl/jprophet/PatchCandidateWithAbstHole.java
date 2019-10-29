@@ -6,12 +6,16 @@ import com.github.javaparser.ast.CompilationUnit;
 
 public class PatchCandidateWithAbstHole implements PatchCandidate {
     private PatchCandidateImpl patchCandidate;
-    public PatchCandidateWithAbstHole(RepairUnit repairUnit, String fixedFilePath) {
-        this.patchCandidate = new PatchCandidateImpl(repairUnit, fixedFilePath);
+    public PatchCandidateWithAbstHole(RepairUnit repairUnit, String fixedFilePath, String fixedFileFQN) {
+        this.patchCandidate = new PatchCandidateImpl(repairUnit, fixedFilePath, fixedFileFQN);
     }
 
     public String getFilePath(){
         return this.patchCandidate.getFilePath();
+    }
+
+    public String getFQN(){
+        return this.patchCandidate.getFQN();
     }
 
     public CompilationUnit getCompilationUnit(){

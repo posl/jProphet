@@ -11,14 +11,20 @@ public class PatchCandidateImpl implements PatchCandidate {
     private final Node fixedNode; 
     private final CompilationUnit compilationUnit;
     private final String fixedFilePath;
-    public PatchCandidateImpl(RepairUnit repairUnit, String fixedFilePath) {
+    private final String fixedFileFQN;
+    public PatchCandidateImpl(RepairUnit repairUnit, String fixedFilePath, String fixedFileFQN) {
         this.fixedNode = repairUnit.getTargetNode();
         this.compilationUnit = repairUnit.getCompilationUnit();
         this.fixedFilePath = fixedFilePath;
+        this.fixedFileFQN = fixedFileFQN;
     }
 
     public String getFilePath(){
         return this.fixedFilePath;
+    }
+
+    public String getFQN(){
+        return this.fixedFileFQN;
     }
 
     public CompilationUnit getCompilationUnit(){
