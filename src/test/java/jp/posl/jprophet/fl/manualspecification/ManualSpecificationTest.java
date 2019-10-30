@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import jp.posl.jprophet.RepairConfiguration;
-import jp.posl.jprophet.Project;
+import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.manualspecification.strategy.*;
 
@@ -17,7 +17,7 @@ import jp.posl.jprophet.fl.manualspecification.strategy.*;
 public class ManualSpecificationTest{
     // 入力として用意するテスト用のプロジェクト
     final private String projectPath = "src/test/resources/testFLProject";
-    final private RepairConfiguration config = new RepairConfiguration("BStmp", null, new Project(this.projectPath));
+    final private RepairConfiguration config = new RepairConfiguration("BStmp", null, new GradleProject(this.projectPath));
     private List<SpecificationStrategy> specificationStrategyList = new ArrayList<SpecificationStrategy>();
 
 
@@ -34,7 +34,7 @@ public class ManualSpecificationTest{
      */
     @Test public void testForBugSpecification(){
         ManualSpecification manualSpecification = new ManualSpecification(config, this.specificationStrategyList);
-        List<Suspiciousness> suspiciousnessList = manualSpecification.exec();
+        List<Suspiciousness> suspiciousnessList = manualSpecification.exec().toList();
 
         
         assertThat(getSuspiciousness(suspiciousnessList, "testFLProject.Ifstatement", 7).getValue()).isEqualTo(0.5);
@@ -67,7 +67,7 @@ public class ManualSpecificationTest{
 
     private Suspiciousness getSuspiciousness(List<Suspiciousness> suspiciousnessList, String fqn, int line){
         List<Suspiciousness> suspiciousness = suspiciousnessList.stream()
-            .filter(s -> fqn.equals(s.getFQN()) && s.getLine() == line)
+            .filter(s -> fqn.equals(s.getFQN()) && s.getLineNumber() == line)
             .collect(Collectors.toList());
         return suspiciousness.get(0);
     }

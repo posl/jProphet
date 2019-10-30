@@ -4,6 +4,7 @@ import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.fl.Suspiciousness;
+import jp.posl.jprophet.fl.SuspiciousnessList;
 import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Jaccard;
@@ -29,7 +30,7 @@ public class SpectrumBasedFaultLocalizationTest{
      */
     @Test public void testForSourceFilePaths(){
         SpectrumBasedFaultLocalization faultLocalization = new SpectrumBasedFaultLocalization(config, coefficient);
-        SuspiciousnessList suspiciousnesses = faultLocalization.exec();
+        List<Suspiciousness> suspiciousnessList = faultLocalization.exec().toList();
 
         //疑惑値のリストの中にテスト対象のファイルのFQDNが存在するかチェック
         List<String> pathList = suspiciousnessList.stream()
@@ -60,14 +61,14 @@ public class SpectrumBasedFaultLocalizationTest{
 
         //Ifstatementの12行目の疑惑値 (Jaccard)
         List<Suspiciousness> ifline12 = suspiciousnessList.stream()
-            .filter(s -> "testFLProject.Ifstatement".equals(s.getFQN()) && s.getLine() == 12)
+            .filter(s -> "testFLProject.Ifstatement".equals(s.getFQN()) && s.getLineNumber() == 12)
             .collect(Collectors.toList());
         assertThat(ifline12.size()).isEqualTo(1);
         double sus12 = 1; //1/(1+0+0)
         assertThat(ifline12.get(0).getValue()).isEqualTo(sus12);
 
         //Ifstatementの9行目の疑惑値 (Jaccard)
-        List<Suspiciousness> ifline9 = suspiciousnesses.stream()
+        List<Suspiciousness> ifline9 = suspiciousnessList.stream()
             .filter(s -> "testFLProject.Ifstatement".equals(s.getFQN()) && s.getLineNumber() == 9)
             .collect(Collectors.toList());
         assertThat(ifline9.size()).isEqualTo(1);

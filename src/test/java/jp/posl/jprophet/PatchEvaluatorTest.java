@@ -10,8 +10,8 @@ import java.util.Optional;
 
 import org.junit.Test;
 
-import jp.posl.jprophet.FL.Suspiciousness;
-import jp.posl.jprophet.FL.SuspiciousnessList;
+import jp.posl.jprophet.fl.Suspiciousness;
+import jp.posl.jprophet.fl.SuspiciousnessList;
 
 public class PatchEvaluatorTest {
     /**

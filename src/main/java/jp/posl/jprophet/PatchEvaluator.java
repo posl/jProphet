@@ -5,8 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import jp.posl.jprophet.FL.Suspiciousness;
-import jp.posl.jprophet.FL.SuspiciousnessList;
+import jp.posl.jprophet.fl.Suspiciousness;
+import jp.posl.jprophet.fl.SuspiciousnessList;
 
 /**
  * 疑惑値などに応じてパッチを評価する

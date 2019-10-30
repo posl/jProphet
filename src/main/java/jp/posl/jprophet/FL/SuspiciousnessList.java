@@ -1,4 +1,4 @@
-package jp.posl.jprophet.FL;
+package jp.posl.jprophet.fl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class SuspiciousnessList {
      */
     public Optional<Suspiciousness> get(int lineNumber, String path){
         for(Suspiciousness suspiciousness : this.suspiciousnesses){
-            if(suspiciousness.getLineNumber() == lineNumber && suspiciousness.getPath() == path){
+            if(suspiciousness.getLineNumber() == lineNumber && suspiciousness.getFQN() == path){
                 return Optional.of(suspiciousness);
             }
         }
@@ -60,6 +60,14 @@ public class SuspiciousnessList {
      */
     public Stream<Suspiciousness> stream(){
         return this.suspiciousnesses.stream();
+    }
+
+    /**
+     * リストを取得
+     * @return リスト
+     */
+    public List<Suspiciousness> toList(){
+        return this.suspiciousnesses;
     }
 
 }
