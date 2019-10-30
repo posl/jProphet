@@ -1,4 +1,4 @@
-package jp.posl.jprophet.FL;
+package jp.posl.jprophet.FL.coverage;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +41,8 @@ public class CoverageCollector {
             this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./" + buildpath + "/") });
         } catch (MalformedURLException e){
             System.err.println(e.getMessage());
+            e.printStackTrace();
+            System.exit(-1);
         }
     }
 

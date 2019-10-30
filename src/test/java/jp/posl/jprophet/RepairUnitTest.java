@@ -4,7 +4,7 @@ import jp.posl.jprophet.AstGenerator;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 
 import com.github.javaparser.ast.Node;

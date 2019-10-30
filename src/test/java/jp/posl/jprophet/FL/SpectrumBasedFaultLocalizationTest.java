@@ -1,25 +1,34 @@
 package jp.posl.jprophet.FL;
 
-import jp.posl.jprophet.ProjectConfiguration;
-import jp.posl.jprophet.FaultLocalization;
+import jp.posl.jprophet.Project;
+import jp.posl.jprophet.RepairConfiguration;
+
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.io.File;
 
-public class FaultLocalizationTest{
+import jp.posl.jprophet.FL.SpectrumBasedFaultLocalization;
+import jp.posl.jprophet.FL.strategy.Coefficient;
+import jp.posl.jprophet.FL.strategy.Jaccard;
+
+public class SpectrumBasedFaultLocalizationTest{
     // 入力として用意するテスト用のプロジェクト
-    private String projectPath = "src/test/resources/testFLProject";
-    private ProjectConfiguration project = new ProjectConfiguration(this.projectPath, "FLtmp");
+    final private String projectPath = "src/test/resources/testFLProject";
+    final private RepairConfiguration config = new RepairConfiguration("FLtmp", null, new Project(projectPath));
+    private Coefficient coefficient = new Jaccard();
 
     /**
      * FaultLocalizationが動作しているかどうかのテスト
      */
     @Test public void testForSourceFilePaths(){
         List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
-        FaultLocalization faultLocalization = new FaultLocalization(project);
+        SpectrumBasedFaultLocalization faultLocalization = new SpectrumBasedFaultLocalization(config, coefficient);
         suspiciousnessList = faultLocalization.exec();
 
         //疑惑値のリストの中にテスト対象のファイルのFQDNが存在するかチェック
@@ -65,23 +74,13 @@ public class FaultLocalizationTest{
         double sus9 = (double)1/(double)3; // 1/(1+2+0)
         assertThat(ifline9.get(0).getValue()).isEqualTo(sus9);
 
-        deleteDirectory(new File("./FLtmp/"));
+        try {
+            FileUtils.deleteDirectory(new File("./FLtmp/"));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * ディレクトリをディレクトリの中のファイルごと再帰的に削除する 
-     * @param dir 削除対象ディレクトリ
-     */
-    private void deleteDirectory(File dir){
-        if(dir.listFiles() != null){
-            for(File file : dir.listFiles()){
-                if(file.isFile())
-                    file.delete();
-                else
-                    deleteDirectory(file);
-            }
-        }
-        dir.delete();
-    }
 
 }

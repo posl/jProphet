@@ -3,15 +3,18 @@ package jp.posl.jprophet.spotbugs;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import jp.posl.jprophet.ProjectConfiguration;
+import jp.posl.jprophet.Project;
+import jp.posl.jprophet.RepairConfiguration;
 
 public class SpotBugsExecutorTest {
 
-    private ProjectConfiguration testProject;
+    private RepairConfiguration config;
     private File outDir;                        // テストプロジェクトのクラスパス
     private File resultDir;                     // SpotBugsの実行結果を格納するパス
 
@@ -20,42 +23,26 @@ public class SpotBugsExecutorTest {
     public void setUpProject() {
         this.outDir = new File("./src/test/resources/testSBproject01/build/classes");
         this.resultDir = new File("./src/test/resources/testSBproject01/build/reports/spotbugs");
-        this.testProject = new ProjectConfiguration("src/test/resources/testSBProject01", outDir.getPath());
+        this.config = new RepairConfiguration(outDir.getPath(), null, new Project("src/test/resources/testSBProject01"));
     }
 
     @Test
     public void testForExec() {
         
-        SpotBugsExecutor executor = new SpotBugsExecutor(testProject, resultDir);
+        SpotBugsExecutor executor = new SpotBugsExecutor(config, resultDir);
         executor.exec();
 
-        /*
-        assertThat(new File("./result/App-warnings.txt").exists()).isTrue();    //ソースファイルは実行対象         assertThat(new File("./result/App-warnings.txt").exists()).isTrue();    //ソースファイルは実行対象 
-        assertThat(new File("./result/App2-warnings.txt").exists()).isTrue();
-        assertThat(new File("./result/App3-warnings.txt").exists()).isTrue(); 
-        assertThat(new File("./result/AppTest-warnings.txt").exists()).isFalse();   //テストファイルは実行対象外
-        */
-
         assertThat(new File(executor.getResultFilePath()).exists()).isTrue();
-        deleteDirectory(resultDir);
-        deleteDirectory(outDir);
+
+        try {
+			FileUtils.deleteDirectory(resultDir);
+            FileUtils.deleteDirectory(outDir);
+		} catch (IOException e) {
+            System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
 
     }
 
-    /**
-     * ディレクトリをディレクトリの中のファイルごと再帰的に削除する
-     * @param dir 削除対象ディレクトリ
-     */
-    private void deleteDirectory(File dir){
-        if(dir.listFiles() != null){
-            for(File file : dir.listFiles()){
-                if(file.isFile())
-                    file.delete();
-                else
-                    deleteDirectory(file);
-            }
-        }
-        dir.delete();
-    }
 
 }

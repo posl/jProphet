@@ -3,12 +3,11 @@ package jp.posl.jprophet;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 
@@ -44,16 +43,14 @@ public class AstGenerator {
      */
     public List<RepairUnit> getAllRepairUnit(String sourceCode){
         List<RepairUnit> repairUnits = new ArrayList<RepairUnit>();
-        for(int i = 0; ; i++){
+        for(int i = 0;/*終了条件なし*/; i++){
             CompilationUnit compilationUnit;   //RepairUnitごとに新しいインスタンスの生成
             compilationUnit = JavaParser.parse(sourceCode);
-
-            // TODO なんかここ良い書き方にしたい．やってることがただのnullチェックif分岐
-            Optional<Node> optNode = AstGenerator.findByLevelOrderIndex(compilationUnit.findRootNode(), i); 
-            if(optNode.isPresent()){
-                repairUnits.add(new RepairUnit(optNode.orElseThrow(), i, compilationUnit)); 
-            }
-            else{
+            // なくなるまで順にASTノードを取り出す
+            try {
+                Node node = AstGenerator.findByLevelOrderIndex(compilationUnit.findRootNode(), i).orElseThrow(); 
+                repairUnits.add(new RepairUnit(node, i, compilationUnit)); 
+            } catch (NoSuchElementException e) {
                 return repairUnits;
             }
         }

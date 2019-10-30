@@ -9,10 +9,9 @@ import java.util.stream.Collectors;
 
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugs2;
-import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.TextUICommandLine;
 import edu.umd.cs.findbugs.filter.FilterException;
-import jp.posl.jprophet.ProjectConfiguration;
+import jp.posl.jprophet.RepairConfiguration;
 
 //import com.github.spotbugs.*;
 
@@ -20,8 +19,9 @@ import jp.posl.jprophet.ProjectConfiguration;
 
 public class SpotBugsExecutor {
 
-    private ProjectConfiguration projectConfiguration;
+    private RepairConfiguration config;
     private File resultDir;
+    private jp.posl.jprophet.Project project;
 
 
     /**
@@ -29,9 +29,10 @@ public class SpotBugsExecutor {
      * @param projectConfiguration 対象のプロジェクト
      * @param resultDir 結果を格納するディレクトリ
      */
-    public SpotBugsExecutor(ProjectConfiguration projectConfiguration, File resultDir) {
-        this.projectConfiguration = projectConfiguration;
+    public SpotBugsExecutor(RepairConfiguration config, File resultDir) {
+        this.config = config;
         this.resultDir = resultDir;
+        this.project = config.getTargetProject();
     }
 
     /**
@@ -64,10 +65,8 @@ public class SpotBugsExecutor {
      * @return クラスファイルのリスト
      */
     private List<File> searchClassFile() {
-        List<File> classFiles = projectConfiguration.getSourceFilePaths().stream().map(path -> new File(path))
-                                                    .map(file -> file.getName()).map(name -> name.replace(".java", ".class"))
-                                                    .map(name -> projectConfiguration.getBuildPath() + "/" + name).map(path -> new File(path))
-                                                    .collect(Collectors.toList()); // もっとシンプルな方法は無いか？
+        List<File> classFiles = null;
+        //config.getTargetProject().getSourceFilePaths().stream().map(path -> new File(path)).map(file -> file.getName()).map(name -> name.replace(".java", ".class")).map(name -> projectConfiguration.getBuildPath() + "/" + name).map(path -> new File(path)).collect(Collectors.toList()); // もっとシンプルな方法は無いか？
         return classFiles;
     }
     
@@ -86,7 +85,7 @@ public class SpotBugsExecutor {
         Runtime runtime = Runtime.getRuntime();
         String[] commands = { "./gradlew", "spotbugsMain" };
         try {
-            Process process = runtime.exec(commands, null, new File(projectConfiguration.getProjectPath()));
+            Process process = runtime.exec(commands, null, new File(project.getProjectPath()));
             process.waitFor();
         } catch (IOException|InterruptedException e) {
             e.printStackTrace();

@@ -1,10 +1,10 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.FL;
 
-import jp.posl.jprophet.ProjectConfiguration;
-import jp.posl.jprophet.FL.Suspiciousness;
-import jp.posl.jprophet.FL.CoverageCollector;
-import jp.posl.jprophet.FL.TestResults;
-import jp.posl.jprophet.FL.SuspiciousnessCalculator;
+import jp.posl.jprophet.RepairConfiguration;
+import jp.posl.jprophet.FL.coverage.CoverageCollector;
+import jp.posl.jprophet.FL.coverage.TestResults;
+import jp.posl.jprophet.FL.strategy.Coefficient;
+import jp.posl.jprophet.Project;
 import jp.posl.jprophet.ProjectBuilder;
 import java.util.List;
 import java.util.ArrayList;
@@ -13,22 +13,25 @@ import java.nio.file.Path;
 /**
  * FaultLocalizationの実行
  */
-public class FaultLocalization {
+public class SpectrumBasedFaultLocalization implements FaultLocalization{
     ProjectBuilder projectBuilder = new ProjectBuilder();
     Path classDir;
     String buildPath;
     List<String> classFilePaths;
     List<String> sourceClassFilePaths = new ArrayList<String>();
     List<String> testClassFilePaths = new ArrayList<String>();
+    Coefficient coefficient;
 
     /**
      * ソースファイルとテストファイルをビルドして,ビルドされたクラスのFQDNを取得
-     * @param project
+     * @param config
+     * @param coefficient
      */
-    public FaultLocalization(ProjectConfiguration project) {
-        this.projectBuilder.build(project);
-        this.buildPath = project.getBuildPath();
-        getFQN(project);
+    public SpectrumBasedFaultLocalization(RepairConfiguration config, Coefficient coefficient) {
+        this.projectBuilder.build(config);
+        this.buildPath = config.getBuildPath();
+        this.coefficient = coefficient;
+        getFQN(config.getTargetProject());
     }
     /**
      * テスト対象の全てのソースファイルの行ごとの疑惑値を算出する
@@ -37,14 +40,15 @@ public class FaultLocalization {
     public List<Suspiciousness> exec() {
         List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
         TestResults testResults;
-        CoverageCollector collector = new CoverageCollector(buildPath);
+        CoverageCollector coverageCollector = new CoverageCollector(buildPath);
         try{
-            testResults = collector.exec(sourceClassFilePaths, testClassFilePaths);
-            SuspiciousnessCalculator suspiciousnessCalculator = new SuspiciousnessCalculator(testResults);
-            suspiciousnessCalculator.exec();
-            suspiciousnessList = suspiciousnessCalculator.getSuspiciousnessList();
+            testResults = coverageCollector.exec(sourceClassFilePaths, testClassFilePaths);
+            SuspiciousnessCollector suspiciousnessCollector = new SuspiciousnessCollector(testResults, coefficient);
+            suspiciousnessCollector.exec();
+            suspiciousnessList = suspiciousnessCollector.getSuspiciousnessList();
         }catch (Exception e){
             System.err.println(e.getMessage());
+            e.printStackTrace();
             System.exit(-1);
         }
         return suspiciousnessList;
@@ -54,11 +58,11 @@ public class FaultLocalization {
      * ファイルパスからFQNを取得する
      * @param project
      */
-    private void getFQN(ProjectConfiguration project){
-        String gradleTestPath = "/src/test/java/";
-        String gradleSourcePath = "/src/main/java/";
-        String testFolderPath = project.getProjectPath() + gradleTestPath;
-        String sourceFolderPath = project.getProjectPath() + gradleSourcePath;
+    private void getFQN(Project project){
+        final String gradleTestPath = "/src/test/java/";
+        final String gradleSourcePath = "/src/main/java/";
+        final String testFolderPath = project.getProjectPath() + gradleTestPath;
+        final String sourceFolderPath = project.getProjectPath() + gradleSourcePath;
         for (String testPath : project.getTestFilePaths()){
             testClassFilePaths.add(testPath.replace(testFolderPath, "").replace("/", ".").replace(".java", ""));
         }

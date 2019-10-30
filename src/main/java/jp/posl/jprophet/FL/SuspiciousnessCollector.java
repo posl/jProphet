@@ -2,28 +2,32 @@ package jp.posl.jprophet.FL;
 
 import java.util.List;
 import java.util.ArrayList;
+import jp.posl.jprophet.FL.strategy.Coefficient;
+import jp.posl.jprophet.FL.coverage.TestResults;
 
 /**
  * ステートメント(行)ごとの疑惑値の計算
  */
-public class SuspiciousnessCalculator {
+public class SuspiciousnessCollector {
 
     private List<Suspiciousness> suspiciousnessList;
     final private int fileNum;
     final private int numberOfSuccessedTests;
     final private int numberOfFailedTests;
     final private TestResults testResults;
+    final private Coefficient coefficient;
 
     /**
      * テスト結果(カバレッジ情報を含む)から,全てのテスト対象ファイルの各行ごとの疑惑値を計算
      * @param testResults テスト結果
      */
-    public SuspiciousnessCalculator(TestResults testResults){
+    public SuspiciousnessCollector(TestResults testResults, Coefficient coefficient){
         this.fileNum = testResults.getTestResult(0).getCoverages().size();
         this.suspiciousnessList = new ArrayList<Suspiciousness>();
         this.numberOfSuccessedTests = testResults.getSuccessedTestResults().size();
         this.numberOfFailedTests = testResults.getFailedTestResults().size();
         this.testResults = testResults;
+        this.coefficient = coefficient;
 
     }
 
@@ -32,7 +36,6 @@ public class SuspiciousnessCalculator {
      * 計算式はSuspiciousnessStrategyの中
      */
     public void exec(){
-        SuspiciousnessStrategy suspiciousnessStrategy = new SuspiciousnessStrategy(numberOfSuccessedTests, numberOfFailedTests);
 
         for (int i = 0; i < fileNum; i++){
             
@@ -42,8 +45,7 @@ public class SuspiciousnessCalculator {
             
             for (int k = 1; k <= lineLength; k++){
                 StatementStatus statementStatus = new StatementStatus(testResults, k, i);
-                suspiciousnessStrategy.setStatementStatus(statementStatus);
-                Suspiciousness suspiciousness = new Suspiciousness(testName, k, suspiciousnessStrategy.jaccard());
+                Suspiciousness suspiciousness = new Suspiciousness(testName, k, coefficient.calculate(statementStatus, numberOfSuccessedTests, numberOfFailedTests));
                 this.suspiciousnessList.add(suspiciousness);
             }
         }

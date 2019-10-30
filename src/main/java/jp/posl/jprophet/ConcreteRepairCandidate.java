@@ -1,5 +1,24 @@
 package jp.posl.jprophet;
 
-public class ConcreteRepairCandidate extends RepairCandidate {
+import com.github.javaparser.ast.CompilationUnit;
 
+public class ConcreteRepairCandidate implements RepairCandidate {
+    private CompilationUnit compilationUnit;
+    private String fixedFilePath;
+    public ConcreteRepairCandidate(CompilationUnit compilationUnit, String fixedFilePath) {
+        this.compilationUnit = compilationUnit;
+        this.fixedFilePath = fixedFilePath;
+    }
+
+    public String getFixedFilePath(){
+        return this.fixedFilePath;
+    }
+
+    public CompilationUnit getCompilationUnit(){
+        return this.compilationUnit;
+    }
+
+    public String toString(){
+        return this.compilationUnit.toString();
+    }
 }
