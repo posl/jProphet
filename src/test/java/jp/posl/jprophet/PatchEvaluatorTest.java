@@ -34,11 +34,10 @@ public class PatchEvaluatorTest {
 
         PatchEvaluator evaluator = new PatchEvaluator();
         List<PatchCandidate> sortedCandidates = evaluator.sortPatchCandidates(candidates, suspiciousenesses);
-        /*
+
         assertThat(sortedCandidates.get(0)).isEqualTo(candidate3);
         assertThat(sortedCandidates.get(1)).isEqualTo(candidate1);
         assertThat(sortedCandidates.get(2)).isEqualTo(candidate2);
-        */
     }
 }
 
