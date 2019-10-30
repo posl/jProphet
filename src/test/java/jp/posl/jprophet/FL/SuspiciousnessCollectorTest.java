@@ -68,7 +68,7 @@ public class SuspiciousnessCollectorTest{
 
         //Ifstatementの3行目の疑惑値 (Jaccard)
         List<Suspiciousness> ifline3 = suspiciousnessCalculator.getSuspiciousnessList().stream()
-            .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLine() == 3)
+            .filter(s -> "testFLProject.Ifstatement".equals(s.getFQN()) && s.getLine() == 3)
             .collect(Collectors.toList());
         assertThat(ifline3.size()).isEqualTo(1);
         double sus3 = 0.2; //1/(1+0+4)
@@ -76,7 +76,7 @@ public class SuspiciousnessCollectorTest{
 
         //Ifstatementの6行目の疑惑値 (Jaccard)
         List<Suspiciousness> ifline6 = suspiciousnessCalculator.getSuspiciousnessList().stream()
-            .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLine() == 6)
+            .filter(s -> "testFLProject.Ifstatement".equals(s.getFQN()) && s.getLine() == 6)
             .collect(Collectors.toList());
         assertThat(ifline6.size()).isEqualTo(1);
         double sus6 = 0; //0/(0+1+1)

@@ -66,7 +66,7 @@ public class BugSpecificationTest{
 
     private Suspiciousness getSuspiciousness(List<Suspiciousness> suspiciousnessList, String fqn, int line){
         List<Suspiciousness> suspiciousness = suspiciousnessList.stream()
-            .filter(s -> fqn.equals(s.getPath()) && s.getLine() == line)
+            .filter(s -> fqn.equals(s.getFQN()) && s.getLine() == line)
             .collect(Collectors.toList());
         return suspiciousness.get(0);
     }

@@ -31,7 +31,7 @@ public class SpecificBug implements SpecificationProcess{
      */
     public List<Suspiciousness> calculate(List<Suspiciousness> suspiciousnessList){
         List<Suspiciousness> suspiciousness = suspiciousnessList.stream()
-            .filter(s -> fqn.equals(s.getPath()) && s.getLine() == line)
+            .filter(s -> fqn.equals(s.getFQN()) && s.getLine() == line)
             .collect(Collectors.toList());
         
         if (suspiciousness.size() == 1){

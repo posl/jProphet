@@ -37,7 +37,7 @@ public class SpecificBugsWavy implements SpecificationProcess{
      */
     public List<Suspiciousness> calculate(List<Suspiciousness> suspiciousnessList){
         List<Suspiciousness> suspiciousness = suspiciousnessList.stream()
-            .filter(s -> fqn.equals(s.getPath()) && s.getLine() == line)
+            .filter(s -> fqn.equals(s.getFQN()) && s.getLine() == line)
             .collect(Collectors.toList());
         
         if (suspiciousness.size() == 1){
@@ -45,12 +45,12 @@ public class SpecificBugsWavy implements SpecificationProcess{
             suspiciousnessList.set(index, new Suspiciousness(fqn, line, value));
             for (int i = 1; i <= range; i++){
                 if (index + i < suspiciousnessList.size()){
-                    if (suspiciousnessList.get(index + i).getPath().equals(fqn) && value - width * i >= 0){
+                    if (suspiciousnessList.get(index + i).getFQN().equals(fqn) && value - width * i >= 0){
                         suspiciousnessList.set(index + i, new Suspiciousness(fqn, line + i, value - width * (double)i));
                     }
                 }
                 if (index - i >= 0){
-                    if (suspiciousnessList.get(index - i).getPath().equals(fqn) && value - width * i >= 0){
+                    if (suspiciousnessList.get(index - i).getFQN().equals(fqn) && value - width * i >= 0){
                         suspiciousnessList.set(index - i, new Suspiciousness(fqn, line - i, value - width * (double)i));
                     }
                 }

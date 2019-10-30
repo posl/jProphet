@@ -4,18 +4,18 @@ package jp.posl.jprophet.FL;
  * テスト対象のソースファイルのパスと,ステートメント(行)の疑惑値を格納
  */
 public class Suspiciousness {
-    final private String path;
+    final private String fqn;
     final private int line;
     final private double value;
 
-    public Suspiciousness(String path, int line, double value) {
-        this.path = path;
+    public Suspiciousness(String fqn, int line, double value) {
+        this.fqn = fqn;
         this.line = line;
         this.value = value;
     }
 
-    public String getPath() {
-        return path;
+    public String getFQN() {
+        return fqn;
     }
 
     public int getLine(){
