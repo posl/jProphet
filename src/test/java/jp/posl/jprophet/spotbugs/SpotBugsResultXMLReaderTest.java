@@ -10,8 +10,11 @@ import org.junit.Test;
 public class SpotBugsResultXMLReaderTest {
 
 
+    /**
+     * 全てのワーニングを取得できているかテスト
+     */
     @Test
-    public void testForReadBugInstance() {
+    public void testForReadAllBugInstances() {
 
         SpotBugsResultXMLReader reader = new SpotBugsResultXMLReader();
         List<BugInstance> instances = reader.readAllBugInstances("src/test/resources/SpotBugsResult/result01.xml");

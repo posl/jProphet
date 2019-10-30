@@ -16,7 +16,7 @@ public class SpotBugsResultXMLReader {
     /**
      * SpotBugsの出力結果ファイルから全てのワーニングの情報を抜き取る
      * @param filePath 対象のXMLファイル
-     * @return バグ情報クラスのリスト
+     * @return ワーニング情報クラスのリスト
      */
     public List<BugInstance> readAllBugInstances(String filePath) {
         final List<BugInstance> bugList = new ArrayList<BugInstance>();

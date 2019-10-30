@@ -3,9 +3,7 @@ package jp.posl.jprophet.spotbugs;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugs2;
@@ -15,73 +13,54 @@ import edu.umd.cs.findbugs.filter.FilterException;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
 
-//import com.github.spotbugs.*;
-
-
 
 public class SpotBugsExecutor {
 
-    private RepairConfiguration config;
-    private File resultDir;
+    private String resultPath;
+    private final String resultFileName = "result.xml";
 
 
     /**
-     * 対象のプロジェクトに対してSpotBugsを適用し、その結果をxmlファイルとして保存する
-     * @param projectConfiguration 対象のプロジェクト
-     * @param resultDir 結果を格納するディレクトリ
+     * 
+     * @param resultPath 結果を格納するディレクトリ
      */
-    public SpotBugsExecutor(RepairConfiguration config, File resultDir) {
-        this.config = config;
-        this.resultDir = resultDir;
+    public SpotBugsExecutor(String resultPath) {
+        this.resultPath = resultPath;
     }
 
+
     /**
-     * SpotBugsを適用する
+     * プロジェクトをビルドし、SpotBugsを適用する
+     * @param RepairConfiguration 対象のプロジェクトのconfig
      */
-    public void exec() {
-        
+    public void exec(RepairConfiguration config) {
         ProjectBuilder projectBuilder = new ProjectBuilder();
         projectBuilder.build(config);
-
+        File resultDir = new File(resultPath);
         if (!resultDir.exists()) {
             resultDir.mkdir();
         }
-        
         try {
-            runSpotBugs();
+            runSpotBugs(config);
         }
         catch(FilterException|IOException|InterruptedException e) {
-            //e.printStackTrace();
+            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
-
-
     }
     
 
     /**
      * クラスファイルを受け取り、それらを対象にSpotBugsを適用する
-     * @param classFile クラスファイルのリスト
+     * @param RepairConfiguration 対象のプロジェクトのconfig
      * @throws FilterException
      * @throws IOException
      * @throws InterruptedException
      */
-    private void runSpotBugs() throws FilterException, IOException, InterruptedException {
-        
-        //APIをいじって処理を書くのが難しいので、とりあえず対象プロジェクトにspotbugsのプラグインを入れておいてそれを実行する
-
-        /*
-        Runtime runtime = Runtime.getRuntime();
-        String[] commands = { "./gradlew", "spotbugsMain" };
-        try {
-            Process process = runtime.exec(commands, null, new File(project.getProjectPath()));
-            process.waitFor();
-        } catch (IOException|InterruptedException e) {
-            e.printStackTrace();
-        }*/   
-        
+    private void runSpotBugs(RepairConfiguration config) throws FilterException, IOException, InterruptedException {       
         FindBugs2 findBugs = new FindBugs2();
         TextUICommandLine commandLine = new TextUICommandLine();
-        final String outputPath = resultDir.getPath() + "/" + "result.xml";   
+        final String outputPath = resultPath + "/" + resultFileName;   
         Project SB_project = new Project();
         List<String> dirList = new ArrayList<String>();
         dirList.add(config.getBuildPath());
@@ -100,7 +79,7 @@ public class SpotBugsExecutor {
      * @return 実行結果ファイルのパス
      */
     public String getResultFilePath() {
-        return this.resultDir.getPath() + "/result.xml";
+        return this.resultPath + "/" + resultFileName;
     }
 
 }

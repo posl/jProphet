@@ -15,34 +15,34 @@ import jp.posl.jprophet.RepairConfiguration;
 public class SpotBugsExecutorTest {
 
     private RepairConfiguration config;
-    private File outDir;                        // テストプロジェクトのクラスパス
-    private File resultDir;                     // SpotBugsの実行結果を格納するパス
+    private final String outDir = "./SBtmp";             // テストプロジェクトのクラスパス
+    private final String resultDir = "./SBresult";       // SpotBugsの実行結果を格納するパス
 
 
+    /**
+     * プロジェクトの準備
+     */
     @Before
     public void setUpProject() {
-        this.outDir = new File("./SBtmp");
-        this.resultDir = new File("./SBresult");
-        this.config = new RepairConfiguration(outDir.getPath(), null, new Project("src/test/resources/testSBProject01"));
+        this.config = new RepairConfiguration(outDir, null, new Project("src/test/resources/testSBProject01"));
     }
 
+
+    /**
+     * 結果を出力できているかテスト
+     */
     @Test
     public void testForExec() {
-        
-        SpotBugsExecutor executor = new SpotBugsExecutor(config, resultDir);
-        executor.exec();
-
+        SpotBugsExecutor executor = new SpotBugsExecutor(resultDir);
+        executor.exec(config);
         assertThat(new File(executor.getResultFilePath()).exists()).isTrue();
-
         try {
-			FileUtils.deleteDirectory(resultDir);
-            FileUtils.deleteDirectory(outDir);
+			FileUtils.deleteDirectory(new File(resultDir));
+            FileUtils.deleteDirectory(new File(outDir));
 		} catch (IOException e) {
             System.err.println(e.getMessage());
 			e.printStackTrace();
 		}
-
     }
-
 
 }
