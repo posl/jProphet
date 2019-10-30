@@ -87,6 +87,13 @@ run {
     }
 }
 
+test {
+    testLogging {
+        events "failed"
+        exceptionFormat "short"
+    }
+}
+
 // task javadocPrivate(type: Javadoc){
 //     source = sourceSets.main.allJava
 //     options.showFromPrivate()
