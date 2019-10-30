@@ -21,8 +21,8 @@ public class SpotBugsExecutorTest {
 
     @Before
     public void setUpProject() {
-        this.outDir = new File("./src/test/resources/testSBproject01/build/classes");
-        this.resultDir = new File("./src/test/resources/testSBproject01/build/reports/spotbugs");
+        this.outDir = new File("./SBtmp");
+        this.resultDir = new File("./SBresult");
         this.config = new RepairConfiguration(outDir.getPath(), null, new Project("src/test/resources/testSBProject01"));
     }
 
