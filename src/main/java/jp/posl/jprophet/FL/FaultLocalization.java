@@ -1,4 +1,4 @@
-package jp.posl.jprophet.FL;
+package jp.posl.jprophet.fl;
 
 public interface FaultLocalization{
     public SuspiciousnessList exec();
