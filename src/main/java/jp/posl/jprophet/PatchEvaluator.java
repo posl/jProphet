@@ -16,6 +16,9 @@ public class PatchEvaluator {
     /**
      * 修正パッチ候補リストを各修正パッチ候補が
      * 変更した行の疑惑値に応じて降順ソートする
+     * TODO: ASTノードがカバーする範囲の先頭の行番号に応じた処理を行っているので
+     * TODO: 今後patchCandidate.getLineNumber()が範囲を返すようになったら
+     * TODO: それに応じた処理にしなくてはならない 
      * 
      * @param patchCandidates ソートしたいパッチ候補リスト
      * @param suspiciousenessList ソートに利用する疑惑値のリスト

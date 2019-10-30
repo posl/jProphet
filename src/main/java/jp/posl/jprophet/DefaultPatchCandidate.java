@@ -10,7 +10,7 @@ import com.github.javaparser.ast.Node;
 /**
  * 実際にプログラムの生成が可能なパッチ候補の実装クラス
  */
-public class PatchCandidateImpl implements PatchCandidate {
+public class DefaultPatchCandidate implements PatchCandidate {
     private final Node fixedNode; 
     private final CompilationUnit compilationUnit;
     private final String fixedFilePath;
@@ -22,7 +22,7 @@ public class PatchCandidateImpl implements PatchCandidate {
      * @param fixedFilePath 修正されたファイルのパス（jprophetルートからの相対パス）
      * @param fixedFileFQN 修正されたファイルのFQN
      */
-    public PatchCandidateImpl(RepairUnit repairUnit, String fixedFilePath, String fixedFileFQN) {
+    public DefaultPatchCandidate(RepairUnit repairUnit, String fixedFilePath, String fixedFileFQN) {
         this.fixedNode = repairUnit.getTargetNode();
         this.compilationUnit = repairUnit.getCompilationUnit();
         this.fixedFilePath = fixedFilePath;

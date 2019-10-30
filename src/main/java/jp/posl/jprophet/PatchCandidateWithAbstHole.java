@@ -9,9 +9,9 @@ import com.github.javaparser.ast.CompilationUnit;
  * 修正パッチ候補を持つ
  */
 public class PatchCandidateWithAbstHole implements PatchCandidate {
-    private PatchCandidateImpl patchCandidate;
+    private DefaultPatchCandidate patchCandidate;
     public PatchCandidateWithAbstHole(RepairUnit repairUnit, String fixedFilePath, String fixedFileFQN) {
-        this.patchCandidate = new PatchCandidateImpl(repairUnit, fixedFilePath, fixedFileFQN);
+        this.patchCandidate = new DefaultPatchCandidate(repairUnit, fixedFilePath, fixedFileFQN);
     }
 
     /**

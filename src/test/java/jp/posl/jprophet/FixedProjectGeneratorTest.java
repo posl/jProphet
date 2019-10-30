@@ -67,7 +67,7 @@ public class FixedProjectGeneratorTest{
         }
         Node targetNode = compilationUnit.findRootNode().getChildNodes().get(1);
         ((ClassOrInterfaceDeclaration)targetNode).setModifier(Modifier.STATIC, true);
-        PatchCandidate patchCandidate = new PatchCandidateImpl(new RepairUnit(targetNode, 1, compilationUnit), this.targetFilePath, this.targetFileFqn);
+        PatchCandidate patchCandidate = new DefaultPatchCandidate(new RepairUnit(targetNode, 1, compilationUnit), this.targetFilePath, this.targetFileFqn);
         this.fixedProjectGenerator.exec(config, patchCandidate);
        
     }

@@ -19,13 +19,13 @@ public class PatchEvaluatorTest {
      */
     @Test public void testIfSortedBySuspiciousness(){
         List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
-        PatchCandidate candidate1 = mock(PatchCandidateImpl.class);
+        PatchCandidate candidate1 = mock(DefaultPatchCandidate.class);
         when(candidate1.getLineNumber()).thenReturn(Optional.of(1));
         when(candidate1.getFqn()).thenReturn("a");
-        PatchCandidate candidate2 = mock(PatchCandidateImpl.class);
+        PatchCandidate candidate2 = mock(DefaultPatchCandidate.class);
         when(candidate2.getLineNumber()).thenReturn(Optional.of(2));
         when(candidate2.getFqn()).thenReturn("b");
-        PatchCandidate candidate3 = mock(PatchCandidateImpl.class);
+        PatchCandidate candidate3 = mock(DefaultPatchCandidate.class);
         when(candidate3.getLineNumber()).thenReturn(Optional.of(3));
         when(candidate3.getFqn()).thenReturn("c");
 
