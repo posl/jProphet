@@ -1,10 +1,10 @@
-package jp.posl.jprophet.FL;
+package jp.posl.jprophet.fl.spectrumbased.statement;
 
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.Project;
 import jp.posl.jprophet.ProjectBuilder;
-import jp.posl.jprophet.FL.coverage.TestResults;
-import jp.posl.jprophet.FL.coverage.CoverageCollector;
+import jp.posl.jprophet.fl.spectrumbased.coverage.TestResults;
+import jp.posl.jprophet.fl.spectrumbased.coverage.CoverageCollector;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;

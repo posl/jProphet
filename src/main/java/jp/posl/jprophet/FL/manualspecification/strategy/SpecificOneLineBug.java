@@ -1,14 +1,14 @@
-package jp.posl.jprophet.FL.specification_strategy;
+package jp.posl.jprophet.fl.manualspecification.strategy;
 
 import java.util.List;
 
-import jp.posl.jprophet.FL.Suspiciousness;
+import jp.posl.jprophet.fl.Suspiciousness;
 import java.util.stream.Collectors;
 
 /**
  * 一箇所の疑惑値を変更する
  */
-public class SpecificBug implements SpecificationProcess{
+public class SpecificOneLineBug implements SpecificationProcess{
 
     final private String fqn;
     final private int line;
@@ -20,7 +20,7 @@ public class SpecificBug implements SpecificationProcess{
      * @param line 変更したいファイルの行番号
      * @param value 変更後の疑惑値
      */
-    public SpecificBug(String fqn, int line, double value){
+    public SpecificOneLineBug(String fqn, int line, double value){
         this.fqn = fqn;
         this.line = line;
         this.value = value;

@@ -1,4 +1,4 @@
-package jp.posl.jprophet.FL;
+package jp.posl.jprophet.fl.manualspecification;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,10 +10,11 @@ import java.util.stream.Collectors;
 
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.Project;
-import jp.posl.jprophet.FL.specification_strategy.*;
+import jp.posl.jprophet.fl.Suspiciousness;
+import jp.posl.jprophet.fl.manualspecification.strategy.*;
 
 
-public class BugSpecificationTest{
+public class ManualSpecificationTest{
     // 入力として用意するテスト用のプロジェクト
     final private String projectPath = "src/test/resources/testFLProject";
     final private RepairConfiguration config = new RepairConfiguration("BStmp", null, new Project(this.projectPath));
@@ -21,7 +22,7 @@ public class BugSpecificationTest{
 
 
     @Before public void setUp(){
-        this.specificationProcessList.add(new SpecificBug("testFLProject.Ifstatement", 7, 0.5));
+        this.specificationProcessList.add(new SpecificOneLineBug("testFLProject.Ifstatement", 7, 0.5));
         this.specificationProcessList.add(new SpecificBugsByRange("testFLProject.App", 8, 10, 0.7));
         this.specificationProcessList.add(new SpecificBugsWavy("testFLProject.Ifstatement", 2, 1, 2, 0.1));
         this.specificationProcessList.add(new SpecificBugsWavy("testFLProject.Ifstatement", 16, 1, 3, 0.2));
@@ -32,8 +33,8 @@ public class BugSpecificationTest{
      * BugSpecification動作しているかどうかのテスト
      */
     @Test public void testForBugSpecification(){
-        BugSpecification bugSpecification = new BugSpecification(config, this.specificationProcessList);
-        List<Suspiciousness> suspiciousnessList = bugSpecification.exec();
+        ManualSpecification manualSpecification = new ManualSpecification(config, this.specificationProcessList);
+        List<Suspiciousness> suspiciousnessList = manualSpecification.exec();
 
         
         assertThat(getSuspiciousness(suspiciousnessList, "testFLProject.Ifstatement", 7).getValue()).isEqualTo(0.5);

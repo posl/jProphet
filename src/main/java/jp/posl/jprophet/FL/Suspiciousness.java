@@ -1,4 +1,4 @@
-package jp.posl.jprophet.FL;
+package jp.posl.jprophet.fl;
 
 /**
  * テスト対象のソースファイルのパスと,ステートメント(行)の疑惑値を格納

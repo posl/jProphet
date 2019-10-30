@@ -1,8 +1,8 @@
-package jp.posl.jprophet.FL.specification_strategy;
+package jp.posl.jprophet.fl.manualspecification.strategy;
 
 import java.util.List;
 
-import jp.posl.jprophet.FL.Suspiciousness;
+import jp.posl.jprophet.fl.Suspiciousness;
 import java.util.stream.Collectors;
 
 /**

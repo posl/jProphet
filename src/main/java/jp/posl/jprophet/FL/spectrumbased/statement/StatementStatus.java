@@ -1,6 +1,6 @@
-package jp.posl.jprophet.FL;
+package jp.posl.jprophet.fl.spectrumbased.statement;
 
-import jp.posl.jprophet.FL.coverage.TestResults;
+import jp.posl.jprophet.fl.spectrumbased.coverage.TestResults;
 
 /**
  * テスト対象のソースファイルのステートメント(行)の失敗(成功)してその行を通った(通ってない)テストの数を格納

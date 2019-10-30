@@ -1,9 +1,10 @@
-package jp.posl.jprophet.FL;
+package jp.posl.jprophet.fl.spectrumbased.statement;
 
 import java.util.List;
 import java.util.ArrayList;
-import jp.posl.jprophet.FL.strategy.Coefficient;
-import jp.posl.jprophet.FL.coverage.TestResults;
+import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
+import jp.posl.jprophet.fl.spectrumbased.coverage.TestResults;
+import jp.posl.jprophet.fl.Suspiciousness;
 
 /**
  * ステートメント(行)ごとの疑惑値の計算

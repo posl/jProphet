@@ -1,7 +1,11 @@
-package jp.posl.jprophet.FL;
+package jp.posl.jprophet.fl.spectrumbased;
 
 import jp.posl.jprophet.Project;
 import jp.posl.jprophet.RepairConfiguration;
+import jp.posl.jprophet.fl.Suspiciousness;
+import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
+import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
+import jp.posl.jprophet.fl.spectrumbased.strategy.Jaccard;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -13,9 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jp.posl.jprophet.FL.SpectrumBasedFaultLocalization;
-import jp.posl.jprophet.FL.strategy.Coefficient;
-import jp.posl.jprophet.FL.strategy.Jaccard;
 
 public class SpectrumBasedFaultLocalizationTest{
     // 入力として用意するテスト用のプロジェクト
