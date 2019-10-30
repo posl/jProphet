@@ -14,8 +14,8 @@ public class PatchCandidateWithAbstHole implements PatchCandidate {
         return this.patchCandidate.getFilePath();
     }
 
-    public String getFQN(){
-        return this.patchCandidate.getFQN();
+    public String getFqn(){
+        return this.patchCandidate.getFqn();
     }
 
     public CompilationUnit getCompilationUnit(){

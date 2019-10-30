@@ -56,10 +56,10 @@ public class JProphetMain {
         List<PatchCandidate> abstractPatchCandidates = patchCandidateGenerator.exec(config.getTargetProject());
         
         // 学習モデルとフォルトローカライゼーションのスコアによってソート
-        List<PatchCandidate> sortedAbstractPatchCandidate = patchEvaluator.sortPatchCandidates(abstractPatchCandidates, suspiciousenesses);
+        patchEvaluator.descendingSortBySuspiciousness(abstractPatchCandidates, suspiciousenesses);
         
         // 抽象修正候補中の条件式の生成
-        for(PatchCandidate abstractRepairCandidate: sortedAbstractPatchCandidate) {
+        for(PatchCandidate abstractRepairCandidate: abstractPatchCandidates) {
             List<PatchCandidate> patchCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
             for(PatchCandidate patchCandidate: patchCandidates) {
                 Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);

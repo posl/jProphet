@@ -11,7 +11,11 @@ public interface PatchCandidate {
      */
     public String getFilePath();
 
-    public String getFQN();
+    /**
+     * 修正されたファイルのFQNを返す
+     * @return FQN文字列
+     */
+    public String getFqn();
 
     /**
      * 修正されたファイルのCompilationUnitを返す

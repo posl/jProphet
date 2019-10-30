@@ -5,35 +5,51 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import jp.posl.jprophet.FL.Suspiciousness;
 import jp.posl.jprophet.FL.SuspiciousnessList;
 
+/**
+ * 疑惑値などに応じてパッチを評価する
+ */
 public class PatchEvaluator {
-    public List<PatchCandidate> sortPatchCandidates(List<PatchCandidate> patchCandidates, SuspiciousnessList suspiciousenessList){
+    /**
+     * 修正パッチ候補リストを各修正パッチ候補が
+     * 変更した行の疑惑値に応じて降順ソートする
+     * 
+     * @param patchCandidates ソートしたいパッチ候補リスト
+     * @param suspiciousenessList ソートに利用する疑惑値のリスト
+     */
+    public void descendingSortBySuspiciousness(List<PatchCandidate> patchCandidates, SuspiciousnessList suspiciousenessList){
         Collections.sort(patchCandidates, new Comparator<PatchCandidate>() {
             @Override
             public int compare(PatchCandidate a, PatchCandidate b) {
-                double aSuspiciousnessValue;
+                final double aSuspiciousnessValue;
                 try {
-                    aSuspiciousnessValue = suspiciousenessList.get(a.getLineNumber().orElseThrow(), a.getFQN()).orElseThrow().getValue();
+                    final int aLineNumber = a.getLineNumber().orElseThrow();
+                    final String aFqn = a.getFqn();
+                    final Suspiciousness aSuspiciousness = suspiciousenessList.get(aLineNumber, aFqn).orElseThrow();
+                    aSuspiciousnessValue = aSuspiciousness.getValue();
                 } catch (NoSuchElementException e) {
                     return 0;
                 }
-                double bSuspiciousnessValue;
+                final double bSuspiciousnessValue;
                 try {
-                    bSuspiciousnessValue = suspiciousenessList.get(a.getLineNumber().orElseThrow(), a.getFQN()).orElseThrow().getValue();
+                    final int bLineNumber = b.getLineNumber().orElseThrow();
+                    final String bFqn = b.getFqn();
+                    final Suspiciousness bSuspiciousness = suspiciousenessList.get(bLineNumber, bFqn).orElseThrow();
+                    bSuspiciousnessValue = bSuspiciousness.getValue();
                 } catch (NoSuchElementException e) {
                     return 0;
                 }
 
-                double diff = aSuspiciousnessValue - bSuspiciousnessValue;
+                final double diff = bSuspiciousnessValue - aSuspiciousnessValue;
                 if(diff > 0){
                     return 1;
                 }
                 else {
-                    return 0;
+                    return -1;
                 }
             }
         });
-        return patchCandidates;
     }
 }

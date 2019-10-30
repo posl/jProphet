@@ -11,20 +11,20 @@ public class PatchCandidateImpl implements PatchCandidate {
     private final Node fixedNode; 
     private final CompilationUnit compilationUnit;
     private final String fixedFilePath;
-    private final String fixedFileFQN;
+    private final String fixedFileFqn;
     public PatchCandidateImpl(RepairUnit repairUnit, String fixedFilePath, String fixedFileFQN) {
         this.fixedNode = repairUnit.getTargetNode();
         this.compilationUnit = repairUnit.getCompilationUnit();
         this.fixedFilePath = fixedFilePath;
-        this.fixedFileFQN = fixedFileFQN;
+        this.fixedFileFqn = fixedFileFQN;
     }
 
     public String getFilePath(){
         return this.fixedFilePath;
     }
 
-    public String getFQN(){
-        return this.fixedFileFQN;
+    public String getFqn(){
+        return this.fixedFileFqn;
     }
 
     public CompilationUnit getCompilationUnit(){
@@ -34,12 +34,7 @@ public class PatchCandidateImpl implements PatchCandidate {
     public Optional<Integer> getLineNumber() {
         try {
             Range range = this.fixedNode.getRange().orElseThrow();        
-            if(range.begin.line == range.end.line){
-                return Optional.of(range.begin.line);
-            }
-            else {
-                return Optional.empty();
-            }
+            return Optional.of(range.begin.line);
         } catch (NoSuchElementException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
