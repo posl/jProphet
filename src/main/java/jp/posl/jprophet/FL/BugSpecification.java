@@ -40,10 +40,10 @@ public class BugSpecification implements FaultLocalization{
      */
     public List<Suspiciousness> exec(){
         List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
-        suspiciousnessList = init(suspiciousnessList);
+        init(suspiciousnessList);
 
         for (SpecificationProcess specificationProcess : specificationProcessList){
-            suspiciousnessList = specificationProcess.calculate(suspiciousnessList);
+            specificationProcess.calculate(suspiciousnessList);
         }
 
         return suspiciousnessList;
@@ -53,7 +53,7 @@ public class BugSpecification implements FaultLocalization{
      * 対象のソースコードの行数とFQNを取得し,suspiciousnessListを疑惑値0で初期化する
      * @param suspiciousnessList
      */
-    private List<Suspiciousness> init(List<Suspiciousness> suspiciousnessList){
+    private void init(List<Suspiciousness> suspiciousnessList){
         Path srcDir;
 
         try {
@@ -74,8 +74,6 @@ public class BugSpecification implements FaultLocalization{
             e.printStackTrace();
             System.exit(-1);
         }
-
-        return suspiciousnessList;
     }
 
     /**

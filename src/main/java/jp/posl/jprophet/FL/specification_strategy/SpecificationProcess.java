@@ -6,5 +6,5 @@ import jp.posl.jprophet.FL.Suspiciousness;
 
 
 public interface SpecificationProcess{
-    public List<Suspiciousness> calculate(List<Suspiciousness> suspiciousnessList);
+    public void calculate(List<Suspiciousness> suspiciousnessList);
 }

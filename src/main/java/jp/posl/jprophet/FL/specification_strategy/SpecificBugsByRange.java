@@ -33,7 +33,7 @@ public class SpecificBugsByRange implements SpecificationProcess{
     /**
      * 受け取った疑惑値リストを上書きして返す
      */
-    public List<Suspiciousness> calculate(List<Suspiciousness> suspiciousnessList){
+    public void calculate(List<Suspiciousness> suspiciousnessList){
         List<Suspiciousness> startSuspiciousness = suspiciousnessList.stream()
             .filter(s -> fqn.equals(s.getFQN()) && s.getLine() == startLine)
             .collect(Collectors.toList());
@@ -49,6 +49,5 @@ public class SpecificBugsByRange implements SpecificationProcess{
                 suspiciousnessList.set(index, new Suspiciousness(fqn, startLine - startIndex + index, value));
             }
         }
-        return suspiciousnessList;
     }
 }

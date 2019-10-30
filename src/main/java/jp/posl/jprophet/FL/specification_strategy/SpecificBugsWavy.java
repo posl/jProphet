@@ -35,7 +35,7 @@ public class SpecificBugsWavy implements SpecificationProcess{
     /**
      * 受け取った疑惑値リストを上書きして返す
      */
-    public List<Suspiciousness> calculate(List<Suspiciousness> suspiciousnessList){
+    public void calculate(List<Suspiciousness> suspiciousnessList){
         List<Suspiciousness> suspiciousness = suspiciousnessList.stream()
             .filter(s -> fqn.equals(s.getFQN()) && s.getLine() == line)
             .collect(Collectors.toList());
@@ -56,6 +56,5 @@ public class SpecificBugsWavy implements SpecificationProcess{
                 }
             }
         }
-        return suspiciousnessList;
     }
 }
