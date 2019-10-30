@@ -18,22 +18,22 @@ public class ManualSpecificationTest{
     // 入力として用意するテスト用のプロジェクト
     final private String projectPath = "src/test/resources/testFLProject";
     final private RepairConfiguration config = new RepairConfiguration("BStmp", null, new Project(this.projectPath));
-    private List<SpecificationProcess> specificationProcessList = new ArrayList<SpecificationProcess>();
+    private List<SpecificationStrategy> specificationStrategyList = new ArrayList<SpecificationStrategy>();
 
 
     @Before public void setUp(){
-        this.specificationProcessList.add(new SpecificOneLineBug("testFLProject.Ifstatement", 7, 0.5));
-        this.specificationProcessList.add(new SpecificBugsByRange("testFLProject.App", 8, 10, 0.7));
-        this.specificationProcessList.add(new SpecificBugsWavy("testFLProject.Ifstatement", 2, 1, 2, 0.1));
-        this.specificationProcessList.add(new SpecificBugsWavy("testFLProject.Ifstatement", 16, 1, 3, 0.2));
-        this.specificationProcessList.add(new SpecificBugsWavy("testFLProject.Forstatement",10, 0.9, 2, 0.05));
-        this.specificationProcessList.add(new SpecificBugsWavy("testFLProject.App",4, 1, 2, 0.7));
+        this.specificationStrategyList.add(new SpecificOneLineBug("testFLProject.Ifstatement", 7, 0.5));
+        this.specificationStrategyList.add(new SpecificBugsByRange("testFLProject.App", 8, 10, 0.7));
+        this.specificationStrategyList.add(new SpecificBugsWavy("testFLProject.Ifstatement", 2, 1, 2, 0.1));
+        this.specificationStrategyList.add(new SpecificBugsWavy("testFLProject.Ifstatement", 16, 1, 3, 0.2));
+        this.specificationStrategyList.add(new SpecificBugsWavy("testFLProject.Forstatement",10, 0.9, 2, 0.05));
+        this.specificationStrategyList.add(new SpecificBugsWavy("testFLProject.App",4, 1, 2, 0.7));
     }
     /**
      * BugSpecification動作しているかどうかのテスト
      */
     @Test public void testForBugSpecification(){
-        ManualSpecification manualSpecification = new ManualSpecification(config, this.specificationProcessList);
+        ManualSpecification manualSpecification = new ManualSpecification(config, this.specificationStrategyList);
         List<Suspiciousness> suspiciousnessList = manualSpecification.exec();
 
         

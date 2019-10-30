@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 /**
  * ある範囲の疑惑値をまとめて変更する
  */
-public class SpecificBugsByRange implements SpecificationProcess{
+public class SpecificBugsByRange implements SpecificationStrategy{
 
     final private String fqn;
     final private int startLine;

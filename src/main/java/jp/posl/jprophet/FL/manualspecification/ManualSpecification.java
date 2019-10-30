@@ -5,7 +5,7 @@ import java.util.List;
 
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.RepairConfiguration;
-import jp.posl.jprophet.fl.manualspecification.strategy.SpecificationProcess;
+import jp.posl.jprophet.fl.manualspecification.strategy.SpecificationStrategy;
 import jp.posl.jprophet.Project;
 import jp.posl.jprophet.fl.FaultLocalization;
 
@@ -17,13 +17,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
+import org.apache.commons.io.FileUtils;
 
 /**
  * バグの位置を指定して,その行の疑惑値を変化させる
  */
 public class ManualSpecification implements FaultLocalization{
 
-    final private List<SpecificationProcess> specificationProcessList;
+    final private List<SpecificationStrategy> specificationStrategyList;
     final private Project project;
 
     /**
@@ -31,9 +32,9 @@ public class ManualSpecification implements FaultLocalization{
      * @param project
      * @param specificationProcessList 疑惑値の変更リスト
      */
-    public ManualSpecification(RepairConfiguration repairConfigulation, List<SpecificationProcess> specificationProcessList){
+    public ManualSpecification(RepairConfiguration repairConfigulation, List<SpecificationStrategy> specificationStrategyList){
         this.project = repairConfigulation.getTargetProject();
-        this.specificationProcessList = specificationProcessList;
+        this.specificationStrategyList = specificationStrategyList;
     }
 
     /**
@@ -41,10 +42,10 @@ public class ManualSpecification implements FaultLocalization{
      */
     public List<Suspiciousness> exec(){
         List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
-        init(suspiciousnessList);
+        initSuspiciousnessList(suspiciousnessList);
 
-        for (SpecificationProcess specificationProcess : specificationProcessList){
-            specificationProcess.calculate(suspiciousnessList);
+        for (SpecificationStrategy specificationStrategy : this.specificationStrategyList){
+            specificationStrategy.calculate(suspiciousnessList);
         }
 
         return suspiciousnessList;
@@ -54,7 +55,7 @@ public class ManualSpecification implements FaultLocalization{
      * 対象のソースコードの行数とFQNを取得し,suspiciousnessListを疑惑値0で初期化する
      * @param suspiciousnessList
      */
-    private void init(List<Suspiciousness> suspiciousnessList){
+    private void initSuspiciousnessList(List<Suspiciousness> suspiciousnessList){
         Path srcDir;
 
         try {
@@ -83,25 +84,16 @@ public class ManualSpecification implements FaultLocalization{
      * @return ファイルの総行数
      */
     private int calculateNumberOfLines(File sourceFile){
-        int lineNumber = 0;
-        try {
-            File file = sourceFile;
-            if (file.exists()){
-                FileReader fr = new FileReader(file);
-                LineNumberReader lnr = new LineNumberReader(fr);
-
-                while (lnr.readLine() != null){
-                    lineNumber++;
-                }
-
-                lnr.close();
-            }
-
-        }catch (IOException e){
+        int numOfLines = 0;
+        try{
+            numOfLines = FileUtils.readLines(sourceFile, "utf-8").size();
+        }catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
             System.exit(-1);
         }
-        return lineNumber;
+        return numOfLines;
     }
+
+
 }

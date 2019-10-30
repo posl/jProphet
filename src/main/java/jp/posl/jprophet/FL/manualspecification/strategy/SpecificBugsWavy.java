@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 /**
  * ある行を中心にして上下何行かの疑惑値を変更
  */
-public class SpecificBugsWavy implements SpecificationProcess{
+public class SpecificBugsWavy implements SpecificationStrategy{
 
     final private String fqn;
     final private int line;

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 /**
  * 一箇所の疑惑値を変更する
  */
-public class SpecificOneLineBug implements SpecificationProcess{
+public class SpecificOneLineBug implements SpecificationStrategy{
 
     final private String fqn;
     final private int line;
