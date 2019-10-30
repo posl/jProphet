@@ -1,12 +1,13 @@
-package jp.posl.jprophet.FL;
+package jp.posl.jprophet.fl.spectrumbased.statement;
 
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.Project;
 import jp.posl.jprophet.ProjectBuilder;
-import jp.posl.jprophet.FL.strategy.Coefficient;
-import jp.posl.jprophet.FL.strategy.Jaccard;
-import jp.posl.jprophet.FL.coverage.TestResults;
-import jp.posl.jprophet.FL.coverage.CoverageCollector;
+import jp.posl.jprophet.fl.Suspiciousness;
+import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
+import jp.posl.jprophet.fl.spectrumbased.strategy.Jaccard;
+import jp.posl.jprophet.fl.spectrumbased.coverage.TestResults;
+import jp.posl.jprophet.fl.spectrumbased.coverage.CoverageCollector;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -68,7 +69,7 @@ public class SuspiciousnessCollectorTest{
 
         //Ifstatementの3行目の疑惑値 (Jaccard)
         List<Suspiciousness> ifline3 = suspiciousnessCalculator.getSuspiciousnessList().stream()
-            .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLine() == 3)
+            .filter(s -> "testFLProject.Ifstatement".equals(s.getFQN()) && s.getLine() == 3)
             .collect(Collectors.toList());
         assertThat(ifline3.size()).isEqualTo(1);
         double sus3 = 0.2; //1/(1+0+4)
@@ -76,7 +77,7 @@ public class SuspiciousnessCollectorTest{
 
         //Ifstatementの6行目の疑惑値 (Jaccard)
         List<Suspiciousness> ifline6 = suspiciousnessCalculator.getSuspiciousnessList().stream()
-            .filter(s -> "testFLProject.Ifstatement".equals(s.getPath()) && s.getLine() == 6)
+            .filter(s -> "testFLProject.Ifstatement".equals(s.getFQN()) && s.getLine() == 6)
             .collect(Collectors.toList());
         assertThat(ifline6.size()).isEqualTo(1);
         double sus6 = 0; //0/(0+1+1)

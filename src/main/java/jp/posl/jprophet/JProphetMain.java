@@ -7,10 +7,10 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
-import jp.posl.jprophet.FL.SpectrumBasedFaultLocalization;
-import jp.posl.jprophet.FL.FaultLocalization;
-import jp.posl.jprophet.FL.Suspiciousness;
-import jp.posl.jprophet.FL.strategy.*;
+import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
+import jp.posl.jprophet.fl.FaultLocalization;
+import jp.posl.jprophet.fl.Suspiciousness;
+import jp.posl.jprophet.fl.spectrumbased.strategy.*;
 
 import jp.posl.jprophet.test.TestExecutor;
 

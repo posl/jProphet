@@ -1,4 +1,4 @@
-package jp.posl.jprophet.FL.coverage;
+package jp.posl.jprophet.fl.spectrumbased.coverage;
 
 import java.io.IOException;
 import java.io.InputStream;
