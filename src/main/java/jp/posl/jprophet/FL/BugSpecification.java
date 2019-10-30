@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.posl.jprophet.FL.Suspiciousness;
-import jp.posl.jprophet.ProjectConfiguration;
+import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.FL.specification_strategy.SpecificationProcess;
+import jp.posl.jprophet.Project;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -22,15 +24,15 @@ public class BugSpecification implements FaultLocalization{
 
     private List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
     final private List<SpecificationProcess> specificationProcessList;
-    final private ProjectConfiguration config;
+    final private Project project;
 
     /**
      * バグの位置を指定して,その行の疑惑値を変化させる
-     * @param config
+     * @param project
      * @param specificationProcessList 疑惑値の変更リスト
      */
-    public BugSpecification(ProjectConfiguration config, List<SpecificationProcess> specificationProcessList){
-        this.config = config;
+    public BugSpecification(RepairConfiguration repairConfigulation, List<SpecificationProcess> specificationProcessList){
+        this.project = repairConfigulation.getTargetProject();
         this.specificationProcessList = specificationProcessList;
         init();
     }
@@ -52,12 +54,12 @@ public class BugSpecification implements FaultLocalization{
         Path srcDir;
 
         try {
-            srcDir =  Paths.get(config.getProjectPath() + "/src/main");
+            srcDir =  Paths.get(project.getProjectPath() + "/src/main");
             List<File> srcFilelist = Files.walk(srcDir).map(path -> path.toFile()).filter(file -> file.isFile()).collect(Collectors.toList());
 
             for (File sourceFile : srcFilelist){
                 final String sourceFQN = sourceFile.getPath();
-                final String fqn = sourceFQN.replace(config.getProjectPath() + "/src/main/java/", "").replace("/", ".").replace(".java", "");
+                final String fqn = sourceFQN.replace(project.getProjectPath() + "/src/main/java/", "").replace("/", ".").replace(".java", "");
                 int numOfLines = calculateNumberOfLines(sourceFile);
                 for (int i = 1; i <= numOfLines; i++){
                     this.suspiciousnessList.add(new Suspiciousness(fqn, i, 0));

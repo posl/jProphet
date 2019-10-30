@@ -8,14 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jp.posl.jprophet.ProjectConfiguration;
+import jp.posl.jprophet.RepairConfiguration;
+import jp.posl.jprophet.Project;
 import jp.posl.jprophet.FL.specification_strategy.*;
 
 
 public class BugSpecificationTest{
     // 入力として用意するテスト用のプロジェクト
     final private String projectPath = "src/test/resources/testFLProject";
-    final private ProjectConfiguration config = new ProjectConfiguration(this.projectPath, "BStmp");
+    final private RepairConfiguration config = new RepairConfiguration("BStmp", null, new Project(this.projectPath));
     private List<SpecificationProcess> specificationProcessList = new ArrayList<SpecificationProcess>();
 
 
