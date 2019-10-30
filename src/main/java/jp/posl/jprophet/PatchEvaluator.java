@@ -10,6 +10,7 @@ import jp.posl.jprophet.FL.SuspiciousnessList;
 
 /**
  * 疑惑値などに応じてパッチを評価する
+ * 今後機械学習機能を組み込んだ場合，それらの結果も考慮したソートなどを行う
  */
 public class PatchEvaluator {
     /**
