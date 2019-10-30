@@ -12,22 +12,13 @@ import jp.posl.jprophet.operation.*;
 
 
 public class RepairCandidateGenerator{
-
-    // テスト時のモック注入のためにprivate変数化
-    private CondRefinementOperation condRefinementOperation = new CondRefinementOperation();
-    private CondIntroductionOperation condIntroductionOperation = new CondIntroductionOperation(); 
-    private CtrlFlowIntroductionOperation ctrlFlowIntroductionOperation = new CtrlFlowIntroductionOperation(); 
-    private InsertInitOperation insertInitOperation = new InsertInitOperation(); 
-    private ValueReplacementOperation valueReplacementOperation =  new ValueReplacementOperation();
-    private CopyReplaceOperation copyReplaceOperation = new CopyReplaceOperation();
-
     /**
      * バグのあるソースコード群から修正パッチ候補を生成する 
      * 
      * @param project 修正パッチ候補を生成する対象のプロジェクト 
      * @return 条件式が抽象化された修正パッチ候補のリスト
      */
-    public List<RepairCandidate> exec(ProjectConfiguration project){
+    public List<RepairCandidate> exec(Project project){
         List<String> filePaths = project.getSourceFilePaths();                
         List<RepairCandidate> candidates = new ArrayList<RepairCandidate>();
         for(String filePath : filePaths){
@@ -38,7 +29,7 @@ public class RepairCandidateGenerator{
                 for(RepairUnit repairUnit : repairUnits){
                     List<RepairUnit> appliedUnits = this.applyTemplate(repairUnit);
                     for(RepairUnit appliedUnit : appliedUnits){
-                        candidates.add(new AbstractRepairCandidate(appliedUnit.getCompilationUnit(), new ArrayList<>(Arrays.asList(filePath))));
+                        candidates.add(new AbstractRepairCandidate(appliedUnit.getCompilationUnit(), filePath));
                     }
                 }
             } catch (IOException e) {
@@ -56,18 +47,19 @@ public class RepairCandidateGenerator{
      * @return テンプレートが適用された修正候補のリスト
      */
     private List<RepairUnit> applyTemplate(RepairUnit repairUnit) {
+
         List<AstOperation> astOperations = new ArrayList<AstOperation>(Arrays.asList(
-            condRefinementOperation,
-            condIntroductionOperation,
-            ctrlFlowIntroductionOperation,
-            insertInitOperation,
-            valueReplacementOperation,
-            copyReplaceOperation
+            new CondRefinementOperation(repairUnit),
+            new CondIntroductionOperation(repairUnit), 
+            new CtrlFlowIntroductionOperation(repairUnit), 
+            new InsertInitOperation(repairUnit), 
+            new VariableReplacementOperation(repairUnit),
+            new CopyReplaceOperation(repairUnit)
         ));
 
         List<RepairUnit> appliedUnits = new ArrayList<RepairUnit>();
         for (AstOperation astOperation : astOperations){
-            appliedUnits.addAll(astOperation.exec(repairUnit));    
+            appliedUnits.addAll(astOperation.exec());    
         }
 
         return appliedUnits;

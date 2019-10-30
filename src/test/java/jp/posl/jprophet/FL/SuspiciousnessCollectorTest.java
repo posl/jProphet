@@ -1,6 +1,7 @@
 package jp.posl.jprophet.FL;
 
-import jp.posl.jprophet.ProjectConfiguration;
+import jp.posl.jprophet.RepairConfiguration;
+import jp.posl.jprophet.Project;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.FL.strategy.Coefficient;
 import jp.posl.jprophet.FL.strategy.Jaccard;
@@ -20,7 +21,7 @@ import java.io.IOException;
 public class SuspiciousnessCollectorTest{
     // 入力として用意するテスト用のプロジェクト
     private String projectPath;
-    private ProjectConfiguration project;
+    private RepairConfiguration config;
     private ProjectBuilder projectBuilder = new ProjectBuilder();
     private List<String> SourceClassFilePaths = new ArrayList<String>();
     private List<String> TestClassFilePaths = new ArrayList<String>();
@@ -31,11 +32,10 @@ public class SuspiciousnessCollectorTest{
 
     @Before public void setup(){
         this.projectPath = "src/test/resources/testFLProject";
-        this.project = new ProjectConfiguration(this.projectPath, "./SCtmp/");
+        this.config = new RepairConfiguration("./SCtmp/", null, new Project(this.projectPath));
         this.SourceClassFilePaths.add("testFLProject.Forstatement");
         this.SourceClassFilePaths.add("testFLProject.Ifstatement");
         this.SourceClassFilePaths.add("testFLProject.App");
-
 
         this.TestClassFilePaths.add("testFLProject.IfstatementTest3");
         this.TestClassFilePaths.add("testFLProject.AppTest");
@@ -44,10 +44,7 @@ public class SuspiciousnessCollectorTest{
         this.TestClassFilePaths.add("testFLProject.ForstatementTest");
         this.TestClassFilePaths.add("testFLProject.IfstatementTest");
 
-
-        projectBuilder.build(project);
-        
-    
+        projectBuilder.build(config);
     }
 
     /**
