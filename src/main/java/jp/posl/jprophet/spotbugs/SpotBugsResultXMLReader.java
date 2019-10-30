@@ -20,20 +20,19 @@ public class SpotBugsResultXMLReader {
      */
     public List<BugInstance> readAllBugInstances(String filePath) {
         final List<BugInstance> bugList = new ArrayList<BugInstance>();
-        Document document = null;
         final SAXReader reader = new SAXReader();
         try {
-            document = reader.read(filePath);
+            final Document document = reader.read(filePath);
+            final List bugs = document.selectNodes("//BugInstance");
+            for (Iterator i = bugs.iterator(); i.hasNext();) {
+                final Element bug = (Element) i.next();
+                bugList.add(readBugInstance(bug));
+            }
         }
         catch (DocumentException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
             System.exit(-1);
-        }
-        final List bugs = document.selectNodes("//BugInstance");
-        for (Iterator i = bugs.iterator(); i.hasNext();) {
-            final Element bug = (Element) i.next();
-            bugList.add(readBugInstance(bug));
         }
         return bugList;
     }

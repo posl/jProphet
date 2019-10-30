@@ -16,7 +16,7 @@ import jp.posl.jprophet.RepairConfiguration;
 
 public class SpotBugsExecutor {
 
-    private String resultPath;
+    private final String resultPath;
     private final String resultFileName = "result.xml";
 
 
@@ -24,7 +24,7 @@ public class SpotBugsExecutor {
      * 
      * @param resultPath 結果を格納するディレクトリ
      */
-    public SpotBugsExecutor(String resultPath) {
+    public SpotBugsExecutor(final String resultPath) {
         this.resultPath = resultPath;
     }
 
@@ -34,9 +34,9 @@ public class SpotBugsExecutor {
      * @param RepairConfiguration 対象のプロジェクトのconfig
      */
     public void exec(RepairConfiguration config) {
-        ProjectBuilder projectBuilder = new ProjectBuilder();
+        final ProjectBuilder projectBuilder = new ProjectBuilder();
         projectBuilder.build(config);
-        File resultDir = new File(resultPath);
+        final File resultDir = new File(resultPath);
         if (!resultDir.exists()) {
             resultDir.mkdir();
         }
@@ -58,15 +58,15 @@ public class SpotBugsExecutor {
      * @throws InterruptedException
      */
     private void runSpotBugs(RepairConfiguration config) throws FilterException, IOException, InterruptedException {       
-        FindBugs2 findBugs = new FindBugs2();
-        TextUICommandLine commandLine = new TextUICommandLine();
+        final FindBugs2 findBugs = new FindBugs2();
+        final TextUICommandLine commandLine = new TextUICommandLine();
         final String outputPath = resultPath + "/" + resultFileName;   
-        Project SB_project = new Project();
-        List<String> dirList = new ArrayList<String>();
+        final Project SB_project = new Project();
+        final String[] argv = new String[]{"-xml", "-output", outputPath, config.getBuildPath()};
+        final List<String> dirList = new ArrayList<String>();
         dirList.add(config.getBuildPath());
         SB_project.addSourceDirs(dirList);
         findBugs.setProject(SB_project);
-        String[] argv = new String[]{"-xml", "-output", outputPath, config.getBuildPath()};
         FindBugs.processCommandLine(commandLine, argv, findBugs);
         FindBugs.runMain(findBugs, commandLine);
         findBugs.execute();

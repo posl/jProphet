@@ -15,9 +15,8 @@ public class SpotBugsResultXMLReaderTest {
      */
     @Test
     public void testForReadAllBugInstances() {
-
-        SpotBugsResultXMLReader reader = new SpotBugsResultXMLReader();
-        List<BugInstance> instances = reader.readAllBugInstances("src/test/resources/SpotBugsResult/result01.xml");
+        final SpotBugsResultXMLReader reader = new SpotBugsResultXMLReader();
+        final List<BugInstance> instances = reader.readAllBugInstances("src/test/resources/SpotBugsResult/result01.xml");
         assertThat(instances).hasSize(5);   // 全てのバグを取得できているか
         final BugInstance target = instances.get(1); //試しに2番目のバグについて調べる
         assertThat(target.getType()).isEqualTo("NM_METHOD_NAMING_CONVENTION");
