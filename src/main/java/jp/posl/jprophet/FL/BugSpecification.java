@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
  */
 public class BugSpecification implements FaultLocalization{
 
-    private List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
     final private List<SpecificationProcess> specificationProcessList;
     final private Project project;
 
@@ -34,23 +33,27 @@ public class BugSpecification implements FaultLocalization{
     public BugSpecification(RepairConfiguration repairConfigulation, List<SpecificationProcess> specificationProcessList){
         this.project = repairConfigulation.getTargetProject();
         this.specificationProcessList = specificationProcessList;
-        init();
     }
 
     /**
      * suspiciousnessListを書き換えて返す関数
      */
     public List<Suspiciousness> exec(){
+        List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
+        suspiciousnessList = init(suspiciousnessList);
+
         for (SpecificationProcess specificationProcess : specificationProcessList){
-            this.suspiciousnessList = specificationProcess.calculate(this.suspiciousnessList);
+            suspiciousnessList = specificationProcess.calculate(suspiciousnessList);
         }
-        return this.suspiciousnessList;
+
+        return suspiciousnessList;
     }
 
     /**
      * 対象のソースコードの行数とFQNを取得し,suspiciousnessListを疑惑値0で初期化する
+     * @param suspiciousnessList
      */
-    private void init(){
+    private List<Suspiciousness> init(List<Suspiciousness> suspiciousnessList){
         Path srcDir;
 
         try {
@@ -62,7 +65,7 @@ public class BugSpecification implements FaultLocalization{
                 final String fqn = sourceFQN.replace(project.getProjectPath() + "/src/main/java/", "").replace("/", ".").replace(".java", "");
                 int numOfLines = calculateNumberOfLines(sourceFile);
                 for (int i = 1; i <= numOfLines; i++){
-                    this.suspiciousnessList.add(new Suspiciousness(fqn, i, 0));
+                    suspiciousnessList.add(new Suspiciousness(fqn, i, 0));
                 }
             }
             
@@ -71,6 +74,8 @@ public class BugSpecification implements FaultLocalization{
             e.printStackTrace();
             System.exit(-1);
         }
+
+        return suspiciousnessList;
     }
 
     /**
