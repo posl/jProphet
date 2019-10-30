@@ -48,9 +48,9 @@ public class GradleProjectTest{
          
         List<FileLocator> actualFileLocators = this.project.getTestFileLocators();
         // assertThat(actualFileLocators.get(0).getPath()).contains(expectedTestFilePaths.get(1));
-        // assertThat(actualFileLocators.get(1).getPath()).contains(expectedTestFilePaths.get(0));
-        // assertThat(actualFileLocators.get(0).getFqn()).contains(expectedTestFileFqns.get(1));
-        // assertThat(actualFileLocators.get(1).getFqn()).contains(expectedTestFileFqns.get(0));
+        assertThat(actualFileLocators.get(1).getPath()).contains(expectedTestFilePaths.get(0));
+        assertThat(actualFileLocators.get(0).getFqn()).contains(expectedTestFileFqns.get(1));
+        assertThat(actualFileLocators.get(1).getFqn()).contains(expectedTestFileFqns.get(0));
     }
 
     /**
