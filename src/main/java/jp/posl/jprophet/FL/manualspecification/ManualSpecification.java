@@ -30,7 +30,7 @@ public class ManualSpecification implements FaultLocalization{
     /**
      * バグの位置を指定して,その行の疑惑値を変化させる
      * @param project
-     * @param specificationProcessList 疑惑値の変更リスト
+     * @param specificationStrategyList 疑惑値の変更リスト
      */
     public ManualSpecification(RepairConfiguration repairConfigulation, List<SpecificationStrategy> specificationStrategyList){
         this.project = repairConfigulation.getTargetProject();
