@@ -1,4 +1,4 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.patch;
 
 import java.util.Optional;
 

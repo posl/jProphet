@@ -4,6 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import jp.posl.jprophet.patch.DefaultPatchCandidate;
+import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.project.GradleProject;
 
 import static org.assertj.core.api.Assertions.*;

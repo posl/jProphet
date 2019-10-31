@@ -2,6 +2,7 @@ package jp.posl.jprophet;
 
 import org.junit.Test;
 
+import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.project.FileLocator;
 import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;

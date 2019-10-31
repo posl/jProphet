@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import jp.posl.jprophet.operation.*;
+import jp.posl.jprophet.patch.PatchCandidate;
+import jp.posl.jprophet.patch.PatchCandidateWithAbstHole;
 import jp.posl.jprophet.project.FileLocator;
 import jp.posl.jprophet.project.Project;
 

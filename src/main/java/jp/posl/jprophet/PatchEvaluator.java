@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.SuspiciousnessList;
+import jp.posl.jprophet.patch.PatchCandidate;
 
 /**
  * 疑惑値などに応じてパッチを評価する

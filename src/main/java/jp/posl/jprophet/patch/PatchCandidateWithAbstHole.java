@@ -1,8 +1,10 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.patch;
 
 import java.util.Optional;
 
 import com.github.javaparser.ast.CompilationUnit;
+
+import jp.posl.jprophet.RepairUnit;
 
 /**
  * StagedProgramrRepairにおける条件内部の具体的なコードが生成される前の状態の

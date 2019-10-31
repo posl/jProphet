@@ -1,4 +1,4 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.patch;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -6,6 +6,8 @@ import java.util.Optional;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+
+import jp.posl.jprophet.RepairUnit;
 
 /**
  * 実際にプログラムの生成が可能なパッチ候補の実装クラス

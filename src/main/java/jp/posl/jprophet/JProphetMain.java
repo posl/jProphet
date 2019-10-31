@@ -10,10 +10,9 @@ import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.fl.FaultLocalization;
-import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.SuspiciousnessList;
 import jp.posl.jprophet.fl.spectrumbased.strategy.*;
-
+import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.TestExecutor;
 
 public class JProphetMain {

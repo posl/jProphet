@@ -12,6 +12,8 @@ import org.junit.Test;
 
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.SuspiciousnessList;
+import jp.posl.jprophet.patch.DefaultPatchCandidate;
+import jp.posl.jprophet.patch.PatchCandidate;
 
 public class PatchEvaluatorTest {
     /**

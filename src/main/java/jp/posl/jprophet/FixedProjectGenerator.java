@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;
 
