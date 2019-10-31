@@ -37,14 +37,14 @@ public class GradleProjectTest{
      * テストファイルのFileLocatorを正しく取得できているかの検証
      */
     @Test public void testForTestFileLocators(){
-        List<String> expectedTestFilePaths = new ArrayList<String>(Arrays.asList(
-            "src/test/resources/testGradleProject01/src/test/java/testGradleProject01/AppTest.java",
-            "src/test/resources/testGradleProject01/src/test/java/testGradleProject01/App2Test.java"
-        ));
-        List<String> expectedTestFileFqns = new ArrayList<String>(Arrays.asList(
+        List<String> expectedTestFilePaths = List.of(
+            "src/test/resources/testGradleProject01/test/main/java/testGradleProject01/AppTest.java",
+            "src/test/resources/testGradleProject01/test/main/java/testGradleProject01/App2Test.java"
+        );
+        List<String> expectedTestFileFqns = List.of(
             "testGradleProject01.AppTest",
             "testGradleProject01.App2Test"
-        ));
+        );
          
         List<FileLocator> actualFileLocators = this.project.getTestFileLocators();
         FileLocator actualFileLocator = actualFileLocators.get(0);

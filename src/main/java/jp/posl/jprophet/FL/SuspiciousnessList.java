@@ -28,6 +28,17 @@ public class SuspiciousnessList {
     }
 
     /**
+     * staticファクトリ
+     * 不変なリストを生成する（要素の追加削除置換ができない）
+     * List.ofの転送
+     * @param suspiciousnesses 生成したいリストの要素の可変長引数
+     * @return SuspiciousnessList
+     */
+    public static SuspiciousnessList of(Suspiciousness... suspiciousnesses){
+        return new SuspiciousnessList(List.of(suspiciousnesses));
+    }
+
+    /**
      * 行番号とファイルパスを元に疑惑値を取得
      * @param lineNumber j行番号
      * @param path ファイルパス
@@ -44,7 +55,7 @@ public class SuspiciousnessList {
 
     /**
      * リストに新しい疑惑値を追加 
-     * List<T>.addの転送
+     * Listのaddメソッドの転送
      * @param suspiciousness 追加したい疑惑値
      * @return true（Collections.add のドキュメントによるとtrueを返すっぽいので
 ）

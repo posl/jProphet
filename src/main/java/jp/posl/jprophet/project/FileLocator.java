@@ -1,5 +1,8 @@
 package jp.posl.jprophet.project;
 
+/**
+ * ファイルのパスとFQNを表す
+ */
 public class FileLocator {
     private final String path;
     private final String fqn;
