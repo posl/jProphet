@@ -2,7 +2,6 @@ package jp.posl.jprophet.project;
 
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
-import org.assertj.core.api.iterable.Extractor;
 import static org.assertj.core.api.Assertions.tuple;
 import java.util.ArrayList;
 import java.util.Arrays;

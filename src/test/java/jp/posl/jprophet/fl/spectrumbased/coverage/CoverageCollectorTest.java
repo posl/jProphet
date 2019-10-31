@@ -1,7 +1,6 @@
 package jp.posl.jprophet.fl.spectrumbased.coverage;
 
 import jp.posl.jprophet.project.GradleProject;
-import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
 

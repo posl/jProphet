@@ -2,7 +2,6 @@ package jp.posl.jprophet.fl.spectrumbased.statement;
 
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.project.GradleProject;
-import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
