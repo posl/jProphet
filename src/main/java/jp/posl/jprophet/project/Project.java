@@ -6,13 +6,13 @@ public interface Project {
 
     /**
      * プロジェクトのソースファイルのFileLocatorオブジェクトを全て取得 
-     * @return ソースファイルのList<FileLocator>
+     * @return ソースファイルのFileLocatorのリスト
      */
     public List<FileLocator> getSrcFileLocators(); 
 
     /**
      * プロジェクトのテストファイルのFileLocatorオブジェクトを全てを取得
-     * @return テストファイルのList<FileLocator>
+     * @return テストファイルのFileLocatorのリストj
      */
     public List<FileLocator> getTestFileLocators(); 
 

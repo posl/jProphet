@@ -10,7 +10,7 @@ import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.fl.FaultLocalization;
-import jp.posl.jprophet.fl.SuspiciousnessList;
+import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.spectrumbased.strategy.*;
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.TestExecutor;
@@ -51,7 +51,7 @@ public class JProphetMain {
             StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, FixedProjectGenerator fixedProjectGenerator
             ) {
         // フォルトローカライゼーション
-        SuspiciousnessList suspiciousenesses = faultLocalization.exec();
+        List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
         List<PatchCandidate> abstractPatchCandidates = patchCandidateGenerator.exec(config.getTargetProject());

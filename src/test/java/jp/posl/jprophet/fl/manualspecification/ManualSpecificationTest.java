@@ -34,7 +34,7 @@ public class ManualSpecificationTest{
      */
     @Test public void testForBugSpecification(){
         ManualSpecification manualSpecification = new ManualSpecification(config, this.specificationStrategyList);
-        List<Suspiciousness> suspiciousnessList = manualSpecification.exec().toList();
+        List<Suspiciousness> suspiciousnessList = manualSpecification.exec();
 
         
         assertThat(getSuspiciousness(suspiciousnessList, "testFLProject.Ifstatement", 7).getValue()).isEqualTo(0.5);

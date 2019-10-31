@@ -11,7 +11,6 @@ import java.util.Optional;
 import org.junit.Test;
 
 import jp.posl.jprophet.fl.Suspiciousness;
-import jp.posl.jprophet.fl.SuspiciousnessList;
 import jp.posl.jprophet.patch.DefaultPatchCandidate;
 import jp.posl.jprophet.patch.PatchCandidate;
 
@@ -35,7 +34,7 @@ public class PatchEvaluatorTest {
         candidates.add(candidate2);
         candidates.add(candidate3);
 
-        SuspiciousnessList suspiciousenesses = new SuspiciousnessList();
+        List<Suspiciousness> suspiciousenesses = new ArrayList<Suspiciousness>();
         suspiciousenesses.add(new Suspiciousness("a", 1, 2));
         suspiciousenesses.add(new Suspiciousness("b", 2, 1));
         suspiciousenesses.add(new Suspiciousness("c", 3, 3));

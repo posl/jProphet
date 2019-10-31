@@ -28,7 +28,7 @@ public class SpectrumBasedFaultLocalizationTest{
      */
     @Test public void testForSourceFilePaths(){
         SpectrumBasedFaultLocalization faultLocalization = new SpectrumBasedFaultLocalization(config, coefficient);
-        List<Suspiciousness> suspiciousnessList = faultLocalization.exec().toList();
+        List<Suspiciousness> suspiciousnessList = faultLocalization.exec();
 
         //疑惑値のリストの中にテスト対象のファイルのFQDNが存在するかチェック
         List<String> pathList = suspiciousnessList.stream()

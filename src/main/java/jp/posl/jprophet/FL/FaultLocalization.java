@@ -1,5 +1,7 @@
 package jp.posl.jprophet.fl;
 
-public interface FaultLocalization{
-    public SuspiciousnessList exec();
+import java.util.List;
+
+public interface FaultLocalization {
+    public List<Suspiciousness> exec();
 }

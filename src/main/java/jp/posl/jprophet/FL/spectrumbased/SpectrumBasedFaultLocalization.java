@@ -6,7 +6,6 @@ import jp.posl.jprophet.fl.spectrumbased.coverage.TestResults;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
 import jp.posl.jprophet.fl.FaultLocalization;
 import jp.posl.jprophet.fl.Suspiciousness;
-import jp.posl.jprophet.fl.SuspiciousnessList;
 import jp.posl.jprophet.fl.spectrumbased.statement.SuspiciousnessCollector;
 import jp.posl.jprophet.ProjectBuilder;
 import java.util.List;
@@ -39,10 +38,10 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
 
     /**
      * テスト対象の全てのソースファイルの行ごとの疑惑値を算出する
-     * @return SuspiciousnessList 
+     * @return 行ごとの疑惑値のリスト
      */
     @Override
-    public SuspiciousnessList exec() {
+    public List<Suspiciousness> exec() {
         List<Suspiciousness> suspiciousnesses = new ArrayList<Suspiciousness>();;
         TestResults testResults;
         CoverageCollector coverageCollector = new CoverageCollector(buildPath);
@@ -57,6 +56,6 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
             e.printStackTrace();
             System.exit(-1);
         }
-        return new SuspiciousnessList(suspiciousnesses);
+        return suspiciousnesses;
     }
 }

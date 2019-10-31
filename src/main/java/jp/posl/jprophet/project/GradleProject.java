@@ -19,7 +19,7 @@ public class GradleProject implements Project{
 
     /**
      * graldeプロジェクトからソースファイルとテストファイルを収集 
-     * @param projectPath Gradleプロジェクトのルートディレクトリのパス
+     * @param rootPath Gradleプロジェクトのルートディレクトリのパス
      */
     public GradleProject(String rootPath) {
         this.rootPath = rootPath;

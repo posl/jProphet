@@ -4,9 +4,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import jp.posl.jprophet.fl.Suspiciousness;
-import jp.posl.jprophet.fl.SuspiciousnessList;
 import jp.posl.jprophet.patch.PatchCandidate;
 
 /**
@@ -22,9 +22,10 @@ public class PatchEvaluator {
      * TODO: それに応じた処理にしなくてはならない 
      * 
      * @param patchCandidates ソートしたいパッチ候補リスト
-     * @param suspiciousenessList ソートに利用する疑惑値のリスト
+     * @param suspiciousnessList ソートに利用する疑惑値のリスト
      */
-    public void descendingSortBySuspiciousness(List<PatchCandidate> patchCandidates, SuspiciousnessList suspiciousenessList){
+    public void descendingSortBySuspiciousness(List<PatchCandidate> patchCandidates, List<Suspiciousness> suspiciousnessList){
+        PatchEvaluator that = this;
         Collections.sort(patchCandidates, new Comparator<PatchCandidate>() {
             @Override
             public int compare(PatchCandidate a, PatchCandidate b) {
@@ -32,7 +33,7 @@ public class PatchEvaluator {
                 try {
                     final int aLineNumber = a.getLineNumber().orElseThrow();
                     final String aFqn = a.getFqn();
-                    final Suspiciousness aSuspiciousness = suspiciousenessList.get(aLineNumber, aFqn).orElseThrow();
+                    final Suspiciousness aSuspiciousness = that.findSuspiciousness(suspiciousnessList, aLineNumber, aFqn).orElseThrow();
                     aSuspiciousnessValue = aSuspiciousness.getValue();
                 } catch (NoSuchElementException e) {
                     return 0;
@@ -41,7 +42,7 @@ public class PatchEvaluator {
                 try {
                     final int bLineNumber = b.getLineNumber().orElseThrow();
                     final String bFqn = b.getFqn();
-                    final Suspiciousness bSuspiciousness = suspiciousenessList.get(bLineNumber, bFqn).orElseThrow();
+                    final Suspiciousness bSuspiciousness = that.findSuspiciousness(suspiciousnessList, bLineNumber, bFqn).orElseThrow();
                     bSuspiciousnessValue = bSuspiciousness.getValue();
                 } catch (NoSuchElementException e) {
                     return 0;
@@ -56,5 +57,21 @@ public class PatchEvaluator {
                 }
             }
         });
+    }
+
+    /**
+     * Suspiciousnessリストから行番号とファイルパスを元に疑惑値を取得
+     * @param targetSuspiciousnesses 検索対象
+     * @param lineNumber 行番号
+     * @param path ファイルパス
+     * @return 疑惑値
+     */
+    private Optional<Suspiciousness> findSuspiciousness(List<Suspiciousness> targetSuspiciousnesses, int lineNumber, String path){
+        for(Suspiciousness suspiciousness : targetSuspiciousnesses){
+            if(suspiciousness.getLineNumber() == lineNumber && suspiciousness.getFQN() == path){
+                return Optional.of(suspiciousness);
+            }
+        }
+        return Optional.empty();
     }
 }
