@@ -15,8 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.github.javaparser.JavaParser;
@@ -41,7 +39,7 @@ public class FixedProjectGeneratorTest{
         this.projectPath = "src/test/resources/testGradleProject01";
         this.targetFilePath = "src/test/resources/testGradleProject01/src/main/java/testGradleProject01/App.java";
         this.targetFileFqn = "testGradleProject01.App";
-        this.projectFilePaths = new ArrayList<String>(Arrays.asList(
+        this.projectFilePaths = List.of(
             "testGradleProject01/src/main/java/testGradleProject01/App.java",
             "testGradleProject01/src/main/java/testGradleProject01/App2.java",
             "testGradleProject01/src/test/java/testGradleProject01/AppTest.java",
@@ -53,7 +51,7 @@ public class FixedProjectGeneratorTest{
             "testGradleProject01/gradlew",
             "testGradleProject01/gradlew.bat",
             "testGradleProject01/settings.gradle"
-        ));
+        );
         this.buildDir = "./temp/";
         this.resultDir = "./result/";
         this.config = new RepairConfiguration(this.buildDir, this.resultDir, new GradleProject(this.projectPath));

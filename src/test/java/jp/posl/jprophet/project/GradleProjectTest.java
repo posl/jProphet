@@ -3,8 +3,6 @@ package jp.posl.jprophet.project;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class GradleProjectTest{
@@ -55,10 +53,10 @@ public class GradleProjectTest{
      * ソースファイルのパスを正しく取得できているかの検証
      */
     @Test public void testForSrcFilePaths(){
-        List<String> expectedSrcFilePaths = new ArrayList<String>(Arrays.asList(
+        List<String> expectedSrcFilePaths = List.of(
             "src/test/resources/testGradleProject01/src/main/java/testGradleProject01/App.java",
             "src/test/resources/testGradleProject01/src/main/java/testGradleProject01/App2.java"
-        ));
+        );
          
         assertThat(this.project.getSrcFilePaths()).containsOnlyElementsOf(expectedSrcFilePaths);
     }
@@ -67,10 +65,10 @@ public class GradleProjectTest{
      * テストファイルのパスを正しく取得できているかの検証
      */
     @Test public void testForTestFilePaths(){
-        List<String> expectedTestFilePaths = new ArrayList<String>(Arrays.asList(
+        List<String> expectedTestFilePaths = List.of(
             "src/test/resources/testGradleProject01/src/test/java/testGradleProject01/AppTest.java",
             "src/test/resources/testGradleProject01/src/test/java/testGradleProject01/App2Test.java"
-        ));
+        );
 
         assertThat(this.project.getTestFilePaths()).containsOnlyElementsOf(expectedTestFilePaths);
     }
@@ -79,10 +77,10 @@ public class GradleProjectTest{
      * ソースファイルのFQNを正しく取得できているかの検証
      */
     @Test public void testForSrcFileFqns(){
-        List<String> expectedSrcFileFqns = new ArrayList<String>(Arrays.asList(
+        List<String> expectedSrcFileFqns = List.of(
             "testGradleProject01.App",
             "testGradleProject01.App2"
-        ));
+        );
          
         assertThat(this.project.getSrcFileFqns()).containsOnlyElementsOf(expectedSrcFileFqns);
     }
@@ -91,10 +89,10 @@ public class GradleProjectTest{
      * テストファイルのFQNを正しく取得できているかの検証
      */
     @Test public void testForTestFileFqns(){
-        List<String> expectedTestFileFqns = new ArrayList<String>(Arrays.asList(
+        List<String> expectedTestFileFqns = List.of(
             "testGradleProject01.AppTest",
             "testGradleProject01.App2Test"
-        ));
+        );
 
         assertThat(this.project.getTestFileFqns()).containsOnlyElementsOf(expectedTestFileFqns);
     }
@@ -103,7 +101,7 @@ public class GradleProjectTest{
      * クラスパスを正しく取得できているかの検証
      */
     @Test public void testForClasspaths(){
-        List<String> expectedClassPaths = new ArrayList<String>(Arrays.asList("src/main/resources/junit-4.11.jar"));
+        List<String> expectedClassPaths = List.of("src/main/resources/junit-4.11.jar");
         assertThat(this.project.getClassPaths()).containsOnlyElementsOf(expectedClassPaths);
     }
 }

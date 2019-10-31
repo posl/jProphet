@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,7 +50,7 @@ public class GradleProject implements Project{
             this.testFileFqns = this.buildTestFileFqns();
 
             // とりあえず依存関係はjunitだけ
-            this.classPaths = new ArrayList<String>(Arrays.asList("src/main/resources/junit-4.11.jar"));
+            this.classPaths = List.of("src/main/resources/junit-4.11.jar");
 
         } catch (NullPointerException | IOException e) {
             System.err.println(e.getMessage());

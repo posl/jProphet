@@ -5,7 +5,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import jp.posl.jprophet.operation.*;
@@ -52,14 +51,14 @@ public class PatchCandidateGenerator{
      */
     private List<RepairUnit> applyTemplate(RepairUnit repairUnit) {
 
-        List<AstOperation> astOperations = new ArrayList<AstOperation>(Arrays.asList(
+        List<AstOperation> astOperations = List.of(
             new CondRefinementOperation(repairUnit),
             new CondIntroductionOperation(repairUnit), 
             new CtrlFlowIntroductionOperation(repairUnit), 
             new InsertInitOperation(repairUnit), 
             new VariableReplacementOperation(repairUnit),
             new CopyReplaceOperation(repairUnit)
-        ));
+        );
 
         List<RepairUnit> appliedUnits = new ArrayList<RepairUnit>();
         for (AstOperation astOperation : astOperations){
