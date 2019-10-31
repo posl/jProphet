@@ -2,6 +2,8 @@ package jp.posl.jprophet.project;
 
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
+import org.assertj.core.api.iterable.Extractor;
+import static org.assertj.core.api.Assertions.tuple;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,50 +18,38 @@ public class GradleProjectTest{
      * ソースファイルのFileLocatorを正しく取得できているかの検証
      */
     @Test public void testForSrcFileLocators(){
-        List<String> expectedSrcFilePaths = new ArrayList<String>(Arrays.asList(
+        FileLocator expectedFileLocator1 = new FileLocator(
             "src/test/resources/testGradleProject01/src/main/java/testGradleProject01/App.java",
-            "src/test/resources/testGradleProject01/src/main/java/testGradleProject01/App2.java"
-        ));
-        List<String> expectedSrcFileFqns = new ArrayList<String>(Arrays.asList(
-            "testGradleProject01.App",
+            "testGradleProject01.App"
+        );
+        FileLocator expectedFileLocator2 = new FileLocator(
+            "src/test/resources/testGradleProject01/src/main/java/testGradleProject01/App2.java",
             "testGradleProject01.App2"
-        ));
-
-         
+        );
+        
         List<FileLocator> actualFileLocators = this.project.getSrcFileLocators();
-        assertThat(actualFileLocators.get(0).getPath()).contains(expectedSrcFilePaths.get(0));
-        assertThat(actualFileLocators.get(1).getPath()).contains(expectedSrcFilePaths.get(1));
-        assertThat(actualFileLocators.get(0).getFqn()).contains(expectedSrcFileFqns.get(0));
-        assertThat(actualFileLocators.get(1).getFqn()).contains(expectedSrcFileFqns.get(1));
+        assertThat(actualFileLocators).extracting((f) -> tuple(f.getPath(), f.getFqn()))
+            .contains(tuple(expectedFileLocator1.getPath(), expectedFileLocator1.getFqn()))
+            .contains(tuple(expectedFileLocator2.getPath(), expectedFileLocator2.getFqn()));
     }
 
     /**
      * テストファイルのFileLocatorを正しく取得できているかの検証
      */
     @Test public void testForTestFileLocators(){
-        List<String> expectedTestFilePaths = List.of(
-            "src/test/resources/testGradleProject01/test/main/java/testGradleProject01/AppTest.java",
-            "src/test/resources/testGradleProject01/test/main/java/testGradleProject01/App2Test.java"
+        FileLocator expectedFileLocator1 = new FileLocator(
+            "src/test/resources/testGradleProject01/src/test/java/testGradleProject01/AppTest.java",
+            "testGradleProject01.AppTest"
         );
-        List<String> expectedTestFileFqns = List.of(
-            "testGradleProject01.AppTest",
+        FileLocator expectedFileLocator2 = new FileLocator(
+            "src/test/resources/testGradleProject01/src/test/java/testGradleProject01/App2Test.java",
             "testGradleProject01.App2Test"
         );
-         
+        
         List<FileLocator> actualFileLocators = this.project.getTestFileLocators();
-        FileLocator actualFileLocator = actualFileLocators.get(0);
-        String actualFilePath = actualFileLocator.getPath();
-        assertThat(actualFilePath).contains(expectedTestFilePaths.get(0));
-        actualFileLocator = actualFileLocators.get(1);
-        actualFilePath = actualFileLocator.getPath();
-        assertThat(actualFilePath).contains(expectedTestFilePaths.get(1));
-
-        actualFileLocator = actualFileLocators.get(0);
-        String actualFileFqn = actualFileLocator.getFqn();
-        assertThat(actualFileFqn).contains(expectedTestFileFqns.get(0));
-        actualFileLocator = actualFileLocators.get(1);
-        actualFileFqn = actualFileLocator.getFqn();
-        assertThat(actualFileFqn).contains(expectedTestFileFqns.get(1));
+        assertThat(actualFileLocators).extracting((f) -> tuple(f.getPath(), f.getFqn()))
+            .contains(tuple(expectedFileLocator1.getPath(), expectedFileLocator1.getFqn()))
+            .contains(tuple(expectedFileLocator2.getPath(), expectedFileLocator2.getFqn()));
     }
 
     /**
