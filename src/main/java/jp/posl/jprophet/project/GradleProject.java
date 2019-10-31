@@ -60,9 +60,9 @@ public class GradleProject implements Project{
     }
 
     /**
-     * プロジェクトのソースファイルのFileLocatorオブジェクトを全て取得 
-     * @return ソースファイルのList<FileLocator>
+     * {@inheritDoc}
      */
+    @Override
     public List<FileLocator> getSrcFileLocators(){
         List<FileLocator> fileLocators = new ArrayList<FileLocator>();
         for(int i = 0; i < this.srcFilePaths.size(); i++){
@@ -72,9 +72,9 @@ public class GradleProject implements Project{
     }; 
 
     /**
-     * プロジェクトのテストファイルのFileLocatorオブジェクトを全てを取得
-     * @return テストファイルのList<FileLocator>
+     * {@inheritDoc}
      */
+    @Override
     public List<FileLocator> getTestFileLocators(){
         List<FileLocator> fileLocators = new ArrayList<FileLocator>();
         for(int i = 0; i < this.testFilePaths.size(); i++){
@@ -84,42 +84,58 @@ public class GradleProject implements Project{
     }; 
 
     /**
-     * プロジェクトのソースファイルのパスを全て取得 
-     * @return ソースファイルのリスト
+     * {@inheritDoc}
      */
+    @Override
     public List<String> getSrcFilePaths() {
         return this.srcFilePaths;
     }
 
     /**
-     * プロジェクトのテストファイルのパスを全てを取得
-     * @return テストファイルのパスのリスト
+     * {@inheritDoc}
      */
+    @Override
     public List<String> getTestFilePaths() {
         return this.testFilePaths;
     }
 
     /**
-     * プロジェクトのソースファイルのFQNを全て取得 
-     * @return ソースファイルのFQNのリスト
+     * {@inheritDoc}
      */
+    @Override
     public List<String> getSrcFileFqns(){
         return this.srcFileFqns;
     }; 
 
     /**
-     * プロジェクトのテストファイルのFQNを全てを取得
-     * @return テストファイルのFQNのリスト
+     * {@inheritDoc}
      */
+    @Override
     public List<String> getTestFileFqns(){
         return this.testFileFqns;
     }; 
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> getClassPaths() {
+        return this.classPaths;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getRootPath(){
+        return this.rootPath;
+    }
+
+    /**
      * プロジェクトのソースファイルのFQNを全て生成 
      * @return ソースファイルのFQNのリスト
      */
-    public List<String> buildSrcFileFqns(){
+    private List<String> buildSrcFileFqns(){
         List<String> fqns = new ArrayList<String>();
         for(String srcFilePaths: this.srcFilePaths){
             fqns.add(this.buildSrcFileFqn(srcFilePaths));
@@ -131,31 +147,13 @@ public class GradleProject implements Project{
      * プロジェクトのテストファイルのFQNを全てを生成
      * @return テストファイルのFQNのリスト
      */
-    public List<String> buildTestFileFqns(){
+    private List<String> buildTestFileFqns(){
         List<String> fqns = new ArrayList<String>();
         for(String testFilePaths: this.testFilePaths){
             fqns.add(this.buildTestFileFqn(testFilePaths));
         }
         return fqns;
     }; 
-
-
-
-    /**
-     * プロジェクトのビルドに必要なクラスパスを取得
-     * @return クラスパスの一覧
-     */
-    public List<String> getClassPaths() {
-        return this.classPaths;
-    }
-
-    /**
-     * プロジェクトのパスを取得
-     * @return プロジェクトのパス
-     */
-    public String getRootPath(){
-        return this.rootPath;
-    }
 
     /**
      * ソースファイルのFQNを生成

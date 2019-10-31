@@ -34,6 +34,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getFilePath(){
         return this.fixedFilePath;
     }
@@ -41,6 +42,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getFqn(){
         return this.fixedFileFqn;
     }
@@ -48,6 +50,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
     /**
      * {@inheritDoc}
      */
+    @Override
     public CompilationUnit getCompilationUnit(){
         return this.compilationUnit;
     }
@@ -55,6 +58,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Optional<Integer> getLineNumber() {
         try {
             Range range = this.fixedNode.getRange().orElseThrow();        
@@ -69,6 +73,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString(){
         return this.compilationUnit.toString();
     }

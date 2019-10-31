@@ -36,10 +36,12 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
         this.sourceClassFileFqns = config.getTargetProject().getSrcFileFqns(); 
         this.testClassFileFqns = config.getTargetProject().getTestFileFqns(); 
     }
+
     /**
      * テスト対象の全てのソースファイルの行ごとの疑惑値を算出する
      * @return SuspiciousnessList 
      */
+    @Override
     public SuspiciousnessList exec() {
         List<Suspiciousness> suspiciousnesses = new ArrayList<Suspiciousness>();;
         TestResults testResults;

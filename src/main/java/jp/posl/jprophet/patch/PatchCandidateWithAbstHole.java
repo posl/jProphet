@@ -19,6 +19,7 @@ public class PatchCandidateWithAbstHole implements PatchCandidate {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getFilePath(){
         return this.patchCandidate.getFilePath();
     }
@@ -26,6 +27,7 @@ public class PatchCandidateWithAbstHole implements PatchCandidate {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getFqn(){
         return this.patchCandidate.getFqn();
     }
@@ -33,6 +35,7 @@ public class PatchCandidateWithAbstHole implements PatchCandidate {
     /**
      * {@inheritDoc}
      */
+    @Override
     public CompilationUnit getCompilationUnit(){
         return this.patchCandidate.getCompilationUnit();
     }
@@ -40,6 +43,7 @@ public class PatchCandidateWithAbstHole implements PatchCandidate {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Optional<Integer> getLineNumber() {
         return this.patchCandidate.getLineNumber();
     }
@@ -47,6 +51,7 @@ public class PatchCandidateWithAbstHole implements PatchCandidate {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString(){
         return this.patchCandidate.toString();
     }

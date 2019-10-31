@@ -51,6 +51,7 @@ public class VariableReplacementOperation implements AstOperation {
      * 一つの修正パッチ候補につき一箇所の置換
      * @return 生成された修正パッチ候補のリスト
      */
+    @Override
     public List<RepairUnit> exec() {
         List<RepairUnit> candidates = new ArrayList<RepairUnit>();
 

@@ -39,6 +39,7 @@ public class ManualSpecification implements FaultLocalization{
     /**
      * suspiciousnessListを書き換えて返す関数
      */
+    @Override
     public SuspiciousnessList exec(){
         List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
         initSuspiciousnessList(suspiciousnessList);

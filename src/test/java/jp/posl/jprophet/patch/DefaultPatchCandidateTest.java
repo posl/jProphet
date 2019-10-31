@@ -1,4 +1,4 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.patch;
 
 import static org.junit.Assert.fail;
 import java.io.IOException;
@@ -12,8 +12,8 @@ import com.github.javaparser.ast.Node;
 import org.junit.Before;
 import org.junit.Test;
 
-import jp.posl.jprophet.patch.DefaultPatchCandidate;
-import jp.posl.jprophet.patch.PatchCandidate;
+import jp.posl.jprophet.RepairUnit;
+
 
 public class DefaultPatchCandidateTest {
     private PatchCandidate patchCandidate;
