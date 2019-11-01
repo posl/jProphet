@@ -12,12 +12,12 @@ public class RepairConfiguration {
      * ビルド先パス，修正済みプロジェクト生成先パス，対象プロジェクトを元に生成する
      * @param buildDirPath
      * @param fixedProjectDirPath
-     * @param targetProject
+     * @param project
      */
-    public RepairConfiguration(String buildDirPath, String fixedProjectDirPath, Project targetProject) {
+    public RepairConfiguration(String buildDirPath, String fixedProjectDirPath, Project project) {
         this.buildDirPath = buildDirPath;
         this.fixedProjectDirPath = fixedProjectDirPath;
-        this.targetProject = targetProject;
+        this.targetProject = project;
     }
 
     /**
