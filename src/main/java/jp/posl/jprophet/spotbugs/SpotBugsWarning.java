@@ -1,11 +1,11 @@
 package jp.posl.jprophet.spotbugs;
 
-public class BugInstance {
+public class SpotBugsWarning {
 
     private final String type;
     private final String filePath;
-    private final int positionStart;
-    private final int positionEnd;
+    private final int startLine;
+    private final int endLine;
     
 
     /**
@@ -15,11 +15,11 @@ public class BugInstance {
      * @param start        ワーニングを含む箇所の始めの行
      * @param end          ワーニングを含む箇所の終わりの行
      */
-    public BugInstance(final String type, final String filePath, final int start, final int end){
+    public SpotBugsWarning(final String type, final String filePath, final int start, final int end){
         this.type = type;
         this.filePath = filePath;
-        this.positionStart = start;
-        this.positionEnd = end;
+        this.startLine = start;
+        this.endLine = end;
     }
 
 
@@ -39,17 +39,17 @@ public class BugInstance {
     }
 
     /**
-     * @return the positionStart
+     * @return the startLine
      */
-    public int getPositionStart() {
-        return this.positionStart;
+    public int getStartLine() {
+        return this.startLine;
     }
 
     /**
-     * @return the positionEnd
+     * @return the finishLine
      */
-    public int getPositionEnd() {
-        return this.positionEnd;
+    public int getEndLine() {
+        return this.endLine;
     }
 
 }

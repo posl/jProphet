@@ -18,15 +18,15 @@ public class SpotBugsResultXMLReader {
      * @param filePath 対象のXMLファイル
      * @return ワーニング情報クラスのリスト
      */
-    public List<BugInstance> readAllBugInstances(String filePath) {
-        final List<BugInstance> bugList = new ArrayList<BugInstance>();
+    public List<SpotBugsWarning> readAllSpotBugsWarnings(String filePath) {
+        final List<SpotBugsWarning> bugList = new ArrayList<SpotBugsWarning>();
         final SAXReader reader = new SAXReader();
         try {
             final Document document = reader.read(filePath);
             final List bugs = document.selectNodes("//BugInstance");
             for (Iterator i = bugs.iterator(); i.hasNext();) {
                 final Element bug = (Element) i.next();
-                bugList.add(readBugInstance(bug));
+                bugList.add(readSpotBugsWarning(bug));
             }
         }
         catch (DocumentException e) {
@@ -38,7 +38,7 @@ public class SpotBugsResultXMLReader {
     }
 
 
-    private BugInstance readBugInstance(Element element) {
+    private SpotBugsWarning readSpotBugsWarning(Element element) {
         final String type = element.attributeValue("type");
         final List<Node> sourceLines = new ArrayList<Node>();
         sourceLines.addAll(element.selectNodes("./SourceLine"));
@@ -48,7 +48,7 @@ public class SpotBugsResultXMLReader {
         final String filePath = targetLine.attributeValue("sourcepath");
         final int start = Integer.parseInt(targetLine.attributeValue("start"));
         final int end = Integer.parseInt(targetLine.attributeValue("end"));
-        return new BugInstance(type, filePath, start, end);
+        return new SpotBugsWarning(type, filePath, start, end);
     }
 
 

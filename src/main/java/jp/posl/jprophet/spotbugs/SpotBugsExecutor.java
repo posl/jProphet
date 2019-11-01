@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.Project;
@@ -16,16 +18,16 @@ import jp.posl.jprophet.RepairConfiguration;
 
 public class SpotBugsExecutor {
 
-    private final String resultPath;
-    private final String resultFileName = "result.xml";
+    private final String resultFileName;
+    private final static String resultDir = "./SBresult";
 
 
     /**
-     * 
-     * @param resultPath 結果を格納するディレクトリ
+     * SpotBugsを適用し、その結果を取得する
+     * @param resultPath 実行結果のファイル名
      */
-    public SpotBugsExecutor(final String resultPath) {
-        this.resultPath = resultPath;
+    public SpotBugsExecutor(final String resultFileName) {
+        this.resultFileName = resultFileName;
     }
 
 
@@ -36,9 +38,9 @@ public class SpotBugsExecutor {
     public void exec(RepairConfiguration config) {
         final ProjectBuilder projectBuilder = new ProjectBuilder();
         projectBuilder.build(config);
-        final File resultDir = new File(resultPath);
-        if (!resultDir.exists()) {
-            resultDir.mkdir();
+        final File dir = new File(resultDir);
+        if (!dir.exists()) {
+            dir.mkdir();
         }
         try {
             runSpotBugs(config);
@@ -51,7 +53,7 @@ public class SpotBugsExecutor {
     
 
     /**
-     * クラスファイルを受け取り、それらを対象にSpotBugsを適用する
+     * SpotBugsのAPIを利用して実行結果を取得する
      * @param RepairConfiguration 対象のプロジェクトのconfig
      * @throws FilterException
      * @throws IOException
@@ -59,10 +61,9 @@ public class SpotBugsExecutor {
      */
     private void runSpotBugs(RepairConfiguration config) throws FilterException, IOException, InterruptedException {       
         final FindBugs2 findBugs = new FindBugs2();
-        final TextUICommandLine commandLine = new TextUICommandLine();
-        final String outputPath = resultPath + "/" + resultFileName;   
+        final TextUICommandLine commandLine = new TextUICommandLine();  
         final Project SB_project = new Project();
-        final String[] argv = new String[]{"-xml", "-output", outputPath, config.getBuildPath()};
+        final String[] argv = new String[]{"-xml", "-output", getResultFilePath(), config.getBuildPath()};
         final List<String> dirList = new ArrayList<String>();
         dirList.add(config.getBuildPath());
         SB_project.addSourceDirs(dirList);
@@ -79,7 +80,20 @@ public class SpotBugsExecutor {
      * @return 実行結果ファイルのパス
      */
     public String getResultFilePath() {
-        return this.resultPath + "/" + resultFileName;
+        return resultDir + "/" + resultFileName + ".xml";
+    }
+
+
+    /**
+     * 実行結果ファイルが格納されているディレクトリを削除する
+     */
+    public static void deleteResultDirectory() {
+        try {
+			FileUtils.deleteDirectory(new File(resultDir));
+		} catch (IOException e) {
+            System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
     }
 
 }
