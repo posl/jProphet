@@ -39,9 +39,10 @@ public class JProphetMain {
             jprophet.run(config, faultLocalization, patchCandidateGenerator, plausibilityAnalyzer, patchEvaluator, stagedCondGenerator, testExecutor, fixedProjectGenerator);
 
         try {
-            FileUtils.deleteDirectory(new File(resultDir));
+            FileUtils.deleteDirectory(new File(buildDir));
             if(!isRepairSuccess){
-                FileUtils.deleteDirectory(new File(buildDir));
+                FileUtils.deleteDirectory(new File(resultDir));
+
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());
