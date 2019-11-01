@@ -1,4 +1,4 @@
-package jp.posl.jprophet.FL.coverage;
+package jp.posl.jprophet.fl.spectrumbased.coverage;
 
 import java.util.List;
 

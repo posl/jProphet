@@ -1,4 +1,4 @@
-package jp.posl.jprophet.FL.coverage;
+package jp.posl.jprophet.fl.spectrumbased.coverage;
 
 import jp.posl.jprophet.Project;
 import jp.posl.jprophet.ProjectBuilder;
