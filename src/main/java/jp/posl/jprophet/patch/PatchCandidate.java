@@ -25,6 +25,7 @@ public interface PatchCandidate {
 
     /**
      * 修正対象のステートメントのソースファイル全体における行番号を返す 
+     * NodeからRangeが取れなかった場合Optional.emptyが返る
      * TODO: 一つの行番号ではなく何行目から何行目のような範囲を返した方がいいかもしれない
      * JavaParserのパッケージないのRangeクラスなど
      * @return 修正対象のステートメントのソースファイル全体における行番号

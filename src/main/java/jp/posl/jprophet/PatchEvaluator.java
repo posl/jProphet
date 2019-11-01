@@ -27,28 +27,21 @@ public class PatchEvaluator {
     public void descendingSortBySuspiciousness(List<PatchCandidate> patchCandidates, List<Suspiciousness> suspiciousnessList){
         PatchEvaluator that = this;
         Collections.sort(patchCandidates, new Comparator<PatchCandidate>() {
+            /**
+             * @{inheritDoc}
+             */
             @Override
             public int compare(PatchCandidate a, PatchCandidate b) {
-                final double aSuspiciousnessValue;
+                final double suspiciousnessValueOfA;
+                final double suspiciousnessValueOfB;
                 try {
-                    final int aLineNumber = a.getLineNumber().orElseThrow();
-                    final String aFqn = a.getFqn();
-                    final Suspiciousness aSuspiciousness = that.findSuspiciousness(suspiciousnessList, aLineNumber, aFqn).orElseThrow();
-                    aSuspiciousnessValue = aSuspiciousness.getValue();
-                } catch (NoSuchElementException e) {
-                    return 0;
-                }
-                final double bSuspiciousnessValue;
-                try {
-                    final int bLineNumber = b.getLineNumber().orElseThrow();
-                    final String bFqn = b.getFqn();
-                    final Suspiciousness bSuspiciousness = that.findSuspiciousness(suspiciousnessList, bLineNumber, bFqn).orElseThrow();
-                    bSuspiciousnessValue = bSuspiciousness.getValue();
+                    suspiciousnessValueOfA = that.getSuspiciousnessValueFromPatch(a, suspiciousnessList); 
+                    suspiciousnessValueOfB = that.getSuspiciousnessValueFromPatch(b, suspiciousnessList); 
                 } catch (NoSuchElementException e) {
                     return 0;
                 }
 
-                final double diff = bSuspiciousnessValue - aSuspiciousnessValue;
+                final double diff = suspiciousnessValueOfB - suspiciousnessValueOfA;
                 if(diff > 0){
                     return 1;
                 }
@@ -56,19 +49,33 @@ public class PatchEvaluator {
                     return -1;
                 }
             }
+
         });
+    }
+    /**
+     * パッチ候補の修正対象のステートメントの疑惑値を取得 
+     * @param  patch 修正パッチ候補
+     * @return 疑惑値 
+     * @throws NoSuchElementException NodeのRangeが取れなかった場合と
+     *         疑惑値リストに対応する疑惑値が存在しない場合に発生
+     */
+    private double getSuspiciousnessValueFromPatch(PatchCandidate patch, List<Suspiciousness> suspiciousnessList) throws NoSuchElementException{
+        final int lineNumber = patch.getLineNumber().orElseThrow();
+        final String fqn = patch.getFqn();
+        final Suspiciousness suspiciousness = this.findSuspiciousness(suspiciousnessList, lineNumber, fqn).orElseThrow();
+        return suspiciousness.getValue();
     }
 
     /**
      * Suspiciousnessリストから行番号とファイルパスを元に疑惑値を取得
      * @param targetSuspiciousnesses 検索対象
      * @param lineNumber 行番号
-     * @param path ファイルパス
+     * @param fqn ファイルのFQN
      * @return 疑惑値
      */
-    private Optional<Suspiciousness> findSuspiciousness(List<Suspiciousness> targetSuspiciousnesses, int lineNumber, String path){
+    private Optional<Suspiciousness> findSuspiciousness(List<Suspiciousness> targetSuspiciousnesses, int lineNumber, String fqn){
         for(Suspiciousness suspiciousness : targetSuspiciousnesses){
-            if(suspiciousness.getLineNumber() == lineNumber && suspiciousness.getFQN() == path){
+            if(suspiciousness.getLineNumber() == lineNumber && suspiciousness.getFQN() == fqn){
                 return Optional.of(suspiciousness);
             }
         }
