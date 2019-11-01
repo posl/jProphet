@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.Collections;
+import java.util.Optional;
 
-
+import com.github.javaparser.Range;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -49,28 +50,33 @@ public class CopyReplaceOperation implements AstOperation{
 
         List<Statement> localStatements = methodNode.findAll(Statement.class);
 
-        //this.targetStatementを含むそれより後ろ(インデックスが大きい)の要素を全て消す
-        //TODO stream()とかでできないか?
-        if (localStatements.contains(this.targetNode)){
-            final int targetIndex = localStatements.indexOf(this.targetNode);
-            final int targetSize = localStatements.size();
-            for (int i = targetIndex; i < targetSize; i++){
-                localStatements.remove(targetIndex);
-            }
-        }
-
-
+        //this.targetStatementを含むそれより後ろの行の要素を全て消す
         //BlockStmtを全て除外する
         return localStatements.stream()
+            .filter(s -> getBeginLineNumber(s).orElseThrow() < getEndLineNumber(this.targetNode).orElseThrow())
             .filter(s -> (s instanceof BlockStmt) == false)
             .collect(Collectors.toList());
+    }
 
-        /*
-        List<Statement> removeSet = new ArrayList<Statement>();
-        removeSet.addAll(methodNode.findAll(BlockStmt.class));
-        Collections.addAll(removeSet);
-        localStatements.removeAll(removeSet);
-        return localStatements;
-        */
+    private Optional<Integer> getBeginLineNumber(Node node) {
+        try {
+            Range range = node.getRange().orElseThrow();        
+            return Optional.of(range.begin.line);
+        } catch (NoSuchElementException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    private Optional<Integer> getEndLineNumber(Node node) {
+        try {
+            Range range = node.getRange().orElseThrow();        
+            return Optional.of(range.end.line);
+        } catch (NoSuchElementException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            return Optional.empty();
+        }
     }
 }
