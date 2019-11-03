@@ -8,7 +8,11 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 
 public class JProphetMainTest {
-    @Test public void testJProphet(){
+    /**
+     * FizzBuzz01プロジェクトのバグが治るかテスト
+     * Value Replace Operationのみで治るバグ 
+     */
+    @Test public void testFizzBuzz(){
         String[] project = {"src/test/resources/FizzBuzz01"};
         JProphetMain.main(project);
         File file = new File("src/test/resources/FizzBuzz01");

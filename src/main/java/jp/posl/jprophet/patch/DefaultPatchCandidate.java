@@ -75,6 +75,6 @@ public class DefaultPatchCandidate implements PatchCandidate {
      */
     @Override
     public String toString(){
-        return this.compilationUnit.toString();
+        return this.fixedNode.toString();
     }
 }
