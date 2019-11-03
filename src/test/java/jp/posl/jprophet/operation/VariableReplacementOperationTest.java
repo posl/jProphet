@@ -48,8 +48,8 @@ public class VariableReplacementOperationTest{
         List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
         List<String> candidateSources = new ArrayList<String>();
         for(RepairUnit repairUnit : repairUnits){
-            VariableReplacementOperation vr = new VariableReplacementOperation(repairUnit);
-            candidateSources.addAll(vr.exec().stream()
+            VariableReplacementOperation vr = new VariableReplacementOperation();
+            candidateSources.addAll(vr.exec(repairUnit).stream()
                 .map(ru -> ru.toString())
                 .collect(Collectors.toList())
             );
@@ -85,8 +85,8 @@ public class VariableReplacementOperationTest{
         List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
         List<String> candidateSources = new ArrayList<String>();
         for(RepairUnit repairUnit : repairUnits){
-            VariableReplacementOperation vr = new VariableReplacementOperation(repairUnit);
-            candidateSources.addAll(vr.exec().stream()
+            VariableReplacementOperation vr = new VariableReplacementOperation();
+            candidateSources.addAll(vr.exec(repairUnit).stream()
                 .map(ru -> ru.toString())
                 .collect(Collectors.toList())
             );
@@ -107,8 +107,8 @@ public class VariableReplacementOperationTest{
         List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(sourceThatHasNothingToReplace);
         List<RepairUnit> candidates = new ArrayList<RepairUnit>();
         for(RepairUnit repairUnit : repairUnits){
-            VariableReplacementOperation vr = new VariableReplacementOperation(repairUnit);
-            candidates.addAll(vr.exec());
+            VariableReplacementOperation vr = new VariableReplacementOperation();
+            candidates.addAll(vr.exec(repairUnit));
         }
 
         assertThat(candidates.size()).isZero();
@@ -137,8 +137,8 @@ public class VariableReplacementOperationTest{
         List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
         List<String> candidateSources = new ArrayList<String>();
         for(RepairUnit repairUnit : repairUnits){
-            VariableReplacementOperation vr = new VariableReplacementOperation(repairUnit);
-            candidateSources.addAll(vr.exec().stream()
+            VariableReplacementOperation vr = new VariableReplacementOperation();
+            candidateSources.addAll(vr.exec(repairUnit).stream()
                 .map(ru -> ru.toString())
                 .collect(Collectors.toList())
             );
@@ -167,8 +167,8 @@ public class VariableReplacementOperationTest{
         List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
         List<String> candidateSources = new ArrayList<String>();
         for(RepairUnit repairUnit : repairUnits){
-            VariableReplacementOperation vr = new VariableReplacementOperation(repairUnit);
-            candidateSources.addAll(vr.exec().stream()
+            VariableReplacementOperation vr = new VariableReplacementOperation();
+            candidateSources.addAll(vr.exec(repairUnit).stream()
                 .map(ru -> ru.toString())
                 .collect(Collectors.toList())
             );

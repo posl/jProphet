@@ -11,10 +11,7 @@ import jp.posl.jprophet.RepairUnit;
  * 対象の前に挿入する
  */
 public class CtrlFlowIntroductionOperation implements AstOperation{
-    public CtrlFlowIntroductionOperation(RepairUnit repairUnit){
-
-    }
-    public List<RepairUnit> exec(){
+    public List<RepairUnit> exec(RepairUnit repairUnit){
         List<RepairUnit> candidates = new ArrayList<RepairUnit>();
         return candidates;
     }

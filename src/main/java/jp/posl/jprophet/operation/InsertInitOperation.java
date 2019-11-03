@@ -9,11 +9,7 @@ import jp.posl.jprophet.RepairUnit;
  * 変数の初期化文を対象ステートメントの前に挿入する
  */
 public class InsertInitOperation implements AstOperation{
-    public InsertInitOperation(RepairUnit repairUnit){
-
-    }
-
-    public List<RepairUnit> exec(){
+    public List<RepairUnit> exec(RepairUnit repairUnit){
         List<RepairUnit> candidates = new ArrayList<RepairUnit>();
         return candidates;
     }
