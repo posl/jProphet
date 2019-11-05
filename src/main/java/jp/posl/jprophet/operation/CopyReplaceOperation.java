@@ -6,20 +6,14 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.BreakStmt;
 
 import jp.posl.jprophet.RepairUnit;
-import jp.posl.jprophet.AstGenerator;
 
 /**
  * 対象ステートメントの以前に現れているステートメントを，
@@ -34,6 +28,8 @@ public class CopyReplaceOperation implements AstOperation{
         this.repairUnit = repairUnit;
         this.targetNode = this.repairUnit.getTargetNode();
     }
+
+    @Override
     public List<RepairUnit> exec(){
         List<RepairUnit> candidates = new ArrayList<RepairUnit>();
         //修正対象のステートメントの属するメソッドノードを取得
@@ -46,6 +42,11 @@ public class CopyReplaceOperation implements AstOperation{
         return candidates;
     }
 
+    /**
+     * targetNodeを含むメソッド内のステートメントで,targetNodeよりも上にあるものを取得
+     * @param targetNode ターゲットノード
+     * @return ステートメントのリスト
+     */
     private List<Statement> collectLocalStatements(Node targetNode){
         MethodDeclaration methodNode;
         try {
@@ -59,12 +60,19 @@ public class CopyReplaceOperation implements AstOperation{
 
         //this.targetStatementを含むそれより後ろの行の要素を全て消す
         //BlockStmtを全て除外する
+        //TODO targetの直前のstatementも含んでしまうのでそこをなんとかしたい
         return localStatements.stream()
             .filter(s -> getEndLineNumber(s).orElseThrow() < getBeginLineNumber(targetNode).orElseThrow())
             .filter(s -> (s instanceof BlockStmt) == false)
             .collect(Collectors.toList());
     }
 
+    /**
+     * targetNodeの直前にstatementをコピペしてrepairUnitを生成してそのリストを返す
+     * @param statements コピペするステートメントのリスト
+     * @param repairUnit targetNodeを含むrepairUnit
+     * @return repairUnitのリスト
+     */
     private List<RepairUnit> copyStatementBeforeTarget(List<Statement> statements, RepairUnit repairUnit){
         Node targetNode = repairUnit.getTargetNode();
         List<RepairUnit> candidates = new ArrayList<RepairUnit>();
@@ -89,6 +97,11 @@ public class CopyReplaceOperation implements AstOperation{
         return candidates;
     }
 
+    /**
+     * ノードの始まりの行番号を取得する
+     * @param node ノード
+     * @return ノードの始まりの行番号
+     */
     private Optional<Integer> getBeginLineNumber(Node node) {
         try {
             Range range = node.getRange().orElseThrow();        
@@ -100,6 +113,11 @@ public class CopyReplaceOperation implements AstOperation{
         }
     }
 
+    /**
+     * ノードの終わりの行番号を取得
+     * @param node ノード
+     * @return ノードの終わりの行番号
+     */
     private Optional<Integer> getEndLineNumber(Node node) {
         try {
             Range range = node.getRange().orElseThrow();        
