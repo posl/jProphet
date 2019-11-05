@@ -6,13 +6,17 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.Range;
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.expr.Expression;
 
+import jp.posl.jprophet.AstGenerator;
 import jp.posl.jprophet.RepairUnit;
 
 /**
@@ -60,7 +64,6 @@ public class CopyReplaceOperation implements AstOperation{
 
         //this.targetStatementを含むそれより後ろの行の要素を全て消す
         //BlockStmtを全て除外する
-        //TODO targetの直前のstatementも含んでしまうのでそこをなんとかしたい
         return localStatements.stream()
             .filter(s -> getEndLineNumber(s).orElseThrow() < getBeginLineNumber(targetNode).orElseThrow())
             .filter(s -> (s instanceof BlockStmt) == false)
@@ -88,10 +91,85 @@ public class CopyReplaceOperation implements AstOperation{
         for (Statement statement : statements){            
             NodeList<Statement> nodeList = blockStmt.clone().getStatements();
             if(targetNode instanceof Statement && nodeList.indexOf(targetNode) != -1){
+                //TODO コピペする前にVariableReplacementOperationを使って値の置換操作を行うクラス
+                //TODO statementをRepairUnitにしてVROになげる?
+                //TODO or コピペした後のrepairUnitをcopyしてtargetNodeをsrtatementに変えてVROになげる?
+                
+                /*
+                MethodDeclaration methodNode;
+                try {
+                    methodNode = statement.findParent(MethodDeclaration.class).orElseThrow();
+                }
+                catch (NoSuchElementException e) {
+                    return candidates;
+                }
+                List<Expression> localExpressions = methodNode.findAll(Expression.class);
+                List<Expression> le = localExpressions.stream()
+                    .filter(s -> (s.toString() + ";").equals(statement.toString()))
+                    .collect(Collectors.toList());
+                System.out.println("statement=");
+                System.out.println(statement.toString());
+                System.out.println("le=");
+                System.out.println(le);
+                System.out.println("\n");
+                
+                if (le.size() != 0){
+                    RepairUnit copiedUnit = new RepairUnit(le.get(0), RepairUnit.copy(repairUnit).getTargetNodeIndex(), RepairUnit.copy(repairUnit).getCompilationUnit());
+                    VariableReplacementOperation vr = new VariableReplacementOperation(copiedUnit);
+                    List<Node> copiedNodeList = vr.exec().stream()
+                        .map(s -> s.getTargetNode())
+                        .collect(Collectors.toList());
+                    for(Node copiedNode : copiedNodeList){
+                        NodeList<Statement> newNodeList = nodeList.addBefore((Statement)copiedNode, (Statement)targetNode);
+                        RepairUnit newCandidate = RepairUnit.copy(repairUnit);
+                        //taergetNodeの親ノード(多分BlockStmt)を丸ごと置き換えることでコピペしている
+                        newCandidate.getTargetNode().getParentNode().orElseThrow().replace(newNodeList.get(nodeList.indexOf(targetNode)).getParentNode().orElseThrow());
+                        candidates.add(newCandidate);
+                    }
+                }
+                */
+                
                 NodeList<Statement> newNodeList = nodeList.addBefore(statement, (Statement)targetNode);
                 RepairUnit newCandidate = RepairUnit.copy(repairUnit);
+                //taergetNodeの親ノード(多分BlockStmt)を丸ごと置き換えることでコピペしている
                 newCandidate.getTargetNode().getParentNode().orElseThrow().replace(newNodeList.get(nodeList.indexOf(targetNode)).getParentNode().orElseThrow());
-                candidates.add(newCandidate);
+                //candidates.add(newCandidate);
+                
+                //TODO 後者の置換方法
+                //TODO そもそもstatementがExpressionじゃないからVROになげてもはじかれる?
+                
+                RepairUnit newNewCandidate = RepairUnit.copy(newCandidate);
+                List<RepairUnit> units = getAllRepairUnit(newNewCandidate.getCompilationUnit());
+                List<RepairUnit> le = units.stream()
+                    .filter(unit -> unit.getTargetNode() instanceof Expression)
+                    .filter(unit -> (unit.toString() + ";").equals(statement.toString()))
+                    .collect(Collectors.toList());
+
+                /*
+                MethodDeclaration methodNode;
+                try {
+                    methodNode = statement.findParent(MethodDeclaration.class).orElseThrow();
+                }
+                catch (NoSuchElementException e) {
+                    return candidates;
+                }
+                List<Expression> localExpressions = methodNode.findAll(Expression.class);
+                List<Expression> le = localExpressions.stream()
+                    .filter(s -> (s.toString() + ";").equals(statement.toString()))
+                    .collect(Collectors.toList());
+                //System.out.println(localExpressions);
+                //System.out.println(statement.toString());
+                System.out.println(le);
+                */
+                
+                if (le.size() != 0){
+                    //RepairUnit copiedUnit = new RepairUnit(le.get(0), RepairUnit.copy(newCandidate).getTargetNodeIndex(), RepairUnit.copy(newCandidate).getCompilationUnit());
+                    //VariableReplacementOperation vr = new VariableReplacementOperation(copiedUnit);
+                    VariableReplacementOperation vr = new VariableReplacementOperation(le.get(0));
+                    List<RepairUnit> copiedNodeList = vr.exec();
+                    candidates.addAll(copiedNodeList);
+                }
+                
             }
         }
         return candidates;
@@ -126,6 +204,27 @@ public class CopyReplaceOperation implements AstOperation{
             System.err.println(e.getMessage());
             e.printStackTrace();
             return Optional.empty();
+        }
+    }
+
+    /**
+     * ソースコードから全てのASTノードを抽出し，修正単位であるRepairUnitを取得する.
+     * 
+     * @param sourceCode AST抽出対象のソースコード
+     * @return 修正対象のASTノードとコンパイルユニットを持った修正単位であるRepairUnitのリスト
+     */
+    private List<RepairUnit> getAllRepairUnit(CompilationUnit compilationUnit){
+        List<RepairUnit> repairUnits = new ArrayList<RepairUnit>();
+        for(int i = 0;/*終了条件なし*/; i++){
+            CompilationUnit newCompilationUnit;   //RepairUnitごとに新しいインスタンスの生成
+            newCompilationUnit = compilationUnit;
+            // なくなるまで順にASTノードを取り出す
+            try {
+                Node node = AstGenerator.findByLevelOrderIndex(newCompilationUnit.findRootNode(), i).orElseThrow(); 
+                repairUnits.add(new RepairUnit(node, i, compilationUnit)); 
+            } catch (NoSuchElementException e) {
+                return repairUnits;
+            }
         }
     }
 }
