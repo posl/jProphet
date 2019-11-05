@@ -10,9 +10,7 @@ import jp.posl.jprophet.Project;
 import jp.posl.jprophet.fl.FaultLocalization;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.LineNumberReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,7 +27,7 @@ public class ManualSpecification implements FaultLocalization{
 
     /**
      * バグの位置を指定して,その行の疑惑値を変化させる
-     * @param project
+     * @param repairConfigulation
      * @param specificationStrategyList 疑惑値の変更リスト
      */
     public ManualSpecification(RepairConfiguration repairConfigulation, List<SpecificationStrategy> specificationStrategyList){
