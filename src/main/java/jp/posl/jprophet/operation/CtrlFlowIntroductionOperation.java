@@ -1,7 +1,15 @@
 package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.Statement;
 
 import jp.posl.jprophet.RepairUnit;
 
@@ -12,7 +20,26 @@ import jp.posl.jprophet.RepairUnit;
  */
 public class CtrlFlowIntroductionOperation implements AstOperation{
     public List<RepairUnit> exec(RepairUnit repairUnit){
-        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
+        Node targetNode = repairUnit.getTargetNode();
+        if(!(targetNode instanceof Statement)) return new ArrayList<>();
+        BlockStmt blockStmt; 
+        try {
+            blockStmt = targetNode.findParent(BlockStmt.class).orElseThrow();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+        NodeList<Statement> statements = blockStmt.clone().getStatements();
+        try {
+            statements.addBefore(new IfStmt(), (Statement)targetNode);
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+
+        RepairUnit newCandidate = RepairUnit.copy(repairUnit);
+        newCandidate.getTargetNode().findParent(BlockStmt.class)
+            .map(b -> b.setStatements(statements));
+        
+        List<RepairUnit> candidates = new ArrayList<RepairUnit>(Arrays.asList(newCandidate));
         return candidates;
     }
 }

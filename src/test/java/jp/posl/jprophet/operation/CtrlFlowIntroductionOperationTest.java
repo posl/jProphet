@@ -12,16 +12,16 @@ import java.util.stream.Collectors;
 
 public class CtrlFlowIntroductionOperationTest {
     /**
-     * ループ構文以外でreturnをするifブロックが挿入されているかテスト
+     * returnをするifブロックが挿入されているかテスト
      */
     @Test public void testForAddReturn(){
         final String targetSource = new StringBuilder().append("")
         .append("public class A {\n")
-        .append("   private String fa = \"a\";\n")
-        .append("   private void ma() {\n")
-        .append("       String la = \"b\";\n")
-        .append("       fa = \"b\";\n")
-        .append("   }\n")
+        .append("    private String fa = \"a\";\n")
+        .append("    private void ma() {\n")
+        .append("        String la = \"b\";\n")
+        .append("        fa = \"b\";\n")
+        .append("    }\n")
         .append("}\n")
         .toString();
 
@@ -29,28 +29,26 @@ public class CtrlFlowIntroductionOperationTest {
 
         expectedSources.add(new StringBuilder().append("")
             .append("public class A {\n")
-            .append("   private String fa = \"a\";\n")
-            .append("   private void ma() {\n")
-            .append("       if(JPROPHET_ABST_HOLE){\n")
-            .append("           return;\n")
-            .append("       }\n")
-            .append("       String la = \"b\";\n")
-            .append("       fa = \"b\";\n")
-            .append("   }\n")
+            .append("    private String fa = \"a\";\n")
+            .append("    private void ma() {\n")
+            .append("        if (false)\n")
+            .append("            return;\n")
+            .append("        String la = \"b\";\n")
+            .append("        fa = \"b\";\n")
+            .append("    }\n")
             .append("}\n")
             .toString()
         );
 
         expectedSources.add(new StringBuilder().append("")
             .append("public class A {\n")
-            .append("   private String fa = \"a\";\n")
-            .append("   private void ma() {\n")
-            .append("       String la = \"b\";\n")
-            .append("       if(JPROPHET_ABST_HOLE){\n")
-            .append("           return;\n")
-            .append("       }\n")
-            .append("       fa = \"b\";\n")
-            .append("   }\n")
+            .append("    private String fa = \"a\";\n")
+            .append("    private void ma() {\n")
+            .append("        String la = \"b\";\n")
+            .append("        if (false)\n")
+            .append("            return;\n")
+            .append("        fa = \"b\";\n")
+            .append("    }\n")
             .append("}\n")
             .toString()
         );
