@@ -2,16 +2,17 @@ package jp.posl.jprophet;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
+import jp.posl.jprophet.project.GradleProject;
+import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.fl.FaultLocalization;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.spectrumbased.strategy.*;
-
+import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.TestExecutor;
 
 public class JProphetMain {
@@ -22,18 +23,19 @@ public class JProphetMain {
         if(args.length > 0){
             projectPath = args[0];
         }
-        final Project                  project                  = new Project(projectPath);
+        final Project                  project                  = new GradleProject(projectPath);
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
         final Coefficient              coefficient              = new Jaccard();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
-        final RepairCandidateGenerator repairCandidateGenerator = new RepairCandidateGenerator();
+        final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
         final PlausibilityAnalyzer     plausibilityAnalyzer     = new PlausibilityAnalyzer();  
+        final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
         final StagedCondGenerator      stagedCondGenerator      = new StagedCondGenerator();
         final TestExecutor             testExecutor             = new TestExecutor();
         final FixedProjectGenerator    fixedProjectGenerator    = new FixedProjectGenerator();
 
         final JProphetMain jprophet = new JProphetMain();
-        jprophet.run(config, faultLocalization, repairCandidateGenerator, plausibilityAnalyzer, stagedCondGenerator, testExecutor, fixedProjectGenerator);
+        jprophet.run(config, faultLocalization, patchCandidateGenerator, plausibilityAnalyzer, patchEvaluator, stagedCondGenerator, testExecutor, fixedProjectGenerator);
 
         try {
             FileUtils.deleteDirectory(new File(buildDir));
@@ -45,24 +47,23 @@ public class JProphetMain {
     }
 
     private void run(RepairConfiguration config, FaultLocalization faultLocalization,
-            RepairCandidateGenerator repairCandidateGenerator, PlausibilityAnalyzer plausibilityAnalyzer,
+            PatchCandidateGenerator patchCandidateGenerator, PlausibilityAnalyzer plausibilityAnalyzer, PatchEvaluator patchEvaluator,
             StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, FixedProjectGenerator fixedProjectGenerator
             ) {
         // フォルトローカライゼーション
         List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
-        List<RepairCandidate> abstractRepairCandidates = new ArrayList<RepairCandidate>();
-        abstractRepairCandidates.addAll(repairCandidateGenerator.exec(config.getTargetProject()));
+        List<PatchCandidate> abstractPatchCandidates = patchCandidateGenerator.exec(config.getTargetProject());
         
         // 学習モデルとフォルトローカライゼーションのスコアによってソート
-        List<RepairCandidate> sortedAbstractRepairCandidate = plausibilityAnalyzer.sortRepairCandidates(abstractRepairCandidates, suspiciousenesses);
+        patchEvaluator.descendingSortBySuspiciousness(abstractPatchCandidates, suspiciousenesses);
         
         // 抽象修正候補中の条件式の生成
-        for(RepairCandidate abstractRepairCandidate: sortedAbstractRepairCandidate) {
-            List<RepairCandidate> repairCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
-            for(RepairCandidate repairCandidate: repairCandidates) {
-                Project fixedProject = fixedProjectGenerator.exec(config, repairCandidate);
+        for(PatchCandidate abstractRepairCandidate: abstractPatchCandidates) {
+            List<PatchCandidate> patchCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
+            for(PatchCandidate patchCandidate: patchCandidates) {
+                Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
                 if(testExecutor.run(new RepairConfiguration(config, fixedProject))) {
                     return;
                 }

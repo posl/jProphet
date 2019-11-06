@@ -86,8 +86,3 @@ run {
         args []
     }
 }
-
-// task javadocPrivate(type: Javadoc){
-//     source = sourceSets.main.allJava
-//     options.showFromPrivate()
-// }

@@ -12,6 +12,9 @@ import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
+
+import jp.posl.jprophet.project.Project;
+
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardJavaFileManager;
@@ -30,7 +33,7 @@ public class ProjectBuilder {
      */
     public boolean build(RepairConfiguration config) {
         final Project project = config.getTargetProject();
-        List<String> filePaths = Stream.concat(project.getSourceFilePaths().stream(), project.getTestFilePaths().stream()).collect(Collectors.toList());
+        List<String> filePaths = Stream.concat(project.getSrcFilePaths().stream(), project.getTestFilePaths().stream()).collect(Collectors.toList());
         final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         final StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 

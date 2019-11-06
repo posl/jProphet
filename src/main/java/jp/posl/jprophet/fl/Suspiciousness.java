@@ -5,12 +5,12 @@ package jp.posl.jprophet.fl;
  */
 public class Suspiciousness {
     final private String fqn;
-    final private int line;
+    final private int lineNumber;
     final private double value;
 
-    public Suspiciousness(String fqn, int line, double value) {
+    public Suspiciousness(String fqn, int lineNumber, double value) {
         this.fqn = fqn;
-        this.line = line;
+        this.lineNumber = lineNumber;
         this.value = value;
     }
 
@@ -18,8 +18,8 @@ public class Suspiciousness {
         return fqn;
     }
 
-    public int getLine(){
-        return line;
+    public int getLineNumber(){
+        return lineNumber;
     }
 
     public double getValue() {

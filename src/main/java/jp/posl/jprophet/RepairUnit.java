@@ -1,9 +1,7 @@
 package jp.posl.jprophet;
 
-import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 import com.github.javaparser.printer.*;
 
@@ -28,11 +26,12 @@ public class RepairUnit {
 
     /**
      * RepairUnitインスタンスのディープコピーを作成する
+     * （JavaParserのNodeクラスの提供するcloneメソッドが親ノードの参照をコピーしないためこのメソッドを作成した）
      *   
      * @param repairUnit コピー元のRepairUnitインスタンス
      * @return コピーされたRepairUnitインスタンス
      */
-    public static RepairUnit copy(RepairUnit repairUnit){
+    public static RepairUnit deepCopy(RepairUnit repairUnit){
         int targetNodeIndex = repairUnit.getTargetNodeIndex();
         CompilationUnit cu = repairUnit.getCompilationUnit();
         CompilationUnit newCu = cu.clone();
@@ -72,16 +71,6 @@ public class RepairUnit {
      */
     @Override public String toString(){
         return this.targetNode.toString();
-    }
-
-    /**
-     * 修正対象のステートメントのソースファイル全体における行番号を返す 
-     * @return 修正対象のステートメントのソースファイル全体における行番号
-     */
-    public int getLineNumber(){
-        // TODO ASTから行番号を返す．未実装
-        TokenRange range = this.targetNode.getTokenRange().get();
-        return 0;
     }
 
     /**

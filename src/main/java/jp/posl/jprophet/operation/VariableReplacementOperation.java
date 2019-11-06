@@ -51,6 +51,7 @@ public class VariableReplacementOperation implements AstOperation {
      * 一つの修正パッチ候補につき一箇所の置換
      * @return 生成された修正パッチ候補のリスト
      */
+    @Override
     public List<RepairUnit> exec() {
         List<RepairUnit> candidates = new ArrayList<RepairUnit>();
 
@@ -161,7 +162,7 @@ public class VariableReplacementOperation implements AstOperation {
                 if(originalAssignedValueName.equals(varName)){
                     continue;
                 }
-                RepairUnit newCandidate = RepairUnit.copy(this.repairUnit);
+                RepairUnit newCandidate = RepairUnit.deepCopy(this.repairUnit);
                 ((AssignExpr) newCandidate.getTargetNode()).setValue(constructExpr.apply(varName));
                 candidates.add(newCandidate);
             }
@@ -187,7 +188,7 @@ public class VariableReplacementOperation implements AstOperation {
                     if(originalArgValue.equals(varName)){
                         continue;
                     }
-                    RepairUnit newCandidate = RepairUnit.copy(this.repairUnit);
+                    RepairUnit newCandidate = RepairUnit.deepCopy(this.repairUnit);
                     MethodCallExpr methodCallExpr = (MethodCallExpr)newCandidate.getTargetNode();
                     methodCallExpr.setArgument(i, constructExpr.apply(varName));
                     candidates.add(newCandidate);
