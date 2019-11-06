@@ -2,7 +2,6 @@ package jp.posl.jprophet;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 import com.github.javaparser.printer.*;
 
 public class RepairUnit {
@@ -21,7 +20,6 @@ public class RepairUnit {
         this.targetNode = targetNode;
         this.targetNodeIndex = targetNodeIndex;
         this.compilationUnit = compilationUnit;
-        LexicalPreservingPrinter.setup(this.compilationUnit);
     }
 
     /**
@@ -58,10 +56,11 @@ public class RepairUnit {
 
     /**
      * CompilationUnitから生成されるソースコードを返す
+     * TODO: LexicalPreservingPrinterを使おうとするとエラーが出るのでPrettyPrinterを使っている
+     * 本当はLPPの方が元のソースコードの再現度が高い
      * @return CompilationUnitから生成されるソースコード
      */
     public String getSourceCode() {
-        //return LexicalPreservingPrinter.print(this.compilationUnit);
         return new PrettyPrinter(new PrettyPrinterConfiguration()).print(this.compilationUnit);
     }
 
