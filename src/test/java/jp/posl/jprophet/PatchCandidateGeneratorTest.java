@@ -2,17 +2,19 @@ package jp.posl.jprophet;
 
 import org.junit.Test;
 
+import jp.posl.jprophet.operation.AstOperation;
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.project.FileLocator;
-import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;
+import jp.posl.jprophet.project.GradleProject;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -26,16 +28,21 @@ public class PatchCandidateGeneratorTest {
     @Test public void testForExec(){
         // 一つのファイルを持ったプロジェクトのスタブを生成
         String filePath = "src/test/resources/test01.java";
-        String fileFqn = "test01";
-        FileLocator fileLocator = new FileLocator(filePath, fileFqn);
-        List<FileLocator> fileLocators = List.of(fileLocator);
+        List<FileLocator> fileLocatorsForTest = new ArrayList<FileLocator>(Arrays.asList(new FileLocator(filePath, null)));
         Project stubProject = mock(GradleProject.class);
-        when(stubProject.getSrcFileLocators()).thenReturn(fileLocators);
+        when(stubProject.getSrcFileLocators()).thenReturn(fileLocatorsForTest);
+        
+        // 必ず一つのRepairUnitを返すAstOperationの匿名クラスを実装してGeneratorに注入
+        AstOperation stubOperation = new AstOperation(){
+            @Override
+            public List<RepairUnit> exec(RepairUnit repairUnit) {
+                return List.of(new RepairUnit(null, 0, null)); 
+            }
+        };
 
-        List<PatchCandidate> candidates = this.patchCandidateGenerator.exec(stubProject);
+        List<PatchCandidate> candidates = this.patchCandidateGenerator.exec(stubProject, List.of(stubOperation));
 
-        // 各operationが呼ばれて修正パッチ候補を生成しているかテスト
-        // 現状VariableReplacementOperationだけが修正パッチ候補を一つ生成する
-        assertThat(candidates.size()).isEqualTo(1);
+        int astNodeNumOfTest01 = 17;
+        assertThat(candidates.size()).isEqualTo(astNodeNumOfTest01);
     }
 }

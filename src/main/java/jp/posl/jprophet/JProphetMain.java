@@ -2,6 +2,8 @@ package jp.posl.jprophet;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -12,6 +14,7 @@ import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.fl.FaultLocalization;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.spectrumbased.strategy.*;
+import jp.posl.jprophet.operation.*;
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.TestExecutor;
 
@@ -34,8 +37,17 @@ public class JProphetMain {
         final TestExecutor             testExecutor             = new TestExecutor();
         final FixedProjectGenerator    fixedProjectGenerator    = new FixedProjectGenerator();
 
+        final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(
+            new CondRefinementOperation(),
+            new CondIntroductionOperation(), 
+            new CtrlFlowIntroductionOperation(), 
+            new InsertInitOperation(), 
+            new VariableReplacementOperation(),
+            new CopyReplaceOperation()
+        ));
+
         final JProphetMain jprophet = new JProphetMain();
-        jprophet.run(config, faultLocalization, patchCandidateGenerator, plausibilityAnalyzer, patchEvaluator, stagedCondGenerator, testExecutor, fixedProjectGenerator);
+        jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, plausibilityAnalyzer, patchEvaluator, stagedCondGenerator, testExecutor, fixedProjectGenerator);
 
         try {
             FileUtils.deleteDirectory(new File(buildDir));
@@ -47,14 +59,14 @@ public class JProphetMain {
     }
 
     private void run(RepairConfiguration config, FaultLocalization faultLocalization,
-            PatchCandidateGenerator patchCandidateGenerator, PlausibilityAnalyzer plausibilityAnalyzer, PatchEvaluator patchEvaluator,
+            PatchCandidateGenerator patchCandidateGenerator, List<AstOperation> operations, PlausibilityAnalyzer plausibilityAnalyzer, PatchEvaluator patchEvaluator,
             StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, FixedProjectGenerator fixedProjectGenerator
             ) {
         // フォルトローカライゼーション
         List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
-        List<PatchCandidate> abstractPatchCandidates = patchCandidateGenerator.exec(config.getTargetProject());
+        List<PatchCandidate> abstractPatchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations);
         
         // 学習モデルとフォルトローカライゼーションのスコアによってソート
         patchEvaluator.descendingSortBySuspiciousness(abstractPatchCandidates, suspiciousenesses);
