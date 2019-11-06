@@ -91,81 +91,29 @@ public class CopyReplaceOperation implements AstOperation{
         for (Statement statement : statements){            
             NodeList<Statement> nodeList = blockStmt.clone().getStatements();
             if(targetNode instanceof Statement && nodeList.indexOf(targetNode) != -1){
-                //TODO コピペする前にVariableReplacementOperationを使って値の置換操作を行うクラス
-                //TODO statementをRepairUnitにしてVROになげる?
-                //TODO or コピペした後のrepairUnitをcopyしてtargetNodeをsrtatementに変えてVROになげる?
-                
-                /*
-                MethodDeclaration methodNode;
-                try {
-                    methodNode = statement.findParent(MethodDeclaration.class).orElseThrow();
-                }
-                catch (NoSuchElementException e) {
-                    return candidates;
-                }
-                List<Expression> localExpressions = methodNode.findAll(Expression.class);
-                List<Expression> le = localExpressions.stream()
-                    .filter(s -> (s.toString() + ";").equals(statement.toString()))
-                    .collect(Collectors.toList());
-                System.out.println("statement=");
-                System.out.println(statement.toString());
-                System.out.println("le=");
-                System.out.println(le);
-                System.out.println("\n");
-                
-                if (le.size() != 0){
-                    RepairUnit copiedUnit = new RepairUnit(le.get(0), RepairUnit.copy(repairUnit).getTargetNodeIndex(), RepairUnit.copy(repairUnit).getCompilationUnit());
-                    VariableReplacementOperation vr = new VariableReplacementOperation(copiedUnit);
-                    List<Node> copiedNodeList = vr.exec().stream()
-                        .map(s -> s.getTargetNode())
-                        .collect(Collectors.toList());
-                    for(Node copiedNode : copiedNodeList){
-                        NodeList<Statement> newNodeList = nodeList.addBefore((Statement)copiedNode, (Statement)targetNode);
-                        RepairUnit newCandidate = RepairUnit.copy(repairUnit);
-                        //taergetNodeの親ノード(多分BlockStmt)を丸ごと置き換えることでコピペしている
-                        newCandidate.getTargetNode().getParentNode().orElseThrow().replace(newNodeList.get(nodeList.indexOf(targetNode)).getParentNode().orElseThrow());
-                        candidates.add(newCandidate);
-                    }
-                }
-                */
-                
                 NodeList<Statement> newNodeList = nodeList.addBefore(statement, (Statement)targetNode);
                 RepairUnit newCandidate = RepairUnit.copy(repairUnit);
                 //taergetNodeの親ノード(多分BlockStmt)を丸ごと置き換えることでコピペしている
                 newCandidate.getTargetNode().getParentNode().orElseThrow().replace(newNodeList.get(nodeList.indexOf(targetNode)).getParentNode().orElseThrow());
                 //candidates.add(newCandidate);
-                
-                //TODO 後者の置換方法
-                //TODO そもそもstatementがExpressionじゃないからVROになげてもはじかれる?
-                
-                RepairUnit newNewCandidate = RepairUnit.copy(newCandidate);
-                List<RepairUnit> units = getAllRepairUnit(newNewCandidate.getCompilationUnit());
+                //List<RepairUnit> units = getAllRepairUnit(newCandidate.getCompilationUnit());
+
+                //Nodeをコピペして任意の場所に入れると,コピペ前のNodeの情報がそのまま入るので行番号がおかしくなる
+                //compilationUnitのtoString()ではちゃんとステートメントが意図した場所にコピペされている
+                //compilationUnitをtoString()してAstGeneratorにかけてcompilationUnitを作り直す
+                //問題点 : compilationUnitをtoString()すると改行や空白が入ってしまうので元のコードと形が変わる
+                //        行数が変わるからVariableReplacementにかけたい行がわからない 
+                AstGenerator astGenerator = new AstGenerator();
+                List<RepairUnit> units = astGenerator.getAllRepairUnit(newCandidate.getCompilationUnit().toString());
                 List<RepairUnit> le = units.stream()
                     .filter(unit -> unit.getTargetNode() instanceof Expression)
                     .filter(unit -> (unit.toString() + ";").equals(statement.toString()))
+                    //.filter(unit -> getBeginLineNumber(unit.getTargetNode()).orElseThrow() == (getBeginLineNumber(targetNode).orElseThrow()))
                     .collect(Collectors.toList());
-
-                /*
-                MethodDeclaration methodNode;
-                try {
-                    methodNode = statement.findParent(MethodDeclaration.class).orElseThrow();
-                }
-                catch (NoSuchElementException e) {
-                    return candidates;
-                }
-                List<Expression> localExpressions = methodNode.findAll(Expression.class);
-                List<Expression> le = localExpressions.stream()
-                    .filter(s -> (s.toString() + ";").equals(statement.toString()))
-                    .collect(Collectors.toList());
-                //System.out.println(localExpressions);
-                //System.out.println(statement.toString());
-                System.out.println(le);
-                */
                 
                 if (le.size() != 0){
-                    //RepairUnit copiedUnit = new RepairUnit(le.get(0), RepairUnit.copy(newCandidate).getTargetNodeIndex(), RepairUnit.copy(newCandidate).getCompilationUnit());
-                    //VariableReplacementOperation vr = new VariableReplacementOperation(copiedUnit);
-                    VariableReplacementOperation vr = new VariableReplacementOperation(le.get(0));
+                    RepairUnit leunit = le.get(1); //TODO get(1)じゃないと正しく置換できないがエラーが起きる
+                    VariableReplacementOperation vr = new VariableReplacementOperation(leunit);
                     List<RepairUnit> copiedNodeList = vr.exec();
                     candidates.addAll(copiedNodeList);
                 }
@@ -210,7 +158,7 @@ public class CopyReplaceOperation implements AstOperation{
     /**
      * ソースコードから全てのASTノードを抽出し，修正単位であるRepairUnitを取得する.
      * 
-     * @param sourceCode AST抽出対象のソースコード
+     * @param compilationUnit AST抽出対象のソースコード
      * @return 修正対象のASTノードとコンパイルユニットを持った修正単位であるRepairUnitのリスト
      */
     private List<RepairUnit> getAllRepairUnit(CompilationUnit compilationUnit){

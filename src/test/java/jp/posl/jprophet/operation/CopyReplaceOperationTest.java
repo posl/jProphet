@@ -20,12 +20,14 @@ public class CopyReplaceOperationTest{
     .append("   private String fb = \"a\";\n")
     .append("   private void ma(String pa, String pb) {\n")
     .append("       String la = \"b\";\n")
+    .append("       la = \"hoge\";\n")
     //.append("       int k = 3;\n")
     //.append("       if (k == 5) {\n")
     //.append("           k = 5;\n")
     //.append("       }\n")
     .append("       this.mb(\"hoge\", \"fuga\");\n")
     .append("       String ld = \"d\";\n")
+    .append("       ld = \"hoge\";\n")
     .append("   }\n")
     .append("   private void mb(String a, String b) {\n")
     .append("   }\n")
@@ -45,6 +47,7 @@ public class CopyReplaceOperationTest{
      */
     @Test public void testForNumOfRepairCopied(){
         //assertThat(candidates.size()).isEqualTo(14);
+        System.out.println(candidates);
         return;
     }
 
