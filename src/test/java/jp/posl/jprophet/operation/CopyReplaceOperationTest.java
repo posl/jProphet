@@ -37,8 +37,8 @@ public class CopyReplaceOperationTest{
     @Before public void setUp(){
         List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
         for(RepairUnit repairUnit : repairUnits){
-            CopyReplaceOperation cr = new CopyReplaceOperation(repairUnit);
-            this.candidates.addAll(cr.exec());
+            CopyReplaceOperation cr = new CopyReplaceOperation();
+            this.candidates.addAll(cr.exec(repairUnit));
         }
     }
 
@@ -110,8 +110,8 @@ public class CopyReplaceOperationTest{
         List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(sourceThatHasNothingToCopy);
         List<RepairUnit> candidates = new ArrayList<RepairUnit>();
         for(RepairUnit repairUnit : repairUnits){
-            CopyReplaceOperation cr = new CopyReplaceOperation(repairUnit);
-            candidates.addAll(cr.exec());
+            CopyReplaceOperation cr = new CopyReplaceOperation();
+            candidates.addAll(cr.exec(repairUnit));
         }
 
         //assertThat(candidates.size()).isZero();

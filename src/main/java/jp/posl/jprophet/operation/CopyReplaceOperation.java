@@ -24,22 +24,16 @@ import jp.posl.jprophet.RepairUnit;
  */
 public class CopyReplaceOperation implements AstOperation{
 
-    private final RepairUnit repairUnit;
-    private final Node targetNode;
-
-    public CopyReplaceOperation(RepairUnit repairUnit){
-        this.repairUnit = repairUnit;
-        this.targetNode = this.repairUnit.getTargetNode();
-    }
 
     @Override
-    public List<RepairUnit> exec(){
+    public List<RepairUnit> exec(RepairUnit repairUnit){
         List<RepairUnit> candidates = new ArrayList<RepairUnit>();
+        Node targetNode = repairUnit.getTargetNode();
         //修正対象のステートメントの属するメソッドノードを取得
         //メソッド内のステートメント(修正対象のステートメントより前のもの)を収集
-        List<Statement> statements = collectLocalStatements(this.targetNode);
+        List<Statement> statements = collectLocalStatements(targetNode);
         if (statements.size() != 0){
-            candidates = copyStatementBeforeTarget(statements, this.repairUnit);
+            candidates = copyStatementBeforeTarget(statements, repairUnit);
         }
         //修正対象のステートメントの直前に,収集したステートメントのNodeを追加
         return candidates;
@@ -91,7 +85,7 @@ public class CopyReplaceOperation implements AstOperation{
             NodeList<Statement> nodeList = blockStatement.clone().getStatements();
             if(targetNode instanceof Statement && nodeList.indexOf(targetNode) != -1){
                 NodeList<Statement> newNodeList = nodeList.addBefore(statement, (Statement)targetNode);
-                RepairUnit newCandidate = RepairUnit.copy(repairUnit);
+                RepairUnit newCandidate = RepairUnit.deepCopy(repairUnit);
                 //taergetNodeの親ノード(多分BlockStmt)を丸ごと置き換えることでコピペしている
                 newCandidate.getTargetNode().getParentNode().orElseThrow().replace(newNodeList.get(nodeList.indexOf(targetNode)).getParentNode().orElseThrow());
                 //candidates.add(newCandidate);
@@ -112,8 +106,8 @@ public class CopyReplaceOperation implements AstOperation{
                 
                 if (le.size() != 0){
                     RepairUnit leunit = le.get(1);  //行番号でleが取得できればget(0)
-                    VariableReplacementOperation vr = new VariableReplacementOperation(leunit);
-                    List<RepairUnit> copiedNodeList = vr.exec();
+                    VariableReplacementOperation vr = new VariableReplacementOperation();
+                    List<RepairUnit> copiedNodeList = vr.exec(leunit);
                     candidates.addAll(copiedNodeList);
                 }
                 

@@ -1,6 +1,6 @@
 package jp.posl.jprophet.fl.spectrumbased;
 
-import jp.posl.jprophet.Project;
+import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
@@ -13,7 +13,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,16 +20,15 @@ import java.util.stream.Collectors;
 public class SpectrumBasedFaultLocalizationTest{
     // 入力として用意するテスト用のプロジェクト
     final private String projectPath = "src/test/resources/testFLProject";
-    final private RepairConfiguration config = new RepairConfiguration("FLtmp", null, new Project(projectPath));
+    final private RepairConfiguration config = new RepairConfiguration("FLtmp", null, new GradleProject(projectPath));
     private Coefficient coefficient = new Jaccard();
 
     /**
      * FaultLocalizationが動作しているかどうかのテスト
      */
     @Test public void testForSourceFilePaths(){
-        List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
         SpectrumBasedFaultLocalization faultLocalization = new SpectrumBasedFaultLocalization(config, coefficient);
-        suspiciousnessList = faultLocalization.exec();
+        List<Suspiciousness> suspiciousnessList = faultLocalization.exec();
 
         //疑惑値のリストの中にテスト対象のファイルのFQDNが存在するかチェック
         List<String> pathList = suspiciousnessList.stream()
@@ -44,15 +42,15 @@ public class SpectrumBasedFaultLocalizationTest{
         //それぞれのテスト対象ファイルの行数が正しいかチェック
         List<Integer> iflineList = suspiciousnessList.stream()
             .filter(s -> "testFLProject.Ifstatement".equals(s.getFQN()))
-            .map(s -> s.getLine())
+            .map(s -> s.getLineNumber())
             .collect(Collectors.toList());
         List<Integer> applineList = suspiciousnessList.stream()
             .filter(s -> "testFLProject.App".equals(s.getFQN()))
-            .map(s -> s.getLine())
+            .map(s -> s.getLineNumber())
             .collect(Collectors.toList());
         List<Integer> forlineList = suspiciousnessList.stream()
             .filter(s -> "testFLProject.Forstatement".equals(s.getFQN()))
-            .map(s -> s.getLine())
+            .map(s -> s.getLineNumber())
             .collect(Collectors.toList());
 
         assertThat(iflineList.size()).isEqualTo(14);
@@ -61,7 +59,7 @@ public class SpectrumBasedFaultLocalizationTest{
 
         //Ifstatementの12行目の疑惑値 (Jaccard)
         List<Suspiciousness> ifline12 = suspiciousnessList.stream()
-            .filter(s -> "testFLProject.Ifstatement".equals(s.getFQN()) && s.getLine() == 12)
+            .filter(s -> "testFLProject.Ifstatement".equals(s.getFQN()) && s.getLineNumber() == 12)
             .collect(Collectors.toList());
         assertThat(ifline12.size()).isEqualTo(1);
         double sus12 = 1; //1/(1+0+0)
@@ -69,7 +67,7 @@ public class SpectrumBasedFaultLocalizationTest{
 
         //Ifstatementの9行目の疑惑値 (Jaccard)
         List<Suspiciousness> ifline9 = suspiciousnessList.stream()
-            .filter(s -> "testFLProject.Ifstatement".equals(s.getFQN()) && s.getLine() == 9)
+            .filter(s -> "testFLProject.Ifstatement".equals(s.getFQN()) && s.getLineNumber() == 9)
             .collect(Collectors.toList());
         assertThat(ifline9.size()).isEqualTo(1);
         double sus9 = (double)1/(double)3; // 1/(1+2+0)

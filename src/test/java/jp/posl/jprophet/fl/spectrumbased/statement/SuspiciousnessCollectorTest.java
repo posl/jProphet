@@ -1,7 +1,7 @@
 package jp.posl.jprophet.fl.spectrumbased.statement;
 
 import jp.posl.jprophet.RepairConfiguration;
-import jp.posl.jprophet.Project;
+import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
@@ -33,7 +33,7 @@ public class SuspiciousnessCollectorTest{
 
     @Before public void setup(){
         this.projectPath = "src/test/resources/testFLProject";
-        this.config = new RepairConfiguration("./SCtmp/", null, new Project(this.projectPath));
+        this.config = new RepairConfiguration("./SCtmp/", null, new GradleProject(this.projectPath));
         this.SourceClassFilePaths.add("testFLProject.Forstatement");
         this.SourceClassFilePaths.add("testFLProject.Ifstatement");
         this.SourceClassFilePaths.add("testFLProject.App");
@@ -57,27 +57,27 @@ public class SuspiciousnessCollectorTest{
         CoverageCollector coverageCollector = new CoverageCollector("SCtmp");
 
         try {
-            //testResults = coverageCollector.exec(sourceClass, testClass);
             testResults = coverageCollector.exec(SourceClassFilePaths, TestClassFilePaths);
         } catch (Exception e){
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
 
-        SuspiciousnessCollector suspiciousnessCalculator = new SuspiciousnessCollector(testResults, coefficient);
-        suspiciousnessCalculator.exec();
+        SuspiciousnessCollector suspiciousnessCollector = new SuspiciousnessCollector(testResults, coefficient);
+        suspiciousnessCollector.exec();
+        List<Suspiciousness> suspiciousnesses = suspiciousnessCollector.getSuspiciousnesses();
 
         //Ifstatementの3行目の疑惑値 (Jaccard)
-        List<Suspiciousness> ifline3 = suspiciousnessCalculator.getSuspiciousnessList().stream()
-            .filter(s -> "testFLProject.Ifstatement".equals(s.getFQN()) && s.getLine() == 3)
+        List<Suspiciousness> ifline3 = suspiciousnesses.stream()
+            .filter(s -> "testFLProject.Ifstatement".equals(s.getFQN()) && s.getLineNumber() == 3)
             .collect(Collectors.toList());
         assertThat(ifline3.size()).isEqualTo(1);
         double sus3 = 0.2; //1/(1+0+4)
         assertThat(ifline3.get(0).getValue()).isEqualTo(sus3);
 
         //Ifstatementの6行目の疑惑値 (Jaccard)
-        List<Suspiciousness> ifline6 = suspiciousnessCalculator.getSuspiciousnessList().stream()
-            .filter(s -> "testFLProject.Ifstatement".equals(s.getFQN()) && s.getLine() == 6)
+        List<Suspiciousness> ifline6 = suspiciousnesses.stream()
+            .filter(s -> "testFLProject.Ifstatement".equals(s.getFQN()) && s.getLineNumber() == 6)
             .collect(Collectors.toList());
         assertThat(ifline6.size()).isEqualTo(1);
         double sus6 = 0; //0/(0+1+1)

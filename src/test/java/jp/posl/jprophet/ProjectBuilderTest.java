@@ -4,6 +4,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import jp.posl.jprophet.project.GradleProject;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +21,7 @@ public class ProjectBuilderTest {
      */
     @Before public void setUpProject(){
         this.buildDir = new File("./tmp/");
-        this.config = new RepairConfiguration(buildDir.getPath(), null, new Project("src/test/resources/testGradleProject01"));
+        this.config = new RepairConfiguration(buildDir.getPath(), null, new GradleProject("src/test/resources/testGradleProject01"));
         this.builder = new ProjectBuilder();
     }
 
