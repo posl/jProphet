@@ -22,7 +22,7 @@ import jp.posl.jprophet.RepairConfiguration;
 public class SpotBugsExecutor {
 
     private final String resultFileName;
-    private final static String resultDir = "./SBresult";
+    private final static String resultDir = "./tmp/SBresult";
 
 
     /**

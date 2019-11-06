@@ -19,15 +19,12 @@ public class SpotBugsExecutorTest {
      */
     @Test
     public void testForExec() {
-        final String outDir = "./SBtmp";             // テストプロジェクトのクラスパス
-        final String resultDir = "./SBresult";       // SpotBugsの実行結果を格納するパス
-        SpotBugsExecutor executor = new SpotBugsExecutor(resultDir);
-        final RepairConfiguration config = new RepairConfiguration(outDir, null, new Project("src/test/resources/testSBProject01"));
+        SpotBugsExecutor executor = new SpotBugsExecutor("result");
+        final RepairConfiguration config = new RepairConfiguration("./tmp/SBout", null, new Project("src/test/resources/testSBProject01"));
         executor.exec(config);
         assertThat(new File(executor.getResultFilePath()).exists()).isTrue();
         try {
-			FileUtils.deleteDirectory(new File(resultDir));
-            FileUtils.deleteDirectory(new File(outDir));
+			FileUtils.deleteDirectory(new File("./tmp"));
 		} catch (IOException e) {
             System.err.println(e.getMessage());
 			e.printStackTrace();
