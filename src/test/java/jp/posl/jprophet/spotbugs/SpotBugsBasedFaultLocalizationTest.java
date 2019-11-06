@@ -22,8 +22,7 @@ public class SpotBugsBasedFaultLocalizationTest {
      */
     @Test
     public void testForExec() {
-        final String outDir = "./SBtmp";             // テストプロジェクトのクラスパス
-        final RepairConfiguration config = new RepairConfiguration(outDir, null, new Project("src/test/resources/testSBProject01"));
+        final RepairConfiguration config = new RepairConfiguration("./tmp/SBtmp", null, new Project("src/test/resources/testSBProject01"));
         final SpotBugsBasedFaultLocalization fl = new SpotBugsBasedFaultLocalization(config);
         final List<Suspiciousness> suspiciousnessList = fl.exec();
 
@@ -35,13 +34,13 @@ public class SpotBugsBasedFaultLocalizationTest {
         assertThat(getSuspiciousness(suspiciousnessList, "testSBProject01.App", 8).getValue()).isEqualTo(0);
         assertThat(getSuspiciousness(suspiciousnessList, "testSBProject01.App2", 24).getValue()).isEqualTo(0);
 
+        
         try {
-			FileUtils.deleteDirectory(new File(outDir));
+			FileUtils.deleteDirectory(new File("./tmp"));
 		} catch (IOException e) {
             System.err.println(e.getMessage());
 			e.printStackTrace();
         }
-        SpotBugsExecutor.deleteResultDirectory();
 
 
     }
