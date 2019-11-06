@@ -6,7 +6,6 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
-import com.github.javaparser.JavaParser;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
@@ -62,7 +61,7 @@ public class CopyReplaceOperation implements AstOperation{
 
         List<Statement> localStatements = methodNode.findAll(Statement.class);
 
-        //this.targetStatementを含むそれより後ろの行の要素を全て消す
+        //targetStatementを含むそれより後ろの行の要素を全て消す
         //BlockStmtを全て除外する
         return localStatements.stream()
             .filter(s -> getEndLineNumber(s).orElseThrow() < getBeginLineNumber(targetNode).orElseThrow())
@@ -80,16 +79,16 @@ public class CopyReplaceOperation implements AstOperation{
         Node targetNode = repairUnit.getTargetNode();
         List<RepairUnit> candidates = new ArrayList<RepairUnit>();
 
-        BlockStmt blockStmt;
+        BlockStmt blockStatement;
         try {
-            blockStmt =  targetNode.findParent(BlockStmt.class).orElseThrow();
+            blockStatement =  targetNode.findParent(BlockStmt.class).orElseThrow();
         }
         catch (NoSuchElementException e) {
             return candidates;
         }
         
         for (Statement statement : statements){            
-            NodeList<Statement> nodeList = blockStmt.clone().getStatements();
+            NodeList<Statement> nodeList = blockStatement.clone().getStatements();
             if(targetNode instanceof Statement && nodeList.indexOf(targetNode) != -1){
                 NodeList<Statement> newNodeList = nodeList.addBefore(statement, (Statement)targetNode);
                 RepairUnit newCandidate = RepairUnit.copy(repairUnit);
@@ -112,7 +111,7 @@ public class CopyReplaceOperation implements AstOperation{
                     .collect(Collectors.toList());
                 
                 if (le.size() != 0){
-                    RepairUnit leunit = le.get(1); //TODO get(1)じゃないと正しく置換できないがエラーが起きる
+                    RepairUnit leunit = le.get(1);  //行番号でleが取得できればget(0)
                     VariableReplacementOperation vr = new VariableReplacementOperation(leunit);
                     List<RepairUnit> copiedNodeList = vr.exec();
                     candidates.addAll(copiedNodeList);
