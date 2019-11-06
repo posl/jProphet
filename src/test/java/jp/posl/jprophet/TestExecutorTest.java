@@ -9,6 +9,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import jp.posl.jprophet.project.GradleProject;
+import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.test.TestExecutor;
 
 public class TestExecutorTest {
@@ -26,9 +28,9 @@ public class TestExecutorTest {
     @Before
     public void setUpProject() {
         this.buildDir = new File("./tmp/");
-        this.correctProject = new Project("src/test/resources/testGradleProject01");
+        this.correctProject = new GradleProject("src/test/resources/testGradleProject01");
         this.correctConfig = new RepairConfiguration(buildDir.getPath(), null, correctProject);
-        this.errorProject = new Project("src/test/resources/testGradleProject02");
+        this.errorProject = new GradleProject("src/test/resources/testGradleProject02");
         this.errorConfig = new RepairConfiguration(buildDir.getPath(), null, errorProject);
         this.testExecutor = new TestExecutor();
     }

@@ -37,7 +37,7 @@ public class SpecificBugsWavy implements SpecificationStrategy{
      */
     public void calculate(List<Suspiciousness> suspiciousnessList){
         List<Suspiciousness> suspiciousness = suspiciousnessList.stream()
-            .filter(s -> fqn.equals(s.getFQN()) && s.getLine() == line)
+            .filter(s -> fqn.equals(s.getFQN()) && s.getLineNumber() == line)
             .collect(Collectors.toList());
         
         if (suspiciousness.size() == 1){
