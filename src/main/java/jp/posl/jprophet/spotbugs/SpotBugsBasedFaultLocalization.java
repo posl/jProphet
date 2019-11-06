@@ -11,6 +11,10 @@ import jp.posl.jprophet.fl.manualspecification.strategy.SpecificBugsByRange;
 import jp.posl.jprophet.fl.manualspecification.strategy.SpecificOneLineBug;
 import jp.posl.jprophet.fl.manualspecification.strategy.SpecificationStrategy;
 
+
+/**
+ * SpotBugsの結果によって疑惑値を決定する
+ */
 public class SpotBugsBasedFaultLocalization implements FaultLocalization {
 
 
@@ -19,8 +23,10 @@ public class SpotBugsBasedFaultLocalization implements FaultLocalization {
     private final static int suspiciousnessValue = 1;
 
     
+
     /**
-     * SpotBugsの結果によって疑惑値を決定する
+     * SpotBugsの結果によって疑惑値を決定するクラスの作成
+     * @param config 対象プロジェクトのconfig
      */
     public SpotBugsBasedFaultLocalization(RepairConfiguration config) {
         this.config = config;
@@ -30,6 +36,7 @@ public class SpotBugsBasedFaultLocalization implements FaultLocalization {
 
     /**
      * SpotBugsの結果による疑惑値を返す
+     * @return 疑惑値のリスト
      */
     @Override
     public List<Suspiciousness> exec() {

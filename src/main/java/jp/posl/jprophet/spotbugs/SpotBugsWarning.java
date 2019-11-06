@@ -1,5 +1,8 @@
 package jp.posl.jprophet.spotbugs;
 
+/**
+ * SpotBugsによるワーニングの情報をまとめたクラス
+ */
 public class SpotBugsWarning {
 
     private final String type;
@@ -9,7 +12,7 @@ public class SpotBugsWarning {
     
 
     /**
-     * SpotBugsによるワーニングの情報をまとめたクラス
+     * SpotBugsによるワーニングの情報をまとめたクラスの生成
      * @param type         ワーニングの種類
      * @param filePath     ワーニングを含むソースファイルパス（対象プロジェクトに対する相対パス）
      * @param start        ワーニングを含む箇所の始めの行

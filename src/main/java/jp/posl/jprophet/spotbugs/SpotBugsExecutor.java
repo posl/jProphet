@@ -16,6 +16,9 @@ import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
 
 
+/**
+ * SpotBugsを適用し、その結果を取得する
+ */
 public class SpotBugsExecutor {
 
     private final String resultFileName;
@@ -23,7 +26,7 @@ public class SpotBugsExecutor {
 
 
     /**
-     * SpotBugsを適用し、その結果を取得する
+     * SpotBugs実行クラスの作成
      * @param resultPath 実行結果のファイル名
      */
     public SpotBugsExecutor(final String resultFileName) {
@@ -33,7 +36,7 @@ public class SpotBugsExecutor {
 
     /**
      * プロジェクトをビルドし、SpotBugsを適用する
-     * @param RepairConfiguration 対象のプロジェクトのconfig
+     * @param config 対象のプロジェクトのconfig
      */
     public void exec(RepairConfiguration config) {
         final ProjectBuilder projectBuilder = new ProjectBuilder();
@@ -54,7 +57,7 @@ public class SpotBugsExecutor {
 
     /**
      * SpotBugsのAPIを利用して実行結果を取得する
-     * @param RepairConfiguration 対象のプロジェクトのconfig
+     * @param config 対象のプロジェクトのconfig
      * @throws FilterException
      * @throws IOException
      * @throws InterruptedException
