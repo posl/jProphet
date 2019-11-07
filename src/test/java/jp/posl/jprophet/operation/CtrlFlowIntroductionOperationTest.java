@@ -16,20 +16,20 @@ public class CtrlFlowIntroductionOperationTest {
      */
     @Test public void testForAddReturn(){
         final String targetSource = new StringBuilder().append("")
-        .append("public class A {\n")
-        .append("    private String fa = \"a\";\n")
-        .append("    private void ma() {\n")
-        .append("        String la = \"b\";\n")
-        .append("        fa = \"b\";\n")
-        .append("    }\n")
-        .append("}\n")
-        .toString();
+            .append("public class A {\n")
+            .append("    private String fa = \"a\";\n")
+            .append("    private void ma() {\n")
+            .append("        String la = \"b\";\n")
+            .append("        fa = \"b\";\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
 
         List<String> expectedSources = new ArrayList<String>();
 
         expectedSources.add(new StringBuilder().append("")
-            .append("public class A {\n")
-            .append("    private String fa = \"a\";\n")
+            .append("public class A {\n\n")
+            .append("    private String fa = \"a\";\n\n")
             .append("    private void ma() {\n")
             .append("        if (false)\n")
             .append("            return;\n")
@@ -41,8 +41,8 @@ public class CtrlFlowIntroductionOperationTest {
         );
 
         expectedSources.add(new StringBuilder().append("")
-            .append("public class A {\n")
-            .append("    private String fa = \"a\";\n")
+            .append("public class A {\n\n")
+            .append("    private String fa = \"a\";\n\n")
             .append("    private void ma() {\n")
             .append("        String la = \"b\";\n")
             .append("        if (false)\n")
