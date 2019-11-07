@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BugCollection version="3.1.10" sequence="0" timestamp="1572231474151" analysisTimestamp="1572231474152" release="">
+  <Project projectName="">
+    <Jar>/Users/asada_mac/jprophet/src/test/resources/testSBProject01/build/classes/java/main/testSBProject01/App2.class</Jar>
+    <Jar>/Users/asada_mac/jprophet/src/test/resources/testSBProject01/build/classes/java/main/testSBProject01/App.class</Jar>
+    <Jar>/Users/asada_mac/jprophet/src/test/resources/testSBProject01/build/classes/java/main/testSBProject01/App3.class</Jar>
+    <AuxClasspathEntry>/Users/asada_mac/jprophet/src/test/resources/testSBProject01/build/classes/java/main</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/asada_mac/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/27.0.1-jre/bd41a290787b5301e63929676d792c507bbc00ae/guava-27.0.1-jre.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/asada_mac/.gradle/caches/modules-2/files-2.1/com.google.guava/failureaccess/1.0.1/1dcf1de382a0bf95a3d8b0849546c88bac1292c9/failureaccess-1.0.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/asada_mac/.gradle/caches/modules-2/files-2.1/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/b421526c5f297295adef1c886e5246c39d4ac629/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/asada_mac/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/3.0.2/25ea2e8b0c338a877313bd4672d3fe056ea78f0d/jsr305-3.0.2.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/asada_mac/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-qual/2.5.2/cea74543d5904a30861a61b4643a5f2bb372efc4/checker-qual-2.5.2.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/asada_mac/.gradle/caches/modules-2/files-2.1/com.google.errorprone/error_prone_annotations/2.2.0/88e3c593e9b3586e1c6177f89267da6fc6986f0c/error_prone_annotations-2.2.0.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/asada_mac/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/1.1/ed28ded51a8b1c6b112568def5f4b455e6809019/j2objc-annotations-1.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/asada_mac/.gradle/caches/modules-2/files-2.1/org.codehaus.mojo/animal-sniffer-annotations/1.17/f97ce6decaea32b36101e37979f8b647f00681fb/animal-sniffer-annotations-1.17.jar</AuxClasspathEntry>
+    <SrcDir>/Users/asada_mac/jprophet/src/test/resources/testSBProject01/src/main/java</SrcDir>
+    <SrcDir>/Users/asada_mac/jprophet/src/test/resources/testSBProject01/src/main/java/testSBProject01/hoge/App3.java</SrcDir>
+    <SrcDir>/Users/asada_mac/jprophet/src/test/resources/testSBProject01/src/main/java/testSBProject01/App.java</SrcDir>
+    <SrcDir>/Users/asada_mac/jprophet/src/test/resources/testSBProject01/src/main/java/testSBProject01/App2.java</SrcDir>
+  </Project>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="1" rank="15" abbrev="DLS" category="STYLE">
+    <Class classname="testSBProject01.App2">
+      <SourceLine classname="testSBProject01.App2" start="11" end="25" sourcefile="App2.java" sourcepath="testSBProject01/App2.java"/>
+    </Class>
+    <Method classname="testSBProject01.App2" name="GetGreeting" signature="()Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="testSBProject01.App2" start="13" end="20" startBytecode="0" endBytecode="18" sourcefile="App2.java" sourcepath="testSBProject01/App2.java"/>
+    </Method>
+    <LocalVariable name="?" register="2" pc="37" role="LOCAL_VARIABLE_UNKNOWN"/>
+    <SourceLine classname="testSBProject01.App2" start="17" end="17" startBytecode="33" endBytecode="33" sourcefile="App2.java" sourcepath="testSBProject01/App2.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.EXCEPTION_HANDLER" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="?"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+  </BugInstance>
+
+  <BugInstance type="NM_METHOD_NAMING_CONVENTION" priority="2" rank="16" abbrev="Nm" category="BAD_PRACTICE">
+    <Class classname="testSBProject01.App2">
+      <SourceLine classname="testSBProject01.App2" start="11" end="25" sourcefile="App2.java" sourcepath="testSBProject01/App2.java"/>
+    </Class>
+    <Method classname="testSBProject01.App2" name="GetGreeting" signature="()Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="testSBProject01.App2" start="13" end="20" startBytecode="0" endBytecode="145" sourcefile="App2.java" sourcepath="testSBProject01/App2.java"/>
+    </Method>
+  </BugInstance>
+  
+  <BugInstance type="NP_ALWAYS_NULL" priority="1" rank="5" abbrev="NP" category="CORRECTNESS">
+    <Class classname="testSBProject01.App2">
+      <SourceLine classname="testSBProject01.App2" start="11" end="25" sourcefile="App2.java" sourcepath="testSBProject01/App2.java"/>
+    </Class>
+    <Method classname="testSBProject01.App2" name="GetGreeting" signature="()Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="testSBProject01.App2" start="13" end="20" startBytecode="0" endBytecode="145" sourcefile="App2.java" sourcepath="testSBProject01/App2.java"/>
+    </Method>
+    <LocalVariable name="text" register="1" pc="5" role="LOCAL_VARIABLE_VALUE_OF"/>
+    <SourceLine classname="testSBProject01.App2" start="14" end="14" startBytecode="6" endBytecode="6" sourcefile="App2.java" sourcepath="testSBProject01/App2.java" role="SOURCE_LINE_DEREF"/>
+  </BugInstance>
+  <BugInstance type="OBL_UNSATISFIED_OBLIGATION" priority="2" rank="20" abbrev="OBL" category="EXPERIMENTAL">
+    <Class classname="testSBProject01.App2">
+      <SourceLine classname="testSBProject01.App2" start="11" end="25" sourcefile="App2.java" sourcepath="testSBProject01/App2.java"/>
+    </Class>
+    <Method classname="testSBProject01.App2" name="GetGreeting" signature="()Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="testSBProject01.App2" start="13" end="20" startBytecode="0" endBytecode="145" sourcefile="App2.java" sourcepath="testSBProject01/App2.java"/>
+    </Method>
+    <Class classname="java.io.InputStream" role="CLASS_REFTYPE">
+      <SourceLine classname="java.io.InputStream" start="50" end="775" sourcefile="InputStream.java" sourcepath="java/io/InputStream.java"/>
+    </Class>
+    <Int value="1" role="INT_OBLIGATIONS_REMAINING"/>
+    <SourceLine classname="testSBProject01.App2" start="17" end="17" startBytecode="30" endBytecode="30" sourcefile="App2.java" sourcepath="testSBProject01/App2.java" role="SOURCE_LINE_OBLIGATION_CREATED"/>
+    <SourceLine classname="testSBProject01.App2" start="19" end="19" startBytecode="34" endBytecode="34" sourcefile="App2.java" sourcepath="testSBProject01/App2.java" role="SOURCE_LINE_PATH_CONTINUES"/>
+    <SourceLine classname="testSBProject01.App2" start="20" end="20" startBytecode="38" endBytecode="38" sourcefile="App2.java" sourcepath="testSBProject01/App2.java" role="SOURCE_LINE_PATH_CONTINUES"/>
+    <String value="{InputStream x 1}" role="STRING_REMAINING_OBLIGATIONS"/>
+  </BugInstance>
+  <BugInstance type="OS_OPEN_STREAM" priority="2" rank="16" abbrev="OS" category="BAD_PRACTICE">
+    <Class classname="testSBProject01.App2">
+      <SourceLine classname="testSBProject01.App2" start="11" end="25" sourcefile="App2.java" sourcepath="testSBProject01/App2.java"/>
+    </Class>
+    <Method classname="testSBProject01.App2" name="GetGreeting" signature="()Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="testSBProject01.App2" start="13" end="20" startBytecode="0" endBytecode="18" sourcefile="App2.java" sourcepath="testSBProject01/App2.java"/>
+    </Method>
+    <Type descriptor="Ljava/io/InputStream;" role="TYPE_CLOSEIT">
+      <SourceLine classname="java.io.InputStream" start="50" end="775" sourcefile="InputStream.java" sourcepath="java/io/InputStream.java"/>
+    </Type>
+    <SourceLine classname="testSBProject01.App2" start="17" end="17" startBytecode="17" endBytecode="17" sourcefile="App2.java" sourcepath="testSBProject01/App2.java"/>
+  </BugInstance>
+  <Errors errors="0" missingClasses="0"></Errors>
+  <FindBugsSummary timestamp="Mon, 28 Oct 2019 11:57:54 +0900" total_classes="3" referenced_classes="25" total_bugs="5" total_size="29" num_packages="1" java_version="12.0.1" vm_version="12.0.1+12" cpu_seconds="3.25" clock_seconds="2.23" peak_mbytes="197.48" alloc_mbytes="512.00" gc_seconds="0.02" priority_2="3" priority_1="2">
+    <PackageStats package="testSBProject01" total_bugs="5" total_types="3" total_size="29" priority_2="3" priority_1="2">
+      <ClassStats class="testSBProject01.App" sourceFile="App.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="testSBProject01.App2" sourceFile="App2.java" interface="false" size="13" bugs="5" priority_2="3" priority_1="2"/>
+      <ClassStats class="testSBProject01.App3" sourceFile="App3.java" interface="false" size="8" bugs="0"/>
+    </PackageStats>
+    <FindBugsProfile>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="1183" invocations="470" avgMicrosecondsPerInvocation="2518" maxMicrosecondsPerInvocation="69100" standardDeviationMicrosecondsPerInvocation="6866"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="107" invocations="25" avgMicrosecondsPerInvocation="4302" maxMicrosecondsPerInvocation="25846" standardDeviationMicrosecondsPerInvocation="6257"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="102" invocations="472" avgMicrosecondsPerInvocation="217" maxMicrosecondsPerInvocation="19163" standardDeviationMicrosecondsPerInvocation="1163"/>
+      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="90" invocations="435" avgMicrosecondsPerInvocation="206" maxMicrosecondsPerInvocation="21076" standardDeviationMicrosecondsPerInvocation="1138"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="88" invocations="93" avgMicrosecondsPerInvocation="952" maxMicrosecondsPerInvocation="17147" standardDeviationMicrosecondsPerInvocation="2655"/>
+    </FindBugsProfile>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History></History>
+</BugCollection>

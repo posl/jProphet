@@ -148,6 +148,9 @@ public class VariableReplacementOperationTest{
         return;
     }
 
+    /**
+     * 変化のない置換が行われていないかテスト
+     */
     @Test public void testThatCandidatesDoesNotContainOriginalInArgs(){
         final String targetStatement = 
                 "       hoge(la);\n"; 
@@ -175,6 +178,39 @@ public class VariableReplacementOperationTest{
         }
 
         assertThat(candidateSources).doesNotContain(targetStatementAsRepairUnitToString);
+        return;
+    }
+
+    /**
+     * 置換先候補について基本型に対応しているかテスト  
+     * 基本型に対応していないバグがあったので追加
+     */
+    @Test public void testForCollectPrimitiveType(){
+        final String targetStatement = 
+                "       hoge(0);\n"; 
+
+        final String source = new StringBuilder().append("")
+        .append("public class A {\n")
+        .append("   private void ma() {\n")
+        .append("       int la = 1;\n")
+        .append(targetStatement)
+        .append("   }\n")
+        .append("}\n")
+        .toString();
+
+        final String targetStatementAsRepairUnitToString = "hoge(la)"; 
+
+        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
+        List<String> candidateSources = new ArrayList<String>();
+        for(RepairUnit repairUnit : repairUnits){
+            VariableReplacementOperation vr = new VariableReplacementOperation();
+            candidateSources.addAll(vr.exec(repairUnit).stream()
+                .map(ru -> ru.toString())
+                .collect(Collectors.toList())
+            );
+        }
+
+        assertThat(candidateSources).contains(targetStatementAsRepairUnitToString);
         return;
     }
 }
