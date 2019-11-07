@@ -35,10 +35,10 @@ public class SpecificBugsByRange implements SpecificationStrategy{
      */
     public void calculate(List<Suspiciousness> suspiciousnessList){
         List<Suspiciousness> startSuspiciousness = suspiciousnessList.stream()
-            .filter(s -> fqn.equals(s.getFQN()) && s.getLine() == startLine)
+            .filter(s -> fqn.equals(s.getFQN()) && s.getLineNumber() == startLine)
             .collect(Collectors.toList());
         List<Suspiciousness> finishSuspiciousness = suspiciousnessList.stream()
-            .filter(s -> fqn.equals(s.getFQN()) && s.getLine() == finishLine)
+            .filter(s -> fqn.equals(s.getFQN()) && s.getLineNumber() == finishLine)
             .collect(Collectors.toList());
         
         if (startSuspiciousness.size() == 1 && finishSuspiciousness.size() == 1){

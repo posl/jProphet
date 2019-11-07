@@ -1,8 +1,6 @@
 package jp.posl.jprophet;
 
-import org.junit.Before;
 import org.junit.Test;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class JProphetMainTest {
     @Test public void testJProphet(){

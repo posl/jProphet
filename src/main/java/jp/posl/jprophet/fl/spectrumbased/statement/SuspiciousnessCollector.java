@@ -11,7 +11,7 @@ import jp.posl.jprophet.fl.Suspiciousness;
  */
 public class SuspiciousnessCollector {
 
-    private List<Suspiciousness> suspiciousnessList;
+    private List<Suspiciousness> suspiciousnesses;
     final private int fileNum;
     final private int numberOfSuccessedTests;
     final private int numberOfFailedTests;
@@ -24,12 +24,11 @@ public class SuspiciousnessCollector {
      */
     public SuspiciousnessCollector(TestResults testResults, Coefficient coefficient){
         this.fileNum = testResults.getTestResult(0).getCoverages().size();
-        this.suspiciousnessList = new ArrayList<Suspiciousness>();
+        this.suspiciousnesses = new ArrayList<Suspiciousness>();
         this.numberOfSuccessedTests = testResults.getSuccessedTestResults().size();
         this.numberOfFailedTests = testResults.getFailedTestResults().size();
         this.testResults = testResults;
         this.coefficient = coefficient;
-
     }
 
     /**
@@ -43,17 +42,17 @@ public class SuspiciousnessCollector {
             //TODO 1つめのメソッドのカバレッジ結果からソースファイルの行数とファイル名を取得している. 他にいい取得方法はないか
             final int lineLength = testResults.getTestResult(0).getCoverages().get(i).getLength();
             final String testName = testResults.getTestResult(0).getCoverages().get(i).getName();
-            
+
             for (int k = 1; k <= lineLength; k++){
                 StatementStatus statementStatus = new StatementStatus(testResults, k, i);
                 Suspiciousness suspiciousness = new Suspiciousness(testName, k, coefficient.calculate(statementStatus, numberOfSuccessedTests, numberOfFailedTests));
-                this.suspiciousnessList.add(suspiciousness);
+                this.suspiciousnesses.add(suspiciousness);
             }
         }
     }
 
-    public List<Suspiciousness> getSuspiciousnessList(){
-        return this.suspiciousnessList;
+    public List<Suspiciousness> getSuspiciousnesses(){
+        return this.suspiciousnesses;
     }
 
 }

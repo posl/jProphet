@@ -8,27 +8,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.posl.jprophet.operation.AstOperation;
+import jp.posl.jprophet.patch.PatchCandidate;
+import jp.posl.jprophet.patch.PatchCandidateWithAbstHole;
+import jp.posl.jprophet.project.FileLocator;
+import jp.posl.jprophet.project.Project;
 
 
-public class RepairCandidateGenerator{
+public class PatchCandidateGenerator{
     /**
      * バグのあるソースコード群から修正パッチ候補を生成する 
      * 
      * @param project 修正パッチ候補を生成する対象のプロジェクト 
      * @return 条件式が抽象化された修正パッチ候補のリスト
      */
-    public List<RepairCandidate> exec(Project project, List<AstOperation> operations){
-        List<String> filePaths = project.getSourceFilePaths();                
-        List<RepairCandidate> candidates = new ArrayList<RepairCandidate>();
-        for(String filePath : filePaths){
+    public List<PatchCandidate> exec(Project project, List<AstOperation> operations){
+        List<FileLocator> fileLocators = project.getSrcFileLocators();                
+        List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
+        for(FileLocator fileLocator : fileLocators){
             try {
-                List<String> lines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
+                List<String> lines = Files.readAllLines(Paths.get(fileLocator.getPath()), StandardCharsets.UTF_8);
                 String souceCode = String.join("\n", lines);
                 List<RepairUnit> repairUnits =  new AstGenerator().getAllRepairUnit(souceCode);
                 for(RepairUnit repairUnit : repairUnits){
                     List<RepairUnit> appliedUnits = this.applyTemplate(repairUnit, operations);
                     for(RepairUnit appliedUnit : appliedUnits){
-                        candidates.add(new AbstractRepairCandidate(appliedUnit.getCompilationUnit(), filePath));
+                        candidates.add(new PatchCandidateWithAbstHole(appliedUnit, fileLocator.getPath(), fileLocator.getFqn()));
                     }
                 }
             } catch (IOException e) {

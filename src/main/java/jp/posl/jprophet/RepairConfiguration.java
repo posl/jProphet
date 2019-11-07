@@ -1,5 +1,7 @@
 package jp.posl.jprophet;
 
+import jp.posl.jprophet.project.Project;
+
 /**
  * リペアの各種設定を保持
  */

@@ -7,7 +7,6 @@ import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
 import jp.posl.jprophet.fl.FaultLocalization;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.spectrumbased.statement.SuspiciousnessCollector;
-import jp.posl.jprophet.Project;
 import jp.posl.jprophet.ProjectBuilder;
 import java.util.List;
 import java.util.ArrayList;
@@ -20,9 +19,8 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
     ProjectBuilder projectBuilder = new ProjectBuilder();
     Path classDir;
     String buildPath;
-    List<String> classFilePaths;
-    List<String> sourceClassFilePaths = new ArrayList<String>();
-    List<String> testClassFilePaths = new ArrayList<String>();
+    List<String> sourceClassFileFqns = new ArrayList<String>();
+    List<String> testClassFileFqns = new ArrayList<String>();
     Coefficient coefficient;
 
     /**
@@ -34,45 +32,30 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
         this.projectBuilder.build(config);
         this.buildPath = config.getBuildPath();
         this.coefficient = coefficient;
-        getFQN(config.getTargetProject());
+        this.sourceClassFileFqns = config.getTargetProject().getSrcFileFqns(); 
+        this.testClassFileFqns = config.getTargetProject().getTestFileFqns(); 
     }
+
     /**
      * テスト対象の全てのソースファイルの行ごとの疑惑値を算出する
-     * @return List[ファイルのFQDN, 行, 疑惑値]
+     * @return 行ごとの疑惑値のリスト
      */
+    @Override
     public List<Suspiciousness> exec() {
-        List<Suspiciousness> suspiciousnessList = new ArrayList<Suspiciousness>();
+        List<Suspiciousness> suspiciousnesses = new ArrayList<Suspiciousness>();;
         TestResults testResults;
         CoverageCollector coverageCollector = new CoverageCollector(buildPath);
-        try{
-            testResults = coverageCollector.exec(sourceClassFilePaths, testClassFilePaths);
+
+        try {
+            testResults = coverageCollector.exec(sourceClassFileFqns, testClassFileFqns);
             SuspiciousnessCollector suspiciousnessCollector = new SuspiciousnessCollector(testResults, coefficient);
             suspiciousnessCollector.exec();
-            suspiciousnessList = suspiciousnessCollector.getSuspiciousnessList();
-        }catch (Exception e){
+            suspiciousnesses = suspiciousnessCollector.getSuspiciousnesses();
+        } catch (Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
             System.exit(-1);
         }
-        return suspiciousnessList;
+        return suspiciousnesses;
     }
-
-    /**
-     * ファイルパスからFQNを取得する
-     * @param project
-     */
-    private void getFQN(Project project){
-        final String gradleTestPath = "/src/test/java/";
-        final String gradleSourcePath = "/src/main/java/";
-        final String testFolderPath = project.getProjectPath() + gradleTestPath;
-        final String sourceFolderPath = project.getProjectPath() + gradleSourcePath;
-        for (String testPath : project.getTestFilePaths()){
-            testClassFilePaths.add(testPath.replace(testFolderPath, "").replace("/", ".").replace(".java", ""));
-        }
-        for (String sourcePath : project.getSourceFilePaths()){
-            sourceClassFilePaths.add(sourcePath.replace(sourceFolderPath, "").replace("/", ".").replace(".java", ""));
-        }
-
-    }
-    
 }

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.ArrayList;
 import org.junit.runner.JUnitCore;
 
-import jp.posl.jprophet.Project;
+import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
 
@@ -76,7 +76,7 @@ public class TestExecutor {
      */
     private List<Class<?>> loadTestClass(Project project) throws ClassNotFoundException {
         List<Class<?>> classes = new ArrayList<Class<?>>();
-        final String testFolderPath = project.getProjectPath() + gradleTestPath;
+        final String testFolderPath = project.getRootPath() + gradleTestPath;
         for (String source : project.getTestFilePaths()) {
             final String fqn = source.replace(testFolderPath, "").replace("/", ".").replace(".java", "");
             classes.add(loader.loadClass(fqn));
