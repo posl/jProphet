@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class App2 {
-    public String GetGreeting() {
+    public String getGreeting() {
         String text = null;
         System.out.println("text.length=" + text.length());
 
@@ -21,6 +21,6 @@ public class App2 {
     }
 
     public static void main(String[] args) {
-        System.out.println(new App2().GetGreeting());
+        System.out.println(new App2().getGreeting());
     }
 }
