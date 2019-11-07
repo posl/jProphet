@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-import jp.posl.jprophet.Project;
+import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.fl.Suspiciousness;
 
@@ -22,7 +22,7 @@ public class SpotBugsBasedFaultLocalizationTest {
      */
     @Test
     public void testForExec() {
-        final RepairConfiguration config = new RepairConfiguration("./tmp/SBtmp", null, new Project("src/test/resources/testSBProject01"));
+        final RepairConfiguration config = new RepairConfiguration("./tmp/SBtmp", null, new GradleProject("src/test/resources/testSBProject01"));
         final SpotBugsBasedFaultLocalization fl = new SpotBugsBasedFaultLocalization(config);
         final List<Suspiciousness> suspiciousnessList = fl.exec();
 
@@ -48,7 +48,7 @@ public class SpotBugsBasedFaultLocalizationTest {
     //ManualSpecificationTestのメソッドをそのままコピー
     private Suspiciousness getSuspiciousness(List<Suspiciousness> suspiciousnessList, String fqn, int line){
         List<Suspiciousness> suspiciousness = suspiciousnessList.stream()
-            .filter(s -> fqn.equals(s.getFQN()) && s.getLine() == line)
+            .filter(s -> fqn.equals(s.getFQN()) && s.getLineNumber() == line)
             .collect(Collectors.toList());
         return suspiciousness.get(0);
     }

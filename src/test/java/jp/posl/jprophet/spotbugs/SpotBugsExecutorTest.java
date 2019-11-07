@@ -8,7 +8,7 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-import jp.posl.jprophet.Project;
+import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.RepairConfiguration;
 
 public class SpotBugsExecutorTest {
@@ -20,7 +20,7 @@ public class SpotBugsExecutorTest {
     @Test
     public void testForExec() {
         SpotBugsExecutor executor = new SpotBugsExecutor("result");
-        final RepairConfiguration config = new RepairConfiguration("./tmp/SBout", null, new Project("src/test/resources/testSBProject01"));
+        final RepairConfiguration config = new RepairConfiguration("./tmp/SBout", null, new GradleProject("src/test/resources/testSBProject01"));
         executor.exec(config);
         assertThat(new File(executor.getResultFilePath()).exists()).isTrue();
         try {

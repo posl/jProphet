@@ -17,6 +17,7 @@ import jp.posl.jprophet.fl.spectrumbased.strategy.*;
 import jp.posl.jprophet.operation.*;
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.TestExecutor;
+import jp.posl.jprophet.test.UnitTestExecutor;
 
 public class JProphetMain {
     public static void main(String[] args) {
@@ -34,7 +35,7 @@ public class JProphetMain {
         final PlausibilityAnalyzer     plausibilityAnalyzer     = new PlausibilityAnalyzer();  
         final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
         final StagedCondGenerator      stagedCondGenerator      = new StagedCondGenerator();
-        final TestExecutor             testExecutor             = new TestExecutor();
+        final TestExecutor             testExecutor             = new UnitTestExecutor();
         final FixedProjectGenerator    fixedProjectGenerator    = new FixedProjectGenerator();
 
         final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(
@@ -76,7 +77,7 @@ public class JProphetMain {
             List<PatchCandidate> patchCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
             for(PatchCandidate patchCandidate: patchCandidates) {
                 Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
-                if(testExecutor.run(new RepairConfiguration(config, fixedProject))) {
+                if(testExecutor.exec(new RepairConfiguration(config, fixedProject))) {
                     return;
                 }
             }
