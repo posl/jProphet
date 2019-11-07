@@ -7,12 +7,14 @@ import java.util.stream.Collectors;
 import java.util.Optional;
 
 import com.github.javaparser.Range;
+import com.github.javaparser.Position;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.expr.Expression;
 
 import jp.posl.jprophet.AstGenerator;
@@ -83,29 +85,42 @@ public class CopyReplaceOperation implements AstOperation{
         
         for (Statement statement : statements){            
             NodeList<Statement> nodeList = blockStatement.clone().getStatements();
-            if(targetNode instanceof Statement && nodeList.indexOf(targetNode) != -1){
-                NodeList<Statement> newNodeList = nodeList.addBefore(statement, (Statement)targetNode);
+            int targetIndex = nodeList.indexOf(targetNode);
+            if(targetNode instanceof Statement && targetIndex != -1){
+                //statementをclone()してそれのrangeを先に変えてaddBeforeする
+                Statement newStatement = statement.clone();
+                setStatementRange(newStatement, targetNode);
+
+                NodeList<Statement> statementInsertedNodeList = nodeList.addBefore(newStatement, (Statement)targetNode);
                 RepairUnit newCandidate = RepairUnit.deepCopy(repairUnit);
                 //taergetNodeの親ノード(多分BlockStmt)を丸ごと置き換えることでコピペしている
-                newCandidate.getTargetNode().getParentNode().orElseThrow().replace(newNodeList.get(nodeList.indexOf(targetNode)).getParentNode().orElseThrow());
+                //BlockStmtのsetStatements(NodeList)がreplaceの代わりにならないか?
+                newCandidate.getTargetNode().getParentNode().orElseThrow().replace(statementInsertedNodeList.get(targetIndex).getParentNode().orElseThrow());
+                //ここでrangeの値を変える
+                Range range = statement.getRange().orElseThrow();
+                changeRange(newCandidate, range, targetIndex);
                 //candidates.add(newCandidate);
-                //List<RepairUnit> units = getAllRepairUnit(newCandidate.getCompilationUnit());
+                List<RepairUnit> repairUnits = getAllRepairUnit(newCandidate.getCompilationUnit());
 
                 //Nodeをコピペして任意の場所に入れると,コピペ前のNodeの情報がそのまま入るので行番号がおかしくなる
                 //compilationUnitのtoString()ではちゃんとステートメントが意図した場所にコピペされている
                 //compilationUnitをtoString()してAstGeneratorにかけてcompilationUnitを作り直す
                 //問題点 : compilationUnitをtoString()すると改行や空白が入ってしまうので元のコードと形が変わる
-                //        行数が変わるからVariableReplacementにかけたい行がわからない 
+                //        行数が変わるからVariableReplacementにかけたい行がわからない
+                
+                //TODO この辺の処理をgetExpression()でなんとかする?
+                //TODO getExpression()だとstatementからRepairUnitが作れなさそう
                 AstGenerator astGenerator = new AstGenerator();
-                List<RepairUnit> units = astGenerator.getAllRepairUnit(newCandidate.getCompilationUnit().toString());
-                List<RepairUnit> le = units.stream()
+                //List<RepairUnit> repairUnits = astGenerator.getAllRepairUnit(newCandidate.getCompilationUnit().toString());
+                List<RepairUnit> expressionNodeRepairUnits = repairUnits.stream()
                     .filter(unit -> unit.getTargetNode() instanceof Expression)
-                    .filter(unit -> (unit.toString() + ";").equals(statement.toString()))
-                    //.filter(unit -> getBeginLineNumber(unit.getTargetNode()).orElseThrow() == (getBeginLineNumber(targetNode).orElseThrow()))
+                    //.filter(unit -> (unit.toString() + ";").equals(statement.toString()))
+                    .filter(unit -> getBeginLineNumber(unit.getTargetNode()).orElseThrow() == (getBeginLineNumber(targetNode).orElseThrow()))
                     .collect(Collectors.toList());
                 
-                if (le.size() != 0){
-                    RepairUnit leunit = le.get(1);  //行番号でleが取得できればget(0)
+                if (expressionNodeRepairUnits.size() >= 1){
+                    //行番号で置換する場所を指定できればexpressionNodeRepairUnitsのsizeが1になるのでget(0)
+                    RepairUnit leunit = expressionNodeRepairUnits.get(0);
                     VariableReplacementOperation vr = new VariableReplacementOperation();
                     List<RepairUnit> copiedNodeList = vr.exec(leunit);
                     candidates.addAll(copiedNodeList);
@@ -149,7 +164,72 @@ public class CopyReplaceOperation implements AstOperation{
     }
 
     /**
-     * ソースコードから全てのASTノードを抽出し，修正単位であるRepairUnitを取得する.
+     * ノードの始まりのコラム番号を取得する
+     * @param node ノード
+     * @return ノードの始まりのコラム番号
+     */
+    private Optional<Integer> getBeginColumnNumber(Node node) {
+        try {
+            Range range = node.getRange().orElseThrow();        
+            return Optional.of(range.begin.column);
+        } catch (NoSuchElementException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * ノードの終わりのコラム番号を取得する
+     * @param node ノード
+     * @return ノードの終わりのコラム番号
+     */
+    private Optional<Integer> getEndColumnNumber(Node node) {
+        try {
+            Range range = node.getRange().orElseThrow();        
+            return Optional.of(range.end.column);
+        } catch (NoSuchElementException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    private void changeRange(RepairUnit repairUnit, Range range, int targetIndex){
+        List<RepairUnit> repairUnits = getAllRepairUnit(repairUnit.getCompilationUnit());
+        int width = range.end.line - range.begin.line + 1;
+        /*
+        //streamで書くと横長になりそうだからとりあえずfor文で
+        repairUnits.stream()
+            .filter(unit -> getBeginLineNumber(unit.getTargetNode()).orElseThrow() >= targetIndex)
+            .forEach(unit -> unit.getTargetNode().setRange(unit.getTargetNode().getRange().orElseThrow()));
+        */
+
+        //TODO statementがブロック内の時はendだけ増やさないといけない
+        //TODO コピペする前も後もrangeが増えてるのをなんとかする
+
+        for (RepairUnit unit : repairUnits){
+            if (getBeginLineNumber(unit.getTargetNode()).orElseThrow() >= targetIndex){
+                int beginLine = getBeginLineNumber(unit.getTargetNode()).orElseThrow();
+                int beginColumn = getBeginColumnNumber(unit.getTargetNode()).orElseThrow();
+                int endLine = getEndLineNumber(unit.getTargetNode()).orElseThrow();
+                int endColumn = getEndColumnNumber(unit.getTargetNode()).orElseThrow();
+                unit.getTargetNode().setRange(new Range(new Position(beginLine + width, beginColumn), new Position(endLine + width, endColumn)));
+            }
+        }
+    }
+
+    private void setStatementRange(Statement statement, Node targetNode){
+        int width = getBeginLineNumber(targetNode).orElseThrow() - getBeginLineNumber(statement).orElseThrow();
+        int beginLine = getBeginLineNumber(statement).orElseThrow();
+        int beginColumn = getBeginColumnNumber(statement).orElseThrow();
+        int endLine = getEndLineNumber(statement).orElseThrow();
+        int endColumn = getEndColumnNumber(statement).orElseThrow();
+        statement.setRange(new Range(new Position(beginLine + width, beginColumn), new Position(endLine + width, endColumn)));
+    }
+
+    /**
+     * compileUnitから全てのASTノードを抽出し，修正単位であるRepairUnitを取得する.
      * 
      * @param compilationUnit AST抽出対象のソースコード
      * @return 修正対象のASTノードとコンパイルユニットを持った修正単位であるRepairUnitのリスト
