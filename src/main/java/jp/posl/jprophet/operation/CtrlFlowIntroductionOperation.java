@@ -35,7 +35,7 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
             return new ArrayList<>();
         }
 
-        RepairUnit newCandidate = RepairUnit.copy(repairUnit);
+        RepairUnit newCandidate = RepairUnit.deepCopy(repairUnit);
         newCandidate.getTargetNode().findParent(BlockStmt.class)
             .map(b -> b.setStatements(statements));
         

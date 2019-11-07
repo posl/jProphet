@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.github.javaparser.printer.PrettyPrinter;
+import com.github.javaparser.printer.PrettyPrinterConfiguration;
+
 public class CtrlFlowIntroductionOperationTest {
     /**
      * returnをするifブロックが挿入されているかテスト
@@ -59,7 +62,7 @@ public class CtrlFlowIntroductionOperationTest {
         for(RepairUnit repairUnit : repairUnits){
             CtrlFlowIntroductionOperation vr = new CtrlFlowIntroductionOperation();
             candidateSources.addAll(vr.exec(repairUnit).stream()
-                .map(ru -> ru.getCompilationUnit().toString())
+                .map(ru -> ru.getCompilationUnit().toString()) 
                 .collect(Collectors.toList())
             );
         }
