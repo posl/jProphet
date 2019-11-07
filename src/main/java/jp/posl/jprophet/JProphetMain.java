@@ -22,7 +22,7 @@ public class JProphetMain {
     public static void main(String[] args) {
         final String buildDir = "./tmp/"; 
         final String resultDir = "./result/"; 
-        String projectPath = "src/test/resources/testGradleProject01";
+        String projectPath = "src/test/resources/FizzBuzz01";
         if(args.length > 0){
             projectPath = args[0];
         }
@@ -47,18 +47,22 @@ public class JProphetMain {
         ));
 
         final JProphetMain jprophet = new JProphetMain();
-        jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, plausibilityAnalyzer, patchEvaluator, stagedCondGenerator, testExecutor, fixedProjectGenerator);
+        boolean isRepairSuccess = 
+            jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, plausibilityAnalyzer, patchEvaluator, stagedCondGenerator, testExecutor, fixedProjectGenerator);
 
         try {
             FileUtils.deleteDirectory(new File(buildDir));
-            FileUtils.deleteDirectory(new File(resultDir));
+            if(!isRepairSuccess){
+                FileUtils.deleteDirectory(new File(resultDir));
+
+            }
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private void run(RepairConfiguration config, FaultLocalization faultLocalization,
+    private boolean run(RepairConfiguration config, FaultLocalization faultLocalization,
             PatchCandidateGenerator patchCandidateGenerator, List<AstOperation> operations, PlausibilityAnalyzer plausibilityAnalyzer, PatchEvaluator patchEvaluator,
             StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, FixedProjectGenerator fixedProjectGenerator
             ) {
@@ -77,9 +81,10 @@ public class JProphetMain {
             for(PatchCandidate patchCandidate: patchCandidates) {
                 Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
                 if(testExecutor.run(new RepairConfiguration(config, fixedProject))) {
-                    return;
+                    return true;
                 }
             }
         }
+        return false;
     }
 }

@@ -11,6 +11,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
@@ -103,11 +104,14 @@ public class VariableReplacementOperation implements AstOperation {
         catch (NoSuchElementException e) {
             return new ArrayList<String>();
         }
-        final List<VariableDeclarationExpr> localVars = methodNode.findAll(VariableDeclarationExpr.class);
-        final int varNameIndexInSimpleName = 1;
+        final List<VariableDeclarationExpr> localVarDeclarations = methodNode.findAll(VariableDeclarationExpr.class);
+        final List<VariableDeclarator> localVars = new ArrayList<VariableDeclarator>(); 
+        localVarDeclarations.stream()
+            .map(VariableDeclarationExpr::getVariables)
+            .forEach(localVars::addAll);
         final List<String> localVarNames = localVars.stream()
-                                                    .map(localVar -> localVar.findAll(SimpleName.class).get(varNameIndexInSimpleName).asString())
-                                                    .collect(Collectors.toList());
+            .map(localVar -> localVar.getName().asString())
+            .collect(Collectors.toList());
         return localVarNames;
     }
 
@@ -125,9 +129,8 @@ public class VariableReplacementOperation implements AstOperation {
             return new ArrayList<String>();
         }
         final List<Parameter> parameters = methodNode.findAll(Parameter.class);
-        final int varNameIndexInSimpleName = 1;
         final List<String> parameterNames = parameters.stream()
-                                                    .map(localVar -> localVar.findAll(SimpleName.class).get(varNameIndexInSimpleName).asString())
+                                                    .map(localVar -> localVar.getName().asString())
                                                     .collect(Collectors.toList());
         return parameterNames;
     }
