@@ -24,11 +24,11 @@ public class SpotBugsExecutorTest {
         executor.exec(config);
         assertThat(new File(executor.getResultFilePath()).exists()).isTrue();
         try {
-			FileUtils.deleteDirectory(new File("./tmp"));
-		} catch (IOException e) {
+            FileUtils.deleteDirectory(new File("./tmp"));
+        } catch (IOException e) {
             System.err.println(e.getMessage());
-			e.printStackTrace();
-		}
+            e.printStackTrace();
+        }
     }
 
 }

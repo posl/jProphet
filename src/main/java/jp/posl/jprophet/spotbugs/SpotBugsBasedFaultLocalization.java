@@ -19,7 +19,7 @@ public class SpotBugsBasedFaultLocalization implements FaultLocalization {
 
 
     private final RepairConfiguration config;
-    private final static String resultFileName = "result";
+    private final static String spotbugsResultFileName = "before";
     private final static int suspiciousnessValue = 1;
 
     
@@ -41,7 +41,7 @@ public class SpotBugsBasedFaultLocalization implements FaultLocalization {
     @Override
     public List<Suspiciousness> exec() {
 
-        final SpotBugsExecutor executor = new SpotBugsExecutor(resultFileName);
+        final SpotBugsExecutor executor = new SpotBugsExecutor(spotbugsResultFileName);
         final SpotBugsResultXMLReader reader = new SpotBugsResultXMLReader();
         final List<SpecificationStrategy> strategies = new ArrayList<SpecificationStrategy>();
 

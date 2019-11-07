@@ -36,10 +36,10 @@ public class SpotBugsBasedFaultLocalizationTest {
 
         
         try {
-			FileUtils.deleteDirectory(new File("./tmp"));
-		} catch (IOException e) {
+            FileUtils.deleteDirectory(new File("./tmp"));
+        } catch (IOException e) {
             System.err.println(e.getMessage());
-			e.printStackTrace();
+            e.printStackTrace();
         }
 
 

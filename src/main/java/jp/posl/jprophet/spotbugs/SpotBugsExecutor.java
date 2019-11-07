@@ -92,11 +92,11 @@ public class SpotBugsExecutor {
      */
     public static void deleteResultDirectory() {
         try {
-			FileUtils.deleteDirectory(new File(resultDir));
-		} catch (IOException e) {
+            FileUtils.deleteDirectory(new File(resultDir));
+        } catch (IOException e) {
             System.err.println(e.getMessage());
-			e.printStackTrace();
-		}
+            e.printStackTrace();
+        }
     }
 
 }
