@@ -15,3 +15,6 @@ bin
 
 # Ignore Gradle build output directory
 build
+
+# Ignore temporary directory
+tmp

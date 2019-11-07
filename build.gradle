@@ -20,6 +20,13 @@ plugins {
 
 }
 
+test {
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+}
+
 jacoco {
     toolVersion = "0.8.3"
 
@@ -72,6 +79,7 @@ dependencies {
     testImplementation "org.mockito:mockito-core:2.+"
 
     compile group: 'com.github.javaparser', name: 'javaparser-symbol-solver-core', version: '3.5.15'
+    compile group: 'com.github.spotbugs', name: 'spotbugs', version: '3.1.12'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
 }
 
