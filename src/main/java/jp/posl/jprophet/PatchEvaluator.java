@@ -75,7 +75,7 @@ public class PatchEvaluator {
      */
     private Optional<Suspiciousness> findSuspiciousness(List<Suspiciousness> targetSuspiciousnesses, int lineNumber, String fqn){
         for(Suspiciousness suspiciousness : targetSuspiciousnesses){
-            if(suspiciousness.getLineNumber() == lineNumber && suspiciousness.getFQN() == fqn){
+            if(suspiciousness.getLineNumber() == lineNumber && suspiciousness.getFQN().equals(fqn)){
                 return Optional.of(suspiciousness);
             }
         }
