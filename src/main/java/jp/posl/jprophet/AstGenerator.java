@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 public class AstGenerator {
@@ -46,7 +47,7 @@ public class AstGenerator {
         CompilationUnit cu = (CompilationUnit)(rootNode);
 
         CompilationUnit newCu = cu.clone();
-        List<Node> nodes = AstGenerator.getAllChildNodes(newCu);
+        List<Node> nodes = AstGenerator.getAllDescendantNodes(newCu);
         Node newNode = nodes.stream().filter(n -> {
             return n.equals(node) && n.getRange().equals(node.getRange());
         }).findFirst().orElseThrow();
@@ -56,16 +57,40 @@ public class AstGenerator {
 
     /**
      * Nodeの全ての子孫ノード（ASTツリー上の全ての子要素）を取得する
-     * @param node 子孫ノードを取得したいノード
+     * @param parentNode 子孫ノードを取得したいノード
      * @return 子孫ノードのリスト
      */
-    public static List<Node> getAllChildNodes(Node node){
-        List<Node> nodes = new ArrayList<Node>();
-        nodes.addAll(node.getChildNodes());
-        node.getChildNodes().stream().map(n -> {
-            return getAllChildNodes(n);
-        }).forEach(nodes::addAll);
-        return nodes;
+    public static List<Node> getAllDescendantNodes(Node parentNode) {
+        List<Node> descendantNodes = new ArrayList<Node>();
+        descendantNodes.addAll(parentNode.getChildNodes());
+        parentNode.getChildNodes().stream().map(n -> {
+            return getAllDescendantNodes(n);
+        }).forEach(descendantNodes::addAll);
+        return descendantNodes;
+    }
+
+    /**
+     * Nodeの全ての子孫ノード（ASTツリー上の全ての子要素）のディープコピーを取得する 
+     * @param parentNode 子孫ノードを取得したいノード
+     * @return ディープコピーされた子孫ノードのリスト
+     */
+    public static List<Node> getAllCopiedDescendantNodes(Node parentNode) {
+        List<Node> descendantNodes = AstGenerator.getAllDescendantNodes(parentNode); 
+        List<Node> copiedDescendantNodes = descendantNodes.stream()
+            .map(AstGenerator::deepCopy)
+            .collect(Collectors.toList());
+
+        return copiedDescendantNodes;
+    }
+
+    /**
+     * ソースコードからASTノード全てを取得する
+     * 各ノードはそれぞれ異なるインスタンスのASTツリーに属する
+     * @param sourceCode AST抽出対象のソースコード
+     * @return ASTノードのリスト
+     */
+    public static List<Node> getAllNodesFromCode(String sourceCode) {
+        return AstGenerator.getAllCopiedDescendantNodes(JavaParser.parse(sourceCode));
     }
 
     /**

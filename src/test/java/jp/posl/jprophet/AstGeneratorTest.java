@@ -6,42 +6,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.stmt.Statement;
 
 public class AstGeneratorTest {
 
-    // @Test public void testForDeepCopy() {
-    //     final String source = new StringBuilder().append("")
-    //         .append("public class A {\n")
-    //         .append("   public void a() {\n")
-    //         .append("       hoge3();\n")
-    //         .append("       hoge1();\n")
-    //         .append("       hoge2();\n")
-    //         .append("       hoge1();\n")
-    //         .append("   }\n")
-    //         .append("   public void a() {\n")
-    //         .append("       hoge1();\n")
-    //         .append("   }\n")
-    //         .append("}\n")
-    //         .toString();
-    //     CompilationUnit compilationUnit;   //RepairUnitごとに新しいインスタンスの生成
-    //     compilationUnit = JavaParser.parse(source);
-    //     Node node = compilationUnit.getChildNodes().get(0).getChildNodes().get(1).getChildNodes().get(2).getChildNodes().get(3);
-    //     MethodDeclaration mNode = (MethodDeclaration)(compilationUnit.getChildNodes().get(0).getChildNodes().get(1));
-    //     NodeList<Statement> stmts = mNode.getBody().get().getStatements();
-    //     //stmts.addBefore(new ReturnStmt(), (Statement)node);
-
-    //     Node newNode = AstGenerator.deepCopy(node);
-    // }
-
     private String sourceCode;
-    private List<Node> nodes; 
     /**
      * 入力用のソースコードからNodeリストを生成
      */
@@ -52,14 +22,13 @@ public class AstGeneratorTest {
             .append("   }\n")
             .append("}\n")
             .toString();
-
-        this.nodes = AstGenerator.getAllChildNodes(JavaParser.parse(sourceCode));
     }
 
     /**
-     * getAllChildNodesメソッドによってNodeの全ての子孫Nodeが取得できているかテスト
+     * getAllNodesFromCodeメソッドによってソースコードの全てのNodeが取得できているかテスト
      */
     @Test public void testForStringByGetAllChileNodes(){
+        List<Node> nodes = AstGenerator.getAllNodesFromCode((sourceCode));
         assertThat(nodes.size()).isEqualTo(6);
         assertThat(nodes.get(0).toString()).isEqualTo("public class A {\n\n    public void a() {\n    }\n}");
         assertThat(nodes.get(1).toString()).isEqualTo("A");
@@ -74,7 +43,7 @@ public class AstGeneratorTest {
      * deepCopyメソッドがNodeの親ノードも含めてコピーできているかテスト
      */
     @Test public void testForCopiedNode(){
-        Node node = this.nodes.get(0); 
+        Node node = AstGenerator.getAllDescendantNodes(JavaParser.parse(sourceCode)).get(0);
         Node copiedNode = AstGenerator.deepCopy(node);
 
         assertThat(copiedNode).isNotSameAs(node);
