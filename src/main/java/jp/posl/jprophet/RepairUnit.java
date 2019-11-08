@@ -33,7 +33,7 @@ public class RepairUnit {
         int targetNodeIndex = repairUnit.getTargetNodeIndex();
         CompilationUnit cu = repairUnit.getCompilationUnit();
         CompilationUnit newCu = cu.clone();
-        Node newTargetNode = AstGenerator.findByLevelOrderIndex(newCu, targetNodeIndex).orElseThrow();
+        Node newTargetNode = NodeUtility.findByLevelOrderIndex(newCu, targetNodeIndex).orElseThrow();
                 
         return new RepairUnit(newTargetNode, targetNodeIndex, newCu);
     }

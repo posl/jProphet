@@ -2,7 +2,7 @@ package jp.posl.jprophet.operation;
 
 import org.junit.Test;
 
-import jp.posl.jprophet.AstGenerator;
+import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.RepairUnit;
 import static org.assertj.core.api.Assertions.*;
 
@@ -55,7 +55,7 @@ public class CtrlFlowIntroductionOperationTest {
         );
 
 
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(targetSource);
+        List<RepairUnit> repairUnits = new NodeUtility().getAllRepairUnit(targetSource);
         List<String> candidateSources = new ArrayList<String>();
         for(RepairUnit repairUnit : repairUnits){
             CtrlFlowIntroductionOperation vr = new CtrlFlowIntroductionOperation();
@@ -120,7 +120,7 @@ public class CtrlFlowIntroductionOperationTest {
             .append("}\n")
             .toString());
 
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(targetSource);
+        List<RepairUnit> repairUnits = new NodeUtility().getAllRepairUnit(targetSource);
         List<String> candidateSources = new ArrayList<String>();
         for(RepairUnit repairUnit : repairUnits){
             CtrlFlowIntroductionOperation vr = new CtrlFlowIntroductionOperation();

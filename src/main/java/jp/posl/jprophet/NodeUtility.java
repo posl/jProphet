@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 
-public class AstGenerator {
+public class NodeUtility {
 
     /**
      * ノードの子ノードを幅優先で探索し，与えられたインデックスのノードを返す
@@ -47,7 +47,7 @@ public class AstGenerator {
         CompilationUnit cu = (CompilationUnit)(rootNode);
 
         CompilationUnit newCu = cu.clone();
-        List<Node> nodes = AstGenerator.getAllDescendantNodes(newCu);
+        List<Node> nodes = NodeUtility.getAllDescendantNodes(newCu);
         Node newNode = nodes.stream().filter(n -> {
             return n.equals(node) && n.getRange().equals(node.getRange());
         }).findFirst().orElseThrow();
@@ -75,9 +75,9 @@ public class AstGenerator {
      * @return ディープコピーされた子孫ノードのリスト
      */
     public static List<Node> getAllCopiedDescendantNodes(Node parentNode) {
-        List<Node> descendantNodes = AstGenerator.getAllDescendantNodes(parentNode); 
+        List<Node> descendantNodes = NodeUtility.getAllDescendantNodes(parentNode); 
         List<Node> copiedDescendantNodes = descendantNodes.stream()
-            .map(AstGenerator::deepCopy)
+            .map(NodeUtility::deepCopy)
             .collect(Collectors.toList());
 
         return copiedDescendantNodes;
@@ -90,7 +90,7 @@ public class AstGenerator {
      * @return ASTノードのリスト
      */
     public static List<Node> getAllNodesFromCode(String sourceCode) {
-        return AstGenerator.getAllCopiedDescendantNodes(JavaParser.parse(sourceCode));
+        return NodeUtility.getAllCopiedDescendantNodes(JavaParser.parse(sourceCode));
     }
 
     /**
@@ -106,7 +106,7 @@ public class AstGenerator {
             compilationUnit = JavaParser.parse(sourceCode);
             // なくなるまで順にASTノードを取り出す
             try {
-                Node node = AstGenerator.findByLevelOrderIndex(compilationUnit.findRootNode(), i).orElseThrow(); 
+                Node node = NodeUtility.findByLevelOrderIndex(compilationUnit.findRootNode(), i).orElseThrow(); 
                 repairUnits.add(new RepairUnit(node, i, compilationUnit)); 
             } catch (NoSuchElementException e) {
                 return repairUnits;

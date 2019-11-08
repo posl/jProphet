@@ -2,7 +2,7 @@ package jp.posl.jprophet.operation;
 
 import org.junit.Test;
 
-import jp.posl.jprophet.AstGenerator;
+import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.RepairUnit;
 import static org.assertj.core.api.Assertions.*;
 
@@ -45,7 +45,7 @@ public class VariableReplacementOperationTest{
         expectedTargetSources.add("this.mb(pb, \"fuga\")");
         expectedTargetSources.add("this.mb(\"hoge\", pb)");
 
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
+        List<RepairUnit> repairUnits = new NodeUtility().getAllRepairUnit(source);
         List<String> candidateSources = new ArrayList<String>();
         for(RepairUnit repairUnit : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
@@ -82,7 +82,7 @@ public class VariableReplacementOperationTest{
         expectedTargetSources.add("la = this.fa");
         expectedTargetSources.add("la = pa");
 
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
+        List<RepairUnit> repairUnits = new NodeUtility().getAllRepairUnit(source);
         List<String> candidateSources = new ArrayList<String>();
         for(RepairUnit repairUnit : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
@@ -104,7 +104,7 @@ public class VariableReplacementOperationTest{
         .append("import java.util.List;\n")
         .toString();
 
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(sourceThatHasNothingToReplace);
+        List<RepairUnit> repairUnits = new NodeUtility().getAllRepairUnit(sourceThatHasNothingToReplace);
         List<RepairUnit> candidates = new ArrayList<RepairUnit>();
         for(RepairUnit repairUnit : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
@@ -134,7 +134,7 @@ public class VariableReplacementOperationTest{
 
         final String targetStatementAsRepairUnitToString = "la = lb"; 
 
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
+        List<RepairUnit> repairUnits = new NodeUtility().getAllRepairUnit(source);
         List<String> candidateSources = new ArrayList<String>();
         for(RepairUnit repairUnit : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
@@ -167,7 +167,7 @@ public class VariableReplacementOperationTest{
 
         final String targetStatementAsRepairUnitToString = "hoge(la)"; 
 
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
+        List<RepairUnit> repairUnits = new NodeUtility().getAllRepairUnit(source);
         List<String> candidateSources = new ArrayList<String>();
         for(RepairUnit repairUnit : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
@@ -200,7 +200,7 @@ public class VariableReplacementOperationTest{
 
         final String targetStatementAsRepairUnitToString = "hoge(la)"; 
 
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
+        List<RepairUnit> repairUnits = new NodeUtility().getAllRepairUnit(source);
         List<String> candidateSources = new ArrayList<String>();
         for(RepairUnit repairUnit : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();

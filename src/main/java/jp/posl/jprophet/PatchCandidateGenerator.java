@@ -28,7 +28,7 @@ public class PatchCandidateGenerator{
             try {
                 List<String> lines = Files.readAllLines(Paths.get(fileLocator.getPath()), StandardCharsets.UTF_8);
                 String souceCode = String.join("\n", lines);
-                List<RepairUnit> repairUnits =  new AstGenerator().getAllRepairUnit(souceCode);
+                List<RepairUnit> repairUnits =  new NodeUtility().getAllRepairUnit(souceCode);
                 for(RepairUnit repairUnit : repairUnits){
                     List<RepairUnit> appliedUnits = this.applyTemplate(repairUnit, operations);
                     for(RepairUnit appliedUnit : appliedUnits){

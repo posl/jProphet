@@ -9,7 +9,7 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.VariableDeclarator;
 
-public class AstGeneratorTest {
+public class NodeUtilityTest {
 
     private String sourceCode;
     /**
@@ -28,7 +28,7 @@ public class AstGeneratorTest {
      * getAllNodesFromCodeメソッドによってソースコードの全てのNodeが取得できているかテスト
      */
     @Test public void testForStringByGetAllChileNodes(){
-        List<Node> nodes = AstGenerator.getAllNodesFromCode((sourceCode));
+        List<Node> nodes = NodeUtility.getAllNodesFromCode((sourceCode));
         assertThat(nodes.size()).isEqualTo(6);
         assertThat(nodes.get(0).toString()).isEqualTo("public class A {\n\n    public void a() {\n    }\n}");
         assertThat(nodes.get(1).toString()).isEqualTo("A");
@@ -43,8 +43,8 @@ public class AstGeneratorTest {
      * deepCopyメソッドがNodeの親ノードも含めてコピーできているかテスト
      */
     @Test public void testForCopiedNode(){
-        Node node = AstGenerator.getAllDescendantNodes(JavaParser.parse(sourceCode)).get(0);
-        Node copiedNode = AstGenerator.deepCopy(node);
+        Node node = NodeUtility.getAllDescendantNodes(JavaParser.parse(sourceCode)).get(0);
+        Node copiedNode = NodeUtility.deepCopy(node);
 
         assertThat(copiedNode).isNotSameAs(node);
         assertThat(copiedNode.getParentNode().isPresent()).isTrue();
@@ -61,7 +61,7 @@ public class AstGeneratorTest {
             .append("   }\n")
             .append("}\n")
             .toString();
-        List<RepairUnit> repairUnit = new AstGenerator().getAllRepairUnit(source);
+        List<RepairUnit> repairUnit = new NodeUtility().getAllRepairUnit(source);
         
         // ASTが取得できているか確認
         assertThat(repairUnit.size()).isEqualTo(6);
@@ -81,7 +81,7 @@ public class AstGeneratorTest {
             .append("   }\n")
             .append("}\n")
             .toString();
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
+        List<RepairUnit> repairUnits = new NodeUtility().getAllRepairUnit(source);
         assertThat(repairUnits.size()).isEqualTo(12);
         final int targetUnitIndex = 8;
         RepairUnit targetUnit = repairUnits.get(targetUnitIndex);

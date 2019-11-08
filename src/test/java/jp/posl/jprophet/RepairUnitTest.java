@@ -1,6 +1,6 @@
 package jp.posl.jprophet;
 
-import jp.posl.jprophet.AstGenerator;
+import jp.posl.jprophet.NodeUtility;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +24,7 @@ public class RepairUnitTest {
             .append("}\n")
             .toString();
 
-        this.repairUnits = new AstGenerator().getAllRepairUnit(sourceCode);
+        this.repairUnits = new NodeUtility().getAllRepairUnit(sourceCode);
     }
 
     /**
@@ -72,7 +72,7 @@ public class RepairUnitTest {
         RepairUnit copiedRepairUnit = RepairUnit.deepCopy(this.repairUnits.get(2));
 
         Node copiedTargetNode = copiedRepairUnit.getTargetNode();
-        Node copiedTargetNodeFromCu = AstGenerator.findByLevelOrderIndex(copiedRepairUnit.getCompilationUnit(), 2).orElseThrow();
+        Node copiedTargetNodeFromCu = NodeUtility.findByLevelOrderIndex(copiedRepairUnit.getCompilationUnit(), 2).orElseThrow();
         Node copiedNodeFromTargetNode = copiedTargetNode.getChildNodes().get(0);
         Node copiedNodeFromCu = copiedTargetNodeFromCu.getChildNodes().get(0);
 
