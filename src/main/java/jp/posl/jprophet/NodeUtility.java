@@ -7,7 +7,6 @@ import com.github.javaparser.ast.CompilationUnit;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -43,8 +42,7 @@ public class NodeUtility {
      * @return ディープコピーによって生成されたインスタンス
      */
     public static Node deepCopy(Node node) {
-        Node rootNode = node.findRootNode();
-        CompilationUnit cu = (CompilationUnit)(rootNode);
+        CompilationUnit cu = node.findCompilationUnit().get();
 
         CompilationUnit newCu = cu.clone();
         List<Node> nodes = NodeUtility.getAllDescendantNodes(newCu);
@@ -91,27 +89,6 @@ public class NodeUtility {
      */
     public static List<Node> getAllNodesFromCode(String sourceCode) {
         return NodeUtility.getAllCopiedDescendantNodes(JavaParser.parse(sourceCode));
-    }
-
-    /**
-     * ソースコードから全てのASTノードを抽出し，修正単位であるRepairUnitを取得する.
-     * 
-     * @param sourceCode AST抽出対象のソースコード
-     * @return 修正対象のASTノードとコンパイルユニットを持った修正単位であるRepairUnitのリスト
-     */
-    public List<RepairUnit> getAllRepairUnit(String sourceCode){
-        List<RepairUnit> repairUnits = new ArrayList<RepairUnit>();
-        for(int i = 0;/*終了条件なし*/; i++){
-            CompilationUnit compilationUnit;   //RepairUnitごとに新しいインスタンスの生成
-            compilationUnit = JavaParser.parse(sourceCode);
-            // なくなるまで順にASTノードを取り出す
-            try {
-                Node node = NodeUtility.findByLevelOrderIndex(compilationUnit.findRootNode(), i).orElseThrow(); 
-                repairUnits.add(new RepairUnit(node, i, compilationUnit)); 
-            } catch (NoSuchElementException e) {
-                return repairUnits;
-            }
-        }
     }
 }
 

@@ -2,8 +2,10 @@ package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -15,7 +17,8 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
-import jp.posl.jprophet.RepairUnit;
+import jp.posl.jprophet.NodeUtility;
+
 
 /**
  * 抽象条件式がtrueの時に実行されるような,
@@ -23,8 +26,7 @@ import jp.posl.jprophet.RepairUnit;
  * 対象の前に挿入する
  */
 public class CtrlFlowIntroductionOperation implements AstOperation{
-    public List<RepairUnit> exec(RepairUnit repairUnit){
-        Node targetNode = repairUnit.getTargetNode();
+    public List<CompilationUnit> exec(Node targetNode){
         if(!(targetNode instanceof Statement)) return new ArrayList<>();
         if(targetNode instanceof BlockStmt) return new ArrayList<>();
         BlockStmt blockStmt; 
@@ -34,27 +36,26 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
             return new ArrayList<>();
         }
 
-        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
-        this.insertIfStmtBefore(blockStmt, targetNode, new ReturnStmt(), repairUnit).map(candidates::add);
+        List<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
+        this.insertIfStmtBefore(blockStmt, targetNode, new ReturnStmt()).map(compilationUnits::add);
         if(targetNode.findParent(ForStmt.class).isPresent()) {
-            this.insertIfStmtBefore(blockStmt, targetNode, new BreakStmt((SimpleName) null), repairUnit).map(candidates::add);
+            this.insertIfStmtBefore(blockStmt, targetNode, new BreakStmt((SimpleName) null)).map(compilationUnits::add);
         }
 
-        return candidates;
+        return compilationUnits;
     }
 
-    public Optional<RepairUnit> insertIfStmtBefore(BlockStmt inThisBlockStmt, Node beforeThisNode, Statement stmtInIfBlock, RepairUnit repairUnit) {
+    private Optional<CompilationUnit> insertIfStmtBefore(BlockStmt inThisBlockStmt, Node beforeThisTargetNode, Statement stmtInIfBlock) {
         NodeList<Statement> statements = inThisBlockStmt.clone().getStatements();
         try {
-            statements.addBefore(new IfStmt(null, new NameExpr("JPROPHET_ABST_HOLE") , stmtInIfBlock , null), (Statement) beforeThisNode);
-        } catch (Exception e) {
+            statements.addBefore(new IfStmt(null, new NameExpr("JPROPHET_ABST_HOLE") , stmtInIfBlock , null), (Statement) beforeThisTargetNode);
+            Node copiedTargetNode = NodeUtility.deepCopy(beforeThisTargetNode);
+            BlockStmt blockStmt = copiedTargetNode.findParent(BlockStmt.class).orElseThrow();
+            blockStmt.setStatements(statements);
+            CompilationUnit compilationUnit = blockStmt.findCompilationUnit().orElseThrow();
+            return Optional.of(compilationUnit);
+        } catch (NoSuchElementException | IllegalArgumentException e) {
             return Optional.empty();
         }
-
-        RepairUnit newCandidate = RepairUnit.deepCopy(repairUnit);
-        newCandidate.getTargetNode().findParent(BlockStmt.class)
-            .map(b -> b.setStatements(statements));
-    
-        return Optional.of(newCandidate);
     }
 }

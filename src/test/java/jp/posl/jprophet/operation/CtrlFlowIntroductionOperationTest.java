@@ -3,7 +3,7 @@ package jp.posl.jprophet.operation;
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.RepairUnit;
+import com.github.javaparser.ast.Node;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
@@ -55,12 +55,12 @@ public class CtrlFlowIntroductionOperationTest {
         );
 
 
-        List<RepairUnit> repairUnits = new NodeUtility().getAllRepairUnit(targetSource);
+        List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
         List<String> candidateSources = new ArrayList<String>();
-        for(RepairUnit repairUnit : repairUnits){
+        for(Node node : nodes){
             CtrlFlowIntroductionOperation vr = new CtrlFlowIntroductionOperation();
-            candidateSources.addAll(vr.exec(repairUnit).stream()
-                .map(ru -> ru.getCompilationUnit().toString()) 
+            candidateSources.addAll(vr.exec(node).stream()
+                .map(ru -> ru.findCompilationUnit().get().toString()) 
                 .collect(Collectors.toList())
             );
         }
@@ -120,12 +120,12 @@ public class CtrlFlowIntroductionOperationTest {
             .append("}\n")
             .toString());
 
-        List<RepairUnit> repairUnits = new NodeUtility().getAllRepairUnit(targetSource);
+        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
         List<String> candidateSources = new ArrayList<String>();
-        for(RepairUnit repairUnit : repairUnits){
-            CtrlFlowIntroductionOperation vr = new CtrlFlowIntroductionOperation();
-            candidateSources.addAll(vr.exec(repairUnit).stream()
-                .map(ru -> ru.getCompilationUnit().toString()) 
+        for(Node node : repairUnits){
+            CtrlFlowIntroductionOperation cfo = new CtrlFlowIntroductionOperation();
+            candidateSources.addAll(cfo.exec(node).stream()
+                .map(n -> n.findCompilationUnit().get().toString()) 
                 .collect(Collectors.toList())
             );
         }

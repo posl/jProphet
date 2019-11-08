@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import com.github.javaparser.ast.CompilationUnit;
 
-import jp.posl.jprophet.RepairUnit;
 
 /**
  * StagedProgramrRepairにおける条件内部の具体的なコードが生成される前の状態の
@@ -12,8 +11,8 @@ import jp.posl.jprophet.RepairUnit;
  */
 public class PatchCandidateWithAbstHole implements PatchCandidate {
     private DefaultPatchCandidate patchCandidate;
-    public PatchCandidateWithAbstHole(RepairUnit repairUnit, String fixedFilePath, String fixedFileFQN) {
-        this.patchCandidate = new DefaultPatchCandidate(repairUnit, fixedFilePath, fixedFileFQN);
+    public PatchCandidateWithAbstHole(CompilationUnit compilationUnit, String fixedFilePath, String fixedFileFQN) {
+        this.patchCandidate = new DefaultPatchCandidate(compilationUnit, fixedFilePath, fixedFileFQN);
     }
 
     /**

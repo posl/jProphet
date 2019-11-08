@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+
 
 public class PatchCandidateGeneratorTest {
     private PatchCandidateGenerator patchCandidateGenerator = new PatchCandidateGenerator();
@@ -35,8 +38,8 @@ public class PatchCandidateGeneratorTest {
         // 必ず一つのRepairUnitを返すAstOperationの匿名クラスを実装してGeneratorに注入
         AstOperation stubOperation = new AstOperation(){
             @Override
-            public List<RepairUnit> exec(RepairUnit repairUnit) {
-                return List.of(new RepairUnit(null, 0, null)); 
+            public List<CompilationUnit> exec(Node targetNode) {
+                return List.of(targetNode.findCompilationUnit().orElseThrow()); 
             }
         };
 
