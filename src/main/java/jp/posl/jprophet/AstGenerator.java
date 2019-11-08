@@ -34,6 +34,39 @@ public class AstGenerator {
         }
     }
 
+    /**
+     * Nodeインスタンスのディープコピーを作成する
+     * （JavaParserのNodeクラスの提供するcloneメソッドが親ノードの参照をコピーしないためこのメソッドを作成した）
+     *   
+     * @param node コピー元のインスタンス
+     * @return ディープコピーによって生成されたインスタンス
+     */
+    public static Node deepCopy(Node node) {
+        Node rootNode = node.findRootNode();
+        CompilationUnit cu = (CompilationUnit)(rootNode);
+
+        CompilationUnit newCu = cu.clone();
+        List<Node> nodes = AstGenerator.getAllChildNodes(newCu);
+        Node newNode = nodes.stream().filter(n -> {
+            return n.equals(node) && n.getRange().equals(node.getRange());
+        }).findFirst().orElseThrow();
+        return newNode;
+    }
+
+
+    /**
+     * Nodeの全ての子孫ノード（ASTツリー上の全ての子要素）を取得する
+     * @param node 子孫ノードを取得したいノード
+     * @return 子孫ノードのリスト
+     */
+    public static List<Node> getAllChildNodes(Node node){
+        List<Node> nodes = new ArrayList<Node>();
+        nodes.addAll(node.getChildNodes());
+        node.getChildNodes().stream().map(n -> {
+            return getAllChildNodes(n);
+        }).forEach(nodes::addAll);
+        return nodes;
+    }
 
     /**
      * ソースコードから全てのASTノードを抽出し，修正単位であるRepairUnitを取得する.
