@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Set;
 
 import jp.posl.jprophet.RepairConfiguration;
-import jp.posl.jprophet.patch.DefaultPatchCandidate;
-import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.TestExecutor;
 import jp.posl.jprophet.test.UnitTestExecutor;
+import jp.posl.jprophet.test.result.SpotBugsTestResult;
+import jp.posl.jprophet.test.result.TestResult;
 
 public class SpotBugsTestExecutor implements TestExecutor {
 
@@ -24,9 +24,9 @@ public class SpotBugsTestExecutor implements TestExecutor {
     }
 
     @Override
-    public boolean exec(RepairConfiguration config) {
+    public TestResult exec(RepairConfiguration config) {
         final UnitTestExecutor unitTestExecutor = new UnitTestExecutor();
-        final boolean isSuccess = unitTestExecutor.exec(config);
+        final boolean isSuccess = unitTestExecutor.exec(config).getIsSuccess();
         if(isSuccess) {
             final SpotBugsExecutor spotBugsExecutor = new SpotBugsExecutor(spotbugsResultFileName);
             spotBugsExecutor.exec(config);
@@ -34,10 +34,10 @@ public class SpotBugsTestExecutor implements TestExecutor {
             final List<SpotBugsWarning> beforeWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(beforeResultFilePath);
             final List<SpotBugsWarning> afterWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(spotBugsExecutor.getResultFilePath());
             final boolean isFixedAll = compareSpotBugsWarnings(beforeWarnings, afterWarnings);
-            return isFixedAll;
+            return new SpotBugsTestResult(isFixedAll);
         }
         else {
-            return false;
+            return new SpotBugsTestResult(false);
         }
     }
 
@@ -63,6 +63,11 @@ public class SpotBugsTestExecutor implements TestExecutor {
 
         final boolean isFixedAll = (unFixedSet.size() == 0);
         return isFixedAll;
+    }
+
+
+    public List<SpotBugsFixedResult> getFixedResults() {
+        return this.fixedResults;
     }
     
 }

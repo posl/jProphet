@@ -3,17 +3,13 @@ package jp.posl.jprophet.spotbugs;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.project.GradleProject;
-import jp.posl.jprophet.project.Project;
-import jp.posl.jprophet.test.TestExecutor;
+
 
 
 public class SpotBugsTestExecutorTest {
@@ -36,11 +32,19 @@ public class SpotBugsTestExecutorTest {
     public void testForExec() {
         final SpotBugsExecutor spotBugsExecutor = new SpotBugsExecutor("test");
         spotBugsExecutor.exec(beforeConfig);
-        final TestExecutor testExecutor = new SpotBugsTestExecutor(spotBugsExecutor.getResultFilePath());
-        final boolean isSuccess01 = testExecutor.exec(afterConfig01);
+
+        final SpotBugsTestExecutor testExecutor01 = new SpotBugsTestExecutor(spotBugsExecutor.getResultFilePath());
+        final boolean isSuccess01 = testExecutor01.exec(afterConfig01).getIsSuccess();
         assertThat(isSuccess01).isFalse();
-        final boolean isSuccess02 = testExecutor.exec(afterConfig02);
+        final SpotBugsFixedResult result01 = testExecutor01.getFixedResults().get(0);
+        assertThat(result01.getFixedWarning().getType()).isEqualTo("NM_METHOD_NAMING_CONVENTION");
+        assertThat(result01.getFixedWarning().getFilePath()).isEqualTo("testSBProject01/App2.java");
+        assertThat(result01.getOccurredNewWarnings().size()).isEqualTo(1);
+
+        final SpotBugsTestExecutor testExecutor02 = new SpotBugsTestExecutor(spotBugsExecutor.getResultFilePath());
+        final boolean isSuccess02 = testExecutor02.exec(afterConfig02).getIsSuccess();
         assertThat(isSuccess02).isTrue();
+        assertThat(testExecutor02.getFixedResults().size()).isEqualTo(6);
 
     }
 

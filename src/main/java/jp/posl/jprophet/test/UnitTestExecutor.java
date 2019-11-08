@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import org.junit.runner.JUnitCore;
 
 import jp.posl.jprophet.project.Project;
+import jp.posl.jprophet.test.result.TestResult;
+import jp.posl.jprophet.test.result.UnitTestResult;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
 
@@ -43,16 +45,16 @@ public class UnitTestExecutor implements TestExecutor {
      * @return 全てのテスト実行が通ったかどうか
      */
     @Override
-    public boolean exec(RepairConfiguration config)  {
+    public TestResult exec(RepairConfiguration config)  {
         try {
             builder.build(config);
             getClassLoader(config.getBuildPath());
             testClasses = loadTestClass(config.getTargetProject());
-            return runAllTestClass(testClasses);
+            return new UnitTestResult(runAllTestClass(testClasses));
         }
         catch (MalformedURLException | ClassNotFoundException e) {
             System.err.println(e.getMessage());
-            return false;
+            return new UnitTestResult(false);
         }
     }
 
