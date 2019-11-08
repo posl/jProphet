@@ -16,11 +16,11 @@ public class SpotBugsTestExecutor implements TestExecutor {
 
     private final String beforeResultFilePath;
     private final static String spotbugsResultFileName = "after";
-    private List<SpotBugsFixedResult> fixedResults;
+    //private List<SpotBugsFixedResult> fixedResults;
 
     public SpotBugsTestExecutor(String beforeResultFilePath) {
         this.beforeResultFilePath = beforeResultFilePath;
-        this.fixedResults = new ArrayList<SpotBugsFixedResult>();
+        //this.fixedResults = new ArrayList<SpotBugsFixedResult>();
     }
 
     @Override
@@ -55,19 +55,22 @@ public class SpotBugsTestExecutor implements TestExecutor {
         final Set<SpotBugsWarning> occurredSet = new HashSet<SpotBugsWarning>(afterSet);
         occurredSet.removeAll(beforeSet);
 
-        final List<SpotBugsWarning> occurredWarnings = new ArrayList<SpotBugsWarning>(occurredSet);
-
+        //final List<SpotBugsWarning> occurredWarnings = new ArrayList<SpotBugsWarning>(occurredSet);
+        /*
         for (SpotBugsWarning warning : fixedSet) {
             fixedResults.add(new SpotBugsFixedResult(warning, occurredWarnings));
         }
+        */
 
         final boolean isFixedAll = (unFixedSet.size() == 0);
         return isFixedAll;
     }
 
 
+    /*
     public List<SpotBugsFixedResult> getFixedResults() {
         return this.fixedResults;
     }
+    */
     
 }
