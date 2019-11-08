@@ -36,34 +36,18 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
         }
 
         List<RepairUnit> candidates = new ArrayList<RepairUnit>();
-        this.insertIfStmtWithReturn(blockStmt, targetNode, repairUnit).map(candidates::add);
-        this.insertIfStmtWithBreak(blockStmt, targetNode, repairUnit).map(candidates::add);
+        this.insertIfStmtBefore(blockStmt, targetNode, new ReturnStmt(), repairUnit).map(candidates::add);
+        if(targetNode.findParent(ForStmt.class).isPresent()) {
+            this.insertIfStmtBefore(blockStmt, targetNode, new BreakStmt((SimpleName) null), repairUnit).map(candidates::add);
+        }
 
         return candidates;
     }
 
-    public Optional<RepairUnit> insertIfStmtWithReturn(BlockStmt blockStmt, Node targetNode, RepairUnit repairUnit) {
-        NodeList<Statement> statements = blockStmt.clone().getStatements();
+    public Optional<RepairUnit> insertIfStmtBefore(BlockStmt inThisBlockStmt, Node beforeThisNode, Statement stmtInIfBlock, RepairUnit repairUnit) {
+        NodeList<Statement> statements = inThisBlockStmt.clone().getStatements();
         try {
-            statements.addBefore(new IfStmt(null, new NameExpr("JPROPHET_ABST_HOLE") , new ReturnStmt(), null), (Statement) targetNode);
-        } catch (Exception e) {
-            return Optional.empty();
-        }
-
-        RepairUnit newCandidate = RepairUnit.deepCopy(repairUnit);
-        newCandidate.getTargetNode().findParent(BlockStmt.class)
-            .map(b -> b.setStatements(statements));
-    
-        return Optional.of(newCandidate);
-    }
-
-    public Optional<RepairUnit> insertIfStmtWithBreak(BlockStmt blockStmt, Node targetNode, RepairUnit repairUnit) throws IllegalArgumentException {
-        if(!targetNode.findParent(ForStmt.class).isPresent()) {
-            return Optional.empty();
-        }
-        NodeList<Statement> statements = blockStmt.clone().getStatements();
-        try {
-            statements.addBefore(new IfStmt(null, new NameExpr("JPROPHET_ABST_HOLE") , new BreakStmt((SimpleName) null), null), (Statement) targetNode);
+            statements.addBefore(new IfStmt(null, new NameExpr("JPROPHET_ABST_HOLE") , stmtInIfBlock , null), (Statement) beforeThisNode);
         } catch (Exception e) {
             return Optional.empty();
         }

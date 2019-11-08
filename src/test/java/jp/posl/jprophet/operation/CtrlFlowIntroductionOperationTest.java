@@ -64,7 +64,7 @@ public class CtrlFlowIntroductionOperationTest {
                 .collect(Collectors.toList())
             );
         }
-        assertThat(candidateSources).containsAll(expectedSources);
+        assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
         return;
     }
 
@@ -82,7 +82,9 @@ public class CtrlFlowIntroductionOperationTest {
             .append("}\n")
             .toString();
 
-        String expectedSource = new StringBuilder().append("")
+        List<String> expectedSources = new ArrayList<String>();
+
+        expectedSources.add(new StringBuilder().append("")
             .append("public class A {\n\n")
             .append("    private void ma() {\n")
             .append("        for (int i = 0; i < 10; i++) {\n")
@@ -92,8 +94,31 @@ public class CtrlFlowIntroductionOperationTest {
             .append("        }\n")
             .append("    }\n")
             .append("}\n")
-            .toString();
+            .toString());
 
+        expectedSources.add(new StringBuilder().append("")
+            .append("public class A {\n\n")
+            .append("    private void ma() {\n")
+            .append("        for (int i = 0; i < 10; i++) {\n")
+            .append("            if (JPROPHET_ABST_HOLE)\n")
+            .append("                return;\n")
+            .append("            String la = \"b\";\n")
+            .append("        }\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString());
+
+        expectedSources.add(new StringBuilder().append("")
+            .append("public class A {\n\n")
+            .append("    private void ma() {\n")
+            .append("        if (JPROPHET_ABST_HOLE)\n")
+            .append("            return;\n")
+            .append("        for (int i = 0; i < 10; i++) {\n")
+            .append("            String la = \"b\";\n")
+            .append("        }\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString());
 
         List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(targetSource);
         List<String> candidateSources = new ArrayList<String>();
@@ -104,7 +129,7 @@ public class CtrlFlowIntroductionOperationTest {
                 .collect(Collectors.toList())
             );
         }
-        assertThat(candidateSources).contains(expectedSource);
+        assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
         return;
     }
 }
