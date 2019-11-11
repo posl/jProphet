@@ -70,19 +70,16 @@ public class JProphetMain {
         List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
-        List<PatchCandidate> abstractPatchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations);
+        List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations);
         
         // 学習モデルとフォルトローカライゼーションのスコアによってソート
-        patchEvaluator.descendingSortBySuspiciousness(abstractPatchCandidates, suspiciousenesses);
+        patchEvaluator.descendingSortBySuspiciousness(patchCandidates, suspiciousenesses);
         
         // 抽象修正候補中の条件式の生成
-        for(PatchCandidate abstractRepairCandidate: abstractPatchCandidates) {
-            List<PatchCandidate> patchCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
-            for(PatchCandidate patchCandidate: patchCandidates) {
-                Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
-                if(testExecutor.run(new RepairConfiguration(config, fixedProject))) {
-                    return true;
-                }
+        for(PatchCandidate patchCandidate: patchCandidates) {
+            Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
+            if(testExecutor.run(new RepairConfiguration(config, fixedProject))) {
+                return true;
             }
         }
         return false;
