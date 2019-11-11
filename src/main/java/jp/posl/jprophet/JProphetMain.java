@@ -72,10 +72,10 @@ public class JProphetMain {
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
         List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations);
         
-        // 学習モデルとフォルトローカライゼーションのスコアによってソート
+        // 学習モデルやフォルトローカライゼーションのスコアによってソート
         patchEvaluator.descendingSortBySuspiciousness(patchCandidates, suspiciousenesses);
         
-        // 抽象修正候補中の条件式の生成
+        // 修正パッチ候補ごとにテスト実行
         for(PatchCandidate patchCandidate: patchCandidates) {
             Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
             if(testExecutor.run(new RepairConfiguration(config, fixedProject))) {
