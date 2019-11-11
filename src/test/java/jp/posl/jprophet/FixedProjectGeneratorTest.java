@@ -65,9 +65,10 @@ public class FixedProjectGeneratorTest{
             fail(e.getMessage());
             return;
         }
-        Node node = compilationUnit.findRootNode().getChildNodes().get(1);
+        Node targetNodeBeforeFix = compilationUnit.findRootNode().getChildNodes().get(1);
+        Node node = NodeUtility.deepCopy(targetNodeBeforeFix);
         ((ClassOrInterfaceDeclaration)node).setModifier(Modifier.STATIC, true);
-        PatchCandidate patchCandidate = new DefaultPatchCandidate(node, this.targetFilePath, this.targetFileFqn);
+        PatchCandidate patchCandidate = new DefaultPatchCandidate(targetNodeBeforeFix, node.findCompilationUnit().get(), this.targetFilePath, this.targetFileFqn);
         this.fixedProjectGenerator.exec(config, patchCandidate);
        
     }

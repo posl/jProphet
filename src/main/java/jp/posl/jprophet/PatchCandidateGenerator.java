@@ -12,7 +12,7 @@ import com.github.javaparser.ast.Node;
 
 import jp.posl.jprophet.operation.AstOperation;
 import jp.posl.jprophet.patch.PatchCandidate;
-import jp.posl.jprophet.patch.PatchCandidateWithAbstHole;
+import jp.posl.jprophet.patch.DefaultPatchCandidate;
 import jp.posl.jprophet.project.FileLocator;
 import jp.posl.jprophet.project.Project;
 
@@ -31,11 +31,11 @@ public class PatchCandidateGenerator{
             try {
                 List<String> lines = Files.readAllLines(Paths.get(fileLocator.getPath()), StandardCharsets.UTF_8);
                 String sourceCode = String.join("\n", lines);
-                List<Node> nodes = NodeUtility.getAllNodesFromCode(sourceCode);
-                for(Node node : nodes){
-                    List<CompilationUnit> appliedCompilationUnits = this.applyTemplate(node, operations);
+                List<Node> targetNodes = NodeUtility.getAllNodesFromCode(sourceCode);
+                for(Node targetNode : targetNodes){
+                    List<CompilationUnit> appliedCompilationUnits = this.applyTemplate(targetNode, operations);
                     for(CompilationUnit appliedCompilationUnit : appliedCompilationUnits){
-                        candidates.add(new PatchCandidateWithAbstHole(appliedCompilationUnit, fileLocator.getPath(), fileLocator.getFqn()));
+                        candidates.add(new DefaultPatchCandidate(targetNode, appliedCompilationUnit, fileLocator.getPath(), fileLocator.getFqn()));
                     }
                 }
             } catch (IOException e) {

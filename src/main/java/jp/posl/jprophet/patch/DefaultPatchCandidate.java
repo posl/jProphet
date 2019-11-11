@@ -12,18 +12,21 @@ import com.github.javaparser.ast.Node;
  * 実際にプログラムの生成が可能なパッチ候補の実装クラス
  */
 public class DefaultPatchCandidate implements PatchCandidate {
-    private final CompilationUnit compilationUnit;
+    private final Node targetNodeBeforeFix;
+    private final CompilationUnit fixedCompilationUnit;
     private final String fixedFilePath;
     private final String fixedFileFqn;
 
     /**
      * 以下の引数の情報を元にパッチ候補を生成 
-     * @param fixedNode 修正されたASTノードの情報を持つRepairUnit
+     * @param targetNodeBeforeFix 修正されたASTノードの情報を持つRepairUnit
+     * @param fixedCompilationUnit 修正されたASTノードの情報を持つRepairUnit
      * @param fixedFilePath 修正されたファイルのパス（jprophetルートからの相対パス）
      * @param fixedFileFQN 修正されたファイルのFQN
      */
-    public DefaultPatchCandidate(CompilationUnit compilationUnit, String fixedFilePath, String fixedFileFQN) {
-        this.compilationUnit = compilationUnit;
+    public DefaultPatchCandidate(Node targetNodeBeforeFix, CompilationUnit fixedCompilationUnit, String fixedFilePath, String fixedFileFQN) {
+        this.targetNodeBeforeFix = targetNodeBeforeFix;
+        this.fixedCompilationUnit = fixedCompilationUnit;
         this.fixedFilePath = fixedFilePath;
         this.fixedFileFqn = fixedFileFQN;
     }
@@ -49,7 +52,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
      */
     @Override
     public CompilationUnit getCompilationUnit(){
-        return this.compilationUnit;
+        return this.fixedCompilationUnit;
     }
 
     /**
@@ -58,7 +61,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
     @Override
     public Optional<Integer> getLineNumber() {
         try {
-            Range range = this.fixedNode.getRange().orElseThrow();        
+            Range range = this.targetNodeBeforeFix.getRange().orElseThrow();        
             return Optional.of(range.begin.line);
         } catch (NoSuchElementException e) {
             System.err.println(e.getMessage());
@@ -72,6 +75,6 @@ public class DefaultPatchCandidate implements PatchCandidate {
      */
     @Override
     public String toString(){
-        return this.compilationUnit.toString();
+        return this.fixedCompilationUnit.toString();
     }
 }

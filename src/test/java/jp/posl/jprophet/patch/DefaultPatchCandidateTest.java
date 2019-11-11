@@ -29,7 +29,7 @@ public class DefaultPatchCandidateTest {
             return;
         }
         Node node = compilationUnit.findRootNode().getChildNodes().get(0).getChildNodes().get(2);
-        this.patchCandidate = new DefaultPatchCandidate(node, filePath, fqn);
+        this.patchCandidate = new DefaultPatchCandidate(node, node.findCompilationUnit().get(), filePath, fqn);
     }
 
     /**
