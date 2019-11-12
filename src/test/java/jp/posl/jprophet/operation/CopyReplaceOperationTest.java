@@ -40,6 +40,7 @@ public class CopyReplaceOperationTest{
             CopyReplaceOperation cr = new CopyReplaceOperation();
             this.candidates.addAll(cr.exec(repairUnit));
         }
+        return;
     }
 
     /**

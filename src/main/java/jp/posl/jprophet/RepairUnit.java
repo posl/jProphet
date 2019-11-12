@@ -1,8 +1,14 @@
 package jp.posl.jprophet;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.printer.*;
+
 
 public class RepairUnit {
     private Node targetNode;
@@ -29,6 +35,7 @@ public class RepairUnit {
      * @param repairUnit コピー元のRepairUnitインスタンス
      * @return コピーされたRepairUnitインスタンス
      */
+    /*
     public static RepairUnit deepCopy(RepairUnit repairUnit){
         int targetNodeIndex = repairUnit.getTargetNodeIndex();
         CompilationUnit cu = repairUnit.getCompilationUnit();
@@ -36,6 +43,36 @@ public class RepairUnit {
         Node newTargetNode = AstGenerator.findByLevelOrderIndex(newCu, targetNodeIndex).orElseThrow();
                 
         return new RepairUnit(newTargetNode, targetNodeIndex, newCu);
+    }
+    */
+    
+    
+    
+    public static RepairUnit deepCopy(RepairUnit repairUnit) {
+        CompilationUnit cu = repairUnit.getCompilationUnit();
+        CompilationUnit newCu = cu.clone();
+        List<RepairUnit> repairUnits = getAllRepairUnit(newCu);
+        RepairUnit statement = repairUnits.stream()
+            .filter(n -> {
+                return n.getTargetNode().equals(repairUnit.getTargetNode()) && n.getTargetNode().getRange().equals(repairUnit.getTargetNode().getRange());
+            }).findFirst().orElseThrow();
+                
+        return statement;
+    }
+
+    private static List<RepairUnit> getAllRepairUnit(CompilationUnit compilationUnit){
+        List<RepairUnit> repairUnits = new ArrayList<RepairUnit>();
+        for(int i = 0;/*終了条件なし*/; i++){
+            CompilationUnit newCompilationUnit;   //RepairUnitごとに新しいインスタンスの生成
+            newCompilationUnit = compilationUnit;
+            // なくなるまで順にASTノードを取り出す
+            try {
+                Node node = AstGenerator.findByLevelOrderIndex(newCompilationUnit.findRootNode(), i).orElseThrow(); 
+                repairUnits.add(new RepairUnit(node, i, compilationUnit)); 
+            } catch (NoSuchElementException e) {
+                return repairUnits;
+            }
+        }
     }
 
     /**
