@@ -2,8 +2,8 @@ package jp.posl.jprophet.operation;
 
 import org.junit.Test;
 
-import jp.posl.jprophet.AstGenerator;
-import jp.posl.jprophet.RepairUnit;
+import jp.posl.jprophet.NodeUtility;
+import com.github.javaparser.ast.Node;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
@@ -19,42 +19,59 @@ public class VariableReplacementOperationTest{
     @Test public void testForArgumentReplace(){
         final String targetStatement = 
                 "       this.mb(\"hoge\", \"fuga\");\n";
+        final String beforeTargetStatement = new StringBuilder().append("")
+            .append("public class A {\n\n")
+            .append("    private String fa = \"a\";\n\n")
+            .append("    private String fb = \"a\";\n\n")
+            .append("    private void ma(String pa, String pb) {\n")
+            .append("        String la = \"b\";\n")
+            .toString();
 
-        final String source = new StringBuilder().append("")
-        .append("public class A {\n")
-        .append("   private String fa = \"a\";\n")
-        .append("   private String fb = \"a\";\n")
-        .append("   private void ma(String pa, String pb) {\n")
-        .append("       String la = \"b\";\n")
-        .append(targetStatement)
-        .append("   }\n")
-        .append("   private void mb(String a, String b) {\n")
-        .append("   }\n")
-        .append("}\n")
-        .toString();
+        final String afterTargetStatement = new StringBuilder().append("")
+            .append("    }\n\n")
+            .append("    private void mb(String a, String b) {\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        final String targetSource = new StringBuilder().append("")
+            .append(beforeTargetStatement)
+            .append(targetStatement)
+            .append(afterTargetStatement)
+            .toString();
 
         List<String> expectedTargetSources = new ArrayList<String>();
-        expectedTargetSources.add("this.mb(this.fa, \"fuga\")");
-        expectedTargetSources.add("this.mb(\"hoge\", this.fa)");
-        expectedTargetSources.add("this.mb(this.fb, \"fuga\")");
-        expectedTargetSources.add("this.mb(\"hoge\", this.fb)");
-        expectedTargetSources.add("this.mb(la, \"fuga\")");
-        expectedTargetSources.add("this.mb(\"hoge\", la)");
-        expectedTargetSources.add("this.mb(pa, \"fuga\")");
-        expectedTargetSources.add("this.mb(\"hoge\", pa)");
-        expectedTargetSources.add("this.mb(pb, \"fuga\")");
-        expectedTargetSources.add("this.mb(\"hoge\", pb)");
+        expectedTargetSources.add("        this.mb(this.fa, \"fuga\");\n");
+        expectedTargetSources.add("        this.mb(\"hoge\", this.fa);\n");
+        expectedTargetSources.add("        this.mb(this.fb, \"fuga\");\n");
+        expectedTargetSources.add("        this.mb(\"hoge\", this.fb);\n");
+        expectedTargetSources.add("        this.mb(la, \"fuga\");\n");
+        expectedTargetSources.add("        this.mb(\"hoge\", la);\n");
+        expectedTargetSources.add("        this.mb(pa, \"fuga\");\n");
+        expectedTargetSources.add("        this.mb(\"hoge\", pa);\n");
+        expectedTargetSources.add("        this.mb(pb, \"fuga\");\n");
+        expectedTargetSources.add("        this.mb(\"hoge\", pb);\n");
 
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
+        List<String> expectedSources = expectedTargetSources.stream()
+            .map(str -> {
+                return new StringBuilder().append("")
+                    .append(beforeTargetStatement)
+                    .append(str)
+                    .append(afterTargetStatement)
+                    .toString();
+            })
+            .collect(Collectors.toList());
+
+        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
         List<String> candidateSources = new ArrayList<String>();
-        for(RepairUnit repairUnit : repairUnits){
+        for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            candidateSources.addAll(vr.exec(repairUnit).stream()
-                .map(ru -> ru.toString())
+            candidateSources.addAll(vr.exec(node).stream()
+                .map(cu -> cu.toString())
                 .collect(Collectors.toList())
             );
         }
-        assertThat(candidateSources).containsOnlyElementsOf(expectedTargetSources);
+        assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
         return;
     }
 
@@ -64,35 +81,53 @@ public class VariableReplacementOperationTest{
     @Test public void testForAssignmentReplace(){
         final String targetStatement = 
                 "       la = \"hoge\";\n"; 
+        final String beforeTargetStatement = new StringBuilder().append("")
+            .append("public class A {\n\n")
+            .append("    private String fa = \"a\";\n\n")
+            .append("    private void ma(String pa) {\n")
+            .append("        String la = \"a\";\n")
+            .append("        String lb = \"b\";\n")
+            .toString();
 
-        final String source = new StringBuilder().append("")
-        .append("public class A {\n")
-        .append("   private String fa = \"a\";\n")
-        .append("   private void ma(String pa) {\n")
-        .append("       String la = \"a\";\n")
-        .append("       String lb = \"b\";\n")
-        .append(targetStatement)
-        .append("   }\n")
-        .append("}\n")
-        .toString();
+        final String afterTargetStatement = new StringBuilder().append("")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        final String targetSource = new StringBuilder().append("")
+            .append(beforeTargetStatement)
+            .append(targetStatement)
+            .append(afterTargetStatement)
+            .toString();
+
 
         List<String> expectedTargetSources = new ArrayList<String>();
-        expectedTargetSources.add("la = la");
-        expectedTargetSources.add("la = lb");
-        expectedTargetSources.add("la = this.fa");
-        expectedTargetSources.add("la = pa");
+        expectedTargetSources.add("        la = la;\n");
+        expectedTargetSources.add("        la = lb;\n");
+        expectedTargetSources.add("        la = this.fa;\n");
+        expectedTargetSources.add("        la = pa;\n");
 
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
+        List<String> expectedSources = expectedTargetSources.stream()
+            .map(str -> {
+                return new StringBuilder().append("")
+                    .append(beforeTargetStatement)
+                    .append(str)
+                    .append(afterTargetStatement)
+                    .toString();
+            })
+            .collect(Collectors.toList());
+
+        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
         List<String> candidateSources = new ArrayList<String>();
-        for(RepairUnit repairUnit : repairUnits){
+        for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            candidateSources.addAll(vr.exec(repairUnit).stream()
+            candidateSources.addAll(vr.exec(node).stream()
                 .map(ru -> ru.toString())
                 .collect(Collectors.toList())
             );
         }
 
-        assertThat(candidateSources).containsOnlyElementsOf(expectedTargetSources);
+        assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
         return;
     }
 
@@ -104,11 +139,11 @@ public class VariableReplacementOperationTest{
         .append("import java.util.List;\n")
         .toString();
 
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(sourceThatHasNothingToReplace);
-        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
-        for(RepairUnit repairUnit : repairUnits){
+        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(sourceThatHasNothingToReplace);
+        List<Node> candidates = new ArrayList<Node>();
+        for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            candidates.addAll(vr.exec(repairUnit));
+            candidates.addAll(vr.exec(node));
         }
 
         assertThat(candidates.size()).isZero();
@@ -123,28 +158,38 @@ public class VariableReplacementOperationTest{
                 "       la = lb;\n"; 
 
         final String source = new StringBuilder().append("")
-        .append("public class A {\n")
-        .append("   private void ma() {\n")
-        .append("       String la = \"a\";\n")
-        .append("       String lb = \"b\";\n")
+        .append("public class A {\n\n")
+        .append("    private void ma() {\n")
+        .append("        String la = \"a\";\n")
+        .append("        String lb = \"b\";\n")
         .append(targetStatement)
-        .append("   }\n")
+        .append("    }\n")
         .append("}\n")
         .toString();
 
-        final String targetStatementAsRepairUnitToString = "la = lb"; 
+        final String expectedTargetStatement = 
+                "        la = lb;\n"; 
+        final String expectedSource = new StringBuilder().append("")
+        .append("public class A {\n\n")
+        .append("    private void ma() {\n")
+        .append("        String la = \"a\";\n")
+        .append("        String lb = \"b\";\n")
+        .append(expectedTargetStatement) 
+        .append("    }\n")
+        .append("}\n")
+        .toString();
 
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
+        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(source);
         List<String> candidateSources = new ArrayList<String>();
-        for(RepairUnit repairUnit : repairUnits){
+        for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            candidateSources.addAll(vr.exec(repairUnit).stream()
+            candidateSources.addAll(vr.exec(node).stream()
                 .map(ru -> ru.toString())
                 .collect(Collectors.toList())
             );
         }
 
-        assertThat(candidateSources).doesNotContain(targetStatementAsRepairUnitToString);
+        assertThat(candidateSources).doesNotContain(expectedSource);
         return;
     }
 
@@ -167,11 +212,11 @@ public class VariableReplacementOperationTest{
 
         final String targetStatementAsRepairUnitToString = "hoge(la)"; 
 
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
+        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(source);
         List<String> candidateSources = new ArrayList<String>();
-        for(RepairUnit repairUnit : repairUnits){
+        for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            candidateSources.addAll(vr.exec(repairUnit).stream()
+            candidateSources.addAll(vr.exec(node).stream()
                 .map(ru -> ru.toString())
                 .collect(Collectors.toList())
             );
@@ -187,30 +232,43 @@ public class VariableReplacementOperationTest{
      */
     @Test public void testForCollectPrimitiveType(){
         final String targetStatement = 
-                "       hoge(0);\n"; 
+                "        hoge(0);\n"; 
 
-        final String source = new StringBuilder().append("")
-        .append("public class A {\n")
-        .append("   private void ma() {\n")
-        .append("       int la = 1;\n")
-        .append(targetStatement)
-        .append("   }\n")
-        .append("}\n")
-        .toString();
+        final String beforeTargetStatement = new StringBuilder().append("")
+            .append("public class A {\n\n")
+            .append("    private void ma() {\n")
+            .append("        int la = 1;\n")
+            .toString();
 
-        final String targetStatementAsRepairUnitToString = "hoge(la)"; 
+        final String afterTargetStatement = new StringBuilder().append("")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
 
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
+        final String targetSource = new StringBuilder().append("")
+            .append(beforeTargetStatement)
+            .append(targetStatement)
+            .append(afterTargetStatement)
+            .toString();
+
+
+        final String expectedSource = new StringBuilder().append("")
+            .append(beforeTargetStatement)
+            .append("        hoge(la);\n")
+            .append(afterTargetStatement)
+            .toString();
+
+        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
         List<String> candidateSources = new ArrayList<String>();
-        for(RepairUnit repairUnit : repairUnits){
+        for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            candidateSources.addAll(vr.exec(repairUnit).stream()
+            candidateSources.addAll(vr.exec(node).stream()
                 .map(ru -> ru.toString())
                 .collect(Collectors.toList())
             );
         }
 
-        assertThat(candidateSources).contains(targetStatementAsRepairUnitToString);
+        assertThat(candidateSources).contains(expectedSource);
         return;
     }
 }

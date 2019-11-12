@@ -3,15 +3,17 @@ package jp.posl.jprophet.operation;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.posl.jprophet.RepairUnit;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+
 
 /**
  * if文における条件式の変更操作
  * 条件を狭める操作と緩める操作の二つを行う
  */
 public class CondRefinementOperation implements AstOperation{
-    public List<RepairUnit> exec(RepairUnit repairUnit){
-        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
+    public List<CompilationUnit> exec(Node node){
+        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
         return candidates;
     }
 }

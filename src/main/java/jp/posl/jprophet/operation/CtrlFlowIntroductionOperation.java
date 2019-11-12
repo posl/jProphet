@@ -3,7 +3,8 @@ package jp.posl.jprophet.operation;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.posl.jprophet.RepairUnit;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
 
 /**
  * 抽象条件式がtrueの時に実行されるような,
@@ -11,8 +12,8 @@ import jp.posl.jprophet.RepairUnit;
  * 対象の前に挿入する
  */
 public class CtrlFlowIntroductionOperation implements AstOperation{
-    public List<RepairUnit> exec(RepairUnit repairUnit){
-        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
+    public List<CompilationUnit> exec(Node targetNode){
+        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
         return candidates;
     }
 }
