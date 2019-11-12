@@ -1,7 +1,6 @@
 package jp.posl.jprophet.test.result;
 
-
-
+import java.util.Map;
 
 public class UnitTestResult implements TestResult {
 
@@ -19,4 +18,10 @@ public class UnitTestResult implements TestResult {
     }
 
 
+    @Override
+    public Map<String, String> toStringMap() {
+        return Map.of("isSuccess", String.valueOf(isSuccess));
+    }
+
 }
+

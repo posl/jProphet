@@ -20,7 +20,7 @@ import jp.posl.jprophet.test.TestExecutor;
 import jp.posl.jprophet.test.UnitTestExecutor;
 import jp.posl.jprophet.test.result.TestResult;
 import jp.posl.jprophet.test.writer.TestResultWriter;
-import jp.posl.jprophet.test.writer.UnitTestResultWriter;
+import jp.posl.jprophet.test.writer.CSVTestResultWriter;
 
 public class JProphetMain {
     public static void main(String[] args) {
@@ -40,7 +40,7 @@ public class JProphetMain {
         final StagedCondGenerator      stagedCondGenerator      = new StagedCondGenerator();
         final TestExecutor             testExecutor             = new UnitTestExecutor();
         final FixedProjectGenerator    fixedProjectGenerator    = new FixedProjectGenerator();
-        final TestResultWriter         testResultWriter         = new UnitTestResultWriter();
+        final TestResultWriter         testResultWriter         = new CSVTestResultWriter();
 
         final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(
             new CondRefinementOperation(),
@@ -82,7 +82,7 @@ public class JProphetMain {
             for(PatchCandidate patchCandidate: patchCandidates) {
                 Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
                 final TestResult result = testExecutor.exec(new RepairConfiguration(config, fixedProject));
-                testResultWriter.addTestResult(result);
+                testResultWriter.addTestResult(result, patchCandidate);
                 if(result.getIsSuccess()) {
                     testResultWriter.write();
                     return;
