@@ -7,9 +7,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+
 import jp.posl.jprophet.operation.AstOperation;
 import jp.posl.jprophet.patch.PatchCandidate;
-import jp.posl.jprophet.patch.PatchCandidateWithAbstHole;
+import jp.posl.jprophet.patch.DefaultPatchCandidate;
 import jp.posl.jprophet.project.FileLocator;
 import jp.posl.jprophet.project.Project;
 
@@ -27,12 +30,12 @@ public class PatchCandidateGenerator{
         for(FileLocator fileLocator : fileLocators){
             try {
                 List<String> lines = Files.readAllLines(Paths.get(fileLocator.getPath()), StandardCharsets.UTF_8);
-                String souceCode = String.join("\n", lines);
-                List<RepairUnit> repairUnits =  new AstGenerator().getAllRepairUnit(souceCode);
-                for(RepairUnit repairUnit : repairUnits){
-                    List<RepairUnit> appliedUnits = this.applyTemplate(repairUnit, operations);
-                    for(RepairUnit appliedUnit : appliedUnits){
-                        candidates.add(new PatchCandidateWithAbstHole(appliedUnit, fileLocator.getPath(), fileLocator.getFqn()));
+                String sourceCode = String.join("\n", lines);
+                List<Node> targetNodes = NodeUtility.getAllNodesFromCode(sourceCode);
+                for(Node targetNode : targetNodes){
+                    List<CompilationUnit> appliedCompilationUnits = this.applyTemplate(targetNode, operations);
+                    for(CompilationUnit appliedCompilationUnit : appliedCompilationUnits){
+                        candidates.add(new DefaultPatchCandidate(targetNode, appliedCompilationUnit, fileLocator.getPath(), fileLocator.getFqn()));
                     }
                 }
             } catch (IOException e) {
@@ -49,13 +52,13 @@ public class PatchCandidateGenerator{
      * @param repairUnits テンプレートを適用するASTノードのリスト
      * @return テンプレートが適用された修正候補のリスト
      */
-    private List<RepairUnit> applyTemplate(RepairUnit repairUnit, List<AstOperation> operations) {
-        List<RepairUnit> appliedUnits = new ArrayList<RepairUnit>();
+    private List<CompilationUnit> applyTemplate(Node node, List<AstOperation> operations) {
+        List<CompilationUnit> appliedCompilationUnits = new ArrayList<CompilationUnit>();
 
         operations.stream()
-            .map(o -> o.exec(repairUnit))
-            .forEach(appliedUnits::addAll);
+            .map(o -> o.exec(node))
+            .forEach(appliedCompilationUnits::addAll);
 
-        return appliedUnits;
+        return appliedCompilationUnits;
     }
 }

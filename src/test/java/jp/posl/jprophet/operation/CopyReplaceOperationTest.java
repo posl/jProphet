@@ -1,19 +1,23 @@
 package jp.posl.jprophet.operation;
 
 import org.junit.Test;
+
+import jp.posl.jprophet.NodeUtility;
+
 import org.junit.Before;
 
-import jp.posl.jprophet.AstGenerator;
-import jp.posl.jprophet.RepairUnit;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+
 public class CopyReplaceOperationTest{
     
-    private List<RepairUnit> candidates = new ArrayList<RepairUnit>();
+    private List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
     private String source = new StringBuilder().append("")
     .append("public class A {\n")
     .append("   private String fa = \"a\";\n")
@@ -35,10 +39,10 @@ public class CopyReplaceOperationTest{
     .toString();
 
     @Before public void setUp(){
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(source);
-        for(RepairUnit repairUnit : repairUnits){
+        List<Node> nodes = NodeUtility.getAllNodesFromCode(source);
+        for(Node node : nodes){
             CopyReplaceOperation cr = new CopyReplaceOperation();
-            this.candidates.addAll(cr.exec(repairUnit));
+            this.candidates.addAll(cr.exec(node));
         }
         return;
     }
@@ -48,10 +52,6 @@ public class CopyReplaceOperationTest{
      */
     @Test public void testForNumOfRepairCopied(){
         //assertThat(candidates.size()).isEqualTo(14);
-        System.out.println(candidates);
-        candidates.stream()
-            .map(s -> s.getCompilationUnit().toString())
-            .forEach(System.out::println);
         return;
     }
 
@@ -111,11 +111,11 @@ public class CopyReplaceOperationTest{
         .append("import java.util.List;\n")
         .toString();
 
-        List<RepairUnit> repairUnits = new AstGenerator().getAllRepairUnit(sourceThatHasNothingToCopy);
-        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
-        for(RepairUnit repairUnit : repairUnits){
+        List<Node> nodes = NodeUtility.getAllNodesFromCode(sourceThatHasNothingToCopy);
+        List<Node> candidates = new ArrayList<Node>();
+        for(Node node : nodes){
             CopyReplaceOperation cr = new CopyReplaceOperation();
-            candidates.addAll(cr.exec(repairUnit));
+            candidates.addAll(cr.exec(node));
         }
 
         //assertThat(candidates.size()).isZero();
