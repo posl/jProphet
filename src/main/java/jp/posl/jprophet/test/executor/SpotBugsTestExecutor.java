@@ -13,18 +13,27 @@ import jp.posl.jprophet.spotbugs.SpotBugsWarning;
 import jp.posl.jprophet.test.result.SpotBugsTestResult;
 import jp.posl.jprophet.test.result.TestResult;
 
+/**
+ * SpotBugsによってテスト検証を行うクラス
+ */
 public class SpotBugsTestExecutor implements TestExecutor {
 
 
     private final String beforeResultFilePath;
     private final static String spotbugsResultFileName = "after";
-    //private List<SpotBugsFixedResult> fixedResults;
 
+    /**
+     * SpotBugsTestExecutorのコンストラクタ
+     * @param beforeResultFilePath　修正前のプロジェクトのSpotBugs適用結果ファイル
+     */
     public SpotBugsTestExecutor(String beforeResultFilePath) {
         this.beforeResultFilePath = beforeResultFilePath;
-        //this.fixedResults = new ArrayList<SpotBugsFixedResult>();
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<TestResult> exec(RepairConfiguration config) {
         final UnitTestExecutor unitTestExecutor = new UnitTestExecutor();
@@ -33,8 +42,8 @@ public class SpotBugsTestExecutor implements TestExecutor {
             final SpotBugsExecutor spotBugsExecutor = new SpotBugsExecutor(spotbugsResultFileName);
             spotBugsExecutor.exec(config);
             final SpotBugsResultXMLReader spotBugsResultXMLReader = new SpotBugsResultXMLReader();
-            final List<SpotBugsWarning> beforeWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(beforeResultFilePath);
-            final List<SpotBugsWarning> afterWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(spotBugsExecutor.getResultFilePath());
+            final List<SpotBugsWarning> beforeWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(beforeResultFilePath, config.getTargetProject());
+            final List<SpotBugsWarning> afterWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(spotBugsExecutor.getResultFilePath(), config.getTargetProject());
             return createResult(beforeWarnings, afterWarnings);
         }
         else {
@@ -43,6 +52,12 @@ public class SpotBugsTestExecutor implements TestExecutor {
     }
 
 
+    /**
+     * 修正前後の結果から差分を取得し結果を作成する
+     * @param before　修正前のワーニングリスト
+     * @param after　修正後のワーニングリスト
+     * @return　テスト結果のリスト
+     */
     private List<TestResult> createResult(List<SpotBugsWarning> before, List<SpotBugsWarning> after) {
         final Set<SpotBugsWarning> beforeSet = new HashSet<SpotBugsWarning>(before);
         final Set<SpotBugsWarning> afterSet = new HashSet<SpotBugsWarning>(after);

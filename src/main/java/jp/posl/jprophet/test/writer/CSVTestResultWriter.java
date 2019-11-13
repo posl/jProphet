@@ -6,22 +6,33 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.result.TestResult;
 
+
+/**
+ * テスト結果と修正パッチを受け取り、CSVファイルとして書き込みを行うクラス
+ */
 public class CSVTestResultWriter implements TestResultWriter {
 
     private final HashMap<TestResult, PatchCandidate> patchResults;
     private final String resultFilePath = "./result.csv";
 
+
+    /**
+     * CSVTestResultWriterのコンストラクタ
+     */
     public CSVTestResultWriter() {
         this.patchResults = new HashMap<TestResult, PatchCandidate>();
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addTestResult(List<TestResult> testResults, PatchCandidate patch) {
         for(TestResult testResult : testResults) {
@@ -29,6 +40,10 @@ public class CSVTestResultWriter implements TestResultWriter {
         } 
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void write() {
 

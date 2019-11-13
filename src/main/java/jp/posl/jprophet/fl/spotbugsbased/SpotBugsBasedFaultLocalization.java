@@ -47,7 +47,7 @@ public class SpotBugsBasedFaultLocalization implements FaultLocalization {
         final List<SpecificationStrategy> strategies = new ArrayList<SpecificationStrategy>();
 
         executor.exec(config);
-        final List<SpotBugsWarning> warnings =  reader.readAllSpotBugsWarnings(executor.getResultFilePath());
+        final List<SpotBugsWarning> warnings =  reader.readAllSpotBugsWarnings(executor.getResultFilePath(), config.getTargetProject());
         for (SpotBugsWarning warning : warnings) {
             int start = warning.getStartLine();
             int end = warning.getEndLine();

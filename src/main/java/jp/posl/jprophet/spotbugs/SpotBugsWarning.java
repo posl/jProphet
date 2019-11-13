@@ -58,7 +58,7 @@ public class SpotBugsWarning {
 
     /**
      * 2つのワーニングが同じものを指しているのか確認する
-     * @param other　比較対象のワーニングクラス
+     * @param obj　比較対象のワーニングクラス
      * @return　同じであればTrue、そうでなければFalseを返す
      */
     @Override

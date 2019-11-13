@@ -27,7 +27,7 @@ public class SpotBugsExecutor {
 
     /**
      * SpotBugs実行クラスの作成
-     * @param resultPath 実行結果のファイル名
+     * @param resultFileName 実行結果のファイル名
      */
     public SpotBugsExecutor(final String resultFileName) {
         this.resultFileName = resultFileName;

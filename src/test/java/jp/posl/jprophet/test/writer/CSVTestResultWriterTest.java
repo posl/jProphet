@@ -20,6 +20,9 @@ public class CSVTestResultWriterTest {
 
     private TestResultWriter writer;
 
+    /**
+     * テスト結果と修正パッチを準備する
+     */
     @Before
     public void setUpResult() {
         this.writer = new CSVTestResultWriter();
@@ -47,11 +50,15 @@ public class CSVTestResultWriterTest {
     }
 
 
+    /**
+     * 正しくファイルを書けているかテスト
+     */
     @Test
     public void testForWrite() {
         writer.write();
         //ファイルを生成するだけなので、assertionは使わず実際に生成されたファイルを確認する
 
     }
+    
 
 }

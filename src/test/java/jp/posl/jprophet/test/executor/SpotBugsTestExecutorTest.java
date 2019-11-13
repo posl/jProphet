@@ -23,6 +23,9 @@ public class SpotBugsTestExecutorTest {
     private RepairConfiguration afterConfig02; //全てのワーニングが解消されたバージョン　テストは通る
 
 
+    /**
+     * テスト入力用のプロジェクトの用意
+     */
     @Before
     public void setUpProject() {
         final File buildDir = new File("./tmp/");
@@ -32,6 +35,9 @@ public class SpotBugsTestExecutorTest {
     }
 
 
+    /**
+     * テスト実行が成功したかどうかテスト
+     */
     @Test
     public void testForExec() {
         final SpotBugsExecutor spotBugsExecutor = new SpotBugsExecutor("test");
