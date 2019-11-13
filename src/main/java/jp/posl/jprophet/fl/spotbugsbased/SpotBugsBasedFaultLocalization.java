@@ -1,4 +1,4 @@
-package jp.posl.jprophet.spotbugs; //後で変更
+package jp.posl.jprophet.fl.spotbugsbased;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +7,10 @@ import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.fl.FaultLocalization;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.manualspecification.ManualSpecification;
-import jp.posl.jprophet.fl.manualspecification.strategy.SpecificBugsByRange;
-import jp.posl.jprophet.fl.manualspecification.strategy.SpecificOneLineBug;
-import jp.posl.jprophet.fl.manualspecification.strategy.SpecificationStrategy;
+import jp.posl.jprophet.fl.manualspecification.strategy.*;
+import jp.posl.jprophet.spotbugs.SpotBugsExecutor;
+import jp.posl.jprophet.spotbugs.SpotBugsResultXMLReader;
+import jp.posl.jprophet.spotbugs.SpotBugsWarning;
 
 
 /**

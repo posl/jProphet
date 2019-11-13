@@ -1,4 +1,4 @@
-package jp.posl.jprophet.spotbugs;
+package jp.posl.jprophet.test.executor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -7,8 +7,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import jp.posl.jprophet.RepairConfiguration;
-import jp.posl.jprophet.test.TestExecutor;
-import jp.posl.jprophet.test.UnitTestExecutor;
+import jp.posl.jprophet.spotbugs.SpotBugsExecutor;
+import jp.posl.jprophet.spotbugs.SpotBugsResultXMLReader;
+import jp.posl.jprophet.spotbugs.SpotBugsWarning;
 import jp.posl.jprophet.test.result.SpotBugsTestResult;
 import jp.posl.jprophet.test.result.TestResult;
 

@@ -1,4 +1,4 @@
-package jp.posl.jprophet.test;
+package jp.posl.jprophet.test.executor;
 
 import java.util.List;
 

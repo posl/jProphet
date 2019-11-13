@@ -1,4 +1,4 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.test.executor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,10 +9,9 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;
-import jp.posl.jprophet.test.TestExecutor;
-import jp.posl.jprophet.test.UnitTestExecutor;
 
 public class UnitTestExecutorTest {
 

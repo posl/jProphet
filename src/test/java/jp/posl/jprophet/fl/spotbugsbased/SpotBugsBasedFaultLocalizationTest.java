@@ -1,4 +1,4 @@
-package jp.posl.jprophet.spotbugs;
+package jp.posl.jprophet.fl.spotbugsbased;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

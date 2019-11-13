@@ -1,4 +1,4 @@
-package jp.posl.jprophet.test;
+package jp.posl.jprophet.test.executor;
 
 import java.net.MalformedURLException;
 import java.net.URL;

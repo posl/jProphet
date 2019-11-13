@@ -29,7 +29,7 @@ public class SpotBugsTestResult implements TestResult {
         return Map.of(
             "isSuccess", String.valueOf(isSuccess),
             "type", fixedWarning.getType(),
-            "occurred error", String.valueOf(numOfOccurredWarning)
+            "NumOfOccurredError", String.valueOf(numOfOccurredWarning)
         );   
     }
 }
