@@ -26,7 +26,7 @@ public class JProphetMain {
     public static void main(String[] args) {
         final String buildDir = "./tmp/"; 
         final String resultDir = "./result/"; 
-        String projectPath = "src/test/resources/testGradleProject01";
+        String projectPath = "src/test/resources/FizzBuzz01";
         if(args.length > 0){
             projectPath = args[0];
         }
@@ -52,18 +52,20 @@ public class JProphetMain {
         ));
 
         final JProphetMain jprophet = new JProphetMain();
-        jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, plausibilityAnalyzer, patchEvaluator, stagedCondGenerator, testExecutor, fixedProjectGenerator, testResultWriter);
-
+        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, plausibilityAnalyzer, patchEvaluator, stagedCondGenerator, testExecutor, fixedProjectGenerator, testResultWriter);
         try {
             FileUtils.deleteDirectory(new File(buildDir));
-            FileUtils.deleteDirectory(new File(resultDir));
+            if(!isRepairSuccess){
+                FileUtils.deleteDirectory(new File(resultDir));
+
+            }
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private void run(RepairConfiguration config, FaultLocalization faultLocalization,
+    private boolean run(RepairConfiguration config, FaultLocalization faultLocalization,
             PatchCandidateGenerator patchCandidateGenerator, List<AstOperation> operations, PlausibilityAnalyzer plausibilityAnalyzer, PatchEvaluator patchEvaluator,
             StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, FixedProjectGenerator fixedProjectGenerator, TestResultWriter testResultWriter
             ) {
@@ -71,23 +73,22 @@ public class JProphetMain {
         List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
-        List<PatchCandidate> abstractPatchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations);
+        List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations);
         
-        // 学習モデルとフォルトローカライゼーションのスコアによってソート
-        patchEvaluator.descendingSortBySuspiciousness(abstractPatchCandidates, suspiciousenesses);
+        // 学習モデルやフォルトローカライゼーションのスコアによってソート
+        patchEvaluator.descendingSortBySuspiciousness(patchCandidates, suspiciousenesses);
         
         // 抽象修正候補中の条件式の生成
-        for(PatchCandidate abstractRepairCandidate: abstractPatchCandidates) {
-            List<PatchCandidate> patchCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
-            for(PatchCandidate patchCandidate: patchCandidates) {
-                Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
-                final List<TestResult> result = testExecutor.exec(new RepairConfiguration(config, fixedProject));
-                testResultWriter.addTestResult(result, patchCandidate);
-                if(result.get(0).getIsSuccess()) { //ここが微妙な気がする
-                    break;
-                }
+        for(PatchCandidate patchCandidate: patchCandidates) {
+            Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
+            final List<TestResult> result = testExecutor.exec(new RepairConfiguration(config, fixedProject));
+            testResultWriter.addTestResult(result, patchCandidate);
+            if(result.get(0).getIsSuccess()) { //ここが微妙な気がする
+                testResultWriter.write();
+                return true;
             }
         }
         testResultWriter.write();
+        return false;
     }
 }

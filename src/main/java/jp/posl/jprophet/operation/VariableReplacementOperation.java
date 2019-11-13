@@ -6,21 +6,25 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+
+import jp.posl.jprophet.NodeUtility;
+
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.ThisExpr;
 
-import jp.posl.jprophet.RepairUnit;
 
 /**
  * 対象ステートメント中の変数を別のもので置き換える操作を行う
@@ -30,53 +34,34 @@ public class VariableReplacementOperation implements AstOperation {
      * 変数の置換操作を行い修正パッチ候補を生成する
      * 代入文の右辺の値と，メソッド呼び出しの引数を対象に，クラスのメンバ変数及びメソッドのローカル変数，仮引数で置換を行う
      * 一つの修正パッチ候補につき一箇所の置換
-     * @return 生成された修正パッチ候補のリスト
+     * @return 生成された修正後のCompilationUnitのリスト
      */
-    public List<RepairUnit> exec(RepairUnit repairUnit) {
-        final Node targetNode = repairUnit.getTargetNode();
+    public List<CompilationUnit> exec(Node targetNode) {
         final List<String> fieldNames = this.collectFieldNames(targetNode);
         final List<String> localVarNames = this.collectLocalVarNames(targetNode);
         final List<String> parameterNames = this.collectParameterNames(targetNode);
 
-        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
+        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
 
         Function<String, Expression> constructField = fieldName -> new FieldAccessExpr(new ThisExpr(), fieldName);
-        candidates.addAll(this.replaceAssignExprAndArgsWith(repairUnit, constructField, fieldNames));
+        candidates.addAll(this.replaceAssignExprAndArgsWith(targetNode, constructField, fieldNames));
 
         Function<String, Expression> constructVar = varName -> new NameExpr(varName);
-        candidates.addAll(this.replaceAssignExprAndArgsWith(repairUnit, constructVar, localVarNames));
-        candidates.addAll(this.replaceAssignExprAndArgsWith(repairUnit, constructVar, parameterNames));
+        candidates.addAll(this.replaceAssignExprAndArgsWith(targetNode, constructVar, localVarNames));
+        candidates.addAll(this.replaceAssignExprAndArgsWith(targetNode, constructVar, parameterNames));
 
         return candidates;
     }
-
-    /**
-     * 代入式の右辺とメソッド呼び出しの実引数を置換する
-     * 
-     * @param repairUnit 置換対象
-     * @param constructVar 変数名からExpressionノードを作成する関数
-     * @param varNames 置換先の変数名のリスト
-     * @return 生成された修正パッチ候補のリスト
-     */
-    private List<RepairUnit> replaceAssignExprAndArgsWith(RepairUnit repairUnit, Function<String, Expression> constructVar, List<String> varNames){
-        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
-
-        candidates.addAll(this.replaceAssignExprWith(repairUnit, varNames, constructVar));
-        candidates.addAll(this.replaceArgsWith(repairUnit, varNames, constructVar));
-
-        return candidates;
-    }
-
 
     /**
      * 修正対象のステートメントが属するクラスのフィールドを集める   
-     * @param targetNode 修正対象 
+     * @param node 修正対象 
      * @return フィールド名のリスト
      */
-    private List<String> collectFieldNames(Node targetNode){
+    private List<String> collectFieldNames(Node node){
         ClassOrInterfaceDeclaration classNode;
         try {
-            classNode = targetNode.findParent(ClassOrInterfaceDeclaration.class).orElseThrow();
+            classNode = node.findParent(ClassOrInterfaceDeclaration.class).orElseThrow();
         }
         catch (NoSuchElementException e) {
             return new ArrayList<String>();
@@ -92,61 +77,78 @@ public class VariableReplacementOperation implements AstOperation {
 
     /**
      * 修正対象のステートメントが書かれているメソッド中のローカル変数を集める 
-     * @param targetNode 修正対象 
+     * @param node 修正対象 
      * @return ローカル変数名のリスト
      */
-    private List<String> collectLocalVarNames(Node targetNode){
+    private List<String> collectLocalVarNames(Node node){
         MethodDeclaration methodNode;
         try {
-            methodNode =  targetNode.findParent(MethodDeclaration.class).orElseThrow();
+            methodNode =  node.findParent(MethodDeclaration.class).orElseThrow();
         }
         catch (NoSuchElementException e) {
             return new ArrayList<String>();
         }
-        final List<VariableDeclarationExpr> localVars = methodNode.findAll(VariableDeclarationExpr.class);
-        final int varNameIndexInSimpleName = 1;
+        final List<VariableDeclarationExpr> localVarDeclarations = methodNode.findAll(VariableDeclarationExpr.class);
+        final List<VariableDeclarator> localVars = new ArrayList<VariableDeclarator>(); 
+        localVarDeclarations.stream()
+            .map(VariableDeclarationExpr::getVariables)
+            .forEach(localVars::addAll);
         final List<String> localVarNames = localVars.stream()
-                                                    .map(localVar -> localVar.findAll(SimpleName.class).get(varNameIndexInSimpleName).asString())
-                                                    .collect(Collectors.toList());
+            .map(localVar -> localVar.getName().asString())
+            .collect(Collectors.toList());
         return localVarNames;
     }
 
     /**
      * 修正対象のステートメントが書かれているメソッドの仮引数を集める 
-     * @param targetNode 修正対象 
+     * @param node 修正対象 
      * @return 仮引数の変数名のリスト
      */
-    private List<String> collectParameterNames(Node targetNode){
+    private List<String> collectParameterNames(Node node){
         MethodDeclaration methodNode;
         try {
-            methodNode =  targetNode.findParent(MethodDeclaration.class).orElseThrow();
+            methodNode =  node.findParent(MethodDeclaration.class).orElseThrow();
         }
         catch (NoSuchElementException e) {
             return new ArrayList<String>();
         }
         final List<Parameter> parameters = methodNode.findAll(Parameter.class);
-        final int varNameIndexInSimpleName = 1;
         final List<String> parameterNames = parameters.stream()
-                                                    .map(localVar -> localVar.findAll(SimpleName.class).get(varNameIndexInSimpleName).asString())
+                                                    .map(localVar -> localVar.getName().asString())
                                                     .collect(Collectors.toList());
         return parameterNames;
     }
 
+    /**
+     * 代入式の右辺とメソッド呼び出しの実引数を置換する
+     * 
+     * @param node 置換対象
+     * @param constructVar 変数名からExpressionノードを作成する関数
+     * @param varNames 置換先の変数名のリスト
+     * @return 置換によって生成された修正後のCompilationUnitのリスト
+     */
+    private List<CompilationUnit> replaceAssignExprAndArgsWith(Node node, Function<String, Expression> constructVar, List<String> varNames){
+        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+
+        candidates.addAll(this.replaceAssignExprWith(node, varNames, constructVar));
+        candidates.addAll(this.replaceArgsWith(node, varNames, constructVar));
+
+        return candidates;
+    }
 
     /**
      * 代入文における右辺の変数を置換する 
-     * @param repairUnit 置換対象 
+     * @param node 置換対象 
      * @param varNames 置換先の変数名のリスト
      * @param constructExpr 置換後の変数のASTノードを生成するラムダ式
-     * @return 置換によって生成された修正パッチ候補のリスト
+     * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    private List<RepairUnit> replaceAssignExprWith(RepairUnit repairUnit, List<String> varNames, Function<String, Expression> constructExpr){
-        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
-        Node targetNode = repairUnit.getTargetNode();
+    private List<CompilationUnit> replaceAssignExprWith(Node node, List<String> varNames, Function<String, Expression> constructExpr){
+        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
 
-        if (targetNode instanceof AssignExpr) {
+        if (node instanceof AssignExpr) {
             for(String varName: varNames){
-                Expression originalAssignedValue = ((AssignExpr)targetNode).getValue();
+                Expression originalAssignedValue = ((AssignExpr)node).getValue();
                 String originalAssignedValueName; 
                 try {
                     originalAssignedValueName = originalAssignedValue.findFirst(SimpleName.class).orElseThrow().asString();
@@ -156,9 +158,9 @@ public class VariableReplacementOperation implements AstOperation {
                 if(originalAssignedValueName.equals(varName)){
                     continue;
                 }
-                RepairUnit newCandidate = RepairUnit.deepCopy(repairUnit);
-                ((AssignExpr) newCandidate.getTargetNode()).setValue(constructExpr.apply(varName));
-                candidates.add(newCandidate);
+                Node newCandidate = NodeUtility.deepCopy(node);
+                ((AssignExpr) newCandidate).setValue(constructExpr.apply(varName));
+                candidates.add(newCandidate.findCompilationUnit().orElseThrow());
             }
         }
 
@@ -167,27 +169,26 @@ public class VariableReplacementOperation implements AstOperation {
 
     /**
      * メソッド呼び出しの引数における変数の置換を行う 
-     * @param repairUnit 置換対象 
+     * @param node 置換対象 
      * @param varNames 置換先の変数名のリスト
      * @param constructExpr 置換後の変数のASTノードを生成するラムダ式
-     * @return 置換によって生成された修正パッチ候補のリスト
+     * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    private List<RepairUnit> replaceArgsWith(RepairUnit repairUnit, List<String> varNames, Function<String, Expression> constructExpr){
-        List<RepairUnit> candidates = new ArrayList<RepairUnit>();
-        Node targetNode = repairUnit.getTargetNode();
+    private List<CompilationUnit> replaceArgsWith(Node node, List<String> varNames, Function<String, Expression> constructExpr){
+        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
 
-        if (targetNode instanceof MethodCallExpr){
-            final int argc = ((MethodCallExpr)(targetNode)).getArguments().size(); 
+        if (node instanceof MethodCallExpr){
+            final int argc = ((MethodCallExpr)(node)).getArguments().size(); 
             for(String varName: varNames){
                 for(int i = 0; i < argc; i++){
-                    String originalArgValue = ((MethodCallExpr)targetNode).getArgument(i).toString();
+                    String originalArgValue = ((MethodCallExpr)node).getArgument(i).toString();
                     if(originalArgValue.equals(varName)){
                         continue;
                     }
-                    RepairUnit newCandidate = RepairUnit.deepCopy(repairUnit);
-                    MethodCallExpr methodCallExpr = (MethodCallExpr)newCandidate.getTargetNode();
+                    Node newCandidate = NodeUtility.deepCopy(node);
+                    MethodCallExpr methodCallExpr = (MethodCallExpr)newCandidate;
                     methodCallExpr.setArgument(i, constructExpr.apply(varName));
-                    candidates.add(newCandidate);
+                    candidates.add(newCandidate.findCompilationUnit().orElseThrow());
                 }
             }
         }

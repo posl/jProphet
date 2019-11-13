@@ -12,8 +12,6 @@ import com.github.javaparser.ast.Node;
 import org.junit.Before;
 import org.junit.Test;
 
-import jp.posl.jprophet.RepairUnit;
-
 
 public class DefaultPatchCandidateTest {
     private PatchCandidate patchCandidate;
@@ -30,9 +28,8 @@ public class DefaultPatchCandidateTest {
             fail(e.getMessage());
             return;
         }
-        Node targetNode = compilationUnit.findRootNode().getChildNodes().get(0).getChildNodes().get(2);
-        RepairUnit repairUnit = new RepairUnit(targetNode, 3, compilationUnit);
-        this.patchCandidate = new DefaultPatchCandidate(repairUnit, filePath, fqn);
+        Node node = compilationUnit.findRootNode().getChildNodes().get(0).getChildNodes().get(2);
+        this.patchCandidate = new DefaultPatchCandidate(node, node.findCompilationUnit().get(), filePath, fqn);
     }
 
     /**
