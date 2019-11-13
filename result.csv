@@ -1,1 +1,4 @@
-src/test/resources/FizzBuzz01/src/main/java/FizzBuzz01/FizzBuzz.java,11,true
+filePath,Line,isSuccess,type,NumOfOccurredError
+hoge.java,6,false,NP_ALWAYS_NULL,1
+hoge.java,6,false,NM_METHOD_NAMING_CONVENTION,1
+huga.java,4,true,NM_METHOD_NAMING_CONVENTION,0
