@@ -104,37 +104,62 @@ public class CopyReplaceOperation implements AstOperation{
         int targetIndex = nodeList.indexOf(targetNode);
         if (targetNode instanceof Statement && targetIndex != -1 && statements.size() != 0){
             Statement newStatement = (Statement)statements.get(0);
-            Statement copiedStatement = newStatement.clone();
+
+            List<Node> statementDescendants = NodeUtility.getAllDescendantNodes(newStatement);
+            List<CompilationUnit> variableReplacedNodes = new ArrayList<CompilationUnit>();
+
+            for (Node unit : statementDescendants){
+                VariableReplacementOperation vr = new VariableReplacementOperation();
+                List<CompilationUnit> copiedNodeList = vr.exec(unit);
+                variableReplacedNodes.addAll(copiedNodeList);
+            }
+
+            List<Statement> variableReplacedStatement = new ArrayList<Statement>();
+            for (Node n : variableReplacedNodes) {
+                List<Statement> stmt = NodeUtility.getAllDescendantNodes(n).stream()
+                    .filter(unit -> unit instanceof Statement && unit.getRange().equals(statement.getRange()))
+                    .map(unit -> (Statement)unit)
+                    .collect(Collectors.toList());
+                variableReplacedStatement.addAll(stmt);
+            }
+            
+            for (Statement s : variableReplacedStatement){
+                Node newBlock = NodeUtility.deepCopy(nodeList.getParentNode().orElseThrow());
+                ((BlockStmt)newBlock).getStatements().add(targetIndex, s);
+                candidates.add(newBlock.getParentNode().orElseThrow().findCompilationUnit().orElseThrow());
+            }
+            //Statement copiedStatement = newStatement.clone();
 
             
             //テスト用
+            /*
             Range statementRange = new Range(new Position(endLineOfStatement - beginLineOfStatement + 1, 0), new Position(endLineOfStatement - beginLineOfStatement + 1, 0));
-            //addNodeTokenRange(copiedStatement, statementRange, statementRange);
+            addNodeTokenRange(copiedStatement, statementRange, statementRange);
             copiedStatement = copiedStatement.clone();
+            */
             //copiedStatement = JavaParser.parseStatement(copiedStatement.toString());
             
 
             //ここでaddBeforeする前にnewStatementのrangeを書き換える
             //changeRangeOfCopyStatement(copiedStatement, targetNode);
-            nodeList.add(targetIndex, (Statement)copiedStatement);
+            //nodeList.add(targetIndex, (Statement)copiedStatement);
             
             //ここでstatementInsertedNodeListの要素に対してgetAllUnderNode()をして,そのノードのrangeを変える
             //changeRangeOfBlockStmt(nodeList, copiedStatement, beginLineOfTargetNode);
             
-            Node parent = nodeList.getParentNode().orElseThrow();
+            //Node parent = nodeList.getParentNode().orElseThrow();
             //ここのparentのchildの並び順と,もとのnodeListの並び順が違う
             //cloneしたら順番は治るがrangeが元に戻る
             //addNodeRange(parent.findCompilationUnit().orElseThrow(), new Range(new Position(0, 0), new Position(endLineOfStatement - beginLineOfStatement + 1, 0)));
 
-            List<Node> newRepairUnits = NodeUtility.getAllDescendantNodes(parent.findCompilationUnit().orElseThrow().clone());
+            //List<Node> newRepairUnits = NodeUtility.getAllDescendantNodes(parent.findCompilationUnit().orElseThrow().clone());
             //List<Node> newRepairUnits = NodeUtility.getAllDescendantNodes(parent.clone().findCompilationUnit().orElseThrow().clone());
             //ここでrangeを変える
 
             //changeRangeAfterClone(newRepairUnits, beginLineOfTargetNode, endLineOfTargetNode, beginLineOfStatement, endLineOfStatement);
             //changeTokenRangeAfterClone(newRepairUnits, beginLineOfTargetNode, endLineOfTargetNode, beginLineOfStatement, endLineOfStatement);
 
-            
-
+            /*
             List<Node> expressionNodeRepairUnits = newRepairUnits.stream()
                 .filter(unit -> unit instanceof Expression)
                 .filter(unit -> getBeginLineNumber(unit).orElseThrow() == beginLineOfTargetNode)
@@ -143,12 +168,12 @@ public class CopyReplaceOperation implements AstOperation{
             
             if (expressionNodeRepairUnits.size() >= 1){
                 for (Node unit : expressionNodeRepairUnits){
-                    //unit.findCompilationUnit().orElseThrow().recalculatePositions();
                     VariableReplacementOperation vr = new VariableReplacementOperation();
                     List<CompilationUnit> copiedNodeList = vr.exec(unit);
                     candidates.addAll(copiedNodeList);
                 }
             }
+            */
             
         }
         return candidates;
