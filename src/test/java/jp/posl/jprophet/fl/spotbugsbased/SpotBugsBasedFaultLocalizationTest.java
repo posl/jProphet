@@ -26,14 +26,14 @@ public class SpotBugsBasedFaultLocalizationTest {
         final SpotBugsBasedFaultLocalization fl = new SpotBugsBasedFaultLocalization(config);
         final List<Suspiciousness> suspiciousnessList = fl.exec();
 
-        for(int i = 13; i <= 20; i++) {
-            
-            //assertThat(getSuspiciousness(suspiciousnessList, "testSBProject01.App2", i).getValue()).isEqualTo(1);
+        for(int i = 13; i <= 20; i++) { 
+            assertThat(getSuspiciousness(suspiciousnessList, "testSBProject01.App2", i).getValue()).isEqualTo(1);
         }
         assertThat(getSuspiciousness(suspiciousnessList, "testSBProject01.hoge.App3", 8).getValue()).isEqualTo(1);
         
         assertThat(getSuspiciousness(suspiciousnessList, "testSBProject01.App", 8).getValue()).isEqualTo(0);
         assertThat(getSuspiciousness(suspiciousnessList, "testSBProject01.App2", 24).getValue()).isEqualTo(0);
+
 
         
         try {

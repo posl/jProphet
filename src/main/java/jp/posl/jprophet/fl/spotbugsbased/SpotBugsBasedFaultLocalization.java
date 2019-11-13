@@ -51,7 +51,7 @@ public class SpotBugsBasedFaultLocalization implements FaultLocalization {
         for (SpotBugsWarning warning : warnings) {
             int start = warning.getStartLine();
             int end = warning.getEndLine();
-            String fqn = warning.getFilePath().replace("/", ".").replace(".java", "");
+            String fqn = warning.getFqn();
             if(start == end) {
                 strategies.add(new SpecificOneLineBug(fqn, start, suspiciousnessValue));
             }

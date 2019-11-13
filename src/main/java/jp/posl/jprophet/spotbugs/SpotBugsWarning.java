@@ -6,7 +6,7 @@ package jp.posl.jprophet.spotbugs;
 public class SpotBugsWarning {
 
     private final String type;
-    private final String filePath;
+    private final String fqn;
     private final int startLine;
     private final int endLine;
     
@@ -14,13 +14,13 @@ public class SpotBugsWarning {
     /**
      * SpotBugsによるワーニングの情報をまとめたクラスの生成
      * @param type         ワーニングの種類
-     * @param filePath     ワーニングを含むソースファイルパス（対象プロジェクトに対する相対パス）
+     * @param fqn          ワーニングを含むクラスのfqn
      * @param start        ワーニングを含む箇所の始めの行
      * @param end          ワーニングを含む箇所の終わりの行
      */
-    public SpotBugsWarning(final String type, final String filePath, final int start, final int end) {
+    public SpotBugsWarning(final String type, final String fqn, final int start, final int end) {
         this.type = type;
-        this.filePath = filePath;
+        this.fqn = fqn;
         this.startLine = start;
         this.endLine = end;
     }
@@ -37,8 +37,8 @@ public class SpotBugsWarning {
     /**
      * @return the filePath
      */
-    public String getFilePath() {
-        return this.filePath;
+    public String getFqn() {
+        return this.fqn;
     }
 
     /**
@@ -65,7 +65,7 @@ public class SpotBugsWarning {
     public boolean equals(Object obj) {
         SpotBugsWarning other = (SpotBugsWarning) obj;
         if(!this.type.equals(other.type)) return false;
-        if(!this.filePath.equals(other.filePath)) return false;
+        if(!this.fqn.equals(other.fqn)) return false;
         if(this.startLine != other.startLine) return false;
         if(this.endLine != other.endLine) return false;
         return true;
@@ -79,13 +79,13 @@ public class SpotBugsWarning {
      */
     @Override
     public int hashCode() {
-        return (type + filePath).hashCode() + startLine + endLine;
+        return (type + fqn).hashCode() + startLine + endLine;
     }
 
 
     @Override
     public String toString() {
-        return String.format("[%s] in %s %d~%d", type, filePath, startLine, endLine);
+        return String.format("[%s] in %s %d~%d", type, fqn, startLine, endLine);
     }
     
 

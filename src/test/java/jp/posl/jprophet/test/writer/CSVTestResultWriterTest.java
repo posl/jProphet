@@ -27,21 +27,21 @@ public class CSVTestResultWriterTest {
     public void setUpResult() {
         this.writer = new CSVTestResultWriter();
         final List<TestResult> testResults01 = List.of(
-            new SpotBugsTestResult(false, new SpotBugsWarning("NM_METHOD_NAMING_CONVENTION", "hoge.java", 1, 10), 1),
-            new SpotBugsTestResult(false, new SpotBugsWarning("NP_ALWAYS_NULL", "hoge.java", 5, 8), 1)
+            new SpotBugsTestResult(false, new SpotBugsWarning("NM_METHOD_NAMING_CONVENTION", "hoge", 1, 10), 1),
+            new SpotBugsTestResult(false, new SpotBugsWarning("NP_ALWAYS_NULL", "hoge", 5, 8), 1)
         );
 
         final List<TestResult> testResults02 = List.of(
-            new SpotBugsTestResult(true, new SpotBugsWarning("NM_METHOD_NAMING_CONVENTION", "huga.java", 4, 7), 0)
+            new SpotBugsTestResult(true, new SpotBugsWarning("NM_METHOD_NAMING_CONVENTION", "huga", 4, 7), 0)
         );
 
         PatchCandidate patchCandidate01 = mock(DefaultPatchCandidate.class);
         when(patchCandidate01.getLineNumber()).thenReturn(Optional.of(6));
-        when(patchCandidate01.getFilePath()).thenReturn("hoge.java");
+        when(patchCandidate01.getFilePath()).thenReturn("hoge");
 
         PatchCandidate patchCandidate02 = mock(DefaultPatchCandidate.class);
         when(patchCandidate02.getLineNumber()).thenReturn(Optional.of(4));
-        when(patchCandidate02.getFilePath()).thenReturn("huga.java");
+        when(patchCandidate02.getFilePath()).thenReturn("huga");
 
         writer.addTestResult(testResults01, patchCandidate01);
         writer.addTestResult(testResults02, patchCandidate02);

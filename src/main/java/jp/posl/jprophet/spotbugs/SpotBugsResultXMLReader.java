@@ -56,16 +56,16 @@ public class SpotBugsResultXMLReader {
         sourceLines.addAll(bugInstance.selectNodes("./Method/SourceLine"));
         sourceLines.addAll(bugInstance.selectNodes("./Class/SourceLine"));
         final Element targetLine = (Element) sourceLines.get(0);
-        final String filePath = targetLine.attributeValue("sourcepath");
+        final String filePath = targetLine.attributeValue("classname");
         final int start = Integer.parseInt(targetLine.attributeValue("start"));
         final int end = Integer.parseInt(targetLine.attributeValue("end"));
-        System.out.println(project.getSrcFilePaths().get(0));
-        //if(project.getSrcFilePaths().contains(filePath)) {          //ソースファイルのワーニングのみを対象とする
+        System.out.println(project.getSrcFileFqns().get(0));
+        if(project.getSrcFileFqns().contains(filePath)) {          //ソースファイルのワーニングのみを対象とする
             return new SpotBugsWarning(type, filePath, start, end);
-        //}
-        //else {
-        //    return null;
-        //}
+        }
+        else {
+            return null;
+        }
     }
 
 
