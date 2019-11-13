@@ -1,15 +1,16 @@
 package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
 import com.github.javaparser.Range;
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.JavaToken;
 import com.github.javaparser.Position;
+import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
@@ -31,7 +32,7 @@ public class CopyReplaceOperation implements AstOperation{
     public List<CompilationUnit> exec(Node targetNode){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
         Node newTargetNode = NodeUtility.deepCopy(targetNode);
-        if (targetNode instanceof Statement){
+        if (targetNode instanceof Statement && !(targetNode instanceof BlockStmt)){
             //修正対象のステートメントの属するメソッドノードを取得
             //メソッド内のステートメント(修正対象のステートメントより前のもの)を収集
             List<Statement> statements = collectLocalStatements(newTargetNode);
@@ -78,10 +79,10 @@ public class CopyReplaceOperation implements AstOperation{
      */
     private List<CompilationUnit> copyStatementBeforeTarget(Statement statement, Node node){
         Node targetNode = NodeUtility.deepCopy(node);
-        int beginLineOfTargetNode = getBeginLineNumber(targetNode).orElseThrow();
-        int endLineOfTargetNode = getEndLineNumber(targetNode).orElseThrow();
-        int beginLineOfStatement = getBeginLineNumber(statement).orElseThrow();
-        int endLineOfStatement = getEndLineNumber(statement).orElseThrow();
+        final int beginLineOfTargetNode = getBeginLineNumber(targetNode).orElseThrow();
+        final int endLineOfTargetNode = getEndLineNumber(targetNode).orElseThrow();
+        final int beginLineOfStatement = getBeginLineNumber(statement).orElseThrow();
+        final int endLineOfStatement = getEndLineNumber(statement).orElseThrow();
 
         List<Node> nodes = NodeUtility.getAllDescendantNodes(targetNode.findCompilationUnit().orElseThrow());
         List<Node> statements = nodes.stream()
@@ -104,18 +105,34 @@ public class CopyReplaceOperation implements AstOperation{
         if (targetNode instanceof Statement && targetIndex != -1 && statements.size() != 0){
             Statement newStatement = (Statement)statements.get(0);
             Statement copiedStatement = newStatement.clone();
+
+            
+            //テスト用
+            Range statementRange = new Range(new Position(endLineOfStatement - beginLineOfStatement + 1, 0), new Position(endLineOfStatement - beginLineOfStatement + 1, 0));
+            //addNodeTokenRange(copiedStatement, statementRange, statementRange);
+            copiedStatement = copiedStatement.clone();
+            //copiedStatement = JavaParser.parseStatement(copiedStatement.toString());
+            
+
             //ここでaddBeforeする前にnewStatementのrangeを書き換える
-            changeRangeOfCopyStatement(copiedStatement, targetNode);
-            nodeList.add(targetIndex, copiedStatement);
+            //changeRangeOfCopyStatement(copiedStatement, targetNode);
+            nodeList.add(targetIndex, (Statement)copiedStatement);
+            
             //ここでstatementInsertedNodeListの要素に対してgetAllUnderNode()をして,そのノードのrangeを変える
-            changeRangeOfBlockStmt(nodeList, copiedStatement, beginLineOfTargetNode);
+            //changeRangeOfBlockStmt(nodeList, copiedStatement, beginLineOfTargetNode);
             
             Node parent = nodeList.getParentNode().orElseThrow();
             //ここのparentのchildの並び順と,もとのnodeListの並び順が違う
             //cloneしたら順番は治るがrangeが元に戻る
+            //addNodeRange(parent.findCompilationUnit().orElseThrow(), new Range(new Position(0, 0), new Position(endLineOfStatement - beginLineOfStatement + 1, 0)));
 
             List<Node> newRepairUnits = NodeUtility.getAllDescendantNodes(parent.findCompilationUnit().orElseThrow().clone());
-            //ここでrangeを変えればいける?
+            //List<Node> newRepairUnits = NodeUtility.getAllDescendantNodes(parent.clone().findCompilationUnit().orElseThrow().clone());
+            //ここでrangeを変える
+
+            //changeRangeAfterClone(newRepairUnits, beginLineOfTargetNode, endLineOfTargetNode, beginLineOfStatement, endLineOfStatement);
+            //changeTokenRangeAfterClone(newRepairUnits, beginLineOfTargetNode, endLineOfTargetNode, beginLineOfStatement, endLineOfStatement);
+
             
 
             List<Node> expressionNodeRepairUnits = newRepairUnits.stream()
@@ -126,6 +143,7 @@ public class CopyReplaceOperation implements AstOperation{
             
             if (expressionNodeRepairUnits.size() >= 1){
                 for (Node unit : expressionNodeRepairUnits){
+                    //unit.findCompilationUnit().orElseThrow().recalculatePositions();
                     VariableReplacementOperation vr = new VariableReplacementOperation();
                     List<CompilationUnit> copiedNodeList = vr.exec(unit);
                     candidates.addAll(copiedNodeList);
@@ -249,31 +267,75 @@ public class CopyReplaceOperation implements AstOperation{
         
     }
 
-    /**
-     * bloclStmtより後ろの行のノードのrangeを変える
-     * @param newCandidate
-     * @param width
-     */
-    /*
-    private void changeRangeAfterBlockStmt(RepairUnit newCandidate, int width){
-        //newCandidateのtargetUnitのBlockStmtを取得(getParent()?)してrangeをとってそれより後ろのNodeのrangeを変える
-        final int blockEndLine = getEndLineNumber(newCandidate.getTargetNode().getParentNode().orElseThrow()).orElseThrow();
-        List<RepairUnit> repairUnits = getAllRepairUnit(newCandidate.getCompilationUnit());
-        final Range range = new Range(new Position(width, 0), new Position(width, 0));
-        repairUnits.stream()
-            .filter(s -> getBeginLineNumber(s.getTargetNode()).orElseThrow() >= blockEndLine)
-            .forEach(s -> addNodeRange(s.getTargetNode(), range));
+    private void changeRangeAfterClone(List<Node> newRepairUnits, int beginLineOfTargetNode, int endLineOfTargetNode, int beginLineOfStatement, int endLineOfStatement){
+        Range otherRange = new Range(new Position(endLineOfStatement - beginLineOfStatement + 1, 0), new Position(endLineOfStatement - beginLineOfStatement + 1, 0));
+        newRepairUnits.stream()
+            .filter(unit -> getBeginLineNumber(unit).orElseThrow() >= endLineOfTargetNode || (getBeginLineNumber(unit).orElseThrow() == beginLineOfTargetNode && getEndLineNumber(unit).orElseThrow() == endLineOfTargetNode))
+            .forEach(unit -> addNodeRange(unit, otherRange));
+
+        Range statementRange = new Range(new Position(beginLineOfTargetNode - beginLineOfStatement, 0), new Position(beginLineOfTargetNode - beginLineOfStatement, 0));
+        List<Node> statementNodes = newRepairUnits.stream()
+            .filter(unit -> unit instanceof Statement)
+            .filter(unit -> getBeginLineNumber(unit).orElseThrow() == beginLineOfStatement)
+            .collect(Collectors.toList());
+        if (statementNodes.size() == 2){
+            addNodeRange(statementNodes.get(1), statementRange);
+            NodeUtility.getAllDescendantNodes(statementNodes.get(1)).stream()
+                .forEach(n -> addNodeRange(n, statementRange));
+        }
+
+        Range blockRange = new Range(new Position(0, 0), new Position(endLineOfStatement - beginLineOfStatement + 1, 0));
+        newRepairUnits.stream()
+            .filter(unit -> getBeginLineNumber(unit).orElseThrow() < beginLineOfTargetNode && getEndLineNumber(unit).orElseThrow() > endLineOfTargetNode)
+            .forEach(unit -> addNodeRange(unit, blockRange));
     }
 
-    private void changeRangeBlockStmtBySpreading(RepairUnit newCandidate, int width){
-        final Range blockRange = new Range(new Position(0, 0), new Position(width, 0));
-        List<RepairUnit> repairUnits = getAllRepairUnit(newCandidate.getCompilationUnit());
-        repairUnits.stream()
-            .filter(s -> getBeginLineNumber(s.getTargetNode()).orElseThrow() < getBeginLineNumber(newCandidate.getTargetNode()).orElseThrow())
-            .filter(s -> getEndLineNumber(s.getTargetNode()).orElseThrow() > getEndLineNumber(newCandidate.getTargetNode()).orElseThrow())
-            .forEach(s -> addNodeRange(s.getTargetNode(), blockRange));
+    /**
+     * ノードのrangeを増やす
+     * @param node ノード
+     * @param addRange 増やしたいrange
+     */
+    private void addNodeTokenRange(Node node, Range addBeginRange, Range addEndRange){
+
+        int beginLineOfBegin = node.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow().begin.line;
+        int endLineOfBegin = node.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow().end.line;
+        int beginColumnOfBegin = node.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow().begin.column;
+        int endColumnOfBegin = node.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow().end.column;
+        node.getTokenRange().orElseThrow().getBegin().setRange(new Range(new Position(beginLineOfBegin + addBeginRange.begin.line, beginColumnOfBegin + addBeginRange.begin.column), new Position(endLineOfBegin + addBeginRange.end.line, endColumnOfBegin + addBeginRange.end.column)));
+
+        int beginLineOfEnd = node.getTokenRange().orElseThrow().getEnd().getRange().orElseThrow().begin.line;
+        int endLineOfEnd = node.getTokenRange().orElseThrow().getEnd().getRange().orElseThrow().end.line;
+        int beginColumnOfEnd = node.getTokenRange().orElseThrow().getEnd().getRange().orElseThrow().begin.column;
+        int endColumnOfEnd = node.getTokenRange().orElseThrow().getEnd().getRange().orElseThrow().end.column;
+        node.getTokenRange().orElseThrow().getEnd().setRange(new Range(new Position(beginLineOfEnd + addEndRange.begin.line, beginColumnOfEnd + addEndRange.begin.column), new Position(endLineOfEnd + addEndRange.end.line, endColumnOfEnd + addEndRange.end.column)));
     }
-    */
+
+    private void changeTokenRangeAfterClone(List<Node> newRepairUnits, int beginLineOfTargetNode, int endLineOfTargetNode, int beginLineOfStatement, int endLineOfStatement){
+        final Range otherBeginRange = new Range(new Position(endLineOfStatement - beginLineOfStatement + 1, 0), new Position(endLineOfStatement - beginLineOfStatement + 1, 0));
+        final Range otherEndRange = new Range(new Position(endLineOfStatement - beginLineOfStatement + 1, 0), new Position(endLineOfStatement - beginLineOfStatement + 1, 0));
+        newRepairUnits.stream()
+            .filter(unit -> unit.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow().begin.line > endLineOfTargetNode || (unit.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow().begin.line == beginLineOfTargetNode && unit.getTokenRange().orElseThrow().getEnd().getRange().orElseThrow().end.line == endLineOfTargetNode))
+            .forEach(unit -> addNodeTokenRange(unit, otherBeginRange, otherEndRange));
+
+        
+        Range statementRange = new Range(new Position(beginLineOfTargetNode - beginLineOfStatement, 0), new Position(beginLineOfTargetNode - beginLineOfStatement, 0));
+        List<Node> statementNodes = newRepairUnits.stream()
+            .filter(unit -> unit instanceof Statement)
+            .filter(unit -> unit.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow().begin.line == beginLineOfStatement)
+            .collect(Collectors.toList());
+        if (statementNodes.size() == 2){
+            addNodeRange(statementNodes.get(1), statementRange);
+            NodeUtility.getAllDescendantNodes(statementNodes.get(1)).stream()
+                .forEach(n -> addNodeTokenRange(n, statementRange, statementRange));
+        }
+
+        Range blockBeginRange = new Range(new Position(0, 0), new Position(0, 0));
+        Range blockEndRange = new Range(new Position(endLineOfStatement - beginLineOfStatement + 1, 0), new Position(endLineOfStatement - beginLineOfStatement + 1, 0));
+        newRepairUnits.stream()
+            .filter(unit -> unit.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow().begin.line < beginLineOfTargetNode && unit.getTokenRange().orElseThrow().getEnd().getRange().orElseThrow().end.line > endLineOfTargetNode)
+            .forEach(unit -> addNodeTokenRange(unit, blockBeginRange, blockEndRange));
+        
+    }
 
     /**
      * 再帰的によ自分より下にあるnodeを全て集める
