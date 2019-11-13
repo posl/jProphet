@@ -26,8 +26,8 @@ public class ConditionGeneratorTest {
             .append("}\n")
             .toString();
 
-        IfStmt ifStmt = JavaParser.parse(targetSource).findFirst(IfStmt.class).get();
-        Expression abstHole = ifStmt.getCondition();
+        IfStmt targetIfStmt = JavaParser.parse(targetSource).findFirst(IfStmt.class).get();
+        Expression abstHole = targetIfStmt.getCondition();
 
         ConditionGenerator condGenerator = new ConditionGenerator();
         Expression actualCondExpression = condGenerator.generateCondition(abstHole);
@@ -42,8 +42,8 @@ public class ConditionGeneratorTest {
             .append("}\n")
             .toString();
         
-        IfStmt expectedIfStmt = JavaParser.parse(targetSource).findFirst(IfStmt.class).get();
-        Expression expectedCondExpression = ifStmt.getCondition();
+        IfStmt expectedIfStmt = JavaParser.parse(expectedSource).findFirst(IfStmt.class).get();
+        Expression expectedCondExpression = expectedIfStmt.getCondition();
 
         assertThat(actualCondExpression).isEqualTo(expectedCondExpression);
 
