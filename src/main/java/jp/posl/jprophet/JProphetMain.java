@@ -81,11 +81,10 @@ public class JProphetMain {
             List<PatchCandidate> patchCandidates = stagedCondGenerator.applyConditionTemplate(abstractRepairCandidate);
             for(PatchCandidate patchCandidate: patchCandidates) {
                 Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
-                final TestResult result = testExecutor.exec(new RepairConfiguration(config, fixedProject));
+                final List<TestResult> result = testExecutor.exec(new RepairConfiguration(config, fixedProject));
                 testResultWriter.addTestResult(result, patchCandidate);
-                if(result.getIsSuccess()) {
-                    testResultWriter.write();
-                    return;
+                if(result.get(0).getIsSuccess()) { //ここが微妙な気がする
+                    break;
                 }
             }
         }

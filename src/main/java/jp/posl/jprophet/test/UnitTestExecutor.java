@@ -45,16 +45,16 @@ public class UnitTestExecutor implements TestExecutor {
      * @return 全てのテスト実行が通ったかどうか
      */
     @Override
-    public TestResult exec(RepairConfiguration config)  {
+    public List<TestResult> exec(RepairConfiguration config)  {
         try {
             builder.build(config);
             getClassLoader(config.getBuildPath());
             testClasses = loadTestClass(config.getTargetProject());
-            return new UnitTestResult(runAllTestClass(testClasses));
+            return List.of(new UnitTestResult(runAllTestClass(testClasses)));
         }
         catch (MalformedURLException | ClassNotFoundException e) {
             System.err.println(e.getMessage());
-            return new UnitTestResult(false);
+            return List.of(new UnitTestResult(false));
         }
     }
 

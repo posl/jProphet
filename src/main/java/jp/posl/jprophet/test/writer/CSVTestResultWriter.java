@@ -14,23 +14,25 @@ import jp.posl.jprophet.test.result.TestResult;
 
 public class CSVTestResultWriter implements TestResultWriter {
 
-    private final HashMap<TestResult, PatchCandidate> results;
+    private final HashMap<TestResult, PatchCandidate> patchResults;
     private final String resultFilePath = "./result.csv";
 
     public CSVTestResultWriter() {
-        this.results = new HashMap<TestResult, PatchCandidate>();
+        this.patchResults = new HashMap<TestResult, PatchCandidate>();
     }
 
     @Override
-    public void addTestResult(TestResult result, PatchCandidate patch) {
-        results.put(result, patch);
+    public void addTestResult(List<TestResult> testResults, PatchCandidate patch) {
+        for(TestResult testResult : testResults) {
+            patchResults.put(testResult, patch);
+        } 
     }
 
     @Override
     public void write() {
 
         final List<String> recodes = new ArrayList<String>();
-        for (Map.Entry<TestResult, PatchCandidate> entry : results.entrySet()) {
+        for (Map.Entry<TestResult, PatchCandidate> entry : patchResults.entrySet()) {
             final TestResult result = entry.getKey();
             final PatchCandidate patch = entry.getValue();
 

@@ -34,7 +34,7 @@ public class SpotBugsTestExecutorTest {
         spotBugsExecutor.exec(beforeConfig);
 
         final SpotBugsTestExecutor testExecutor01 = new SpotBugsTestExecutor(spotBugsExecutor.getResultFilePath());
-        final boolean isSuccess01 = testExecutor01.exec(afterConfig01).getIsSuccess();
+        final boolean isSuccess01 = testExecutor01.exec(afterConfig01).get(0).getIsSuccess();
         assertThat(isSuccess01).isFalse();
         /*
         final SpotBugsFixedResult result01 = testExecutor01.getFixedResults().get(0);
@@ -44,7 +44,7 @@ public class SpotBugsTestExecutorTest {
         */
 
         final SpotBugsTestExecutor testExecutor02 = new SpotBugsTestExecutor(spotBugsExecutor.getResultFilePath());
-        final boolean isSuccess02 = testExecutor02.exec(afterConfig02).getIsSuccess();
+        final boolean isSuccess02 = testExecutor02.exec(afterConfig02).get(0).getIsSuccess();
         assertThat(isSuccess02).isTrue();
         //assertThat(testExecutor02.getFixedResults().size()).isEqualTo(6);
 

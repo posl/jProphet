@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.test.TestExecutor;
@@ -24,25 +25,24 @@ public class SpotBugsTestExecutor implements TestExecutor {
     }
 
     @Override
-    public TestResult exec(RepairConfiguration config) {
+    public List<TestResult> exec(RepairConfiguration config) {
         final UnitTestExecutor unitTestExecutor = new UnitTestExecutor();
-        final boolean isSuccess = unitTestExecutor.exec(config).getIsSuccess();
+        final boolean isSuccess = unitTestExecutor.exec(config).get(0).getIsSuccess();
         if(isSuccess) {
             final SpotBugsExecutor spotBugsExecutor = new SpotBugsExecutor(spotbugsResultFileName);
             spotBugsExecutor.exec(config);
             final SpotBugsResultXMLReader spotBugsResultXMLReader = new SpotBugsResultXMLReader();
             final List<SpotBugsWarning> beforeWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(beforeResultFilePath);
             final List<SpotBugsWarning> afterWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(spotBugsExecutor.getResultFilePath());
-            final boolean isFixedAll = compareSpotBugsWarnings(beforeWarnings, afterWarnings);
-            return new SpotBugsTestResult(isFixedAll);
+            return createResult(beforeWarnings, afterWarnings);
         }
         else {
-            return new SpotBugsTestResult(false);
+            return new ArrayList<TestResult>();
         }
     }
 
 
-    private boolean compareSpotBugsWarnings(List<SpotBugsWarning> before, List<SpotBugsWarning> after) {
+    private List<TestResult> createResult(List<SpotBugsWarning> before, List<SpotBugsWarning> after) {
         final Set<SpotBugsWarning> beforeSet = new HashSet<SpotBugsWarning>(before);
         final Set<SpotBugsWarning> afterSet = new HashSet<SpotBugsWarning>(after);
 
@@ -55,22 +55,10 @@ public class SpotBugsTestExecutor implements TestExecutor {
         final Set<SpotBugsWarning> occurredSet = new HashSet<SpotBugsWarning>(afterSet);
         occurredSet.removeAll(beforeSet);
 
-        //final List<SpotBugsWarning> occurredWarnings = new ArrayList<SpotBugsWarning>(occurredSet);
-        /*
-        for (SpotBugsWarning warning : fixedSet) {
-            fixedResults.add(new SpotBugsFixedResult(warning, occurredWarnings));
-        }
-        */
-
         final boolean isFixedAll = (unFixedSet.size() == 0);
-        return isFixedAll;
-    }
+        final int numOfOccurredWarnings = occurredSet.size();
 
-
-    /*
-    public List<SpotBugsFixedResult> getFixedResults() {
-        return this.fixedResults;
+        return fixedSet.stream().map(warning -> new SpotBugsTestResult(isFixedAll, warning, numOfOccurredWarnings)).collect(Collectors.toList());
     }
-    */
     
 }
