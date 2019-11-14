@@ -90,5 +90,27 @@ public class NodeUtility {
     public static List<Node> getAllNodesFromCode(String sourceCode) {
         return NodeUtility.getAllCopiedDescendantNodes(JavaParser.parse(sourceCode));
     }
+
+
+    /**
+     * 1つのノードを2つのノードの間に入れる
+     * @param insertNode
+     * @param beforeNode
+     * @param afterNode
+     * @return ノード挿入後のASTノード
+     */
+    public static Optional<Node> insertToken(Node insertNode, Node beforeNode, Node afterNode){
+        return Optional.empty();
+    }
+
+    /**
+     * ノードを置換する
+     * @param reolaceNode
+     * @param originalNode
+     * @return 置換後のASTノード
+     */
+    public static Optional<Node> replaceNode(Node reolaceNode, Node originalNode){
+        return Optional.empty();
+    }
 }
 
