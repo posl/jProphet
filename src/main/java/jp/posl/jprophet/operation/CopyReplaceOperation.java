@@ -16,8 +16,11 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.printer.PrettyPrinter;
+import com.github.javaparser.printer.PrettyPrinterConfiguration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 
 import jp.posl.jprophet.NodeUtility;
 
@@ -126,7 +129,14 @@ public class CopyReplaceOperation implements AstOperation{
             for (Statement s : variableReplacedStatement){
                 Node newBlock = NodeUtility.deepCopy(nodeList.getParentNode().orElseThrow());
                 ((BlockStmt)newBlock).getStatements().add(targetIndex, s);
-                candidates.add(newBlock.getParentNode().orElseThrow().findCompilationUnit().orElseThrow());
+                //これだとrangeがおかしいが,FixedProjectGeneratorではrangeを参照しないから大丈夫?
+                CompilationUnit compilationUnit = newBlock.getParentNode().orElseThrow().findCompilationUnit().orElseThrow();
+                candidates.add(compilationUnit);
+                System.out.print(compilationUnit);
+
+                //こっちだと勝手に改行が入るけどrangeはちゃんとなる
+                //final String compilationUnitSourceCode = new PrettyPrinter(new PrettyPrinterConfiguration()).print(newBlock.getParentNode().orElseThrow().findCompilationUnit().orElseThrow());
+                //candidates.add(JavaParser.parse(compilationUnitSourceCode));
             }
             //Statement copiedStatement = newStatement.clone();
 

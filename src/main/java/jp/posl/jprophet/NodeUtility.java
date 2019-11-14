@@ -7,6 +7,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -43,13 +44,29 @@ public class NodeUtility {
      */
     public static Node deepCopy(Node node) {
         CompilationUnit cu = node.findCompilationUnit().get();
+        JavaParser.parse(cu.toString());                                                                                              
 
         CompilationUnit newCu = cu.clone();
         List<Node> nodes = NodeUtility.getAllDescendantNodes(newCu);
-        Node newNode = nodes.stream().filter(n -> {
-            return n.equals(node) && n.getRange().equals(node.getRange());
-        }).findFirst().orElseThrow();
+        try{
+        Node newNode = nodes.stream()
+            .filter(n -> {
+                return n.equals(node) && n.getRange().equals(node.getRange());
+            })
+            .findFirst()
+            .orElseThrow();
         return newNode;
+        }catch (NoSuchElementException e){
+            //改行や空白を考慮して探し直す
+        Node newNode = nodes.stream()
+            .filter(n -> {
+                return n.equals(node) && (n.getRange().orElseThrow().begin.line == node.getRange().orElseThrow().begin.line + 1);
+            })
+            .findFirst()
+            .orElseThrow();
+        return newNode;
+        }
+        
     }
 
 
@@ -88,6 +105,8 @@ public class NodeUtility {
      * @return ASTノードのリスト
      */
     public static List<Node> getAllNodesFromCode(String sourceCode) {
+        //CompilationUnit compilationUnit = JavaParser.parse(sourceCode);
+        //return NodeUtility.getAllCopiedDescendantNodes(JavaParser.parse(compilationUnit.toString()));
         return NodeUtility.getAllCopiedDescendantNodes(JavaParser.parse(sourceCode));
     }
 }
