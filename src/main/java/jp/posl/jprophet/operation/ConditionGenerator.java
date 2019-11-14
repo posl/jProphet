@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 import com.github.javaparser.ast.stmt.IfStmt;
 
 public class ConditionGenerator {
@@ -13,6 +15,10 @@ public class ConditionGenerator {
     }
 
 	public List<Expression> generateCondition(Expression abstHole) {
+        // Expression newCondition = abstHole.clone(); 
+        // newCondition.replace(new BinaryExpr(left, right, Operator.EQUALS));
+        // newCondition.getTokenRange()
+
         String expectedSourceBeforeTarget = new StringBuilder().append("")
             .append("public class A {\n\n") 
             .append("    boolean fieldBoolVarA;\n\n")

@@ -11,28 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 
-public class NodeUtility {
-
-    /**
-     * ノードの子ノードを幅優先で探索し，与えられたインデックスのノードを返す
-     * 
-     * @param node 検索対象の親ノード
-     * @param targetIndex レベル順（幅優先）のインデックス
-     * @return レベル順でtargetIndex番目のノード
-     */
-    public static Optional<Node> findByLevelOrderIndex(Node node, int targetIndex){
-        List<Node> childNodes = new LinkedList<Node>(node.getChildNodes());
-        for(int i = 0;;i++){
-            if(childNodes.isEmpty()){ 
-                return Optional.empty();
-            }
-            Node head = childNodes.remove(0);
-            if(i == targetIndex){
-                return Optional.of(head); 
-            }
-            childNodes.addAll(head.getChildNodes());
-        }
-    }
+public final class NodeUtility {
 
     /**
      * Nodeインスタンスのディープコピーを作成する

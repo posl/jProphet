@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.IfStmt;
 
 import org.junit.Test;
