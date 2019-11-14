@@ -19,8 +19,8 @@ public class DefaultPatchCandidate implements PatchCandidate {
 
     /**
      * 以下の引数の情報を元にパッチ候補を生成 
-     * @param targetNodeBeforeFix 修正されたASTノードの情報を持つRepairUnit
-     * @param fixedCompilationUnit 修正されたASTノードの情報を持つRepairUnit
+     * @param targetNodeBeforeFix 修正前の対象ASTノード
+     * @param fixedCompilationUnit 修正されたASTノードの情報を持つCompilationUnit
      * @param fixedFilePath 修正されたファイルのパス（jprophetルートからの相対パス）
      * @param fixedFileFQN 修正されたファイルのFQN
      */
