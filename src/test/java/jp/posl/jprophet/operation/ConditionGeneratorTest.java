@@ -16,8 +16,10 @@ public class ConditionGeneratorTest {
     @Test public void test() {
         String targetSource = new StringBuilder().append("")
             .append("public class A {\n\n") 
-            .append("    boolean ba;\n\n")
+            .append("    boolean fieldBoolVarA;\n\n")
             .append("    private void ma() {\n")
+            .append("        boolean localBoolVarA;\n\n")
+            .append("        Object localObjectA;\n\n")
             .append("        if (JPROPHET_ABST_HOLE)\n")
             .append("            return;\n")
             .append("    }\n")
@@ -44,7 +46,11 @@ public class ConditionGeneratorTest {
                     "        if (localBoolVarA == true)\n",
                     "        if (localBoolVarA == false)\n",
                     "        if (localObjectA == null)\n",
-                    "        if (localObjectA != null)\n"
+                    "        if (localObjectA != null)\n",
+                    "        if (fieldBoolVarA == null)\n",
+                    "        if (fieldBoolVarA != null)\n",
+                    "        if (localBoolVarA == null)\n",
+                    "        if (localBoolVarA != null)\n"
         );
 
         String expectedSourceAfterTarget = new StringBuilder().append("")
