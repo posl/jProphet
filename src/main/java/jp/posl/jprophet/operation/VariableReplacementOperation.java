@@ -8,9 +8,6 @@ import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
@@ -18,7 +15,6 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 
 import jp.posl.jprophet.NodeUtility;
 
@@ -59,19 +55,11 @@ public class VariableReplacementOperation implements AstOperation {
      * @return フィールド名のリスト
      */
     private List<String> collectFieldNames(Node node){
-        ClassOrInterfaceDeclaration classNode;
-        try {
-            classNode = node.findParent(ClassOrInterfaceDeclaration.class).orElseThrow();
-        }
-        catch (NoSuchElementException e) {
-            return new ArrayList<String>();
-        }
-        final List<FieldDeclaration> fields = classNode.findAll(FieldDeclaration.class);
-        final int varNameIndexInSimpleName = 1;
+        final DeclarationCollector collector = new DeclarationCollector();
+        final List<VariableDeclarator> fields = collector.collectFileds(node);
         final List<String> fieldNames = fields.stream()
-                                              .map(field -> field.findAll(SimpleName.class).get(varNameIndexInSimpleName).asString())
-                                              .collect(Collectors.toList());
-        
+            .map(field -> field.getName().asString())
+            .collect(Collectors.toList());
         return fieldNames;
     }
 
@@ -81,18 +69,8 @@ public class VariableReplacementOperation implements AstOperation {
      * @return ローカル変数名のリスト
      */
     private List<String> collectLocalVarNames(Node node){
-        MethodDeclaration methodNode;
-        try {
-            methodNode =  node.findParent(MethodDeclaration.class).orElseThrow();
-        }
-        catch (NoSuchElementException e) {
-            return new ArrayList<String>();
-        }
-        final List<VariableDeclarationExpr> localVarDeclarations = methodNode.findAll(VariableDeclarationExpr.class);
-        final List<VariableDeclarator> localVars = new ArrayList<VariableDeclarator>(); 
-        localVarDeclarations.stream()
-            .map(VariableDeclarationExpr::getVariables)
-            .forEach(localVars::addAll);
+        final DeclarationCollector collector = new DeclarationCollector();
+        final List<VariableDeclarator> localVars = collector.collectLocalVars(node);
         final List<String> localVarNames = localVars.stream()
             .map(localVar -> localVar.getName().asString())
             .collect(Collectors.toList());
@@ -105,17 +83,11 @@ public class VariableReplacementOperation implements AstOperation {
      * @return 仮引数の変数名のリスト
      */
     private List<String> collectParameterNames(Node node){
-        MethodDeclaration methodNode;
-        try {
-            methodNode =  node.findParent(MethodDeclaration.class).orElseThrow();
-        }
-        catch (NoSuchElementException e) {
-            return new ArrayList<String>();
-        }
-        final List<Parameter> parameters = methodNode.findAll(Parameter.class);
+        final DeclarationCollector collector = new DeclarationCollector();
+        final List<Parameter> parameters = collector.collectParameters(node);
         final List<String> parameterNames = parameters.stream()
-                                                    .map(localVar -> localVar.getName().asString())
-                                                    .collect(Collectors.toList());
+            .map(localVar -> localVar.getName().asString())
+            .collect(Collectors.toList());
         return parameterNames;
     }
 
