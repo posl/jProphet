@@ -44,7 +44,7 @@ public class SpotBugsTestResult implements TestResult {
         return Map.of(
             "isSuccess", String.valueOf(isSuccess),
             "type", fixedWarning.getType(),
-            "NumOfOccurredError", String.valueOf(numOfOccurredWarning)
+            "numOfOccurredWarning", String.valueOf(numOfOccurredWarning)
             //TODO 後にpatchCandidateのdiffも記録したい
         );   
     }

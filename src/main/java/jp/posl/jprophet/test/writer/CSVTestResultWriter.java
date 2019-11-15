@@ -57,13 +57,13 @@ public class CSVTestResultWriter implements TestResultWriter {
         
         final List<Map.Entry<TestResult, PatchCandidate>> entryList = new ArrayList<>(patchResults.entrySet());
         
-        final String field = "filePath,Line," + String.join(",", entryList.get(0).getKey().toStringMap().keySet());
+        final String field = "filePath,line,operation," + String.join(",", entryList.get(0).getKey().toStringMap().keySet());
         recodes.add(field);
 
         for (Map.Entry<TestResult, PatchCandidate> entry : entryList) {
             final TestResult result = entry.getKey();
             final PatchCandidate patch = entry.getValue();
-            final String patchLine = patch.getFilePath() + "," + patch.getLineNumber().get();
+            final String patchLine = patch.getFilePath() + "," + patch.getLineNumber().get() + "," + patch.getAppliedOperation();
             final String resultLine = String.join(",", result.toStringMap().values());
             final String recode = patchLine + "," + resultLine;
             recodes.add(recode);

@@ -38,10 +38,14 @@ public class CSVTestResultWriterTest {
         PatchCandidate patchCandidate01 = mock(DefaultPatchCandidate.class);
         when(patchCandidate01.getLineNumber()).thenReturn(Optional.of(6));
         when(patchCandidate01.getFilePath()).thenReturn("hoge");
-
+        when(patchCandidate01.getAppliedOperation()).thenReturn("VariableReplacementOperation");
+        
         PatchCandidate patchCandidate02 = mock(DefaultPatchCandidate.class);
         when(patchCandidate02.getLineNumber()).thenReturn(Optional.of(4));
         when(patchCandidate02.getFilePath()).thenReturn("huga");
+        when(patchCandidate02.getAppliedOperation()).thenReturn("CopyReplaceOperation");
+
+
 
         writer.addTestResult(testResults01, patchCandidate01);
         writer.addTestResult(testResults02, patchCandidate02);

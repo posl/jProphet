@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
@@ -33,9 +34,9 @@ public class PatchCandidateGenerator{
                 String sourceCode = String.join("\n", lines);
                 List<Node> targetNodes = NodeUtility.getAllNodesFromCode(sourceCode);
                 for(Node targetNode : targetNodes){
-                    List<CompilationUnit> appliedCompilationUnits = this.applyTemplate(targetNode, operations);
-                    for(CompilationUnit appliedCompilationUnit : appliedCompilationUnits){
-                        candidates.add(new DefaultPatchCandidate(targetNode, appliedCompilationUnit, fileLocator.getPath(), fileLocator.getFqn()));
+                    List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
+                    for(AppliedOperationResult result : appliedOperationResults){
+                        candidates.add(new DefaultPatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation()));
                     }
                 }
             } catch (IOException e) {
@@ -43,6 +44,7 @@ public class PatchCandidateGenerator{
                 break;
             }
         }
+
         return candidates;
     }
 
@@ -52,13 +54,39 @@ public class PatchCandidateGenerator{
      * @param repairUnits テンプレートを適用するASTノードのリスト
      * @return テンプレートが適用された修正候補のリスト
      */
-    private List<CompilationUnit> applyTemplate(Node node, List<AstOperation> operations) {
-        List<CompilationUnit> appliedCompilationUnits = new ArrayList<CompilationUnit>();
+    private List<AppliedOperationResult> applyTemplate(Node node, List<AstOperation> operations) {
+        List<AppliedOperationResult> appliedOperationResults = new ArrayList<AppliedOperationResult>();
 
         operations.stream()
-            .map(o -> o.exec(node))
-            .forEach(appliedCompilationUnits::addAll);
+            .map(o -> o.exec(node).stream().map(c -> new AppliedOperationResult(c, o.getClass())).collect(Collectors.toList()))
+            .forEach(appliedOperationResults::addAll);
 
-        return appliedCompilationUnits;
+        return appliedOperationResults;
     }
+
+
+    public class AppliedOperationResult {
+        private final CompilationUnit compilationUnit;
+        private final Class<? extends AstOperation> operation;
+
+        public AppliedOperationResult(CompilationUnit compilationUnit, Class<? extends AstOperation> operation) {
+            this.compilationUnit = compilationUnit;
+            this.operation = operation;
+        }
+
+        /**
+         * @return the compilationUnit
+         */
+        public CompilationUnit getCompilationUnit() {
+            return compilationUnit;
+        }
+
+        /**
+         * @return the operation
+         */
+        public Class<? extends AstOperation> getOperation() {
+            return operation;
+        }
+    }
+
 }

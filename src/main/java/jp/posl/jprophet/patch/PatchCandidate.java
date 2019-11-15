@@ -32,6 +32,13 @@ public interface PatchCandidate {
      */
     public Optional<Integer> getLineNumber();
 
+
+    /**
+     * 適用したオペレーションを返す
+     * @return　適用したオペレーションを表す文字列
+     */
+    public String getAppliedOperation();
+
     /**
      * 修正されたAST部分のソースコードを返す 
      * @return 修正されたAST部分のソースコード

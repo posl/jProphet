@@ -1,4 +1,0 @@
-filePath,Line,NumOfOccurredError,isSuccess,type
-huga,4,0,true,NM_METHOD_NAMING_CONVENTION
-hoge,6,1,false,NM_METHOD_NAMING_CONVENTION
-hoge,6,1,false,NP_ALWAYS_NULL
