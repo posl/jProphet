@@ -15,7 +15,7 @@ public interface TestResultWriter {
      * @param results　テスト結果
      * @param patch　修正パッチ
      */
-    public void addTestResult(List<TestResult> results, PatchCandidate patch);
+    public void addTestResults(List<TestResult> results, PatchCandidate patch);
 
     /**
      * テキストファイルとして書き込みを行う

@@ -44,7 +44,7 @@ public class SpotBugsTestExecutor implements TestExecutor {
             final SpotBugsResultXMLReader spotBugsResultXMLReader = new SpotBugsResultXMLReader();
             final List<SpotBugsWarning> beforeWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(beforeResultFilePath, config.getTargetProject());
             final List<SpotBugsWarning> afterWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(spotBugsExecutor.getResultFilePath(), config.getTargetProject());
-            return createResult(beforeWarnings, afterWarnings);
+            return createResults(beforeWarnings, afterWarnings);
         }
         else {
             return new ArrayList<TestResult>();
@@ -58,7 +58,7 @@ public class SpotBugsTestExecutor implements TestExecutor {
      * @param after　修正後のワーニングリスト
      * @return　テスト結果のリスト
      */
-    private List<TestResult> createResult(List<SpotBugsWarning> before, List<SpotBugsWarning> after) {
+    private List<TestResult> createResults(List<SpotBugsWarning> before, List<SpotBugsWarning> after) {
         final Set<SpotBugsWarning> beforeSet = new HashSet<SpotBugsWarning>(before);
         final Set<SpotBugsWarning> afterSet = new HashSet<SpotBugsWarning>(after);
 

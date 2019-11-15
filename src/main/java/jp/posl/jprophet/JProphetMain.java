@@ -81,9 +81,9 @@ public class JProphetMain {
         // 抽象修正候補中の条件式の生成
         for(PatchCandidate patchCandidate: patchCandidates) {
             Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
-            final List<TestResult> result = testExecutor.exec(new RepairConfiguration(config, fixedProject));
-            testResultWriter.addTestResult(result, patchCandidate);
-            if(result.get(0).getIsSuccess()) { //ここが微妙な気がする
+            final List<TestResult> results = testExecutor.exec(new RepairConfiguration(config, fixedProject));
+            testResultWriter.addTestResults(results, patchCandidate);
+            if(results.get(0).getIsSuccess()) { //ここが微妙な気がする
                 testResultWriter.write();
                 return true;
             }

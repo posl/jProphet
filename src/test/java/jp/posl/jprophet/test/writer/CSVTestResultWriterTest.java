@@ -47,8 +47,8 @@ public class CSVTestResultWriterTest {
 
 
 
-        writer.addTestResult(testResults01, patchCandidate01);
-        writer.addTestResult(testResults02, patchCandidate02);
+        writer.addTestResults(testResults01, patchCandidate01);
+        writer.addTestResults(testResults02, patchCandidate02);
 
 
     }

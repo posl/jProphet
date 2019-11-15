@@ -34,7 +34,7 @@ public class CSVTestResultWriter implements TestResultWriter {
      * {@inheritDoc}
      */
     @Override
-    public void addTestResult(List<TestResult> testResults, PatchCandidate patch) {
+    public void addTestResults(List<TestResult> testResults, PatchCandidate patch) {
         for(TestResult testResult : testResults) {
             patchResults.put(testResult, patch);
         } 
