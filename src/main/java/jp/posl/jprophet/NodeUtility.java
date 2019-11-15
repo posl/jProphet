@@ -1,7 +1,11 @@
 package jp.posl.jprophet;
 
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.JavaToken;
+import com.github.javaparser.Range;
+import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.CompilationUnit;
 
 import java.util.ArrayList;
@@ -93,14 +97,60 @@ public class NodeUtility {
 
 
     /**
-     * 1つのノードを2つのノードの間に入れる
+     * 1つのノードを2つのノードの間に入れる(行の最初や最後に入れることはできない)
+     * 基本的に,行と行の間にステートメントを入れたい時に利用
      * @param insertNode
      * @param beforeNode
      * @param afterNode
-     * @return ノード挿入後のASTノード
+     * @return 挿入したノード
      */
-    public static Optional<Node> insertToken(Node insertNode, Node beforeNode, Node afterNode){
-        return Optional.empty();
+    public static Node insertToken(Node insertNode, Node beforeNode, Node afterNode){
+        Node copiedAfterNode = NodeUtility.deepCopy(afterNode);
+
+        JavaToken beginTokenOfAfter = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
+        JavaToken insertToken = insertNode.getTokenRange().orElseThrow().getBegin();
+        final JavaToken endTokenOfInsert = insertNode.getTokenRange().orElseThrow().getEnd();
+        final JavaToken originalBeginTokenOfAfter = afterNode.getTokenRange().orElseThrow().getBegin();
+
+        final Range beginRangeOfAfter = afterNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
+
+        final int beginLineOfAfter = beginRangeOfAfter.begin.line;
+
+
+        while (true){
+            beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
+            if (insertToken.getRange().equals(endTokenOfInsert.getRange())){
+                break;
+            }
+            insertToken = insertToken.getNextToken().orElseThrow();
+        }
+
+        insertToken = beforeNode.getTokenRange().orElseThrow().getEnd().getNextToken().orElseThrow();
+        
+        while (true){
+            if (insertToken.getRange().equals(originalBeginTokenOfAfter.getRange())){
+                break;
+            }
+            beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
+            
+            insertToken = insertToken.getNextToken().orElseThrow();
+        }
+        
+
+        CompilationUnit compilationUnit = copiedAfterNode.findCompilationUnit().orElseThrow();
+        LexicalPreservingPrinter.setup(compilationUnit);
+        String source = LexicalPreservingPrinter.print(compilationUnit);
+        CompilationUnit parsedCompilationUnit = JavaParser.parse(source);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnit(parsedCompilationUnit, insertNode, beginLineOfAfter);
+        return copiedInsertNode;
+    }
+
+    public static Node findNodeInCompilationUnit(CompilationUnit compilationUnit, Node node, int beginLine){
+        List<Node> nodes = NodeUtility.getAllDescendantNodes(compilationUnit);
+        Node newNode = nodes.stream().filter(n -> {
+            return n.equals(node) && n.getRange().orElseThrow().begin.line == beginLine;
+        }).findFirst().orElseThrow();
+        return newNode;
     }
 
     /**
@@ -110,6 +160,15 @@ public class NodeUtility {
      * @return 置換後のASTノード
      */
     public static Optional<Node> replaceNode(Node reolaceNode, Node originalNode){
+        return Optional.empty();
+    }
+
+    /**
+     * ノードを削除する
+     * @param node
+     * @return
+     */
+    public static Optional<Node> removeNode(Node node){
         return Optional.empty();
     }
 }
