@@ -11,6 +11,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -104,7 +105,7 @@ public class NodeUtility {
      * @param afterNode
      * @return 挿入したノード
      */
-    public static Node insertToken(Node insertNode, Node beforeNode, Node afterNode){
+    public static Node insertNode(Node insertNode, Node beforeNode, Node afterNode){
         Node copiedAfterNode = NodeUtility.deepCopy(afterNode);
 
         JavaToken beginTokenOfAfter = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
@@ -136,7 +137,6 @@ public class NodeUtility {
             insertToken = insertToken.getNextToken().orElseThrow();
         }
         
-
         CompilationUnit compilationUnit = copiedAfterNode.findCompilationUnit().orElseThrow();
         LexicalPreservingPrinter.setup(compilationUnit);
         String source = LexicalPreservingPrinter.print(compilationUnit);
@@ -159,17 +159,51 @@ public class NodeUtility {
      * @param originalNode
      * @return 置換後のASTノード
      */
-    public static Optional<Node> replaceNode(Node reolaceNode, Node originalNode){
-        return Optional.empty();
-    }
+    public static Node replaceNode(Node replaceNode, Node targetNode){
+        Node copiedTargetNode = NodeUtility.deepCopy(targetNode);
+        JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
+        JavaToken replaceToken = replaceNode.getTokenRange().orElseThrow().getBegin();
+        final JavaToken endTokenOfReplace = replaceNode.getTokenRange().orElseThrow().getEnd();
 
-    /**
-     * ノードを削除する
-     * @param node
-     * @return
-     */
-    public static Optional<Node> removeNode(Node node){
-        return Optional.empty();
+        final Range beginRangeOfTarget = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
+
+        final int beginLineOfTarget = beginRangeOfTarget.begin.line;
+
+        JavaToken deleteToken;
+
+        final JavaToken endTokenOfTarget = targetNode.getTokenRange().orElseThrow().getEnd();
+
+        while (true){
+            beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, replaceToken.getKind(), replaceToken.getText(), null, null));
+            if (replaceToken.getRange().equals(endTokenOfReplace.getRange())){
+                break;
+            }
+            replaceToken = replaceToken.getNextToken().orElseThrow();
+        }
+
+        deleteToken = beginTokenOfTarget.getNextToken().orElseThrow();
+
+        //NodeとTokenが同じ時の処理がおかしい
+        while (true){
+            if (beginTokenOfTarget.getRange().equals(endTokenOfTarget.getRange())){
+                beginTokenOfTarget.deleteToken();
+                break;
+            }
+            if (deleteToken.getRange().equals(endTokenOfTarget.getRange())){
+                deleteToken.deleteToken();
+                beginTokenOfTarget.deleteToken();
+                break;
+            }
+            deleteToken.deleteToken();
+            deleteToken = beginTokenOfTarget.getNextToken().orElseThrow();
+        }
+
+        CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
+        LexicalPreservingPrinter.setup(compilationUnit);
+        String source = LexicalPreservingPrinter.print(compilationUnit);
+        CompilationUnit parsedCompilationUnit = JavaParser.parse(source);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnit(parsedCompilationUnit, replaceNode, beginLineOfTarget);
+        return copiedInsertNode;
     }
 }
 
