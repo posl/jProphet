@@ -135,8 +135,6 @@ public class NodeUtility {
 
 
         while (true){
-            //deepCopyしているはずがオリジナルのノードも変更されてしまう
-            //cloneはTokenRangeまでコピーしない?
             beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
             if (insertToken.getRange().equals(endTokenOfInsert.getRange())){
                 break;
@@ -202,6 +200,41 @@ public class NodeUtility {
             }
             beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
             
+            insertToken = insertToken.getNextToken().orElseThrow();
+        }
+        
+        CompilationUnit compilationUnit = copiedAfterNode.findCompilationUnit().orElseThrow();
+        CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnit(parsedCompilationUnit, insertNode, beginLineOfAfter);
+        return copiedInsertNode;
+    }
+
+    /**
+     * 1行の中でノードを挿入する
+     * ノードを挿入した後空白を一つ入れる
+     * x = 0; を int x = 0; にしたりする時に利用
+     * @param insertNode 挿入するノード
+     * @param afterNode 挿入するノードの後ろのノード
+     * @return 挿入したノード
+     */
+    public static Node insertNodeInOneLine(Node insertNode, Node afterNode){
+        Node copiedAfterNode = NodeUtility.deepCopyByReparse(afterNode);
+
+        JavaToken beginTokenOfAfter = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
+        JavaToken insertToken = insertNode.getTokenRange().orElseThrow().getBegin();
+        final JavaToken endTokenOfInsert = insertNode.getTokenRange().orElseThrow().getEnd();
+
+        final Range beginRangeOfAfter = afterNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
+
+        final int beginLineOfAfter = beginRangeOfAfter.begin.line;
+
+
+        while (true){
+            beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
+            if (insertToken.getRange().equals(endTokenOfInsert.getRange())){
+                beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, 1, " ", null, null));
+                break;
+            }
             insertToken = insertToken.getNextToken().orElseThrow();
         }
         

@@ -141,12 +141,58 @@ public class NodeUtilityTest {
             .toString();
 
         Statement insertStatement = JavaParser.parseStatement(insertStatementSource);
+
         Node insertedStatement = NodeUtility.insertNode(insertStatement, nodeList.get(1),nodeList.get(2));
+        Node insertedStatement2 = NodeUtility.insertNodeWithNewLine(insertStatement, nodeList.get(2));
         LexicalPreservingPrinter.setup(insertedStatement.findCompilationUnit().orElseThrow());
-        String source2 = LexicalPreservingPrinter.print(insertedStatement.findCompilationUnit().orElseThrow());
+        LexicalPreservingPrinter.setup(insertedStatement2.findCompilationUnit().orElseThrow());
+        String reparsedSource = LexicalPreservingPrinter.print(insertedStatement.findCompilationUnit().orElseThrow());
+        String reparsedSource2 = LexicalPreservingPrinter.print(insertedStatement2.findCompilationUnit().orElseThrow());
+        assertThat(reparsedSource).isEqualTo(expectedSource);
+        assertThat(reparsedSource2).isEqualTo(expectedSource);
 
-        assertThat(source2).isEqualTo(expectedSource);
+        return;
+    }
 
+    /** 
+     * 1行の中でノードが挿入されるかテスト
+     */
+    @Test public void testForInsertNodeInOneLineByCopy(){
+        String source = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("   private String fa = \"a\";\n")
+            .append("   private void ma(String pa, String pb) {\n")
+            .append("       String la = \"b\";\n")
+            .append("       la = \"hoge\";\n")
+            .append("       ld = \"huga\";\n")
+            .append("   }\n")
+            .append("}\n")
+            .toString();
+
+        String expectedSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("   private String fa = \"a\";\n")
+            .append("   private void ma(String pa, String pb) {\n")
+            .append("       String la = \"b\";\n")
+            .append("       la = \"hoge\";\n")
+            .append("       String ld = \"huga\";\n")
+            .append("   }\n")
+            .append("}\n")
+            .toString();
+        
+        CompilationUnit compilationUnit = JavaParser.parse(source);
+        
+        BlockStmt block = (BlockStmt)compilationUnit.getChildNodes().get(0).getChildNodes().get(2).getChildNodes().get(4);
+        NodeList<Statement> nodeList = block.getStatements();
+        Node string = nodeList.get(0).getChildNodes().get(0).getChildNodes().get(0).getChildNodes().get(0);
+
+        Node insertNode = NodeUtility.insertNodeInOneLine(string, nodeList.get(2));
+        CompilationUnit insertedCompilationUnit = insertNode.findCompilationUnit().orElseThrow();
+        LexicalPreservingPrinter.setup(insertedCompilationUnit);
+        String reparsedSource = LexicalPreservingPrinter.print(insertedCompilationUnit);
+
+        assertThat(reparsedSource).isEqualTo(expectedSource);
+        
         return;
     }
 
