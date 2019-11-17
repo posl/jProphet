@@ -90,11 +90,16 @@ public class NodeUtilityTest {
         NodeList<Statement> nodeList = block.getStatements();
 
         Node insertNode = NodeUtility.insertNode(nodeList.get(0), nodeList.get(1),nodeList.get(2));
-        CompilationUnit compilationUnit2 = insertNode.findCompilationUnit().orElseThrow();
-        LexicalPreservingPrinter.setup(compilationUnit2);
-        String source2 = LexicalPreservingPrinter.print(compilationUnit2);
+        Node insertNode2 = NodeUtility.insertNodeWithNewLine(nodeList.get(0), nodeList.get(2));
+        CompilationUnit insertedCompilationUnit = insertNode.findCompilationUnit().orElseThrow();
+        CompilationUnit insertedCompilationUnit2 = insertNode2.findCompilationUnit().orElseThrow();
+        LexicalPreservingPrinter.setup(insertedCompilationUnit);
+        LexicalPreservingPrinter.setup(insertedCompilationUnit2);
+        String reparsedSource = LexicalPreservingPrinter.print(insertedCompilationUnit);
+        String reparsedSource2 = LexicalPreservingPrinter.print(insertedCompilationUnit2);
 
-        assertThat(source2).isEqualTo(expectedSource);
+        assertThat(reparsedSource).isEqualTo(expectedSource);
+        assertThat(reparsedSource2).isEqualTo(expectedSource);
         
         return;
     }
