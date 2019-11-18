@@ -16,6 +16,7 @@ import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinte
 public class NodeUtilityTest {
 
     private String sourceCode;
+    private String sourceCode2;
     /**
      * 入力用のソースコードからNodeリストを生成
      */
@@ -23,6 +24,17 @@ public class NodeUtilityTest {
         this.sourceCode = new StringBuilder().append("")
             .append("public class A {\n")
             .append("   public void a() {\n")
+            .append("   }\n")
+            .append("}\n")
+            .toString();
+
+        this.sourceCode2 = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("   private String fa = \"a\";\n")
+            .append("   private void ma(String pa, String pb) {\n")
+            .append("       String la = \"b\";\n")
+            .append("       la = \"hoge\";\n")
+            .append("       ld = \"huga\";\n")
             .append("   }\n")
             .append("}\n")
             .toString();
@@ -55,22 +67,24 @@ public class NodeUtilityTest {
         assertThat(copiedNode.getParentNode().get()).isNotSameAs(node.getParentNode().get());
     }
 
+    /**
+     * deepCopyByReparseメソッドがNodeの親ノードも含めてコピーできているかテスト
+     */
+    @Test public void testForCopiedNodeByReparse(){
+        Node node = NodeUtility.getAllDescendantNodes(JavaParser.parse(sourceCode)).get(0);
+        Node copiedNode = NodeUtility.deepCopyByReparse(node);
+
+        assertThat(copiedNode).isNotSameAs(node);
+        assertThat(copiedNode.getParentNode().isPresent()).isTrue();
+        assertThat(copiedNode.getParentNode().get()).isNotSameAs(node.getParentNode().get());
+    }
+
 
 
     /**
      * ノードが挿入されているかテスト(コピペ)
      */
     @Test public void testForInsertNodeByCopy(){
-        String source = new StringBuilder().append("")
-            .append("public class A {\n")
-            .append("   private String fa = \"a\";\n")
-            .append("   private void ma(String pa, String pb) {\n")
-            .append("       String la = \"b\";\n")
-            .append("       la = \"hoge\";\n")
-            .append("       ld = \"huga\";\n")
-            .append("   }\n")
-            .append("}\n")
-            .toString();
 
         String expectedSource = new StringBuilder().append("")
             .append("public class A {\n")
@@ -84,7 +98,7 @@ public class NodeUtilityTest {
             .append("}\n")
             .toString();
         
-        CompilationUnit compilationUnit = JavaParser.parse(source);
+        CompilationUnit compilationUnit = JavaParser.parse(sourceCode2);
         
         BlockStmt block = (BlockStmt)compilationUnit.getChildNodes().get(0).getChildNodes().get(2).getChildNodes().get(4);
         NodeList<Statement> nodeList = block.getStatements();
@@ -108,16 +122,6 @@ public class NodeUtilityTest {
      * ノードが挿入されているかテスト(作成したノード)
      */
     @Test public void testForInsertByManual(){
-        String source = new StringBuilder().append("")
-            .append("public class A {\n")
-            .append("   private String fa = \"a\";\n")
-            .append("   private void ma(String pa, String pb) {\n")
-            .append("       String la = \"b\";\n")
-            .append("       la = \"hoge\";\n")
-            .append("       ld = \"huga\";\n")
-            .append("   }\n")
-            .append("}\n")
-            .toString();
 
         String expectedSource = new StringBuilder().append("")
             .append("public class A {\n")
@@ -131,7 +135,7 @@ public class NodeUtilityTest {
             .append("}\n")
             .toString();
         
-        CompilationUnit compilationUnit = JavaParser.parse(source);
+        CompilationUnit compilationUnit = JavaParser.parse(sourceCode2);
         
         BlockStmt block = (BlockStmt)compilationUnit.getChildNodes().get(0).getChildNodes().get(2).getChildNodes().get(4);
         NodeList<Statement> nodeList = block.getStatements();
@@ -144,10 +148,13 @@ public class NodeUtilityTest {
 
         Node insertedStatement = NodeUtility.insertNode(insertStatement, nodeList.get(1),nodeList.get(2));
         Node insertedStatement2 = NodeUtility.insertNodeWithNewLine(insertStatement, nodeList.get(2));
-        LexicalPreservingPrinter.setup(insertedStatement.findCompilationUnit().orElseThrow());
-        LexicalPreservingPrinter.setup(insertedStatement2.findCompilationUnit().orElseThrow());
+        CompilationUnit insertedCompilationUnit = insertedStatement.findCompilationUnit().orElseThrow();
+        CompilationUnit insertedCompilationUnit2 = insertedStatement2.findCompilationUnit().orElseThrow();
+        LexicalPreservingPrinter.setup(insertedCompilationUnit);
+        LexicalPreservingPrinter.setup(insertedCompilationUnit2);
         String reparsedSource = LexicalPreservingPrinter.print(insertedStatement.findCompilationUnit().orElseThrow());
         String reparsedSource2 = LexicalPreservingPrinter.print(insertedStatement2.findCompilationUnit().orElseThrow());
+
         assertThat(reparsedSource).isEqualTo(expectedSource);
         assertThat(reparsedSource2).isEqualTo(expectedSource);
 
@@ -158,16 +165,6 @@ public class NodeUtilityTest {
      * 1行の中でノードが挿入されるかテスト
      */
     @Test public void testForInsertNodeInOneLineByCopy(){
-        String source = new StringBuilder().append("")
-            .append("public class A {\n")
-            .append("   private String fa = \"a\";\n")
-            .append("   private void ma(String pa, String pb) {\n")
-            .append("       String la = \"b\";\n")
-            .append("       la = \"hoge\";\n")
-            .append("       ld = \"huga\";\n")
-            .append("   }\n")
-            .append("}\n")
-            .toString();
 
         String expectedSource = new StringBuilder().append("")
             .append("public class A {\n")
@@ -180,7 +177,7 @@ public class NodeUtilityTest {
             .append("}\n")
             .toString();
         
-        CompilationUnit compilationUnit = JavaParser.parse(source);
+        CompilationUnit compilationUnit = JavaParser.parse(sourceCode2);
         
         BlockStmt block = (BlockStmt)compilationUnit.getChildNodes().get(0).getChildNodes().get(2).getChildNodes().get(4);
         NodeList<Statement> nodeList = block.getStatements();
@@ -200,16 +197,6 @@ public class NodeUtilityTest {
      * ノードが置換されているかテスト(コピペ)
      */
     @Test public void testForReplaceNodeByCopy(){
-        String source = new StringBuilder().append("")
-            .append("public class A {\n")
-            .append("   private String fa = \"a\";\n")
-            .append("   private void ma(String pa, String pb) {\n")
-            .append("       String la = \"b\";\n")
-            .append("       la = \"hoge\";\n")
-            .append("       ld = \"huga\";\n")
-            .append("   }\n")
-            .append("}\n")
-            .toString();
 
         String expectedSource = new StringBuilder().append("")
             .append("public class A {\n")
@@ -222,17 +209,16 @@ public class NodeUtilityTest {
             .append("}\n")
             .toString();
         
-        CompilationUnit compilationUnit = JavaParser.parse(source);
+        CompilationUnit compilationUnit = JavaParser.parse(sourceCode2);
         
         BlockStmt block = (BlockStmt)compilationUnit.getChildNodes().get(0).getChildNodes().get(2).getChildNodes().get(4);
         NodeList<Statement> nodeList = block.getStatements();
 
-        Node insertNode = NodeUtility.replaceNode(nodeList.get(0), nodeList.get(2));
-        CompilationUnit compilationUnit2 = insertNode.findCompilationUnit().orElseThrow();
-        LexicalPreservingPrinter.setup(compilationUnit2);
-        String source2 = LexicalPreservingPrinter.print(compilationUnit2);
-        System.out.println(source2);
-        assertThat(source2).isEqualTo(expectedSource);
+        Node replacedNode = NodeUtility.replaceNode(nodeList.get(0), nodeList.get(2));
+        CompilationUnit replacedCompilationUnit = replacedNode.findCompilationUnit().orElseThrow();
+        LexicalPreservingPrinter.setup(replacedCompilationUnit);
+        String reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
+        assertThat(reparsedSource).isEqualTo(expectedSource);
         
         return;
     }
@@ -241,16 +227,6 @@ public class NodeUtilityTest {
      * ノードが置換されているかテスト(作成したノード)
      */
     @Test public void testForReplaceNodeByManual(){
-        String source = new StringBuilder().append("")
-            .append("public class A {\n")
-            .append("   private String fa = \"a\";\n")
-            .append("   private void ma(String pa, String pb) {\n")
-            .append("       String la = \"b\";\n")
-            .append("       la = \"hoge\";\n")
-            .append("       ld = \"huga\";\n")
-            .append("   }\n")
-            .append("}\n")
-            .toString();
 
         String expectedSource = new StringBuilder().append("")
             .append("public class A {\n")
@@ -263,17 +239,17 @@ public class NodeUtilityTest {
             .append("}\n")
             .toString();
         
-        CompilationUnit compilationUnit = JavaParser.parse(source);
+        CompilationUnit compilationUnit = JavaParser.parse(sourceCode2);
         
         BlockStmt block = (BlockStmt)compilationUnit.getChildNodes().get(0).getChildNodes().get(2).getChildNodes().get(4);
         NodeList<Statement> nodeList = block.getStatements();
         Node replaceNode = nodeList.get(1).getChildNodes().get(0).getChildNodes().get(1);
         Node targetNode = nodeList.get(2).getChildNodes().get(0).getChildNodes().get(1);
         
-        //Statement insertStatement = JavaParser.parseStatement(insertStatementSource);
         Node replacedStatement = NodeUtility.replaceNode(replaceNode, targetNode);
-        LexicalPreservingPrinter.setup(replacedStatement.findCompilationUnit().orElseThrow());
-        String source2 = LexicalPreservingPrinter.print(replacedStatement.findCompilationUnit().orElseThrow());
+        CompilationUnit replacedCompilationUnit = replacedStatement.findCompilationUnit().orElseThrow();
+        LexicalPreservingPrinter.setup(replacedCompilationUnit);
+        String source2 = LexicalPreservingPrinter.print(replacedCompilationUnit);
 
         assertThat(source2).isEqualTo(expectedSource);
 

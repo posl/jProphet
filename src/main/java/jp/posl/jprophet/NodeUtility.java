@@ -5,13 +5,11 @@ import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinte
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.JavaToken;
 import com.github.javaparser.Range;
-import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.CompilationUnit;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -103,12 +101,14 @@ public class NodeUtility {
      */
     public static Node deepCopyByReparse(Node node){
         CompilationUnit compilationUnit = node.findCompilationUnit().orElseThrow();
+
         LexicalPreservingPrinter.setup(compilationUnit);
         CompilationUnit newCu = JavaParser.parse(LexicalPreservingPrinter.print(compilationUnit));
         List<Node> nodes = NodeUtility.getAllDescendantNodes(newCu);
         Node newNode = nodes.stream().filter(n -> {
             return n.equals(node) && n.getRange().equals(node.getRange());
         }).findFirst().orElseThrow();
+
         return newNode;
     }
 
@@ -133,23 +133,16 @@ public class NodeUtility {
 
         final int beginLineOfAfter = beginRangeOfAfter.begin.line;
 
-
         while (true){
             beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
-            if (insertToken.getRange().equals(endTokenOfInsert.getRange())){
-                break;
-            }
+            if (insertToken.getRange().equals(endTokenOfInsert.getRange())) break;
             insertToken = insertToken.getNextToken().orElseThrow();
         }
 
         insertToken = beforeNode.getTokenRange().orElseThrow().getEnd().getNextToken().orElseThrow();
         
-        while (true){
-            if (insertToken.getRange().equals(originalBeginTokenOfAfter.getRange())){
-                break;
-            }
+        while (!insertToken.getRange().equals(originalBeginTokenOfAfter.getRange())){
             beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
-            
             insertToken = insertToken.getNextToken().orElseThrow();
         }
         
@@ -179,12 +172,9 @@ public class NodeUtility {
 
         final int beginLineOfAfter = beginRangeOfAfter.begin.line;
 
-
         while (true){
             beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
-            if (insertToken.getRange().equals(endTokenOfInsert.getRange())){
-                break;
-            }
+            if (insertToken.getRange().equals(endTokenOfInsert.getRange())) break;
             insertToken = insertToken.getNextToken().orElseThrow();
         }
 
@@ -194,12 +184,8 @@ public class NodeUtility {
             insertToken = insertToken.getPreviousToken().orElseThrow();
         }
 
-        while (true){
-            if (insertToken.getRange().equals(originalBeginTokenOfAfter.getRange())){
-                break;
-            }
-            beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
-            
+        while (!insertToken.getRange().equals(originalBeginTokenOfAfter.getRange())){
+            beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));   
             insertToken = insertToken.getNextToken().orElseThrow();
         }
         
@@ -228,11 +214,10 @@ public class NodeUtility {
 
         final int beginLineOfAfter = beginRangeOfAfter.begin.line;
 
-
         while (true){
             beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
             if (insertToken.getRange().equals(endTokenOfInsert.getRange())){
-                beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, 1, " ", null, null));
+                beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, JavaToken.Kind.SPACE.getKind(), " ", null, null));
                 break;
             }
             insertToken = insertToken.getNextToken().orElseThrow();
@@ -252,19 +237,19 @@ public class NodeUtility {
      */
     public static Node replaceNode(Node replaceNode, Node targetNode){
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
+
         JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
         JavaToken replaceToken = replaceNode.getTokenRange().orElseThrow().getBegin();
-
         final JavaToken endTokenOfReplace = replaceNode.getTokenRange().orElseThrow().getEnd();
         final JavaToken endTokenOfTarget = targetNode.getTokenRange().orElseThrow().getEnd();
+
         final Range beginRangeOfTarget = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
+
         final int beginLineOfTarget = beginRangeOfTarget.begin.line;
 
         while (true){
             beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, replaceToken.getKind(), replaceToken.getText(), null, null));
-            if (replaceToken.getRange().equals(endTokenOfReplace.getRange())){
-                break;
-            }
+            if (replaceToken.getRange().equals(endTokenOfReplace.getRange())) break;
             replaceToken = replaceToken.getNextToken().orElseThrow();
         }
 
@@ -291,7 +276,7 @@ public class NodeUtility {
     }
 
     /**
-     * compilationUnitからノードを探す
+     * compilationUnitから行単位でノードを探す
      * @param compilationUnit パースし直した後のcompilationUnit
      * @param node パースし直す前の探したいノード
      * @param beginLine 探したいノードの最初の行番号
@@ -316,4 +301,3 @@ public class NodeUtility {
         return JavaParser.parse(source);
     }
 }
-
