@@ -25,15 +25,14 @@ public class CopyReplaceOperation implements AstOperation{
     @Override
     public List<CompilationUnit> exec(Node targetNode){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
-        Node newTargetNode = NodeUtility.deepCopy(targetNode);
         if (targetNode instanceof Statement && !(targetNode instanceof BlockStmt)){
             //修正対象のステートメントの属するメソッドノードを取得
             //メソッド内のステートメント(修正対象のステートメントより前のもの)を収集
-            List<Statement> statements = collectLocalStatements(newTargetNode);
+            List<Statement> statements = collectLocalStatements(targetNode);
             if (statements.size() != 0){
                 //candidates = copyStatementBeforeTarget(statements, newRepairUnit);
                 for (Statement statement : statements){
-                    candidates.addAll(copyStatementBeforeTarget(statement, newTargetNode));
+                    candidates.addAll(copyStatementBeforeTarget(statement, targetNode));
                 }
             }
         }
@@ -71,8 +70,7 @@ public class CopyReplaceOperation implements AstOperation{
      * @param repairUnit targetNodeを含むrepairUnit
      * @return repairUnitのリスト
      */
-    private List<CompilationUnit> copyStatementBeforeTarget(Statement statement, Node node){
-        Node targetNode = NodeUtility.deepCopyByReparse(node);
+    private List<CompilationUnit> copyStatementBeforeTarget(Statement statement, Node targetNode){
         Node copiedNode = NodeUtility.insertNodeWithNewLine(statement, targetNode);
         List<Node> copiedNodeDescendants = NodeUtility.getAllDescendantNodes(copiedNode);
 

@@ -22,16 +22,13 @@ public class CopyReplaceOperationTest{
     private String source = new StringBuilder().append("")
     .append("public class A {\n")
     .append("   private String fa = \"a\";\n")
-    .append("   private String fb = \"a\";\n")
     .append("   private void ma(String pa, String pb) {\n")
     .append("       String la = \"b\";\n")
     .append("       la = \"hoge\";\n")
-    //.append("       int k = 3;\n")
     .append("       if (k == 5) {\n")
     .append("           k = 5;\n")
     .append("       }\n")
-    .append("       this.mb(\"hoge\", \"fuga\");\n")
-    .append("       String ld = \"d\";\n")
+    //.append("       this.mb(\"hoge\", \"fuga\");\n")
     .append("       ld = \"hoge\";\n")
     .append("   }\n")
     .append("   private void mb(String a, String b) {\n")
@@ -53,6 +50,8 @@ public class CopyReplaceOperationTest{
      */
     @Test public void testForNumOfRepairCopied(){
         candidates.forEach(System.out::println);
+        LexicalPreservingPrinter.setup(candidates.get(20));
+        String string = LexicalPreservingPrinter.print(candidates.get(20));
         return;
     }
 
