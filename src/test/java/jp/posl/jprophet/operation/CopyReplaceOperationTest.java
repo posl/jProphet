@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 
 public class CopyReplaceOperationTest{
     
@@ -51,7 +52,7 @@ public class CopyReplaceOperationTest{
      * ステートメントコピペ後の修正候補の数のテスト
      */
     @Test public void testForNumOfRepairCopied(){
-        //assertThat(candidates.size()).isEqualTo(14);
+        candidates.forEach(System.out::println);
         return;
     }
 
