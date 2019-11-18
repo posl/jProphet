@@ -5,11 +5,13 @@ import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinte
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.JavaToken;
 import com.github.javaparser.Range;
+import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.CompilationUnit;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -273,6 +275,48 @@ public class NodeUtility {
         CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
         Node copiedInsertNode = NodeUtility.findNodeInCompilationUnit(parsedCompilationUnit, replaceNode, beginLineOfTarget);
         return copiedInsertNode;
+    }
+
+    /**
+     * TokenRangeを,指定したノードの直前の行に挿入
+     * TokenRangeのbeginの一つ前と,endの一つ後はnullでないといけない
+     * @param tokenRange
+     * @param afterNode
+     * @return
+     */
+    public static CompilationUnit insertTokenWithNewLine(TokenRange tokenRange, Node afterNode){
+        Node copiedAfterNode = NodeUtility.deepCopyByReparse(afterNode);
+
+        JavaToken beginTokenOfAfter = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
+        JavaToken insertToken = tokenRange.getBegin();
+        final JavaToken originalBeginTokenOfAfter = afterNode.getTokenRange().orElseThrow().getBegin();
+
+        final Range beginRangeOfAfter = afterNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
+
+        while (true){
+            beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
+            try{
+                insertToken.getNextToken().orElseThrow();
+            }catch (NoSuchElementException e){
+                break;
+            }
+            insertToken = insertToken.getNextToken().orElseThrow();
+        }
+
+        insertToken = afterNode.getTokenRange().orElseThrow().getBegin();
+
+        while (!insertToken.getText().equals("\n")){
+            insertToken = insertToken.getPreviousToken().orElseThrow();
+        }
+
+        while (!insertToken.getRange().equals(originalBeginTokenOfAfter.getRange())){
+            beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));   
+            insertToken = insertToken.getNextToken().orElseThrow();
+        }
+        
+        CompilationUnit compilationUnit = copiedAfterNode.findCompilationUnit().orElseThrow();
+        CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
+        return parsedCompilationUnit;
     }
 
     /**

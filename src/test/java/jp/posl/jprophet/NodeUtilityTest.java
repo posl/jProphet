@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.JavaToken;
+import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
@@ -35,6 +37,9 @@ public class NodeUtilityTest {
             .append("       String la = \"b\";\n")
             .append("       la = \"hoge\";\n")
             .append("       ld = \"huga\";\n")
+            //.append("       if (true){\n")
+            //.append("           la = \"b\";\n")
+            //.append("       }\n")
             .append("   }\n")
             .append("}\n")
             .toString();
@@ -114,7 +119,7 @@ public class NodeUtilityTest {
 
         assertThat(reparsedSource).isEqualTo(expectedSource);
         assertThat(reparsedSource2).isEqualTo(expectedSource);
-        
+
         return;
     }
 
@@ -249,9 +254,56 @@ public class NodeUtilityTest {
         Node replacedStatement = NodeUtility.replaceNode(replaceNode, targetNode);
         CompilationUnit replacedCompilationUnit = replacedStatement.findCompilationUnit().orElseThrow();
         LexicalPreservingPrinter.setup(replacedCompilationUnit);
-        String source2 = LexicalPreservingPrinter.print(replacedCompilationUnit);
+        String reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
 
-        assertThat(source2).isEqualTo(expectedSource);
+        assertThat(reparsedSource).isEqualTo(expectedSource);
+
+        return;
+    }
+
+    /** TokenRangeを作成してノードの前に挿入するテスト */
+    @Test public void testForInsertToken(){
+
+        String expectedSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("   private String fa = \"a\";\n")
+            .append("   private void ma(String pa, String pb) {\n")
+            .append("       String la = \"b\";\n")
+            .append("       la = \"hoge\";\n")
+            .append("       if (true){ la=\"p\";}\n")
+            .append("       ld = \"huga\";\n")
+            .append("   }\n")
+            .append("}\n")
+            .toString();
+        
+        CompilationUnit compilationUnit = JavaParser.parse(sourceCode2);
+        
+        BlockStmt block = (BlockStmt)compilationUnit.getChildNodes().get(0).getChildNodes().get(2).getChildNodes().get(4);
+        NodeList<Statement> nodeList = block.getStatements();
+        
+        Node targetNode = nodeList.get(2);
+
+        JavaToken begin = new JavaToken(34);
+        JavaToken end = new JavaToken(95);
+
+        begin.insertAfter(end);
+        begin.insertAfter(new JavaToken(98));
+        begin.insertAfter(new JavaToken(88, "\"p\""));
+        begin.insertAfter(new JavaToken(102));
+        begin.insertAfter(new JavaToken(89, "la"));
+        begin.insertAfter(new JavaToken(1));
+        begin.insertAfter(new JavaToken(94));
+        begin.insertAfter(new JavaToken(93));
+        begin.insertAfter(new JavaToken(59));
+        begin.insertAfter(new JavaToken(92));
+        begin.insertAfter(new JavaToken(1));
+
+        TokenRange tokenRange = new TokenRange(begin, end);
+        CompilationUnit insertedCompilationUnit = NodeUtility.insertTokenWithNewLine(tokenRange, targetNode);
+        LexicalPreservingPrinter.setup(insertedCompilationUnit);
+        String reparsedSource = LexicalPreservingPrinter.print(insertedCompilationUnit);
+
+        assertThat(reparsedSource).isEqualTo(expectedSource);
 
         return;
     }
