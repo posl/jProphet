@@ -19,7 +19,7 @@ import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.executor.TestExecutor;
 import jp.posl.jprophet.test.executor.UnitTestExecutor;
 import jp.posl.jprophet.test.result.TestResult;
-import jp.posl.jprophet.test.result.TestResultStore;
+import jp.posl.jprophet.test.exporter.TestResultStore;
 import jp.posl.jprophet.test.exporter.TestResultExporter;
 import jp.posl.jprophet.test.exporter.CSVTestResultExporter;
 

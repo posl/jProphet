@@ -3,7 +3,6 @@ package jp.posl.jprophet.test.exporter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +10,6 @@ import org.apache.commons.io.FileUtils;
 
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.result.TestResult;
-import jp.posl.jprophet.test.result.TestResultStore;
 
 
 /**
