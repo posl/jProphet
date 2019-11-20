@@ -20,16 +20,15 @@ public class SpotBugsExecutorTest {
     @Test
     public void testForExec() {
         SpotBugsExecutor executor = new SpotBugsExecutor("result");
-
         final RepairConfiguration config = new RepairConfiguration("./tmp/SBout", null, new GradleProject("src/test/resources/testSBProject01"));
         executor.exec(config);
         assertThat(new File(executor.getResultFilePath()).exists()).isTrue();
         try {
-			FileUtils.deleteDirectory(new File("./tmp"));
-		} catch (IOException e) {
+            FileUtils.deleteDirectory(new File("./tmp"));
+        } catch (IOException e) {
             System.err.println(e.getMessage());
-			e.printStackTrace();
-		}
+            e.printStackTrace();
+        }
     }
 
 }

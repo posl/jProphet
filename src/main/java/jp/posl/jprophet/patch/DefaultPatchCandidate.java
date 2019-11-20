@@ -7,6 +7,8 @@ import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 
+import jp.posl.jprophet.operation.AstOperation;
+
 
 /**
  * 実際にプログラムの生成が可能なパッチ候補の実装クラス
@@ -16,6 +18,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
     private final CompilationUnit fixedCompilationUnit;
     private final String fixedFilePath;
     private final String fixedFileFqn;
+    private Class<? extends AstOperation> operaiton;
 
     /**
      * 以下の引数の情報を元にパッチ候補を生成 
@@ -23,12 +26,15 @@ public class DefaultPatchCandidate implements PatchCandidate {
      * @param fixedCompilationUnit 修正されたASTノードの情報を持つCompilationUnit
      * @param fixedFilePath 修正されたファイルのパス（jprophetルートからの相対パス）
      * @param fixedFileFQN 修正されたファイルのFQN
+     * @param operation 適用されたオペレータのクラス
      */
-    public DefaultPatchCandidate(Node targetNodeBeforeFix, CompilationUnit fixedCompilationUnit, String fixedFilePath, String fixedFileFQN) {
+    public DefaultPatchCandidate(Node targetNodeBeforeFix, CompilationUnit fixedCompilationUnit, 
+                                 String fixedFilePath, String fixedFileFQN, Class<? extends AstOperation> operation) {
         this.targetNodeBeforeFix = targetNodeBeforeFix;
         this.fixedCompilationUnit = fixedCompilationUnit;
         this.fixedFilePath = fixedFilePath;
         this.fixedFileFqn = fixedFileFQN;
+        this.operaiton = operation;
     }
 
     /**
@@ -69,6 +75,16 @@ public class DefaultPatchCandidate implements PatchCandidate {
             return Optional.empty();
         }
     }
+
+
+    /**
+     * {@inheritDoc}
+     */
+     @Override
+     public String getAppliedOperation() {
+         return operaiton.getName().replace("jp.posl.jprophet.operation.", "");
+     }
+
 
     /**
      * {@inheritDoc}

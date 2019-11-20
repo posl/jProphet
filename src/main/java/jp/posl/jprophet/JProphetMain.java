@@ -16,7 +16,12 @@ import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.spectrumbased.strategy.*;
 import jp.posl.jprophet.operation.*;
 import jp.posl.jprophet.patch.PatchCandidate;
-import jp.posl.jprophet.test.TestExecutor;
+import jp.posl.jprophet.test.executor.TestExecutor;
+import jp.posl.jprophet.test.executor.UnitTestExecutor;
+import jp.posl.jprophet.test.result.TestResult;
+import jp.posl.jprophet.test.result.TestResultStore;
+import jp.posl.jprophet.test.exporter.TestResultExporter;
+import jp.posl.jprophet.test.exporter.CSVTestResultExporter;
 
 public class JProphetMain {
     public static void main(String[] args) {
@@ -34,8 +39,10 @@ public class JProphetMain {
         final PlausibilityAnalyzer     plausibilityAnalyzer     = new PlausibilityAnalyzer();  
         final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
         final StagedCondGenerator      stagedCondGenerator      = new StagedCondGenerator();
-        final TestExecutor             testExecutor             = new TestExecutor();
+        final TestExecutor             testExecutor             = new UnitTestExecutor();
         final FixedProjectGenerator    fixedProjectGenerator    = new FixedProjectGenerator();
+        final TestResultStore          testResultStore          = new TestResultStore();
+        final TestResultExporter       testResultExporter       = new CSVTestResultExporter(resultDir);
 
         final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(
             new CondRefinementOperation(),
@@ -47,9 +54,7 @@ public class JProphetMain {
         ));
 
         final JProphetMain jprophet = new JProphetMain();
-        boolean isRepairSuccess = 
-            jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, plausibilityAnalyzer, patchEvaluator, stagedCondGenerator, testExecutor, fixedProjectGenerator);
-
+        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, plausibilityAnalyzer, patchEvaluator, stagedCondGenerator, testExecutor, fixedProjectGenerator, testResultStore, testResultExporter);
         try {
             FileUtils.deleteDirectory(new File(buildDir));
             if(!isRepairSuccess){
@@ -64,7 +69,7 @@ public class JProphetMain {
 
     private boolean run(RepairConfiguration config, FaultLocalization faultLocalization,
             PatchCandidateGenerator patchCandidateGenerator, List<AstOperation> operations, PlausibilityAnalyzer plausibilityAnalyzer, PatchEvaluator patchEvaluator,
-            StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, FixedProjectGenerator fixedProjectGenerator
+            StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, FixedProjectGenerator fixedProjectGenerator, TestResultStore testResultStore, TestResultExporter testResultExporter
             ) {
         // フォルトローカライゼーション
         List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
@@ -78,10 +83,14 @@ public class JProphetMain {
         // 修正パッチ候補ごとにテスト実行
         for(PatchCandidate patchCandidate: patchCandidates) {
             Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
-            if(testExecutor.run(new RepairConfiguration(config, fixedProject))) {
+            final List<TestResult> results = testExecutor.exec(new RepairConfiguration(config, fixedProject));
+            testResultStore.addTestResults(results, patchCandidate);
+            if(results.get(0).getIsSuccess()) { //ここが微妙な気がする
+                testResultExporter.export(testResultStore);
                 return true;
             }
         }
+        testResultExporter.export(testResultStore);
         return false;
     }
 }
