@@ -116,22 +116,22 @@ public class NodeUtility {
 
 
     /**
-     * 1つのノードを2つのノードの間に入れる(行の最初や最後に入れることはできない)
-     * beforeNodeの最後からafterNodeの初めまでのトークンをそのままinsertNodeの後にコピーする
-     * @param insertNode 挿入するノード
-     * @param beforeNode 挿入するノードの前のノード
-     * @param afterNode 挿入するノードの後ろのノード
+     * previousNodeとnextNodeの間にnodeToInsertを挿入する
+     * nodeToInsertとnextNodeの間の空白の数や,インデント,改行の数は,previousNodeとnextNodeの間のそれらと等しくなる
+     * @param nodeToInsert 挿入するノード
+     * @param previousNode 挿入するノードの前のノード
+     * @param nextNode 挿入するノードの後ろのノード
      * @return 挿入したノード
      */
-    public static Node insertNode(Node insertNode, Node beforeNode, Node afterNode){
-        Node copiedAfterNode = NodeUtility.deepCopyByReparse(afterNode);
+    public static Node insertNodeBetweenNodes (Node nodeToInsert, Node previousNode, Node nextNode) throws NoSuchElementException{
+        Node copiedAfterNode = NodeUtility.deepCopyByReparse(nextNode);
 
         JavaToken beginTokenOfAfter = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
-        JavaToken insertToken = insertNode.getTokenRange().orElseThrow().getBegin();
-        final JavaToken endTokenOfInsert = insertNode.getTokenRange().orElseThrow().getEnd();
-        final JavaToken originalBeginTokenOfAfter = afterNode.getTokenRange().orElseThrow().getBegin();
+        JavaToken insertToken = nodeToInsert.getTokenRange().orElseThrow().getBegin();
+        final JavaToken endTokenOfInsert = nodeToInsert.getTokenRange().orElseThrow().getEnd();
+        final JavaToken originalBeginTokenOfAfter = nextNode.getTokenRange().orElseThrow().getBegin();
 
-        final Range beginRangeOfAfter = afterNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
+        final Range beginRangeOfAfter = nextNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
 
         while (true){
             beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
@@ -139,7 +139,7 @@ public class NodeUtility {
             insertToken = insertToken.getNextToken().orElseThrow();
         }
 
-        insertToken = beforeNode.getTokenRange().orElseThrow().getEnd().getNextToken().orElseThrow();
+        insertToken = previousNode.getTokenRange().orElseThrow().getEnd().getNextToken().orElseThrow();
         
         while (!insertToken.getRange().equals(originalBeginTokenOfAfter.getRange())){
             beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
@@ -148,27 +148,27 @@ public class NodeUtility {
         
         CompilationUnit compilationUnit = copiedAfterNode.findCompilationUnit().orElseThrow();
         CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, insertNode, beginRangeOfAfter);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, nodeToInsert, beginRangeOfAfter);
         return copiedInsertNode;
     }
 
     /**
-     * 1つのノードをあるノードの前に入れる(行の最初や最後に入れることはできない)
-     * afterNodeの最初から後ろを見て改行コード\nまでをinsertNodeの後にコピーする
-     * 1行の中にノードを挿入することはできない(final int a = 0; をfinal public int a = 0; にする等)
-     * @param insertNode 挿入するノード
-     * @param afterNode 挿入するノードの後ろのノード
+     * targetNodeの直前の行にnodeToInsertを入れる
+     * nodeToInsertのインデントはtargetNodeのインデントと同じ
+     * Statementノードよりも小さい単位のノードを渡すと正しく挿入されない
+     * @param nodeToInsert 挿入するノード
+     * @param targetNode 挿入するノードの後ろのノード
      * @return 挿入したノード
      */
-    public static Node insertNodeWithNewLine(Node insertNode, Node afterNode){
-        Node copiedAfterNode = NodeUtility.deepCopyByReparse(afterNode);
+    public static Node insertNodeWithNewLine(Node nodeToInsert, Node targetNode) throws NoSuchElementException{
+        Node copiedAfterNode = NodeUtility.deepCopyByReparse(targetNode);
 
         JavaToken beginTokenOfAfter = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
-        JavaToken insertToken = insertNode.getTokenRange().orElseThrow().getBegin();
-        final JavaToken endTokenOfInsert = insertNode.getTokenRange().orElseThrow().getEnd();
-        final JavaToken originalBeginTokenOfAfter = afterNode.getTokenRange().orElseThrow().getBegin();
+        JavaToken insertToken = nodeToInsert.getTokenRange().orElseThrow().getBegin();
+        final JavaToken endTokenOfInsert = nodeToInsert.getTokenRange().orElseThrow().getEnd();
+        final JavaToken originalBeginTokenOfAfter = targetNode.getTokenRange().orElseThrow().getBegin();
 
-        final Range beginRangeOfAfter = afterNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
+        final Range beginRangeOfAfter = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
 
         while (true){
             beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
@@ -176,7 +176,7 @@ public class NodeUtility {
             insertToken = insertToken.getNextToken().orElseThrow();
         }
 
-        insertToken = afterNode.getTokenRange().orElseThrow().getBegin();
+        insertToken = targetNode.getTokenRange().orElseThrow().getBegin();
 
         while (!insertToken.getText().equals("\n")){
             insertToken = insertToken.getPreviousToken().orElseThrow();
@@ -189,26 +189,26 @@ public class NodeUtility {
         
         CompilationUnit compilationUnit = copiedAfterNode.findCompilationUnit().orElseThrow();
         CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, insertNode, beginRangeOfAfter);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, nodeToInsert, beginRangeOfAfter);
         return copiedInsertNode;
     }
 
     /**
-     * 1行の中でノードを挿入する
-     * ノードを挿入した後空白を一つ入れる
-     * x = 0; を int x = 0; にしたりする時に利用
-     * @param insertNode 挿入するノード
-     * @param afterNode 挿入するノードの後ろのノード
+     * nodeToInsertをtargetNodeの直前に挿入する
+     * Statementノードよりも小さい単位のノードを挿入する際に利用
+     * x = 0; を int x = 0; にするなど
+     * @param nodeToInsert 挿入するノード
+     * @param targetNode 挿入するノードの後ろのノード
      * @return 挿入したノード
      */
-    public static Node insertNodeInOneLine(Node insertNode, Node afterNode){
-        Node copiedAfterNode = NodeUtility.deepCopyByReparse(afterNode);
+    public static Node insertNodeInOneLine(Node nodeToInsert, Node targetNode) throws NoSuchElementException{
+        Node copiedAfterNode = NodeUtility.deepCopyByReparse(targetNode);
 
         JavaToken beginTokenOfAfter = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
-        JavaToken insertToken = insertNode.getTokenRange().orElseThrow().getBegin();
-        final JavaToken endTokenOfInsert = insertNode.getTokenRange().orElseThrow().getEnd();
+        JavaToken insertToken = nodeToInsert.getTokenRange().orElseThrow().getBegin();
+        final JavaToken endTokenOfInsert = nodeToInsert.getTokenRange().orElseThrow().getEnd();
 
-        final Range beginRangeOfAfter = afterNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
+        final Range beginRangeOfAfter = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
 
         while (true){
             beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
@@ -221,7 +221,7 @@ public class NodeUtility {
         
         CompilationUnit compilationUnit = copiedAfterNode.findCompilationUnit().orElseThrow();
         CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, insertNode, beginRangeOfAfter);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, nodeToInsert, beginRangeOfAfter);
         return copiedInsertNode;
     }
 
@@ -231,7 +231,7 @@ public class NodeUtility {
      * @param originalNode 置換される前のノード
      * @return 置換後のASTノード
      */
-    public static Node replaceNode(Node replaceNode, Node targetNode){
+    public static Node replaceNode(Node replaceNode, Node targetNode) throws NoSuchElementException{
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
 
         JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
@@ -270,20 +270,20 @@ public class NodeUtility {
     }
 
     /**
-     * TokenRangeを,指定したノードの直前の行に挿入
-     * TokenRangeのbeginの一つ前と,endの一つ後はnullでないといけない
-     * @param tokenRange
-     * @param afterNode
+     * tokenRangeを,指定したノードの直前の行に挿入
+     * tokenRangeのbeginの一つ前と,endの一つ後はnullでないといけ
+     * @param tokenRange beginの一つ前と,endの1つ後がnullであるtokenRange
+     * @param nextNode
      * @return
      */
-    public static CompilationUnit insertTokenWithNewLine(TokenRange tokenRange, Node afterNode){
-        Node copiedAfterNode = NodeUtility.deepCopyByReparse(afterNode);
+    public static CompilationUnit insertTokenWithNewLine(TokenRange tokenRange, Node nextNode) throws NoSuchElementException{
+        Node copiedAfterNode = NodeUtility.deepCopyByReparse(nextNode);
 
         JavaToken beginTokenOfAfter = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
         JavaToken insertToken = tokenRange.getBegin();
-        final JavaToken originalBeginTokenOfAfter = afterNode.getTokenRange().orElseThrow().getBegin();
+        final JavaToken originalBeginTokenOfAfter = nextNode.getTokenRange().orElseThrow().getBegin();
 
-        final Range beginRangeOfAfter = afterNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
+        final Range beginRangeOfAfter = nextNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
 
         while (true){
             beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
@@ -295,7 +295,7 @@ public class NodeUtility {
             insertToken = insertToken.getNextToken().orElseThrow();
         }
 
-        insertToken = afterNode.getTokenRange().orElseThrow().getBegin();
+        insertToken = nextNode.getTokenRange().orElseThrow().getBegin();
 
         while (!insertToken.getText().equals("\n")){
             insertToken = insertToken.getPreviousToken().orElseThrow();
