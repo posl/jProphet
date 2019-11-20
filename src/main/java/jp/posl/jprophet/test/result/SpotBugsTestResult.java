@@ -16,9 +16,9 @@ public class SpotBugsTestResult implements TestResult {
 
     /**
      * SpotBugsTestResultのコンストラクタ
-     * @param isSuccess　テストに成功していたか
-     * @param fixedWarning　修正されたワーニング
-     * @param numOfOccurredWarnings　新たに発生したワーニングの数
+     * @param isSuccess テストに成功していたか
+     * @param fixedWarning 修正されたワーニング
+     * @param numOfOccurredWarnings 新たに発生したワーニングの数
      */
     public SpotBugsTestResult(boolean isSuccess, SpotBugsWarning fixedWarning, int numOfOccurredWarnings) {
         this.isSuccess = isSuccess;

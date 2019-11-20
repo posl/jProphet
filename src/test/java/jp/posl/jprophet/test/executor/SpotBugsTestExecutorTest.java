@@ -20,7 +20,7 @@ public class SpotBugsTestExecutorTest {
 
     private RepairConfiguration beforeConfig;
     private RepairConfiguration afterConfig01; //一部解消＆新たなワーニング発生バージョン テストは通らない
-    private RepairConfiguration afterConfig02; //全てのワーニングが解消されたバージョン　テストは通る
+    private RepairConfiguration afterConfig02; //全てのワーニングが解消されたバージョン テストは通る
 
 
     /**

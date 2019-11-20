@@ -12,8 +12,8 @@ public interface TestResultWriter {
 
     /**
      * テスト結果と適用した修正パッチを追加する
-     * @param results　テスト結果
-     * @param patch　修正パッチ
+     * @param results テスト結果
+     * @param patch 修正パッチ
      */
     public void addTestResults(List<TestResult> results, PatchCandidate patch);
 

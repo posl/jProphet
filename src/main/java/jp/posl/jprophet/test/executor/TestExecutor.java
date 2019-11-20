@@ -12,8 +12,8 @@ public interface TestExecutor {
 
     /**
      * テスト検証を行い、テスト結果を取得する
-     * @param config　対象プロジェクトのconfig
-     * @return　テスト結果のリスト
+     * @param config 対象プロジェクトのconfig
+     * @return テスト結果のリスト
      */
     public List<TestResult> exec(RepairConfiguration config);
 

@@ -24,7 +24,7 @@ public class SpotBugsTestExecutor implements TestExecutor {
 
     /**
      * SpotBugsTestExecutorのコンストラクタ
-     * @param beforeResultFilePath　修正前のプロジェクトのSpotBugs適用結果ファイル
+     * @param beforeResultFilePath 修正前のプロジェクトのSpotBugs適用結果ファイル
      */
     public SpotBugsTestExecutor(String beforeResultFilePath) {
         this.beforeResultFilePath = beforeResultFilePath;
@@ -54,9 +54,9 @@ public class SpotBugsTestExecutor implements TestExecutor {
 
     /**
      * 修正前後の結果から差分を取得し結果を作成する
-     * @param before　修正前のワーニングリスト
-     * @param after　修正後のワーニングリスト
-     * @return　テスト結果のリスト
+     * @param before 修正前のワーニングリスト
+     * @param after 修正後のワーニングリスト
+     * @return テスト結果のリスト
      */
     private List<TestResult> createResults(List<SpotBugsWarning> before, List<SpotBugsWarning> after) {
         final Set<SpotBugsWarning> beforeSet = new HashSet<SpotBugsWarning>(before);

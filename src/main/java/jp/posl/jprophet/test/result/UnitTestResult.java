@@ -13,7 +13,7 @@ public class UnitTestResult implements TestResult {
 
     /**
      * UnitTestResultのコンストラクタ
-     * @param isSuccess　テストに成功していたか
+     * @param isSuccess テストに成功していたか
      */
     public UnitTestResult(boolean isSuccess) {
         this.isSuccess = isSuccess;
