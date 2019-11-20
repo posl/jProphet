@@ -114,16 +114,14 @@ public class NodeUtilityTest {
         String reparsedSource = null;
         String reparsedSource2 = null;
 
-        try{
-            Node insertNode = NodeUtility.insertNodeBetweenNodes(nodeToInsert, previousNode, nextNode);
-            Node insertNode2 = NodeUtility.insertNodeWithNewLine(nodeToInsert, nextNode);
-            CompilationUnit insertedCompilationUnit = insertNode.findCompilationUnit().orElseThrow();
-            CompilationUnit insertedCompilationUnit2 = insertNode2.findCompilationUnit().orElseThrow();
-            LexicalPreservingPrinter.setup(insertedCompilationUnit);
-            LexicalPreservingPrinter.setup(insertedCompilationUnit2);
-            reparsedSource = LexicalPreservingPrinter.print(insertedCompilationUnit);
-            reparsedSource2 = LexicalPreservingPrinter.print(insertedCompilationUnit2);
-        }catch(NoSuchElementException e){}
+        Node insertNode = NodeUtility.insertNodeBetweenNodes(nodeToInsert, previousNode, nextNode);
+        Node insertNode2 = NodeUtility.insertNodeWithNewLine(nodeToInsert, nextNode);
+        CompilationUnit insertedCompilationUnit = insertNode.findCompilationUnit().orElseThrow();
+        CompilationUnit insertedCompilationUnit2 = insertNode2.findCompilationUnit().orElseThrow();
+        LexicalPreservingPrinter.setup(insertedCompilationUnit);
+        LexicalPreservingPrinter.setup(insertedCompilationUnit2);
+        reparsedSource = LexicalPreservingPrinter.print(insertedCompilationUnit);
+        reparsedSource2 = LexicalPreservingPrinter.print(insertedCompilationUnit2);
 
         assertThat(reparsedSource).isEqualTo(expectedSource);
         assertThat(reparsedSource2).isEqualTo(expectedSource);
@@ -161,16 +159,14 @@ public class NodeUtilityTest {
         String reparsedSource = null;
         String reparsedSource2 = null;
 
-        try{
-            Node insertedStatement = NodeUtility.insertNodeBetweenNodes(insertStatement, previousNode, nextNode);
-            Node insertedStatement2 = NodeUtility.insertNodeWithNewLine(insertStatement, nextNode);
-            CompilationUnit insertedCompilationUnit = insertedStatement.findCompilationUnit().orElseThrow();
-            CompilationUnit insertedCompilationUnit2 = insertedStatement2.findCompilationUnit().orElseThrow();
-            LexicalPreservingPrinter.setup(insertedCompilationUnit);
-            LexicalPreservingPrinter.setup(insertedCompilationUnit2);
-            reparsedSource = LexicalPreservingPrinter.print(insertedStatement.findCompilationUnit().orElseThrow());
-            reparsedSource2 = LexicalPreservingPrinter.print(insertedStatement2.findCompilationUnit().orElseThrow());
-        }catch (NoSuchElementException e) {}
+        Node insertedStatement = NodeUtility.insertNodeBetweenNodes(insertStatement, previousNode, nextNode);
+        Node insertedStatement2 = NodeUtility.insertNodeWithNewLine(insertStatement, nextNode);
+        CompilationUnit insertedCompilationUnit = insertedStatement.findCompilationUnit().orElseThrow();
+        CompilationUnit insertedCompilationUnit2 = insertedStatement2.findCompilationUnit().orElseThrow();
+        LexicalPreservingPrinter.setup(insertedCompilationUnit);
+        LexicalPreservingPrinter.setup(insertedCompilationUnit2);
+        reparsedSource = LexicalPreservingPrinter.print(insertedStatement.findCompilationUnit().orElseThrow());
+        reparsedSource2 = LexicalPreservingPrinter.print(insertedStatement2.findCompilationUnit().orElseThrow());
 
         assertThat(reparsedSource).isEqualTo(expectedSource);
         assertThat(reparsedSource2).isEqualTo(expectedSource);
@@ -199,12 +195,10 @@ public class NodeUtilityTest {
 
         String reparsedSource = null;
 
-        try{
-            Node insertNode = NodeUtility.insertNodeInOneLine(string, targetNode);
-            CompilationUnit insertedCompilationUnit = insertNode.findCompilationUnit().orElseThrow();
-            LexicalPreservingPrinter.setup(insertedCompilationUnit);
-            reparsedSource = LexicalPreservingPrinter.print(insertedCompilationUnit);
-        }catch (NoSuchElementException e) {}
+        Node insertNode = NodeUtility.insertNodeInOneLine(string, targetNode);
+        CompilationUnit insertedCompilationUnit = insertNode.findCompilationUnit().orElseThrow();
+        LexicalPreservingPrinter.setup(insertedCompilationUnit);
+        reparsedSource = LexicalPreservingPrinter.print(insertedCompilationUnit);
 
         assertThat(reparsedSource).isEqualTo(expectedSource);
         
@@ -232,12 +226,10 @@ public class NodeUtilityTest {
         Node replaceNode = nodeList.get(0); //String la = "b";
         Node targetNode = nodeList.get(2); //ld = "huga";
 
-        try{
-            Node replacedNode = NodeUtility.replaceNode(replaceNode, targetNode);
-            CompilationUnit replacedCompilationUnit = replacedNode.findCompilationUnit().orElseThrow();
-            LexicalPreservingPrinter.setup(replacedCompilationUnit);
-            reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
-        }catch (NoSuchElementException e) {}
+        Node replacedNode = NodeUtility.replaceNode(replaceNode, targetNode);
+        CompilationUnit replacedCompilationUnit = replacedNode.findCompilationUnit().orElseThrow();
+        LexicalPreservingPrinter.setup(replacedCompilationUnit);
+        reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
 
         assertThat(reparsedSource).isEqualTo(expectedSource);
         
@@ -265,12 +257,10 @@ public class NodeUtilityTest {
         
         String reparsedSource = null;
 
-        try{
-            Node replacedStatement = NodeUtility.replaceNode(replaceNode, targetNode);
-            CompilationUnit replacedCompilationUnit = replacedStatement.findCompilationUnit().orElseThrow();
-            LexicalPreservingPrinter.setup(replacedCompilationUnit);
-            reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
-        }catch (NoSuchElementException e) {}
+        Node replacedStatement = NodeUtility.replaceNode(replaceNode, targetNode);
+        CompilationUnit replacedCompilationUnit = replacedStatement.findCompilationUnit().orElseThrow();
+        LexicalPreservingPrinter.setup(replacedCompilationUnit);
+        reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
 
         assertThat(reparsedSource).isEqualTo(expectedSource);
 
@@ -312,11 +302,9 @@ public class NodeUtilityTest {
         TokenRange tokenRange = new TokenRange(begin, end);
 
         String reparsedSource = null;
-        try{
-            CompilationUnit insertedCompilationUnit = NodeUtility.insertTokenWithNewLine(tokenRange, targetNode);
-            LexicalPreservingPrinter.setup(insertedCompilationUnit);
-            reparsedSource = LexicalPreservingPrinter.print(insertedCompilationUnit);
-        }catch (NoSuchElementException e) {}
+        CompilationUnit insertedCompilationUnit = NodeUtility.insertTokenWithNewLine(tokenRange, targetNode);
+        LexicalPreservingPrinter.setup(insertedCompilationUnit);
+        reparsedSource = LexicalPreservingPrinter.print(insertedCompilationUnit);
 
         assertThat(reparsedSource).isEqualTo(expectedSource);
 

@@ -101,7 +101,7 @@ public class NodeUtility {
      * @param node コピー元のインスタンス
      * @return パースし直したnode
      */
-    public static Node deepCopyByReparse(Node node){
+    public static Node deepCopyByReparse(Node node) {
         CompilationUnit compilationUnit = node.findCompilationUnit().orElseThrow();
 
         LexicalPreservingPrinter.setup(compilationUnit);
@@ -124,7 +124,7 @@ public class NodeUtility {
      * @param nextNode 挿入するノードの後ろのノード
      * @return 挿入したノード
      */
-    public static Node insertNodeBetweenNodes (Node nodeToInsert, Node previousNode, Node nextNode) throws NoSuchElementException{
+    public static Node insertNodeBetweenNodes (Node nodeToInsert, Node previousNode, Node nextNode) {
         Node copiedAfterNode = NodeUtility.deepCopyByReparse(nextNode);
 
         JavaToken beginTokenOfAfter = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
@@ -161,7 +161,7 @@ public class NodeUtility {
      * @param targetNode 挿入するノードの後ろのノード
      * @return 挿入したノード
      */
-    public static Node insertNodeWithNewLine(Node nodeToInsert, Node targetNode) throws NoSuchElementException{
+    public static Node insertNodeWithNewLine(Node nodeToInsert, Node targetNode) {
         Node copiedAfterNode = NodeUtility.deepCopyByReparse(targetNode);
 
         JavaToken beginTokenOfAfter = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
@@ -203,7 +203,7 @@ public class NodeUtility {
      * @param targetNode 挿入するノードの後ろのノード
      * @return 挿入したノード
      */
-    public static Node insertNodeInOneLine(Node nodeToInsert, Node targetNode) throws NoSuchElementException{
+    public static Node insertNodeInOneLine(Node nodeToInsert, Node targetNode) {
         Node copiedAfterNode = NodeUtility.deepCopyByReparse(targetNode);
 
         JavaToken beginTokenOfAfter = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
@@ -233,7 +233,7 @@ public class NodeUtility {
      * @param originalNode 置換される前のノード
      * @return 置換後のASTノード
      */
-    public static Node replaceNode(Node nodeToReplace, Node targetNode) throws NoSuchElementException{
+    public static Node replaceNode(Node nodeToReplace, Node targetNode) {
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
 
         JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
@@ -278,7 +278,7 @@ public class NodeUtility {
      * @param targetNode 
      * @return
      */
-    public static CompilationUnit insertTokenWithNewLine(TokenRange tokenRange, Node targetNode) throws NoSuchElementException{
+    public static CompilationUnit insertTokenWithNewLine(TokenRange tokenRange, Node targetNode) {
         Node copiedAfterNode = NodeUtility.deepCopyByReparse(targetNode);
 
         JavaToken beginTokenOfAfter = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
@@ -320,7 +320,7 @@ public class NodeUtility {
      * @param beginLine 探したいノードの最初の行番号
      * @return 見つけたノード
      */
-    public static Node findNodeInCompilationUnitByLine(CompilationUnit compilationUnit, Node node, Range range){
+    public static Node findNodeInCompilationUnitByLine(CompilationUnit compilationUnit, Node node, Range range) {
         List<Node> nodes = NodeUtility.getAllDescendantNodes(compilationUnit);
         Node newNode = nodes.stream().filter(n -> {
             return n.equals(node) && n.getRange().orElseThrow().begin.line == range.begin.line;
@@ -333,7 +333,7 @@ public class NodeUtility {
      * @param compilationUnit パースし直すcompilationUnit
      * @return パースし直したcompilationUnit
      */
-    public static CompilationUnit reparseCompilationUnit(CompilationUnit compilationUnit){
+    public static CompilationUnit reparseCompilationUnit(CompilationUnit compilationUnit) {
         LexicalPreservingPrinter.setup(compilationUnit);
         String source = LexicalPreservingPrinter.print(compilationUnit);
         return JavaParser.parse(source);
