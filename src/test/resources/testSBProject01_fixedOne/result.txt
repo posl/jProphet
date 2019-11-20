@@ -1,0 +1,5 @@
+H C NP: text の null 値を利用しています。testSBProject01.App2.GetGreeting()  参照外しをした箇所 App2.java:[line 14]
+M B Nm: メソッド名 testSBProject01.App2.GetGreeting() は，小文字から始まっていません。  該当箇所 App2.java:[lines 13-20]
+M B OS: testSBProject01.App2.GetGreeting() は，ストリームのクローズに失敗するかもしれません。  該当箇所 App2.java:[line 17]
+H D DLS: $L2 への無効な代入です。testSBProject01.App2.GetGreeting()  該当箇所 App2.java:[line 17]
+M X OBL: testSBProject01.App2.GetGreeting() は，java.io.InputStream のクリーンアップに失敗するかもしれません。  App2.java:[line 17] で作成されたリソースのクリーンアップが行われていない

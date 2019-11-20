@@ -19,6 +19,7 @@
     <SrcDir>/Users/asada_mac/jprophet/src/test/resources/testSBProject01/src/main/java/testSBProject01/App.java</SrcDir>
     <SrcDir>/Users/asada_mac/jprophet/src/test/resources/testSBProject01/src/main/java/testSBProject01/App2.java</SrcDir>
   </Project>
+
   <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="1" rank="15" abbrev="DLS" category="STYLE">
     <Class classname="testSBProject01.App2">
       <SourceLine classname="testSBProject01.App2" start="11" end="25" sourcefile="App2.java" sourcepath="testSBProject01/App2.java"/>
@@ -52,6 +53,7 @@
     <LocalVariable name="text" register="1" pc="5" role="LOCAL_VARIABLE_VALUE_OF"/>
     <SourceLine classname="testSBProject01.App2" start="14" end="14" startBytecode="6" endBytecode="6" sourcefile="App2.java" sourcepath="testSBProject01/App2.java" role="SOURCE_LINE_DEREF"/>
   </BugInstance>
+
   <BugInstance type="OBL_UNSATISFIED_OBLIGATION" priority="2" rank="20" abbrev="OBL" category="EXPERIMENTAL">
     <Class classname="testSBProject01.App2">
       <SourceLine classname="testSBProject01.App2" start="11" end="25" sourcefile="App2.java" sourcepath="testSBProject01/App2.java"/>
@@ -68,6 +70,7 @@
     <SourceLine classname="testSBProject01.App2" start="20" end="20" startBytecode="38" endBytecode="38" sourcefile="App2.java" sourcepath="testSBProject01/App2.java" role="SOURCE_LINE_PATH_CONTINUES"/>
     <String value="{InputStream x 1}" role="STRING_REMAINING_OBLIGATIONS"/>
   </BugInstance>
+
   <BugInstance type="OS_OPEN_STREAM" priority="2" rank="16" abbrev="OS" category="BAD_PRACTICE">
     <Class classname="testSBProject01.App2">
       <SourceLine classname="testSBProject01.App2" start="11" end="25" sourcefile="App2.java" sourcepath="testSBProject01/App2.java"/>
@@ -80,6 +83,21 @@
     </Type>
     <SourceLine classname="testSBProject01.App2" start="17" end="17" startBytecode="17" endBytecode="17" sourcefile="App2.java" sourcepath="testSBProject01/App2.java"/>
   </BugInstance>
+
+    <BugInstance type="OS_OPEN_STREAM" priority="2" rank="16" abbrev="OS" category="BAD_PRACTICE">
+    <Class classname="testSBProject01.App2Test">
+      <SourceLine classname="testSBProject01.App2Test" start="11" end="25" sourcefile="App2Test.java" sourcepath="testSBProject01/App2Test.java"/>
+    </Class>
+    <Method classname="testSBProject01.App2Test" name="GetGreeting" signature="()Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="testSBProject01.App2Test" start="13" end="20" startBytecode="0" endBytecode="18" sourcefile="App2Test.java" sourcepath="testSBProject01/App2Test.java"/>
+    </Method>
+    <Type descriptor="Ljava/io/InputStream;" role="TYPE_CLOSEIT">
+      <SourceLine classname="java.io.InputStream" start="50" end="775" sourcefile="InputStream.java" sourcepath="java/io/InputStream.java"/>
+    </Type>
+    <SourceLine classname="testSBProject01.App2Test" start="17" end="17" startBytecode="17" endBytecode="17" sourcefile="App2Test.java" sourcepath="testSBProject01/App2Test.java"/>
+  </BugInstance>
+
+
   <Errors errors="0" missingClasses="0"></Errors>
   <FindBugsSummary timestamp="Mon, 28 Oct 2019 11:57:54 +0900" total_classes="3" referenced_classes="25" total_bugs="5" total_size="29" num_packages="1" java_version="12.0.1" vm_version="12.0.1+12" cpu_seconds="3.25" clock_seconds="2.23" peak_mbytes="197.48" alloc_mbytes="512.00" gc_seconds="0.02" priority_2="3" priority_1="2">
     <PackageStats package="testSBProject01" total_bugs="5" total_types="3" total_size="29" priority_2="3" priority_1="2">

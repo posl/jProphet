@@ -27,7 +27,7 @@ public class SpotBugsExecutor {
 
     /**
      * SpotBugs実行クラスの作成
-     * @param resultPath 実行結果のファイル名
+     * @param resultFileName 実行結果のファイル名
      */
     public SpotBugsExecutor(final String resultFileName) {
         this.resultFileName = resultFileName;
@@ -92,11 +92,11 @@ public class SpotBugsExecutor {
      */
     public static void deleteResultDirectory() {
         try {
-			FileUtils.deleteDirectory(new File(resultDir));
-		} catch (IOException e) {
+            FileUtils.deleteDirectory(new File(resultDir));
+        } catch (IOException e) {
             System.err.println(e.getMessage());
-			e.printStackTrace();
-		}
+            e.printStackTrace();
+        }
     }
 
 }
