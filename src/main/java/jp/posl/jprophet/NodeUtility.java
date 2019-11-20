@@ -5,10 +5,7 @@ import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinte
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.JavaToken;
 import com.github.javaparser.Range;
-<<<<<<< HEAD
-=======
 import com.github.javaparser.TokenRange;
->>>>>>> master
 import com.github.javaparser.ast.CompilationUnit;
 
 import java.util.ArrayList;

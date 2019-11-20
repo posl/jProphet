@@ -50,8 +50,8 @@ public class CopyReplaceOperationTest{
      */
     @Test public void testForNumOfRepairCopied(){
         candidates.forEach(System.out::println);
-        LexicalPreservingPrinter.setup(candidates.get(20));
-        String string = LexicalPreservingPrinter.print(candidates.get(20));
+        //LexicalPreservingPrinter.setup(candidates.get(20));
+        //String string = LexicalPreservingPrinter.print(candidates.get(20));
         return;
     }
 
