@@ -1,4 +1,0 @@
-filePath,line,operation,isSuccess,type,numOfOccurredWarning
-huga,4,CopyReplaceOperation,true,NM_METHOD_NAMING_CONVENTION,0
-hoge,6,VariableReplacementOperation,false,NP_ALWAYS_NULL,1
-hoge,6,VariableReplacementOperation,false,NM_METHOD_NAMING_CONVENTION,1

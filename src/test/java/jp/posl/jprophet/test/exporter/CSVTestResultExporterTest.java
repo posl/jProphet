@@ -14,10 +14,12 @@ import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.spotbugs.SpotBugsWarning;
 import jp.posl.jprophet.test.result.SpotBugsTestResult;
 import jp.posl.jprophet.test.result.TestResult;
+import jp.posl.jprophet.test.result.TestResultStore;
 
 
 public class CSVTestResultExporterTest {
 
+    private TestResultStore store;
     private TestResultExporter exporter;
 
     /**
@@ -25,7 +27,8 @@ public class CSVTestResultExporterTest {
      */
     @Before
     public void setUpResult() {
-        this.exporter = new CSVTestResultExporter();
+        this.store = new TestResultStore();
+        this.exporter = new CSVTestResultExporter("result/");
         final List<TestResult> testResults01 = List.of(
             new SpotBugsTestResult(false, new SpotBugsWarning("NM_METHOD_NAMING_CONVENTION", "hoge", 1, 10), 1),
             new SpotBugsTestResult(false, new SpotBugsWarning("NP_ALWAYS_NULL", "hoge", 5, 8), 1)
@@ -47,8 +50,8 @@ public class CSVTestResultExporterTest {
 
 
 
-        exporter.addTestResults(testResults01, patchCandidate01);
-        exporter.addTestResults(testResults02, patchCandidate02);
+        store.addTestResults(testResults01, patchCandidate01);
+        store.addTestResults(testResults02, patchCandidate02);
 
 
     }
@@ -59,7 +62,7 @@ public class CSVTestResultExporterTest {
      */
     @Test
     public void testForWrite() {
-        exporter.write();
+        exporter.export(store);
         //ファイルを生成するだけなので、assertionは使わず実際に生成されたファイルを確認する
 
     }

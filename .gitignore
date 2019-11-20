@@ -21,3 +21,6 @@ build
 
 # Ignore temporary directory
 tmp
+
+# Ignore SpotBugs result file
+.csv

@@ -11,6 +11,7 @@ import org.apache.commons.io.FileUtils;
 
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.result.TestResult;
+import jp.posl.jprophet.test.result.TestResultStore;
 
 
 /**
@@ -18,15 +19,15 @@ import jp.posl.jprophet.test.result.TestResult;
  */
 public class CSVTestResultExporter implements TestResultExporter {
 
-    private final HashMap<TestResult, PatchCandidate> patchResults;
-    private final String resultFilePath = "./result.csv";
+    private final String resultDir;
+    private final String resultFilePath = "result.csv";
 
 
     /**
      * CSVTestResultExporterのコンストラクタ
      */
-    public CSVTestResultExporter() {
-        this.patchResults = new HashMap<TestResult, PatchCandidate>();
+    public CSVTestResultExporter(String resultDir) {
+        this.resultDir = resultDir;
     }
 
 
@@ -34,28 +35,21 @@ public class CSVTestResultExporter implements TestResultExporter {
      * {@inheritDoc}
      */
     @Override
-    public void addTestResults(List<TestResult> testResults, PatchCandidate patch) {
-        for(TestResult testResult : testResults) {
-            patchResults.put(testResult, patch);
-        } 
-    }
+    public void export(TestResultStore resultStore) {
 
+        final File resultDirFile = new File(resultDir);
+        if(!resultDirFile.exists()) {
+            resultDirFile.mkdir();
+        }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void write() {
-
-        final File outputFile = new File(resultFilePath);
+        final File outputFile = new File(resultDir + resultFilePath);
         if(outputFile.exists()) {
-            System.out.println(outputFile.delete());
-            
+            outputFile.delete();
         }
         final List<String> recodes = new ArrayList<String>();
 
         
-        final List<Map.Entry<TestResult, PatchCandidate>> entryList = new ArrayList<>(patchResults.entrySet());
+        final List<Map.Entry<TestResult, PatchCandidate>> entryList = new ArrayList<>(resultStore.getPatchResults().entrySet());
         
         final String field = "filePath,line,operation," + String.join(",", entryList.get(0).getKey().toStringMap().keySet());
         recodes.add(field);
