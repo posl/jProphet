@@ -272,7 +272,7 @@ public class NodeUtility {
     }
 
     /**
-     * tokenRangeを,指定したノードの直前の行に挿入
+     * tokenRangeを,targetNodeの直前の行に挿入
      * tokenRangeの先頭の1つ前のトークンと,末尾の1つ後ろのトークンがnullでないとエラーが起きる
      * @param tokenRange beginの一つ前と,endの1つ後がnullであるtokenRange
      * @param targetNode 
