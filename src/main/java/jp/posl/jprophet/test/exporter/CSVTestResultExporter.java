@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.result.TestResult;
+import jp.posl.jprophet.test.result.TestResultStore;
 
 
 /**

@@ -7,7 +7,7 @@
 bin
 *.code-workspace
 .DS_Store
-result
+/result
 temp
 tmp
 

@@ -1,4 +1,4 @@
-package jp.posl.jprophet.test.exporter;
+package jp.posl.jprophet.test.result;
 
 import java.util.HashMap;
 import java.util.List;
