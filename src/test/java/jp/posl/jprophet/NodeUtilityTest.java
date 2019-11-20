@@ -37,9 +37,6 @@ public class NodeUtilityTest {
             .append("       String la = \"b\";\n")
             .append("       la = \"hoge\";\n")
             .append("       ld = \"huga\";\n")
-            //.append("       if (true){\n")
-            //.append("           la = \"b\";\n")
-            //.append("       }\n")
             .append("   }\n")
             .append("}\n")
             .toString();
@@ -283,20 +280,20 @@ public class NodeUtilityTest {
         
         Node targetNode = nodeList.get(2);
 
-        JavaToken begin = new JavaToken(34);
-        JavaToken end = new JavaToken(95);
+        JavaToken begin = new JavaToken(JavaToken.Kind.IF.getKind());
+        JavaToken end = new JavaToken(JavaToken.Kind.RBRACE.getKind());
 
         begin.insertAfter(end);
-        begin.insertAfter(new JavaToken(98));
-        begin.insertAfter(new JavaToken(88, "\"p\""));
-        begin.insertAfter(new JavaToken(102));
-        begin.insertAfter(new JavaToken(89, "la"));
-        begin.insertAfter(new JavaToken(1));
-        begin.insertAfter(new JavaToken(94));
-        begin.insertAfter(new JavaToken(93));
-        begin.insertAfter(new JavaToken(59));
-        begin.insertAfter(new JavaToken(92));
-        begin.insertAfter(new JavaToken(1));
+        begin.insertAfter(new JavaToken(JavaToken.Kind.SEMICOLON.getKind()));
+        begin.insertAfter(new JavaToken(JavaToken.Kind.STRING_LITERAL.getKind(), "\"p\""));
+        begin.insertAfter(new JavaToken(JavaToken.Kind.ASSIGN.getKind()));
+        begin.insertAfter(new JavaToken(JavaToken.Kind.IDENTIFIER.getKind(), "la"));
+        begin.insertAfter(new JavaToken(JavaToken.Kind.SPACE.getKind()));
+        begin.insertAfter(new JavaToken(JavaToken.Kind.LBRACE.getKind()));
+        begin.insertAfter(new JavaToken(JavaToken.Kind.RPAREN.getKind()));
+        begin.insertAfter(new JavaToken(JavaToken.Kind.TRUE.getKind()));
+        begin.insertAfter(new JavaToken(JavaToken.Kind.LPAREN.getKind()));
+        begin.insertAfter(new JavaToken(JavaToken.Kind.SPACE.getKind()));
 
         TokenRange tokenRange = new TokenRange(begin, end);
         CompilationUnit insertedCompilationUnit = NodeUtility.insertTokenWithNewLine(tokenRange, targetNode);
