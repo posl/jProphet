@@ -1,4 +1,4 @@
-package jp.posl.jprophet.test;
+package jp.posl.jprophet.test.executor;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import org.junit.runner.JUnitCore;
 
 import jp.posl.jprophet.project.Project;
+import jp.posl.jprophet.test.result.TestResult;
+import jp.posl.jprophet.test.result.UnitTestResult;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
 
@@ -16,7 +18,7 @@ import java.io.File;
 /**
  *  コード修正後のプロジェクトに対してテスト実行を行う
  */
-public class TestExecutor {
+public class UnitTestExecutor implements TestExecutor {
 
     private ProjectBuilder builder;
     private MemoryClassLoader loader;
@@ -31,7 +33,7 @@ public class TestExecutor {
      * コンストラクタ
      * 
      */
-    public TestExecutor() {
+    public UnitTestExecutor() {
         this.builder = new ProjectBuilder();
         this.loader = null;
     }
@@ -42,17 +44,17 @@ public class TestExecutor {
      * @param config 対象プロジェクトの設定
      * @return 全てのテスト実行が通ったかどうか
      */
-
-    public boolean run(RepairConfiguration config)  {
+    @Override
+    public List<TestResult> exec(RepairConfiguration config)  {
         try {
             builder.build(config);
             getClassLoader(config.getBuildPath());
             testClasses = loadTestClass(config.getTargetProject());
-            return runAllTestClass(testClasses);
+            return List.of(new UnitTestResult(runAllTestClass(testClasses)));
         }
         catch (MalformedURLException | ClassNotFoundException e) {
             System.err.println(e.getMessage());
-            return false;
+            return List.of(new UnitTestResult(false));
         }
     }
 

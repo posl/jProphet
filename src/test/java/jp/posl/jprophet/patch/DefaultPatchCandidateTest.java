@@ -12,12 +12,15 @@ import com.github.javaparser.ast.Node;
 import org.junit.Before;
 import org.junit.Test;
 
+import jp.posl.jprophet.operation.VariableReplacementOperation;
+
 
 public class DefaultPatchCandidateTest {
     private PatchCandidate patchCandidate;
     private String filePath = "src/test/resources/test01.java";
     private CompilationUnit compilationUnit;
     private String fqn = "test01";
+    private String operation = "VariableReplacementOperation";
 
     @Before public void setUp() {
         try {
@@ -29,7 +32,7 @@ public class DefaultPatchCandidateTest {
             return;
         }
         Node node = compilationUnit.findRootNode().getChildNodes().get(0).getChildNodes().get(2);
-        this.patchCandidate = new DefaultPatchCandidate(node, node.findCompilationUnit().get(), filePath, fqn);
+        this.patchCandidate = new DefaultPatchCandidate(node, node.findCompilationUnit().get(), filePath, fqn, VariableReplacementOperation.class);
     }
 
     /**
@@ -66,6 +69,12 @@ public class DefaultPatchCandidateTest {
         CompilationUnit actualCompilationUnit = this.patchCandidate.getCompilationUnit();
         CompilationUnit expectedCompilationUnit = this.compilationUnit;
         assertThat(actualCompilationUnit).isEqualTo(expectedCompilationUnit);
+    }
+
+    @Test public void testForGetAppliedOperation() {
+        String actualAppliedOperation = this.patchCandidate.getAppliedOperation();
+        String expectedAppliedOperation = this.operation;
+        assertThat(actualAppliedOperation).isEqualTo(expectedAppliedOperation);
     }
 
 }
