@@ -20,6 +20,7 @@ public class NodeUtilityTest {
 
     private String sourceCode;
     private String sourceCode2;
+    private NodeList<Statement> nodeList;
     /**
      * 入力用のソースコードからNodeリストを生成
      */
@@ -41,6 +42,11 @@ public class NodeUtilityTest {
             .append("   }\n")
             .append("}\n")
             .toString();
+
+        CompilationUnit compilationUnit = JavaParser.parse(sourceCode2);
+        
+        BlockStmt block = (BlockStmt)compilationUnit.getChildNodes().get(0).getChildNodes().get(2).getChildNodes().get(4);
+        this.nodeList = block.getStatements();
     }
 
     /**
@@ -100,18 +106,17 @@ public class NodeUtilityTest {
             .append("   }\n")
             .append("}\n")
             .toString();
-        
-        CompilationUnit compilationUnit = JavaParser.parse(sourceCode2);
-        
-        BlockStmt block = (BlockStmt)compilationUnit.getChildNodes().get(0).getChildNodes().get(2).getChildNodes().get(4);
-        NodeList<Statement> nodeList = block.getStatements();
 
+        Node nodeToInsert = nodeList.get(0); //String la = "b";
+        Node previousNode = nodeList.get(1); //la = "hoge";
+        Node nextNode = nodeList.get(2); //ld = "huga";
+        
         String reparsedSource = null;
         String reparsedSource2 = null;
 
         try{
-            Node insertNode = NodeUtility.insertNodeBetweenNodes(nodeList.get(0), nodeList.get(1),nodeList.get(2));
-            Node insertNode2 = NodeUtility.insertNodeWithNewLine(nodeList.get(0), nodeList.get(2));
+            Node insertNode = NodeUtility.insertNodeBetweenNodes(nodeToInsert, previousNode, nextNode);
+            Node insertNode2 = NodeUtility.insertNodeWithNewLine(nodeToInsert, nextNode);
             CompilationUnit insertedCompilationUnit = insertNode.findCompilationUnit().orElseThrow();
             CompilationUnit insertedCompilationUnit2 = insertNode2.findCompilationUnit().orElseThrow();
             LexicalPreservingPrinter.setup(insertedCompilationUnit);
@@ -143,23 +148,22 @@ public class NodeUtilityTest {
             .append("}\n")
             .toString();
         
-        CompilationUnit compilationUnit = JavaParser.parse(sourceCode2);
-        
-        BlockStmt block = (BlockStmt)compilationUnit.getChildNodes().get(0).getChildNodes().get(2).getChildNodes().get(4);
-        NodeList<Statement> nodeList = block.getStatements();
-        
         String insertStatementSource = new StringBuilder().append("")
             .append("int x = 0;\n")
             .toString();
 
         Statement insertStatement = JavaParser.parseStatement(insertStatementSource);
 
+
+        Node previousNode = nodeList.get(1); //la = "hoge";
+        Node nextNode = nodeList.get(2); //ld = "huga";
+
         String reparsedSource = null;
         String reparsedSource2 = null;
 
         try{
-            Node insertedStatement = NodeUtility.insertNodeBetweenNodes(insertStatement, nodeList.get(1),nodeList.get(2));
-            Node insertedStatement2 = NodeUtility.insertNodeWithNewLine(insertStatement, nodeList.get(2));
+            Node insertedStatement = NodeUtility.insertNodeBetweenNodes(insertStatement, previousNode, nextNode);
+            Node insertedStatement2 = NodeUtility.insertNodeWithNewLine(insertStatement, nextNode);
             CompilationUnit insertedCompilationUnit = insertedStatement.findCompilationUnit().orElseThrow();
             CompilationUnit insertedCompilationUnit2 = insertedStatement2.findCompilationUnit().orElseThrow();
             LexicalPreservingPrinter.setup(insertedCompilationUnit);
@@ -190,16 +194,13 @@ public class NodeUtilityTest {
             .append("}\n")
             .toString();
         
-        CompilationUnit compilationUnit = JavaParser.parse(sourceCode2);
-        
-        BlockStmt block = (BlockStmt)compilationUnit.getChildNodes().get(0).getChildNodes().get(2).getChildNodes().get(4);
-        NodeList<Statement> nodeList = block.getStatements();
-        Node string = nodeList.get(0).getChildNodes().get(0).getChildNodes().get(0).getChildNodes().get(0);
+        Node string = nodeList.get(0).getChildNodes().get(0).getChildNodes().get(0).getChildNodes().get(0); //String
+        Node targetNode = nodeList.get(2); //ld = "huga";
 
         String reparsedSource = null;
 
         try{
-            Node insertNode = NodeUtility.insertNodeInOneLine(string, nodeList.get(2));
+            Node insertNode = NodeUtility.insertNodeInOneLine(string, targetNode);
             CompilationUnit insertedCompilationUnit = insertNode.findCompilationUnit().orElseThrow();
             LexicalPreservingPrinter.setup(insertedCompilationUnit);
             reparsedSource = LexicalPreservingPrinter.print(insertedCompilationUnit);
@@ -225,16 +226,19 @@ public class NodeUtilityTest {
             .append("   }\n")
             .append("}\n")
             .toString();
-        
-        CompilationUnit compilationUnit = JavaParser.parse(sourceCode2);
-        
-        BlockStmt block = (BlockStmt)compilationUnit.getChildNodes().get(0).getChildNodes().get(2).getChildNodes().get(4);
-        NodeList<Statement> nodeList = block.getStatements();
 
-        Node replacedNode = NodeUtility.replaceNode(nodeList.get(0), nodeList.get(2));
-        CompilationUnit replacedCompilationUnit = replacedNode.findCompilationUnit().orElseThrow();
-        LexicalPreservingPrinter.setup(replacedCompilationUnit);
-        String reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
+        String reparsedSource = null;
+
+        Node replaceNode = nodeList.get(0); //String la = "b";
+        Node targetNode = nodeList.get(2); //ld = "huga";
+
+        try{
+            Node replacedNode = NodeUtility.replaceNode(replaceNode, targetNode);
+            CompilationUnit replacedCompilationUnit = replacedNode.findCompilationUnit().orElseThrow();
+            LexicalPreservingPrinter.setup(replacedCompilationUnit);
+            reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
+        }catch (NoSuchElementException e) {}
+
         assertThat(reparsedSource).isEqualTo(expectedSource);
         
         return;
@@ -256,12 +260,8 @@ public class NodeUtilityTest {
             .append("}\n")
             .toString();
         
-        CompilationUnit compilationUnit = JavaParser.parse(sourceCode2);
-        
-        BlockStmt block = (BlockStmt)compilationUnit.getChildNodes().get(0).getChildNodes().get(2).getChildNodes().get(4);
-        NodeList<Statement> nodeList = block.getStatements();
-        Node replaceNode = nodeList.get(1).getChildNodes().get(0).getChildNodes().get(1);
-        Node targetNode = nodeList.get(2).getChildNodes().get(0).getChildNodes().get(1);
+        Node replaceNode = nodeList.get(1).getChildNodes().get(0).getChildNodes().get(1); //"hoge"
+        Node targetNode = nodeList.get(2).getChildNodes().get(0).getChildNodes().get(1); //"huga"
         
         String reparsedSource = null;
 
@@ -292,12 +292,7 @@ public class NodeUtilityTest {
             .append("}\n")
             .toString();
         
-        CompilationUnit compilationUnit = JavaParser.parse(sourceCode2);
-        
-        BlockStmt block = (BlockStmt)compilationUnit.getChildNodes().get(0).getChildNodes().get(2).getChildNodes().get(4);
-        NodeList<Statement> nodeList = block.getStatements();
-        
-        Node targetNode = nodeList.get(2);
+        Node targetNode = nodeList.get(2); //ld = "huga";
 
         JavaToken begin = new JavaToken(JavaToken.Kind.IF.getKind());
         JavaToken end = new JavaToken(JavaToken.Kind.RBRACE.getKind());
