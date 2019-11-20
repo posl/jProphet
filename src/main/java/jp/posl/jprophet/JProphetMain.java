@@ -19,8 +19,8 @@ import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.executor.TestExecutor;
 import jp.posl.jprophet.test.executor.UnitTestExecutor;
 import jp.posl.jprophet.test.result.TestResult;
-import jp.posl.jprophet.test.writer.TestResultWriter;
-import jp.posl.jprophet.test.writer.CSVTestResultWriter;
+import jp.posl.jprophet.test.exporter.TestResultExporter;
+import jp.posl.jprophet.test.exporter.CSVTestResultExporter;
 
 public class JProphetMain {
     public static void main(String[] args) {
@@ -40,7 +40,7 @@ public class JProphetMain {
         final StagedCondGenerator      stagedCondGenerator      = new StagedCondGenerator();
         final TestExecutor             testExecutor             = new UnitTestExecutor();
         final FixedProjectGenerator    fixedProjectGenerator    = new FixedProjectGenerator();
-        final TestResultWriter         testResultWriter         = new CSVTestResultWriter();
+        final TestResultExporter         testResultExporter         = new CSVTestResultExporter();
 
         final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(
             new CondRefinementOperation(),
@@ -52,7 +52,7 @@ public class JProphetMain {
         ));
 
         final JProphetMain jprophet = new JProphetMain();
-        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, plausibilityAnalyzer, patchEvaluator, stagedCondGenerator, testExecutor, fixedProjectGenerator, testResultWriter);
+        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, plausibilityAnalyzer, patchEvaluator, stagedCondGenerator, testExecutor, fixedProjectGenerator, testResultExporter);
         try {
             FileUtils.deleteDirectory(new File(buildDir));
             if(!isRepairSuccess){
@@ -67,7 +67,7 @@ public class JProphetMain {
 
     private boolean run(RepairConfiguration config, FaultLocalization faultLocalization,
             PatchCandidateGenerator patchCandidateGenerator, List<AstOperation> operations, PlausibilityAnalyzer plausibilityAnalyzer, PatchEvaluator patchEvaluator,
-            StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, FixedProjectGenerator fixedProjectGenerator, TestResultWriter testResultWriter
+            StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, FixedProjectGenerator fixedProjectGenerator, TestResultExporter testResultExporter
             ) {
         // フォルトローカライゼーション
         List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
@@ -82,13 +82,13 @@ public class JProphetMain {
         for(PatchCandidate patchCandidate: patchCandidates) {
             Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
             final List<TestResult> results = testExecutor.exec(new RepairConfiguration(config, fixedProject));
-            testResultWriter.addTestResults(results, patchCandidate);
+            testResultExporter.addTestResults(results, patchCandidate);
             if(results.get(0).getIsSuccess()) { //ここが微妙な気がする
-                testResultWriter.write();
+                testResultExporter.write();
                 return true;
             }
         }
-        testResultWriter.write();
+        testResultExporter.write();
         return false;
     }
 }

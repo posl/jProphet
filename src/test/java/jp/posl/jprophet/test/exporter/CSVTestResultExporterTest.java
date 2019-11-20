@@ -1,4 +1,4 @@
-package jp.posl.jprophet.test.writer;
+package jp.posl.jprophet.test.exporter;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -16,16 +16,16 @@ import jp.posl.jprophet.test.result.SpotBugsTestResult;
 import jp.posl.jprophet.test.result.TestResult;
 
 
-public class CSVTestResultWriterTest {
+public class CSVTestResultExporterTest {
 
-    private TestResultWriter writer;
+    private TestResultExporter exporter;
 
     /**
      * テスト結果と修正パッチを準備する
      */
     @Before
     public void setUpResult() {
-        this.writer = new CSVTestResultWriter();
+        this.exporter = new CSVTestResultExporter();
         final List<TestResult> testResults01 = List.of(
             new SpotBugsTestResult(false, new SpotBugsWarning("NM_METHOD_NAMING_CONVENTION", "hoge", 1, 10), 1),
             new SpotBugsTestResult(false, new SpotBugsWarning("NP_ALWAYS_NULL", "hoge", 5, 8), 1)
@@ -47,8 +47,8 @@ public class CSVTestResultWriterTest {
 
 
 
-        writer.addTestResults(testResults01, patchCandidate01);
-        writer.addTestResults(testResults02, patchCandidate02);
+        exporter.addTestResults(testResults01, patchCandidate01);
+        exporter.addTestResults(testResults02, patchCandidate02);
 
 
     }
@@ -59,7 +59,7 @@ public class CSVTestResultWriterTest {
      */
     @Test
     public void testForWrite() {
-        writer.write();
+        exporter.write();
         //ファイルを生成するだけなので、assertionは使わず実際に生成されたファイルを確認する
 
     }

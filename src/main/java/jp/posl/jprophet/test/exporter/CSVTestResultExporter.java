@@ -1,4 +1,4 @@
-package jp.posl.jprophet.test.writer;
+package jp.posl.jprophet.test.exporter;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,16 +16,16 @@ import jp.posl.jprophet.test.result.TestResult;
 /**
  * テスト結果と修正パッチを受け取り、CSVファイルとして書き込みを行うクラス
  */
-public class CSVTestResultWriter implements TestResultWriter {
+public class CSVTestResultExporter implements TestResultExporter {
 
     private final HashMap<TestResult, PatchCandidate> patchResults;
     private final String resultFilePath = "./result.csv";
 
 
     /**
-     * CSVTestResultWriterのコンストラクタ
+     * CSVTestResultExporterのコンストラクタ
      */
-    public CSVTestResultWriter() {
+    public CSVTestResultExporter() {
         this.patchResults = new HashMap<TestResult, PatchCandidate>();
     }
 
