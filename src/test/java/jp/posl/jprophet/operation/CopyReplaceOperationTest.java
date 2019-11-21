@@ -3,122 +3,221 @@ package jp.posl.jprophet.operation;
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
-
-import org.junit.Before;
-
+import com.github.javaparser.ast.Node;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
-
 public class CopyReplaceOperationTest{
     
-    private List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
-    private String source = new StringBuilder().append("")
-    .append("public class A {\n")
-    .append("   private String fa = \"a\";\n")
-    .append("   private void ma(String pa, String pb) {\n")
-    .append("       String la = \"b\";\n")
-    .append("       la = \"hoge\";\n")
-    .append("       if (k == 5) {\n")
-    .append("           k = 5;\n")
-    .append("       }\n")
-    //.append("       this.mb(\"hoge\", \"fuga\");\n")
-    .append("       ld = \"hoge\";\n")
-    .append("   }\n")
-    .append("   private void mb(String a, String b) {\n")
-    .append("   }\n")
-    .append("}\n")
-    .toString();
-
-    @Before public void setUp(){
-        List<Node> nodes = NodeUtility.getAllNodesFromCode(source);
-        for(Node node : nodes){
-            CopyReplaceOperation cr = new CopyReplaceOperation();
-            this.candidates.addAll(cr.exec(node));
-        }
-        return;
-    }
 
     /**
-     * ステートメントコピペ後の修正候補の数のテスト
+     * copiedStatementが置換でき,targetStatementの前にコピペされているかテスト
      */
-    @Test public void testForNumOfRepairCopied(){
-        candidates.forEach(System.out::println);
-        //LexicalPreservingPrinter.setup(candidates.get(20));
-        //String string = LexicalPreservingPrinter.print(candidates.get(20));
-        return;
-    }
+    @Test public void testForStatementCopy(){
+        final String copiedStatement = 
+                "        this.mb(\"hoge\", \"fuga\");\n";
 
-    /**
-     * 修正される対象のステートメントが正しいかテスト
-     */
-    @Test public void testForTargetStatementAfterCopied(){
+        final String targetStatement = 
+                "        la = \"d\";\n";
+        final String beforeCopiedStatement = new StringBuilder().append("")
+            .append("public class A {\n\n")
+            .append("    private String fa = \"a\";\n\n")
+            .append("    private String fb = \"a\";\n\n")
+            .append("    private void ma(String pa, String pb) {\n")
+            .append("        String la = \"b\";\n")
+            .toString();
+
+        final String afterTargetStatement = new StringBuilder().append("")
+            .append("    }\n\n")
+            .append("    private void mb(String a, String b) {\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        final String targetSource = new StringBuilder().append("")
+            .append(beforeCopiedStatement)
+            .append(copiedStatement)
+            .append(targetStatement)
+            .append(afterTargetStatement)
+            .toString();
+
         List<String> expectedTargetSources = new ArrayList<String>();
-        expectedTargetSources.add("int k = 3;");
-        expectedTargetSources.add("if (k == 5) {\n    k = 5;\n}");
-        expectedTargetSources.add("k = 5;");
-        expectedTargetSources.add("this.mb(\"hoge\", \"fuga\");");
-        expectedTargetSources.add("String ld = \"d\";");
+        expectedTargetSources.add("        this.mb(this.fa, \"fuga\");\n");
+        expectedTargetSources.add("        this.mb(\"hoge\", this.fa);\n");
+        expectedTargetSources.add("        this.mb(this.fb, \"fuga\");\n");
+        expectedTargetSources.add("        this.mb(\"hoge\", this.fb);\n");
+        expectedTargetSources.add("        this.mb(la, \"fuga\");\n");
+        expectedTargetSources.add("        this.mb(\"hoge\", la);\n");
+        expectedTargetSources.add("        this.mb(pa, \"fuga\");\n");
+        expectedTargetSources.add("        this.mb(\"hoge\", pa);\n");
+        expectedTargetSources.add("        this.mb(pb, \"fuga\");\n");
+        expectedTargetSources.add("        this.mb(\"hoge\", pb);\n");
 
-        List<String> candidateSources = this.candidates.stream()
-            .map(s -> s.toString())
+        List<String> expectedSources = expectedTargetSources.stream()
+            .map(str -> {
+                return new StringBuilder().append("")
+                    .append(beforeCopiedStatement)
+                    .append(copiedStatement)
+                    .append(str)
+                    .append(targetStatement)
+                    .append(afterTargetStatement)
+                    .toString();
+            })
             .collect(Collectors.toList());
-        
-        //assertThat(candidateSources).containsOnlyElementsOf(expectedTargetSources);
+
+        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
+        List<String> candidateSources = new ArrayList<String>();
+        for(Node node : repairUnits){
+            CopyReplaceOperation cr = new CopyReplaceOperation();
+            candidateSources.addAll(cr.exec(node).stream()
+                .map(cu -> cu.toString())
+                .collect(Collectors.toList())
+            );
+        }
+        assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
         return;
     }
 
     /**
-     * RepairUnitのcompilationUnitが正しく書き換えられているかテスト(14個のうち1つだけ確認)
+     * if文が含まれる場合のテスト
      */
-    @Test public void testForCopiedStatementBeforeTarget(){
-        final String targetStatement = "        this.mb(\"hoge\", \"fuga\");\n";
-        final String copiedStatement = "        int k = 3;\n";
-        final String expectedSource = new StringBuilder().append("")
+    @Test public void testForIfStatementCopy(){
+        final String copiedStatement = 
+                "        la = \"hoge\";\n";
+        final String targetStatement = new StringBuilder().append("")
+            .append("        if (true) {\n")
+            .append("            lb = \"huga\";\n")
+            .append("        }\n")
+            .toString();
+                
+        final String beforeTargetStatement = new StringBuilder().append("")
+            .append("public class A {\n\n")
+            .append("    private String fa = \"a\";\n\n")
+            .append("    private void ma(String pa) {\n")
+            .append("        String la = \"a\";\n")
+            .append("        String lb = \"b\";\n")
+            .toString();
+
+        final String afterTargetStatement = new StringBuilder().append("")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        final String targetSource = new StringBuilder().append("")
+            .append(beforeTargetStatement)
+            .append(copiedStatement)
+            .append(targetStatement)
+            .append(afterTargetStatement)
+            .toString();
+
+
+        List<String> expectedTargetSources = new ArrayList<String>();
+        expectedTargetSources.add("        la = la;\n");
+        expectedTargetSources.add("        la = lb;\n");
+        expectedTargetSources.add("        la = this.fa;\n");
+        expectedTargetSources.add("        la = pa;\n");
+
+        List<String> expectedSources = expectedTargetSources.stream()
+            .map(str -> {
+                return new StringBuilder().append("")
+                    .append(beforeTargetStatement)
+                    .append(copiedStatement)
+                    .append(str)
+                    .append(targetStatement)
+                    .append(afterTargetStatement)
+                    .toString();
+            })
+            .collect(Collectors.toList());
+
+        expectedSources.addAll(expectedTargetSources.stream()
+            .map(str -> {
+                return new StringBuilder().append("")
+                    .append(beforeTargetStatement)
+                    .append(copiedStatement)
+                    .append("        if (true) {\n")
+                    .append("    " + str)
+                    .append("            lb = \"huga\";\n")
+                    .append("        }\n")
+                    .append(afterTargetStatement)
+                    .toString();
+            })
+            .collect(Collectors.toList()));
+
+        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
+        List<String> candidateSources = new ArrayList<String>();
+        for(Node node : repairUnits){
+            CopyReplaceOperation cr = new CopyReplaceOperation();
+            candidateSources.addAll(cr.exec(node).stream()
+                .map(ru -> ru.toString())
+                .collect(Collectors.toList())
+            );
+        }
+        assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
+        return;
+    }
+
+    /**
+     * クラス外のステートメントに対して正常に動作するかテスト
+     */
+    @Test public void testForWhenThereIsNoCopy(){
+        final String sourceThatHasNothingToReplace = new StringBuilder().append("")
+        .append("import java.util.List;\n")
+        .toString();
+
+        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(sourceThatHasNothingToReplace);
+        List<Node> candidates = new ArrayList<Node>();
+        for(Node node : repairUnits){
+            CopyReplaceOperation vr = new CopyReplaceOperation();
+            candidates.addAll(vr.exec(node));
+        }
+
+        assertThat(candidates.size()).isZero();
+        return;
+    }
+
+    /**
+     * 生成した修正パッチ候補に元のステートメントと同じものが含まれていないことをテスト
+     */
+    @Test public void testThatCandidatesDoesNotContainOriginal(){
+        final String targetStatement = 
+                "       la = lb;\n"; 
+
+        final String source = new StringBuilder().append("")
         .append("public class A {\n\n")
-        .append("    private String fa = \"a\";\n\n")
-        .append("    private String fb = \"a\";\n\n")
-        .append("    private void ma(String pa, String pb) {\n")
-        .append("        String la = \"b\";\n")
-        .append("        int k = 3;\n")
-        .append("        if (k == 5) {\n")
-        .append("            k = 5;\n")
-        .append("        }\n")
-        .append(copiedStatement)
+        .append("    private void ma() {\n")
+        .append("        String la = \"a\";\n")
+        .append("        String lb = \"b\";\n")
         .append(targetStatement)
-        .append("        String ld = \"d\";\n")
-        .append("    }\n\n")
-        .append("    private void mb(String a, String b) {\n")
         .append("    }\n")
         .append("}\n")
         .toString();
 
-        //assertThat(candidates.get(4).getCompilationUnit().toString()).isEqualTo(expectedSource);
-        return;
-    }
-
-    /**
-     * メソッド外のステートメントに対して正常に動作するかテスト
-     */
-    @Test public void testForWhenThereIsNoCopy(){
-        final String sourceThatHasNothingToCopy = new StringBuilder().append("")
-        .append("import java.util.List;\n")
+        final String expectedTargetStatement = 
+                "        la = lb;\n"; 
+        final String expectedSource = new StringBuilder().append("")
+        .append("public class A {\n\n")
+        .append("    private void ma() {\n")
+        .append("        String la = \"a\";\n")
+        .append("        String lb = \"b\";\n")
+        .append(expectedTargetStatement) 
+        .append("    }\n")
+        .append("}\n")
         .toString();
 
-        List<Node> nodes = NodeUtility.getAllNodesFromCode(sourceThatHasNothingToCopy);
-        List<Node> candidates = new ArrayList<Node>();
-        for(Node node : nodes){
+        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(source);
+        List<String> candidateSources = new ArrayList<String>();
+        for(Node node : repairUnits){
             CopyReplaceOperation cr = new CopyReplaceOperation();
-            candidates.addAll(cr.exec(node));
+            candidateSources.addAll(cr.exec(node).stream()
+                .map(ru -> ru.toString())
+                .collect(Collectors.toList())
+            );
         }
 
-        //assertThat(candidates.size()).isZero();
+        assertThat(candidateSources).doesNotContain(expectedSource);
         return;
     }
 }

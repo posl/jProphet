@@ -21,7 +21,9 @@ import jp.posl.jprophet.NodeUtility;
  */
 public class CopyReplaceOperation implements AstOperation{
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<CompilationUnit> exec(Node targetNode){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
@@ -29,8 +31,7 @@ public class CopyReplaceOperation implements AstOperation{
             //修正対象のステートメントの属するメソッドノードを取得
             //メソッド内のステートメント(修正対象のステートメントより前のもの)を収集
             List<Statement> statements = collectLocalStatements(targetNode);
-            if (statements.size() != 0){
-                //candidates = copyStatementBeforeTarget(statements, newRepairUnit);
+            if (statements.size() > 0){
                 for (Statement statement : statements){
                     candidates.addAll(copyStatementBeforeTarget(statement, targetNode));
                 }
@@ -41,9 +42,9 @@ public class CopyReplaceOperation implements AstOperation{
     }
 
     /**
-     * targetNodeを含むメソッド内のステートメントで,targetNodeよりも上にあるものを取得
-     * @param targetNode ターゲットノード
-     * @return ステートメントのリスト
+     * targetNodeを含むメソッド内のステートメントで,targetNodeよりも上の行にあるものを収集
+     * @param targetNode 修正対象のノード
+     * @return 収集したステートメントのリスト
      */
     private List<Statement> collectLocalStatements(Node targetNode){
         MethodDeclaration methodNode;
@@ -65,19 +66,19 @@ public class CopyReplaceOperation implements AstOperation{
     }
 
     /**
-     * targetNodeの直前にstatementをコピペしてrepairUnitを生成してそのリストを返す
-     * @param statements コピペするステートメントのリスト
-     * @param repairUnit targetNodeを含むrepairUnit
-     * @return repairUnitのリスト
+     * targetNodeの直前にstatementをコピペしてVariableReplacementで変数を置換してできたcompilationUnitを返す
+     * @param statement コピペするステートメント
+     * @param targetNode statementがコピペされる直後の行のノード
+     * @return compilationUnitのリスト
      */
     private List<CompilationUnit> copyStatementBeforeTarget(Statement statement, Node targetNode){
         Node copiedNode = NodeUtility.insertNodeWithNewLine(statement, targetNode);
         List<Node> copiedNodeDescendants = NodeUtility.getAllDescendantNodes(copiedNode);
 
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
-        for (Node n : copiedNodeDescendants){
+        for (Node descendant : copiedNodeDescendants){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            List<CompilationUnit> copiedNodeList = vr.exec(n);
+            List<CompilationUnit> copiedNodeList = vr.exec(descendant);
             candidates.addAll(copiedNodeList);
         }
         return candidates;
