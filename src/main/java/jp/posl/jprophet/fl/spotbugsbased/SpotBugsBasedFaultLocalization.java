@@ -61,5 +61,12 @@ public class SpotBugsBasedFaultLocalization implements FaultLocalization {
         return manualSpecification.exec();
 
     }
+
+    /**
+     * @return the spotbugsResultFileName
+     */
+    public static String getSpotBugsResultFilePath() {
+        return SpotBugsExecutor.getResultFilePath(spotbugsResultFileName);
+    }
     
 }
