@@ -24,7 +24,6 @@ public class SpotBugsBasedFaultLocalization implements FaultLocalization {
     private final static int suspiciousnessValue = 1;
 
     
-
     /**
      * SpotBugsの結果によって疑惑値を決定するクラスの作成
      * @param config 対象プロジェクトのconfig
@@ -34,7 +33,6 @@ public class SpotBugsBasedFaultLocalization implements FaultLocalization {
     }
 
 
-
     /**
      * SpotBugsの結果による疑惑値を返す
      * @return 疑惑値のリスト
@@ -42,12 +40,12 @@ public class SpotBugsBasedFaultLocalization implements FaultLocalization {
     @Override
     public List<Suspiciousness> exec() {
 
-        final SpotBugsExecutor executor = new SpotBugsExecutor(spotbugsResultFileName);
+        final SpotBugsExecutor executor = new SpotBugsExecutor();
         final SpotBugsResultXMLReader reader = new SpotBugsResultXMLReader();
         final List<SpecificationStrategy> strategies = new ArrayList<SpecificationStrategy>();
 
-        executor.exec(config);
-        final List<SpotBugsWarning> warnings =  reader.readAllSpotBugsWarnings(executor.getResultFilePath(), config.getTargetProject());
+        executor.exec(config, spotbugsResultFileName);
+        final List<SpotBugsWarning> warnings =  reader.readAllSpotBugsWarnings(SpotBugsExecutor.getResultFilePath(spotbugsResultFileName), config.getTargetProject());
         for (SpotBugsWarning warning : warnings) {
             int start = warning.getStartLine();
             int end = warning.getEndLine();
