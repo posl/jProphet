@@ -1,5 +1,6 @@
 package jp.posl.jprophet;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,6 +17,8 @@ import jp.posl.jprophet.project.GradleProject;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +52,17 @@ public class SpotBugsIntegrationTest {
 
     @Test
     public void testForRoughConstantValue() {
-
+        String project = "src/test/resources/testSBProject02";
+        runjProphet(project);
+        
+        File file = new File("result/result.csv");
+        assertThat(file.exists()).isTrue();
+        try {
+            FileUtils.deleteDirectory(new File("./result/"));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 
@@ -61,12 +74,22 @@ public class SpotBugsIntegrationTest {
         final PlausibilityAnalyzer     plausibilityAnalyzer     = new PlausibilityAnalyzer();  
         final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
         final StagedCondGenerator      stagedCondGenerator      = new StagedCondGenerator();
-        final TestExecutor             testExecutor             = new SpotBugsTestExecutor("");
+        final TestExecutor             testExecutor             = new SpotBugsTestExecutor(SpotBugsBasedFaultLocalization.getSpotBugsResultFilePath());
         final FixedProjectGenerator    fixedProjectGenerator    = new FixedProjectGenerator();
         final TestResultStore          testResultStore          = new TestResultStore();
         final TestResultExporter       testResultExporter       = new CSVTestResultExporter(resultDir);
+        final JProphetMain jprophet = new JProphetMain();
+        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, plausibilityAnalyzer, patchEvaluator, stagedCondGenerator, testExecutor, fixedProjectGenerator, testResultStore, testResultExporter);
+        try {
+            FileUtils.deleteDirectory(new File(buildDir));
+            if(!isRepairSuccess){
+                FileUtils.deleteDirectory(new File(resultDir));
+
+            }
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
-
-
 
 }
