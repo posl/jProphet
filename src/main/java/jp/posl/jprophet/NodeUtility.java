@@ -47,8 +47,8 @@ public class NodeUtility {
      * @return ディープコピーによって生成されたインスタンス
      */
     public static Node deepCopy(Node node) {
-        CompilationUnit cu = node.findCompilationUnit().get();                                                                                         
-
+        CompilationUnit cu = node.findCompilationUnit().get();
+        
         CompilationUnit newCu = cu.clone();
         List<Node> nodes = NodeUtility.getAllDescendantNodes(newCu);
         Node newNode = nodes.stream().filter(n -> {
