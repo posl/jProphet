@@ -38,8 +38,8 @@ public class ConditionGenerator {
         vars.addAll(collector.collectLocalVarsDeclared(targetCondition));
         final List<Parameter> parameters = collector.collectParameters(targetCondition);
         
-        final List<String> booleanVarNames = this.collectBooleanNamesFrom(vars, parameters);
-        final List<String> allVarNames = this.collectNamesFrom(vars, parameters);
+        final List<String> booleanVarNames = this.collectBooleanNames(vars, parameters);
+        final List<String> allVarNames = this.collectNames(vars, parameters);
 
         final List<Expression> newConditions = new ArrayList<Expression>();
         booleanVarNames.stream()
@@ -68,7 +68,7 @@ public class ConditionGenerator {
      * @param parameters 検索対象の仮引数
      * @return Boolean型変数の名前のリスト
      */
-    private List<String> collectBooleanNamesFrom(List<VariableDeclarator> vars, List<Parameter> parameters) {
+    private List<String> collectBooleanNames(List<VariableDeclarator> vars, List<Parameter> parameters) {
         final List<String> booleanVarNames = new ArrayList<String>();
         vars.stream()
             .filter(v -> v.getTypeAsString().equals("boolean"))
@@ -88,7 +88,7 @@ public class ConditionGenerator {
      * @param parameters 仮引数
      * @return 変数の名前のリスト
      */
-    private List<String> collectNamesFrom(List<VariableDeclarator> vars, List<Parameter> parameters) {
+    private List<String> collectNames(List<VariableDeclarator> vars, List<Parameter> parameters) {
         final List<String> names = new ArrayList<String>();
         vars.stream()
             .map(v -> v.getNameAsString())
@@ -99,12 +99,26 @@ public class ConditionGenerator {
         return names;
     }
 
-    private BinaryExpr replaceWithBinaryExpr(Expression replaceThisExpression, String leftExprName, Expression rightExpr, Operator operator){
+    /**
+     * BinaryExprで置換 
+     * @param exprToReplace 置換される元のExpression
+     * @param leftExprName BinarExprの左辺の変数名
+     * @param rightExpr BinarExprの右辺の変数名
+     * @param operator BinaryExprの演算子
+     * @return 置換後のBinaryExpr
+     */
+    private BinaryExpr replaceWithBinaryExpr(Expression exprToReplace, String leftExprName, Expression rightExpr, Operator operator){
         final BinaryExpr newBinaryExpr = new BinaryExpr(new NameExpr(leftExprName), rightExpr, operator);
-        final BinaryExpr insertedBinaryExpr = (BinaryExpr)this.replaceWithExpr(replaceThisExpression, newBinaryExpr);
+        final BinaryExpr insertedBinaryExpr = (BinaryExpr)this.replaceWithExpr(exprToReplace, newBinaryExpr);
         return insertedBinaryExpr;
     }
 
+    /**
+     * Expressionを置換 
+     * @param exprToReplace 置換される元のExpression
+     * @param exprToReplaceWith 新しいExpression
+     * @return 置換後の新しいExpression
+     */
     private Expression replaceWithExpr(Expression exprToReplace, Expression exprToReplaceWith){
         final Expression newCondition = (Expression)NodeUtility.deepCopyByReparse(exprToReplace); 
         final Expression insertedExpr = (Expression)NodeUtility.replaceNode(JavaParser.parseExpression(exprToReplaceWith.toString()), newCondition);
