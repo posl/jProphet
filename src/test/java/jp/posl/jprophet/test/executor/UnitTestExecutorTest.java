@@ -1,4 +1,4 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.test.executor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,11 +9,11 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;
-import jp.posl.jprophet.test.TestExecutor;
 
-public class TestExecutorTest {
+public class UnitTestExecutorTest {
 
     private TestExecutor testExecutor;
     private Project correctProject;
@@ -32,7 +32,7 @@ public class TestExecutorTest {
         this.correctConfig = new RepairConfiguration(buildDir.getPath(), null, correctProject);
         this.errorProject = new GradleProject("src/test/resources/testGradleProject02");
         this.errorConfig = new RepairConfiguration(buildDir.getPath(), null, errorProject);
-        this.testExecutor = new TestExecutor();
+        this.testExecutor = new UnitTestExecutor();
     }
 
     /**
@@ -41,7 +41,7 @@ public class TestExecutorTest {
     @Test
     public void testForExecute() {
 
-        boolean isSuccess01 = this.testExecutor.run(correctConfig);
+        boolean isSuccess01 = this.testExecutor.exec(correctConfig).get(0).getIsSuccess();
         assertThat(isSuccess01).isTrue();
         try {
             FileUtils.deleteDirectory(this.buildDir);
@@ -50,7 +50,7 @@ public class TestExecutorTest {
             e.printStackTrace();
         }
 
-        boolean isSuccess02 = this.testExecutor.run(errorConfig);
+        boolean isSuccess02 = this.testExecutor.exec(errorConfig).get(0).getIsSuccess();
         assertThat(isSuccess02).isFalse();
         try {
             FileUtils.deleteDirectory(this.buildDir);

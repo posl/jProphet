@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import jp.posl.jprophet.operation.AstOperation;
 import jp.posl.jprophet.patch.DefaultPatchCandidate;
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.project.GradleProject;
@@ -68,7 +69,7 @@ public class FixedProjectGeneratorTest{
         Node targetNodeBeforeFix = compilationUnit.findRootNode().getChildNodes().get(1);
         Node node = NodeUtility.deepCopy(targetNodeBeforeFix);
         ((ClassOrInterfaceDeclaration)node).setModifier(Modifier.STATIC, true);
-        PatchCandidate patchCandidate = new DefaultPatchCandidate(targetNodeBeforeFix, node.findCompilationUnit().get(), this.targetFilePath, this.targetFileFqn);
+        PatchCandidate patchCandidate = new DefaultPatchCandidate(targetNodeBeforeFix, node.findCompilationUnit().get(), this.targetFilePath, this.targetFileFqn, AstOperation.class);
         this.fixedProjectGenerator.exec(config, patchCandidate);
        
     }
