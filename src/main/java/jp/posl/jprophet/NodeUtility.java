@@ -139,6 +139,7 @@ public final class NodeUtility {
      * @param nodeToInsert 挿入するノード
      * @param targetNode 挿入するノードの後ろのノード
      * @return 挿入したノード
+     * @exception NoSuchElementException "new Expression()"などで生成したTokenRangeなどが設定されていないノードを渡すと発生
      */
     public static Node insertNodeWithNewLine(Node nodeToInsert, Node targetNode) {
         Node copiedAfterNode = NodeUtility.deepCopyByReparse(targetNode);
@@ -208,16 +209,16 @@ public final class NodeUtility {
 
     /**
      * targetNodeをnodeToReplaceに置換する
-     * @param reolaceNode 置換された後のノード
-     * @param originalNode 置換される前のノード
+     * @param nodeToReplaceWith 置換された後のノード
+     * @param targetNode 置換される前のノード
      * @return 置換後のASTノード
      */
-    public static Node replaceNode(Node nodeToReplace, Node targetNode) {
+    public static Node replaceNode(Node nodeToReplaceWith, Node targetNode) {
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
 
         JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
-        JavaToken replaceToken = nodeToReplace.getTokenRange().orElseThrow().getBegin();
-        final JavaToken endTokenOfReplace = nodeToReplace.getTokenRange().orElseThrow().getEnd();
+        JavaToken replaceToken = nodeToReplaceWith.getTokenRange().orElseThrow().getBegin();
+        final JavaToken endTokenOfReplace = nodeToReplaceWith.getTokenRange().orElseThrow().getEnd();
         final JavaToken endTokenOfTarget = targetNode.getTokenRange().orElseThrow().getEnd();
 
         final Range beginRangeOfTarget = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
@@ -246,7 +247,7 @@ public final class NodeUtility {
 
         CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
         CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, nodeToReplace, beginRangeOfTarget);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, nodeToReplaceWith, beginRangeOfTarget);
         return copiedInsertNode;
     }
 

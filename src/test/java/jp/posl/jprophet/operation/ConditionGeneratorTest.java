@@ -27,10 +27,10 @@ public class ConditionGeneratorTest {
             .toString();
 
         IfStmt targetIfStmt = JavaParser.parse(targetSource).findFirst(IfStmt.class).get();
-        Expression abstHole = targetIfStmt.getCondition();
+        Expression abstCondition = targetIfStmt.getCondition();
 
         ConditionGenerator condGenerator = new ConditionGenerator();
-        List<Expression> actualCondExpressions = condGenerator.generateCondition(abstHole);
+        List<Expression> actualCondExpressions = condGenerator.generateCondition(abstCondition);
 
         String expectedSourceBeforeTarget = new StringBuilder().append("")
             .append("public class A {\n\n") 
@@ -50,7 +50,8 @@ public class ConditionGeneratorTest {
                     "        if (fieldBoolVarA == null)\n",
                     "        if (fieldBoolVarA != null)\n",
                     "        if (localBoolVarA == null)\n",
-                    "        if (localBoolVarA != null)\n"
+                    "        if (localBoolVarA != null)\n",
+                    "        if (true)\n"
         );
 
         String expectedSourceAfterTarget = new StringBuilder().append("")

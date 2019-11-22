@@ -32,7 +32,7 @@ public class CtrlFlowIntroductionOperationTest {
             .append("public class A {\n\n") //toString(PrettyPrinter)での出力ではクラス宣言の先頭行の後に空行が入る仕様 
             .append("    private String fa = \"a\";\n\n") //ここも
             .append("    private void ma() {\n")
-            .append("        if (fa == null)\n")
+            .append("        if (true)\n")
             .append("            return;\n")
             .append("        String la = \"b\";\n")
             .append("        fa = \"b\";\n")
@@ -46,7 +46,7 @@ public class CtrlFlowIntroductionOperationTest {
             .append("    private String fa = \"a\";\n\n")
             .append("    private void ma() {\n")
             .append("        String la = \"b\";\n")
-            .append("        if (fa == null)\n")
+            .append("        if (true)\n")
             .append("            return;\n")
             .append("        fa = \"b\";\n")
             .append("    }\n")
@@ -88,7 +88,7 @@ public class CtrlFlowIntroductionOperationTest {
             .append("public class A {\n\n")
             .append("    private void ma() {\n")
             .append("        for (int i = 0; i < 10; i++) {\n")
-            .append("            if (JPROPHET_ABST_HOLE)\n")
+            .append("            if (true)\n")
             .append("                break;\n")
             .append("            String la = \"b\";\n")
             .append("        }\n")
@@ -100,7 +100,7 @@ public class CtrlFlowIntroductionOperationTest {
             .append("public class A {\n\n")
             .append("    private void ma() {\n")
             .append("        for (int i = 0; i < 10; i++) {\n")
-            .append("            if (JPROPHET_ABST_HOLE)\n")
+            .append("            if (true)\n")
             .append("                return;\n")
             .append("            String la = \"b\";\n")
             .append("        }\n")
@@ -111,7 +111,7 @@ public class CtrlFlowIntroductionOperationTest {
         expectedSources.add(new StringBuilder().append("")
             .append("public class A {\n\n")
             .append("    private void ma() {\n")
-            .append("        if (JPROPHET_ABST_HOLE)\n")
+            .append("        if (true)\n")
             .append("            return;\n")
             .append("        for (int i = 0; i < 10; i++) {\n")
             .append("            String la = \"b\";\n")
@@ -129,7 +129,7 @@ public class CtrlFlowIntroductionOperationTest {
                 .collect(Collectors.toList())
             );
         }
-        assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
+        assertThat(candidateSources).containsAll(expectedSources);
         return;
     }
 }

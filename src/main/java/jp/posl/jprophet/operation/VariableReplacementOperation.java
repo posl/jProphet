@@ -70,7 +70,7 @@ public class VariableReplacementOperation implements AstOperation {
      */
     private List<String> collectLocalVarNames(Node node){
         final DeclarationCollector collector = new DeclarationCollector();
-        final List<VariableDeclarator> localVars = collector.collectLocalVars(node);
+        final List<VariableDeclarator> localVars = collector.collectLocalVarsDeclared(node);
         final List<String> localVarNames = localVars.stream()
             .map(localVar -> localVar.getName().asString())
             .collect(Collectors.toList());

@@ -3,6 +3,7 @@ package jp.posl.jprophet.operation;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BinaryExpr;
@@ -14,40 +15,61 @@ import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 
 import jp.posl.jprophet.NodeUtility;
 
-
+/**
+ * 条件式の生成を行うクラス
+ */
 public class ConditionGenerator {
 
-	public List<Expression> generateCondition(Expression abstHole) {
-        DeclarationCollector collector = new DeclarationCollector();
-        List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
-        vars.addAll(collector.collectFileds(abstHole));
-        vars.addAll(collector.collectLocalVars(abstHole));
-        List<Parameter> parameters = collector.collectParameters(abstHole);
+    /**
+     * 参照可能な変数から以下の複数の条件式を生成する</br>
+     * <ul>
+     * <li>全ての変数とnullを==と!=で比較</li>
+     * <li>全てのBool変数とtrueを==と!=で比較</li>
+     * <li>true（恒真）</li>
+     * </ul>
+     * 
+     * @param targetCondition 条件式を生成して置き換えられるExpressionノード
+     * @return 生成された条件式によって置き換えられたtargetConditionノードのリスト 
+     */
+	public List<Expression> generateCondition(Expression targetCondition) {
+        final DeclarationCollector collector = new DeclarationCollector();
+        final List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+        vars.addAll(collector.collectFileds(targetCondition));
+        vars.addAll(collector.collectLocalVarsDeclared(targetCondition));
+        final List<Parameter> parameters = collector.collectParameters(targetCondition);
         
-        List<String> booleanVarNames = this.collectBooleanNames(vars, parameters);
-        List<String> objectNames = this.collectObjectNames(vars, parameters);
+        final List<String> booleanVarNames = this.collectBooleanNamesFrom(vars, parameters);
+        final List<String> allVarNames = this.collectNamesFrom(vars, parameters);
 
-        List<Expression> newConditions = new ArrayList<Expression>();
+        final List<Expression> newConditions = new ArrayList<Expression>();
         booleanVarNames.stream()
             .forEach(name -> {
-                BinaryExpr isTrue = this.replaceWithBinaryExpr(abstHole, name, new BooleanLiteralExpr(true), Operator.EQUALS);
+                final BinaryExpr isTrue = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(true), Operator.EQUALS);
                 newConditions.add(isTrue);
-                BinaryExpr isFalse = this.replaceWithBinaryExpr(abstHole, name, new BooleanLiteralExpr(false), Operator.EQUALS);
+                final BinaryExpr isFalse = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(false), Operator.EQUALS);
                 newConditions.add(isFalse);
             });
-        objectNames.stream()
+        allVarNames.stream()
             .forEach(name -> {
-                BinaryExpr isNull = this.replaceWithBinaryExpr(abstHole, name, new NullLiteralExpr(), Operator.EQUALS);
+                final BinaryExpr isNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.EQUALS);
                 newConditions.add(isNull);
-                BinaryExpr isNotNull = this.replaceWithBinaryExpr(abstHole, name, new NullLiteralExpr(), Operator.NOT_EQUALS);
+                final BinaryExpr isNotNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.NOT_EQUALS);
                 newConditions.add(isNotNull);
             });
+
+        newConditions.add(this.replaceWithExpr(targetCondition, new BooleanLiteralExpr(true)));
             
         return newConditions;
     }
     
-    private List<String> collectBooleanNames(List<VariableDeclarator> vars, List<Parameter> parameters) {
-        List<String> booleanVarNames = new ArrayList<String>();
+    /**
+     * 与えられた変数からBoolean型の変数の名前を全て収集する 
+     * @param vars 仮引数以外の検索対象の変数
+     * @param parameters 検索対象の仮引数
+     * @return Boolean型変数の名前のリスト
+     */
+    private List<String> collectBooleanNamesFrom(List<VariableDeclarator> vars, List<Parameter> parameters) {
+        final List<String> booleanVarNames = new ArrayList<String>();
         vars.stream()
             .filter(v -> v.getTypeAsString().equals("boolean"))
             .map(v -> v.getNameAsString())
@@ -60,21 +82,33 @@ public class ConditionGenerator {
         return booleanVarNames;
     }
 
-    private List<String> collectObjectNames(List<VariableDeclarator> vars, List<Parameter> parameters) {
-        List<String> objectNames = new ArrayList<String>();
+    /**
+     * 与えられた全ての変数の名前を収集する 
+     * @param vars 仮引数以外の変数
+     * @param parameters 仮引数
+     * @return 変数の名前のリスト
+     */
+    private List<String> collectNamesFrom(List<VariableDeclarator> vars, List<Parameter> parameters) {
+        final List<String> names = new ArrayList<String>();
         vars.stream()
             .map(v -> v.getNameAsString())
-            .forEach(objectNames::add);
+            .forEach(names::add);
         parameters.stream()
             .map(p -> p.getNameAsString())
-            .forEach(objectNames::add);
-        return objectNames;
+            .forEach(names::add);
+        return names;
     }
 
     private BinaryExpr replaceWithBinaryExpr(Expression replaceThisExpression, String leftExprName, Expression rightExpr, Operator operator){
-        Expression newCondition = (Expression)NodeUtility.deepCopy(replaceThisExpression); 
-        BinaryExpr newNode = new BinaryExpr(new NameExpr(leftExprName), rightExpr, operator);
-        newCondition.replace(newNode);
-        return newNode;
+        final BinaryExpr newBinaryExpr = new BinaryExpr(new NameExpr(leftExprName), rightExpr, operator);
+        final BinaryExpr insertedBinaryExpr = (BinaryExpr)this.replaceWithExpr(replaceThisExpression, newBinaryExpr);
+        return insertedBinaryExpr;
     }
+
+    private Expression replaceWithExpr(Expression exprToReplace, Expression exprToReplaceWith){
+        final Expression newCondition = (Expression)NodeUtility.deepCopyByReparse(exprToReplace); 
+        final Expression insertedExpr = (Expression)NodeUtility.replaceNode(JavaParser.parseExpression(exprToReplaceWith.toString()), newCondition);
+        return insertedExpr;
+    }
+
 }

@@ -2,14 +2,12 @@ package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.BreakStmt;
@@ -22,54 +20,62 @@ import jp.posl.jprophet.NodeUtility;
 
 
 /**
+ * <p>
  * 抽象条件式がtrueの時に実行されるような,
  * コントロールフローを制御するステートメント(return, breakなど)を
- * 対象の前に挿入する
+ * 対象の前に挿入する  
+ * </p>
+ * if (true)  
+ *     return;   
+ * など
  */
 public class CtrlFlowIntroductionOperation implements AstOperation{
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<CompilationUnit> exec(Node targetNode){
         if(!(targetNode instanceof Statement)) return new ArrayList<>();
         if(targetNode instanceof BlockStmt) return new ArrayList<>();
-        BlockStmt blockStmt; 
-        try {
-            blockStmt = targetNode.findParent(BlockStmt.class).orElseThrow();
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
 
-        List<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
-        compilationUnits.addAll(this.insertIfStmt(blockStmt, targetNode, new ReturnStmt()));
+        final List<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
+        final Expression abstConditionOfIfReturn = this.insertIfStmtWithAbstCond(targetNode, new ReturnStmt());
+        compilationUnits.addAll(this.collectConcreteConditions(abstConditionOfIfReturn));
         if(targetNode.findParent(ForStmt.class).isPresent()) {
-            compilationUnits.addAll(this.insertIfStmt(blockStmt, targetNode, new BreakStmt((SimpleName) null)));
+            final Expression abstConditionOfIfBreak = this.insertIfStmtWithAbstCond(targetNode, new BreakStmt((SimpleName) null));
+            compilationUnits.addAll(this.collectConcreteConditions(abstConditionOfIfBreak));
         }
 
         return compilationUnits;
     }
 
-    private List<CompilationUnit> insertIfStmt(BlockStmt inThisBlockStmt, Node beforeThisTargetNode, Statement stmtInIfBlockToInsert) {
-        NodeList<Statement> statements = inThisBlockStmt.clone().getStatements();
+    /**
+     * 条件式が穴あきの状態のif文を指定したノードの前に挿入する
+     * 穴あきは"ABST_HOLE()"というメソッド呼び出しを入れておく 
+     * @param node 挿入したい箇所の次のノード
+     * @param stmtInIfBlockToInsert 挿入するif文のブロック内の文
+     * @return 挿入したif文における穴あきの条件式
+     */
+    private Expression insertIfStmtWithAbstCond(Node nextNode, Statement stmtInIfBlockToInsert) {
+        final String abstractConditionName = "ABST_HOLE";
+        final IfStmt newIfStmt =  (IfStmt)JavaParser.parseStatement((new IfStmt(null, new MethodCallExpr(abstractConditionName), stmtInIfBlockToInsert, null)).toString());
+        final IfStmt insertedIfStmt = (IfStmt)NodeUtility.insertNodeWithNewLine(newIfStmt, nextNode);
+        final Expression abstCondition = insertedIfStmt.getCondition();
+        return abstCondition;
+    }
 
-        NameExpr abstHole = new NameExpr("ABST_HOLE");
-        //TODO: addBeforeはプログラム中のNodeを一意に決定できない
-        statements.addBefore(new IfStmt(null, abstHole, stmtInIfBlockToInsert , null), (Statement) beforeThisTargetNode);
-        Node copiedTargetNode = NodeUtility.deepCopy(beforeThisTargetNode);
-        BlockStmt blockStmt;
-        try {
-            blockStmt = copiedTargetNode.findParent(BlockStmt.class).orElseThrow();
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-        blockStmt.setStatements(statements);
-        ConditionGenerator conditionGenerator = new ConditionGenerator();
+    /**
+     * 穴あきの条件式から最終的な条件式を生成
+     * @param abstCondition 置換される穴あきの条件式
+     * @return 生成された条件式を含むCompilationUnit
+     */
+    private List<CompilationUnit> collectConcreteConditions(Expression abstCondition) {
+        final ConditionGenerator conditionGenerator = new ConditionGenerator();
+        final List<Expression> concreteConditions = conditionGenerator.generateCondition(abstCondition);
 
-        List<Expression> concreteConditions = conditionGenerator.generateCondition(abstHole);
-        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+        final List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
         concreteConditions.stream()
-            .forEach(c -> {
-                CompilationUnit candidate = blockStmt.findCompilationUnit().orElseThrow();
-                abstHole.replace(c);
-                candidates.add(candidate);
-            });
+            .forEach(c -> candidates.add(c.findCompilationUnit().orElseThrow()));
 
         return candidates;
     }

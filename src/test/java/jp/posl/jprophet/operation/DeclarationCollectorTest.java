@@ -58,7 +58,7 @@ public class DeclarationCollectorTest {
         List<VariableDeclarator> expectedLocalVarDeclarations = cu.findAll(VariableDeclarator.class);
 
         DeclarationCollector collector = new DeclarationCollector();
-        List<VariableDeclarator> actualLocalVarDeclarations = collector.collectLocalVars(targetNode);
+        List<VariableDeclarator> actualLocalVarDeclarations = collector.collectLocalVarsDeclared(targetNode);
 
         assertThat(actualLocalVarDeclarations).containsOnlyElementsOf(expectedLocalVarDeclarations);
     }
@@ -81,7 +81,7 @@ public class DeclarationCollectorTest {
             .collect(Collectors.toList());
 
         DeclarationCollector collector = new DeclarationCollector();
-        List<VariableDeclarator> actualLocalVarDeclarations = collector.collectLocalVars(targetNode);
+        List<VariableDeclarator> actualLocalVarDeclarations = collector.collectLocalVarsDeclared(targetNode);
 
         assertThat(actualLocalVarDeclarations).containsOnlyElementsOf(expectedLocalVarDeclarations);
     }
