@@ -3,7 +3,11 @@ package jp.posl.jprophet.operation;
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
+
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.ThisExpr;
+
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;

@@ -1,6 +1,8 @@
 package jp.posl.jprophet;
 
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.JavaToken;
@@ -323,7 +325,7 @@ public class NodeUtility {
     public static Node findNodeInCompilationUnitByLine(CompilationUnit compilationUnit, Node node, Range range) {
         List<Node> nodes = NodeUtility.getAllDescendantNodes(compilationUnit);
         Node newNode = nodes.stream().filter(n -> {
-            return n.equals(node) && n.getRange().orElseThrow().begin.line == range.begin.line;
+            return n.equals(node) && n.getRange().orElseThrow().begin.equals(range.begin);
         }).findFirst().orElseThrow();
         return newNode;
     }
@@ -337,5 +339,17 @@ public class NodeUtility {
         LexicalPreservingPrinter.setup(compilationUnit);
         String source = LexicalPreservingPrinter.print(compilationUnit);
         return JavaParser.parse(source);
+    }
+
+    public static Node parseNode(Node node){
+        Node parsedNode;
+        if (node instanceof Statement){
+            parsedNode = JavaParser.parseStatement(node.toString());
+        }else if (node instanceof Expression){
+            parsedNode = JavaParser.parseExpression(node.toString());
+        }else{
+            parsedNode = null;
+        }
+        return parsedNode;
     }
 }
