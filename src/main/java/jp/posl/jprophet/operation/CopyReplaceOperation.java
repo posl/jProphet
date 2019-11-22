@@ -65,8 +65,8 @@ public class CopyReplaceOperation implements AstOperation{
 
     /**
      * targetNodeの直前にstatementをコピペしてVariableReplacementで変数を置換してできたcompilationUnitを返す
-     * @param statement コピペするステートメント
-     * @param targetNode statementがコピペされる直後の行のノード
+     * @param statement コピペされるステートメント
+     * @param targetNode コピペ先の次の行のノード
      * @return compilationUnitのリスト
      */
     private List<CompilationUnit> copyAndPasteReplacedStatementToBeforeTarget(Statement statement, Node targetNode){
