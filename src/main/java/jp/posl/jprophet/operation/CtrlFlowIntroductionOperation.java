@@ -52,7 +52,7 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
     /**
      * 条件式が穴あきの状態のif文を指定したノードの前に挿入する
      * 穴あきは"ABST_HOLE()"というメソッド呼び出しを入れておく 
-     * @param node 挿入したい箇所の次のノード
+     * @param nextNode 挿入したい箇所の次のノード
      * @param stmtInIfBlockToInsert 挿入するif文のブロック内の文
      * @return 挿入したif文における穴あきの条件式
      */
