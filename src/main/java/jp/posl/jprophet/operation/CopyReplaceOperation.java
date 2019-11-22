@@ -30,11 +30,9 @@ public class CopyReplaceOperation implements AstOperation{
         if (targetNode instanceof Statement && !(targetNode instanceof BlockStmt)){
             //修正対象のステートメントの属するメソッドノードを取得
             //メソッド内のステートメント(修正対象のステートメントより前のもの)を収集
-            List<Statement> statements = collectLocalStatements(targetNode);
-            if (statements.size() > 0){
-                for (Statement statement : statements){
-                    candidates.addAll(copyStatementBeforeTarget(statement, targetNode));
-                }
+            List<Statement> statements = collectLocalStatements((Statement)targetNode);
+            for (Statement statement : statements){
+                candidates.addAll(copyAndPasteReplacedStatementToBeforeTarget(statement, targetNode));
             }
         }
         //修正対象のステートメントの直前に,収集したステートメントのNodeを追加
@@ -42,14 +40,14 @@ public class CopyReplaceOperation implements AstOperation{
     }
 
     /**
-     * targetNodeを含むメソッド内のステートメントで,targetNodeよりも上の行にあるものを収集
-     * @param targetNode 修正対象のノード
+     * beforeThisStatementを含むメソッド内のステートメントで,beforeThisStatementよりも上の行にあるものを収集
+     * @param beforeThisStatement 修正対象のノード
      * @return 収集したステートメントのリスト
      */
-    private List<Statement> collectLocalStatements(Node targetNode){
+    private List<Statement> collectLocalStatements(Statement beforeThisStatement){
         MethodDeclaration methodNode;
         try {
-            methodNode =  targetNode.findParent(MethodDeclaration.class).orElseThrow();
+            methodNode =  beforeThisStatement.findParent(MethodDeclaration.class).orElseThrow();
         }
         catch (NoSuchElementException e) {
             return new ArrayList<Statement>();
@@ -60,7 +58,7 @@ public class CopyReplaceOperation implements AstOperation{
         //targetStatementを含むそれより後ろの行の要素を全て消す
         //BlockStmtを全て除外する
         return localStatements.stream()
-            .filter(s -> getEndLineNumber(s).orElseThrow() < getBeginLineNumber(targetNode).orElseThrow())
+            .filter(s -> getEndLineNumber(s).orElseThrow() < getBeginLineNumber(beforeThisStatement).orElseThrow())
             .filter(s -> (s instanceof BlockStmt) == false)
             .collect(Collectors.toList());
     }
@@ -71,7 +69,7 @@ public class CopyReplaceOperation implements AstOperation{
      * @param targetNode statementがコピペされる直後の行のノード
      * @return compilationUnitのリスト
      */
-    private List<CompilationUnit> copyStatementBeforeTarget(Statement statement, Node targetNode){
+    private List<CompilationUnit> copyAndPasteReplacedStatementToBeforeTarget(Statement statement, Node targetNode){
         Node copiedNode = NodeUtility.insertNodeWithNewLine(statement, targetNode);
         List<Node> copiedNodeDescendants = NodeUtility.getAllDescendantNodes(copiedNode);
 

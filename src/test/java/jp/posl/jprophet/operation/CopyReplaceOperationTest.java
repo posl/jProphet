@@ -17,11 +17,7 @@ public class CopyReplaceOperationTest{
      * copiedStatementが置換でき,targetStatementの前にコピペされているかテスト
      */
     @Test public void testForStatementCopy(){
-        final String copiedStatement = 
-                "        this.mb(\"hoge\", \"fuga\");\n";
-
-        final String targetStatement = 
-                "        la = \"d\";\n";
+        
         final String beforeCopiedStatement = new StringBuilder().append("")
             .append("public class A {\n\n")
             .append("    private String fa = \"a\";\n\n")
@@ -29,6 +25,12 @@ public class CopyReplaceOperationTest{
             .append("    private void ma(String pa, String pb) {\n")
             .append("        String la = \"b\";\n")
             .toString();
+        
+        final String statementToBeCopied = 
+            "        this.mb(\"hoge\", \"fuga\");\n";
+
+        final String targetStatement = 
+            "        la = \"d\";\n";
 
         final String afterTargetStatement = new StringBuilder().append("")
             .append("    }\n\n")
@@ -39,7 +41,7 @@ public class CopyReplaceOperationTest{
 
         final String targetSource = new StringBuilder().append("")
             .append(beforeCopiedStatement)
-            .append(copiedStatement)
+            .append(statementToBeCopied)
             .append(targetStatement)
             .append(afterTargetStatement)
             .toString();
@@ -60,7 +62,7 @@ public class CopyReplaceOperationTest{
             .map(str -> {
                 return new StringBuilder().append("")
                     .append(beforeCopiedStatement)
-                    .append(copiedStatement)
+                    .append(statementToBeCopied)
                     .append(str)
                     .append(targetStatement)
                     .append(afterTargetStatement)
@@ -85,20 +87,22 @@ public class CopyReplaceOperationTest{
      * if文が含まれる場合のテスト
      */
     @Test public void testForIfStatementCopy(){
-        final String copiedStatement = 
-                "        la = \"hoge\";\n";
-        final String targetStatement = new StringBuilder().append("")
-            .append("        if (true) {\n")
-            .append("            lb = \"huga\";\n")
-            .append("        }\n")
-            .toString();
-                
+
         final String beforeTargetStatement = new StringBuilder().append("")
             .append("public class A {\n\n")
             .append("    private String fa = \"a\";\n\n")
             .append("    private void ma(String pa) {\n")
             .append("        String la = \"a\";\n")
             .append("        String lb = \"b\";\n")
+            .toString();
+        
+        final String statementToBeCopied = 
+            "        la = \"hoge\";\n";
+
+        final String targetStatement = new StringBuilder().append("")
+            .append("        if (true) {\n")
+            .append("            lb = \"huga\";\n")
+            .append("        }\n")
             .toString();
 
         final String afterTargetStatement = new StringBuilder().append("")
@@ -108,7 +112,7 @@ public class CopyReplaceOperationTest{
 
         final String targetSource = new StringBuilder().append("")
             .append(beforeTargetStatement)
-            .append(copiedStatement)
+            .append(statementToBeCopied)
             .append(targetStatement)
             .append(afterTargetStatement)
             .toString();
@@ -124,7 +128,7 @@ public class CopyReplaceOperationTest{
             .map(str -> {
                 return new StringBuilder().append("")
                     .append(beforeTargetStatement)
-                    .append(copiedStatement)
+                    .append(statementToBeCopied)
                     .append(str)
                     .append(targetStatement)
                     .append(afterTargetStatement)
@@ -136,7 +140,7 @@ public class CopyReplaceOperationTest{
             .map(str -> {
                 return new StringBuilder().append("")
                     .append(beforeTargetStatement)
-                    .append(copiedStatement)
+                    .append(statementToBeCopied)
                     .append("        if (true) {\n")
                     .append("    " + str)
                     .append("            lb = \"huga\";\n")
