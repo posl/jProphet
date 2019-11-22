@@ -33,8 +33,11 @@ public class SpotBugsIntegrationTest {
     private final String resultDir = "./result/"; 
     private List<AstOperation> operations;
 
+    /**
+     * オペレーションの準備
+     */
     @Before
-    public void SetUpClasses() {
+    public void SetUpOperations() {
         this.operations = new ArrayList<AstOperation>(Arrays.asList(
             new CondRefinementOperation(),
             new CondIntroductionOperation(), 
@@ -47,6 +50,9 @@ public class SpotBugsIntegrationTest {
     }
 
 
+    /**
+     * 修正結果ファイルが出力されているかテスト
+     */
     @Test
     public void testForRoughConstantValue() {
         String project = "src/test/resources/testSBProject02";
@@ -65,7 +71,11 @@ public class SpotBugsIntegrationTest {
     }
 
 
-    public void runjProphet(String projectPath) {
+    /**
+     * 指定したファイルに対してjProphetを実行する
+     * @param projectPath 対象のプロジェクトのパス
+     */
+    private void runjProphet(String projectPath) {
         final Project                  project                  = new GradleProject(projectPath);
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
         final FaultLocalization        faultLocalization        = new SpotBugsBasedFaultLocalization(config);
