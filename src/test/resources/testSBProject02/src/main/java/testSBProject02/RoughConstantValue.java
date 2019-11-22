@@ -4,7 +4,7 @@
 package testSBProject02;
 
 public class RoughConstantValue {
-    public double calcCicleArea(double radius) {
+    public double calcCircleArea(double radius) {
         double pi = Math.PI;       //定義済みライブラリ定数
         double area = radius * 2;
         area *= 3.141592;        //雑な値　ここでワーニングが発生するはず
@@ -14,6 +14,6 @@ public class RoughConstantValue {
 
     public static void main(String[] args) {
         final RoughConstantValue roughConstantValue = new RoughConstantValue();
-        System.out.println(roughConstantValue.calcCicleArea(5));
+        System.out.println(roughConstantValue.calcCircleArea(5));
     }
 }

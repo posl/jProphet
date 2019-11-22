@@ -1,6 +1,8 @@
 package jp.posl.jprophet.test.executor;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,7 +49,7 @@ public class SpotBugsTestExecutor implements TestExecutor {
             return createResults(beforeWarnings, afterWarnings);
         }
         else {
-            return new ArrayList<TestResult>();
+            return List.of(new SpotBugsTestResult(false, new SpotBugsWarning("", "", 0, 0), 0));   
         }
     }
 
