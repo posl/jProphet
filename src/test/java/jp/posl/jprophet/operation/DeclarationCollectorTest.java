@@ -17,7 +17,7 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 
 
 public class DeclarationCollectorTest {
-    @Test public void testForCollectFields() {
+    @Test public void testCollectFields() {
         final String targetSource = new StringBuilder().append("")
             .append("public class A {\n\n")
             .append("    private String fa = \"a\";\n\n")
@@ -39,7 +39,7 @@ public class DeclarationCollectorTest {
         final Node targetNode = cu.findFirst(MethodCallExpr.class).get();
         List<VariableDeclarator> actualFieldDeclarations = collector.collectFileds(targetNode);
 
-        assertThat(actualFieldDeclarations).containsAll(expectedFieldDeclarations);
+        assertThat(actualFieldDeclarations).containsOnlyElementsOf(expectedFieldDeclarations);
     }
 
     @Test public void testForCollectLocalVars() {
@@ -60,7 +60,30 @@ public class DeclarationCollectorTest {
         DeclarationCollector collector = new DeclarationCollector();
         List<VariableDeclarator> actualLocalVarDeclarations = collector.collectLocalVars(targetNode);
 
-        assertThat(actualLocalVarDeclarations).containsAll(expectedLocalVarDeclarations);
+        assertThat(actualLocalVarDeclarations).containsOnlyElementsOf(expectedLocalVarDeclarations);
+    }
+
+    @Test public void testCollectLocalVarsExistsBeforeTargetNode() {
+        final String targetSource = new StringBuilder().append("")
+            .append("public class A {\n\n")
+            .append("    private void ma() {\n")
+            .append("        String la = \"a\";\n\n")
+            .append("        hoge();\n")
+            .append("        String lb = \"b\";\n\n")
+            .append("    }\n\n")
+            .append("}\n\n")
+            .toString();
+        
+        final CompilationUnit cu = JavaParser.parse(targetSource);
+        final Node targetNode = cu.findFirst(MethodCallExpr.class).get();
+        List<VariableDeclarator> expectedLocalVarDeclarations = cu.findAll(VariableDeclarator.class).stream()
+            .filter(v -> v.getNameAsString().equals("la"))
+            .collect(Collectors.toList());
+
+        DeclarationCollector collector = new DeclarationCollector();
+        List<VariableDeclarator> actualLocalVarDeclarations = collector.collectLocalVars(targetNode);
+
+        assertThat(actualLocalVarDeclarations).containsOnlyElementsOf(expectedLocalVarDeclarations);
     }
 
     @Test public void testForCollectParameters() {
@@ -79,6 +102,6 @@ public class DeclarationCollectorTest {
         DeclarationCollector collector = new DeclarationCollector();
         List<Parameter> actualParameters = collector.collectParameters(targetNode);
 
-        assertThat(actualParameters).containsAll(expectedParameters);
+        assertThat(actualParameters).containsOnlyElementsOf(expectedParameters);
     }
 }

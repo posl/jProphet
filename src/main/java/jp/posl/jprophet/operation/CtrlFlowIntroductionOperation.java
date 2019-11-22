@@ -8,6 +8,7 @@ import java.util.Optional;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -37,25 +38,39 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
         }
 
         List<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
-        this.insertIfStmtBefore(blockStmt, targetNode, new ReturnStmt()).map(compilationUnits::add);
+        compilationUnits.addAll(this.insertIfStmt(blockStmt, targetNode, new ReturnStmt()));
         if(targetNode.findParent(ForStmt.class).isPresent()) {
-            this.insertIfStmtBefore(blockStmt, targetNode, new BreakStmt((SimpleName) null)).map(compilationUnits::add);
+            compilationUnits.addAll(this.insertIfStmt(blockStmt, targetNode, new BreakStmt((SimpleName) null)));
         }
 
         return compilationUnits;
     }
 
-    private Optional<CompilationUnit> insertIfStmtBefore(BlockStmt inThisBlockStmt, Node beforeThisTargetNode, Statement stmtInIfBlock) {
+    private List<CompilationUnit> insertIfStmt(BlockStmt inThisBlockStmt, Node beforeThisTargetNode, Statement stmtInIfBlockToInsert) {
         NodeList<Statement> statements = inThisBlockStmt.clone().getStatements();
+
+        NameExpr abstHole = new NameExpr("ABST_HOLE");
+        //TODO: addBeforeはプログラム中のNodeを一意に決定できない
+        statements.addBefore(new IfStmt(null, abstHole, stmtInIfBlockToInsert , null), (Statement) beforeThisTargetNode);
+        Node copiedTargetNode = NodeUtility.deepCopy(beforeThisTargetNode);
+        BlockStmt blockStmt;
         try {
-            statements.addBefore(new IfStmt(null, new NameExpr("JPROPHET_ABST_HOLE") , stmtInIfBlock , null), (Statement) beforeThisTargetNode);
-            Node copiedTargetNode = NodeUtility.deepCopy(beforeThisTargetNode);
-            BlockStmt blockStmt = copiedTargetNode.findParent(BlockStmt.class).orElseThrow();
-            blockStmt.setStatements(statements);
-            CompilationUnit compilationUnit = blockStmt.findCompilationUnit().orElseThrow();
-            return Optional.of(compilationUnit);
-        } catch (NoSuchElementException | IllegalArgumentException e) {
-            return Optional.empty();
+            blockStmt = copiedTargetNode.findParent(BlockStmt.class).orElseThrow();
+        } catch (Exception e) {
+            return new ArrayList<>();
         }
+        blockStmt.setStatements(statements);
+        ConditionGenerator conditionGenerator = new ConditionGenerator();
+
+        List<Expression> concreteConditions = conditionGenerator.generateCondition(abstHole);
+        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+        concreteConditions.stream()
+            .forEach(c -> {
+                CompilationUnit candidate = blockStmt.findCompilationUnit().orElseThrow();
+                abstHole.replace(c);
+                candidates.add(candidate);
+            });
+
+        return candidates;
     }
 }

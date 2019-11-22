@@ -37,7 +37,9 @@ public class DeclarationCollector {
         catch (NoSuchElementException e) {
             return new ArrayList<VariableDeclarator>();
         }
-        final List<VariableDeclarator> localVars = methodNode.findAll(VariableDeclarator.class);
+        final List<VariableDeclarator> localVars = methodNode.findAll(VariableDeclarator.class).stream()
+            .filter(v -> v.getBegin().orElseThrow().line < inTheMethodThisNodeIsIn.getBegin().orElseThrow().line)
+            .collect(Collectors.toList());
 		return localVars;
 	}
 

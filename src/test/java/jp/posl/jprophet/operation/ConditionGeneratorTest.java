@@ -76,7 +76,6 @@ public class ConditionGeneratorTest {
             .map(s -> s.getCondition())
             .collect(Collectors.toList());
 
-        assertThat(actualCondExpressions).containsAll(expectedCondExpressions);
-
+        assertThat(actualCondExpressions).containsOnlyElementsOf(expectedCondExpressions);
     }
 }
