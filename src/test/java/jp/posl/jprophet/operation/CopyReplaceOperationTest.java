@@ -4,6 +4,10 @@ import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
+
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
@@ -74,10 +78,17 @@ public class CopyReplaceOperationTest{
         List<String> candidateSources = new ArrayList<String>();
         for(Node node : repairUnits){
             CopyReplaceOperation cr = new CopyReplaceOperation();
+            /*
             candidateSources.addAll(cr.exec(node).stream()
                 .map(cu -> cu.toString())
                 .collect(Collectors.toList())
             );
+            */
+            List<CompilationUnit> cuList = cr.exec(node);
+            for (CompilationUnit c : cuList){
+                LexicalPreservingPrinter.setup(c);
+                candidateSources.add(LexicalPreservingPrinter.print(c));
+            }
         }
         assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
         return;

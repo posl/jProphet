@@ -19,10 +19,15 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.JavaToken;
+import com.github.javaparser.Position;
+import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 
 import org.apache.commons.io.FileUtils;
 
@@ -66,10 +71,11 @@ public class FixedProjectGeneratorTest{
             fail(e.getMessage());
             return;
         }
-        Node targetNodeBeforeFix = compilationUnit.findRootNode().getChildNodes().get(1);
-        Node node = NodeUtility.deepCopy(targetNodeBeforeFix);
-        ((ClassOrInterfaceDeclaration)node).setModifier(Modifier.STATIC, true);
-        PatchCandidate patchCandidate = new DefaultPatchCandidate(targetNodeBeforeFix, node.findCompilationUnit().get(), this.targetFilePath, this.targetFileFqn, AstOperation.class);
+        Node targetNodeBeforeFix = compilationUnit.findRootNode().getChildNodes().get(1).getChildNodes().get(1);
+        Node node = NodeUtility.deepCopyByReparse(targetNodeBeforeFix);
+        node.getTokenRange().orElseThrow().getBegin().replaceToken(new JavaToken(node.getTokenRange().orElseThrow().getBegin().getRange().get(), JavaToken.Kind.PRIVATE.getKind(), "private", null, null));
+        CompilationUnit cu = NodeUtility.reparseCompilationUnit(node.findCompilationUnit().get());
+        PatchCandidate patchCandidate = new DefaultPatchCandidate(targetNodeBeforeFix, cu, this.targetFilePath, this.targetFileFqn, AstOperation.class);
         this.fixedProjectGenerator.exec(config, patchCandidate);
        
     }
@@ -98,8 +104,8 @@ public class FixedProjectGeneratorTest{
             return;
         }
 
-        final int modifiedLineNumber = 5;
-         assertThat(lines.get(modifiedLineNumber)).contains("static");
+        final int modifiedLineNumber = 6;
+        assertThat(lines.get(modifiedLineNumber)).contains("private");
     }
 
     @After public void cleanUp(){
