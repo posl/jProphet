@@ -10,7 +10,6 @@ import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.printer.*;
 import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 
 /**

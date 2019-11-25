@@ -3,7 +3,11 @@ package jp.posl.jprophet.operation;
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
+
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
+
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
@@ -18,7 +22,7 @@ public class VariableReplacementOperationTest{
      */
     @Test public void testForArgumentReplace(){
         final String targetStatement = 
-                "       this.mb(\"hoge\", \"fuga\");\n";
+                "        this.mb(\"hoge\", \"fuga\");\n";
         final String beforeTargetStatement = new StringBuilder().append("")
             .append("public class A {\n\n")
             .append("    private String fa = \"a\";\n\n")
@@ -66,11 +70,20 @@ public class VariableReplacementOperationTest{
         List<String> candidateSources = new ArrayList<String>();
         for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
+            /*
             candidateSources.addAll(vr.exec(node).stream()
                 .map(cu -> cu.toString())
                 .collect(Collectors.toList())
             );
+            */
+            List<CompilationUnit> cUnits = vr.exec(node);
+            for (CompilationUnit cUnit : cUnits){
+                LexicalPreservingPrinter.setup(cUnit);
+                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
+            }
         }
+        System.out.println(candidateSources);
+        System.out.println(expectedSources);
         assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
         return;
     }
@@ -80,7 +93,7 @@ public class VariableReplacementOperationTest{
      */
     @Test public void testForAssignmentReplace(){
         final String targetStatement = 
-                "       la = \"hoge\";\n"; 
+                "        la = \"hoge\";\n"; 
         final String beforeTargetStatement = new StringBuilder().append("")
             .append("public class A {\n\n")
             .append("    private String fa = \"a\";\n\n")
@@ -155,7 +168,7 @@ public class VariableReplacementOperationTest{
      */
     @Test public void testThatCandidatesDoesNotContainOriginalInAssignExpr(){
         final String targetStatement = 
-                "       la = lb;\n"; 
+                "        la = lb;\n"; 
 
         final String source = new StringBuilder().append("")
         .append("public class A {\n\n")
@@ -198,7 +211,7 @@ public class VariableReplacementOperationTest{
      */
     @Test public void testThatCandidatesDoesNotContainOriginalInArgs(){
         final String targetStatement = 
-                "       hoge(la);\n"; 
+                "        hoge(la);\n"; 
 
         final String source = new StringBuilder().append("")
         .append("public class A {\n")
