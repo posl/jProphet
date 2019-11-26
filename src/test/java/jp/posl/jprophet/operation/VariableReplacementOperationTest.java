@@ -70,12 +70,6 @@ public class VariableReplacementOperationTest{
         List<String> candidateSources = new ArrayList<String>();
         for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            /*
-            candidateSources.addAll(vr.exec(node).stream()
-                .map(cu -> cu.toString())
-                .collect(Collectors.toList())
-            );
-            */
             List<CompilationUnit> cUnits = vr.exec(node);
             for (CompilationUnit cUnit : cUnits){
                 LexicalPreservingPrinter.setup(cUnit);
@@ -134,10 +128,11 @@ public class VariableReplacementOperationTest{
         List<String> candidateSources = new ArrayList<String>();
         for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            candidateSources.addAll(vr.exec(node).stream()
-                .map(ru -> ru.toString())
-                .collect(Collectors.toList())
-            );
+            List<CompilationUnit> cUnits = vr.exec(node);
+            for (CompilationUnit cUnit : cUnits){
+                LexicalPreservingPrinter.setup(cUnit);
+                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
+            }
         }
 
         assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
@@ -196,10 +191,11 @@ public class VariableReplacementOperationTest{
         List<String> candidateSources = new ArrayList<String>();
         for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            candidateSources.addAll(vr.exec(node).stream()
-                .map(ru -> ru.toString())
-                .collect(Collectors.toList())
-            );
+            List<CompilationUnit> cUnits = vr.exec(node);
+            for (CompilationUnit cUnit : cUnits){
+                LexicalPreservingPrinter.setup(cUnit);
+                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
+            }
         }
 
         assertThat(candidateSources).doesNotContain(expectedSource);
@@ -229,10 +225,11 @@ public class VariableReplacementOperationTest{
         List<String> candidateSources = new ArrayList<String>();
         for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            candidateSources.addAll(vr.exec(node).stream()
-                .map(ru -> ru.toString())
-                .collect(Collectors.toList())
-            );
+            List<CompilationUnit> cUnits = vr.exec(node);
+            for (CompilationUnit cUnit : cUnits){
+                LexicalPreservingPrinter.setup(cUnit);
+                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
+            }
         }
 
         assertThat(candidateSources).doesNotContain(targetStatementAsRepairUnitToString);
@@ -275,10 +272,11 @@ public class VariableReplacementOperationTest{
         List<String> candidateSources = new ArrayList<String>();
         for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            candidateSources.addAll(vr.exec(node).stream()
-                .map(ru -> ru.toString())
-                .collect(Collectors.toList())
-            );
+            List<CompilationUnit> cUnits = vr.exec(node);
+            for (CompilationUnit cUnit : cUnits){
+                LexicalPreservingPrinter.setup(cUnit);
+                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
+            }
         }
 
         assertThat(candidateSources).contains(expectedSource);

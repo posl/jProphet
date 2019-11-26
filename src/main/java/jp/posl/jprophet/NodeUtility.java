@@ -129,14 +129,14 @@ public class NodeUtility {
      */
     public static Node insertNodeBetweenNodes (Node nodeToInsert, Node previousNode, Node nextNode) {
         Node copiedAfterNode = NodeUtility.deepCopyByReparse(nextNode);
-        Node newNodeToInsert = nodeToInsert;
+        Node nodeToInsertWithToken = nodeToInsert;
         if (!nodeToInsert.getTokenRange().isPresent()){
-            newNodeToInsert = NodeUtility.parseNode(nodeToInsert);
+            nodeToInsertWithToken = NodeUtility.parseNode(nodeToInsert);
         }
 
         JavaToken beginTokenOfAfter = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
-        JavaToken insertToken = newNodeToInsert.getTokenRange().orElseThrow().getBegin();
-        final JavaToken endTokenOfInsert = newNodeToInsert.getTokenRange().orElseThrow().getEnd();
+        JavaToken insertToken = nodeToInsertWithToken.getTokenRange().orElseThrow().getBegin();
+        final JavaToken endTokenOfInsert = nodeToInsertWithToken.getTokenRange().orElseThrow().getEnd();
         final JavaToken originalBeginTokenOfAfter = nextNode.getTokenRange().orElseThrow().getBegin();
 
         final Range beginRangeOfAfter = nextNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
@@ -156,7 +156,7 @@ public class NodeUtility {
         
         CompilationUnit compilationUnit = copiedAfterNode.findCompilationUnit().orElseThrow();
         CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, newNodeToInsert, beginRangeOfAfter);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, nodeToInsertWithToken, beginRangeOfAfter);
         return copiedInsertNode;
     }
 
@@ -170,14 +170,14 @@ public class NodeUtility {
      */
     public static Node insertNodeWithNewLine(Node nodeToInsert, Node targetNode) {
         Node copiedAfterNode = NodeUtility.deepCopyByReparse(targetNode);
-        Node newNodeToInsert = nodeToInsert;
+        Node nodeToInsertWithToken = nodeToInsert;
         if (!nodeToInsert.getTokenRange().isPresent()){
-            newNodeToInsert = NodeUtility.parseNode(nodeToInsert);
+            nodeToInsertWithToken = NodeUtility.parseNode(nodeToInsert);
         }
 
         JavaToken beginTokenOfAfter = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
-        JavaToken insertToken = newNodeToInsert.getTokenRange().orElseThrow().getBegin();
-        final JavaToken endTokenOfInsert = newNodeToInsert.getTokenRange().orElseThrow().getEnd();
+        JavaToken insertToken = nodeToInsertWithToken.getTokenRange().orElseThrow().getBegin();
+        final JavaToken endTokenOfInsert = nodeToInsertWithToken.getTokenRange().orElseThrow().getEnd();
         final JavaToken originalBeginTokenOfAfter = targetNode.getTokenRange().orElseThrow().getBegin();
 
         final Range beginRangeOfAfter = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
@@ -201,7 +201,7 @@ public class NodeUtility {
         
         CompilationUnit compilationUnit = copiedAfterNode.findCompilationUnit().orElseThrow();
         CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, newNodeToInsert, beginRangeOfAfter);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, nodeToInsertWithToken, beginRangeOfAfter);
         return copiedInsertNode;
     }
 
@@ -216,14 +216,14 @@ public class NodeUtility {
      */
     public static Node insertNodeInOneLine(Node nodeToInsert, Node targetNode) {
         Node copiedAfterNode = NodeUtility.deepCopyByReparse(targetNode);
-        Node newNodeToInsert = nodeToInsert;
+        Node nodeToInsertWithToken = nodeToInsert;
         if (!nodeToInsert.getTokenRange().isPresent()){
-            newNodeToInsert = NodeUtility.parseNode(nodeToInsert);
+            nodeToInsertWithToken = NodeUtility.parseNode(nodeToInsert);
         }
 
         JavaToken beginTokenOfAfter = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
-        JavaToken insertToken = newNodeToInsert.getTokenRange().orElseThrow().getBegin();
-        final JavaToken endTokenOfInsert = newNodeToInsert.getTokenRange().orElseThrow().getEnd();
+        JavaToken insertToken = nodeToInsertWithToken.getTokenRange().orElseThrow().getBegin();
+        final JavaToken endTokenOfInsert = nodeToInsertWithToken.getTokenRange().orElseThrow().getEnd();
 
         final Range beginRangeOfAfter = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
 
@@ -238,7 +238,7 @@ public class NodeUtility {
         
         CompilationUnit compilationUnit = copiedAfterNode.findCompilationUnit().orElseThrow();
         CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, newNodeToInsert, beginRangeOfAfter);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, nodeToInsertWithToken, beginRangeOfAfter);
         return copiedInsertNode;
     }
 
@@ -250,14 +250,14 @@ public class NodeUtility {
      */
     public static Node replaceNode(Node nodeToReplace, Node targetNode) {
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
-        Node newNodeToReplace = nodeToReplace;
+        Node nodeToReplaceWithToken = nodeToReplace;
         if (!nodeToReplace.getTokenRange().isPresent()){
-            newNodeToReplace = NodeUtility.parseNode(nodeToReplace);
+            nodeToReplaceWithToken = NodeUtility.parseNode(nodeToReplace);
         }
 
         JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
-        JavaToken replaceToken = newNodeToReplace.getTokenRange().orElseThrow().getBegin();
-        final JavaToken endTokenOfReplace = newNodeToReplace.getTokenRange().orElseThrow().getEnd();
+        JavaToken replaceToken = nodeToReplaceWithToken.getTokenRange().orElseThrow().getBegin();
+        final JavaToken endTokenOfReplace = nodeToReplaceWithToken.getTokenRange().orElseThrow().getEnd();
         final JavaToken endTokenOfTarget = targetNode.getTokenRange().orElseThrow().getEnd();
 
         final Range beginRangeOfTarget = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
@@ -286,7 +286,7 @@ public class NodeUtility {
 
         CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
         CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, newNodeToReplace, beginRangeOfTarget);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, nodeToReplaceWithToken, beginRangeOfTarget);
         return copiedInsertNode;
     }
 
@@ -359,6 +359,7 @@ public class NodeUtility {
         try {
             cu = JavaParser.parse(source);
         } catch (ParseProblemException e){
+            //パースできなかったときはcuにnullを入れておく
             cu = null;
         }
         return cu;
@@ -366,8 +367,8 @@ public class NodeUtility {
 
     /**
      * StatementまたはExpression型のノードをパースする
-     * @param node
-     * @return
+     * @param node パースしたいのノード
+     * @return パースしたノード
      */
     public static Node parseNode(Node node){
         Node parsedNode;

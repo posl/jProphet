@@ -52,9 +52,8 @@ public class FixedProjectGenerator {
     private void generateFixedFile(PatchCandidate patchCandidate, String fixedProjectPath, String originalProjectPath){
         final String fixedFilePath   = patchCandidate.getFilePath();
         final File   fixedFile       = new File(fixedProjectPath + fixedFilePath.replace(originalProjectPath, ""));
-        //final String fixedSourceCode = new PrettyPrinter(new PrettyPrinterConfiguration()).print(patchCandidate.getCompilationUnit());
         CompilationUnit cu = patchCandidate.getCompilationUnit();
-        //ここでcuがnullの時の処理をする
+        if (cu == null) return;
         LexicalPreservingPrinter.setup(cu);
         final String fixedSourceCode = LexicalPreservingPrinter.print(cu);
 
