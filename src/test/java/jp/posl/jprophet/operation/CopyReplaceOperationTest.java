@@ -231,4 +231,89 @@ public class CopyReplaceOperationTest{
         assertThat(candidateSources).doesNotContain(expectedSource);
         return;
     }
+
+    /**
+     * 少し複雑なコードで動作するかどうかテスト
+     */
+    @Test public void testtest(){
+
+        final String targetSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private String fa = \"a\";\n")
+            .append("    private String fb = \"a\";\n")
+            .append("    private void ma(String pa, String pb) {\n")
+            .append("        String la = \"b\";\n")
+            .append("        int num = 0;\n")
+            .append("        this.mb(\"hoge\", \"fuga\");\n")
+            .append("        if (true) {\n")
+            .append("            la = \"c\";\n")
+            .append("            while (true) {\n")
+            .append("                this.mb(\"f\", \"g\");\n")
+            .append("            }\n")
+            .append("            return;\n")
+            .append("        }\n")
+            .append("        la = \"d\";\n")
+            .append("    }\n")
+            .append("    private void mb(String a, String b) {\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
+        List<String> candidateSources = new ArrayList<String>();
+        for(Node node : repairUnits){
+            CopyReplaceOperation cr = new CopyReplaceOperation();
+            List<CompilationUnit> cUnits = cr.exec(node);
+            for (CompilationUnit cUnit : cUnits){
+                LexicalPreservingPrinter.setup(cUnit);
+                String str = LexicalPreservingPrinter.print(cUnit);
+                candidateSources.add(str);
+            }
+        }
+        return;
+    }
+
+    /**
+     * switch文がある時にエラーが起きないかテスト
+     */
+    @Test public void testForSwitch(){
+
+        final String targetSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private String fa = \"a\";\n")
+            .append("    private String fb = \"a\";\n")
+            .append("    private void ma(String pa, String pb) {\n")
+            .append("        String la = \"b\";\n")
+            .append("        int num = 0;\n")
+            .append("        switch (num) {\n")
+            .append("        case 1:\n")
+            .append("            num = 1;\n")
+            .append("            break;\n")
+            .append("        case 2:\n")
+            .append("            num = 2;\n")
+            .append("            break;\n")
+            .append("        default:\n")
+            .append("            num = 0;\n")
+            .append("        }\n")
+            .append("        la = \"d\";\n")
+            .append("        this.mb(\"hoge\", \"fuga\");\n")
+            .append("    }\n")
+            .append("    private void mb(String a, String b) {\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
+        List<String> candidateSources = new ArrayList<String>();
+        for(Node node : repairUnits){
+            CopyReplaceOperation cr = new CopyReplaceOperation();
+            List<CompilationUnit> cUnits = cr.exec(node);
+            for (CompilationUnit cUnit : cUnits){
+                LexicalPreservingPrinter.setup(cUnit);
+                String str = LexicalPreservingPrinter.print(cUnit);
+                candidateSources.add(str);
+            }
+        }
+        return;
+    }
 }

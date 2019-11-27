@@ -11,6 +11,8 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.stmt.SwitchEntryStmt;
+import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
 import jp.posl.jprophet.NodeUtility;
@@ -27,7 +29,7 @@ public class CopyReplaceOperation implements AstOperation{
     @Override
     public List<CompilationUnit> exec(Node targetNode){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
-        if (targetNode instanceof Statement && !(targetNode instanceof BlockStmt)){
+        if (targetNode instanceof Statement && !(targetNode instanceof BlockStmt) && !(targetNode instanceof SwitchEntryStmt)){
             //修正対象のステートメントの属するメソッドノードを取得
             //メソッド内のステートメント(修正対象のステートメントより前のもの)を収集
             List<Statement> statements = collectLocalStatementsBeforeTarget((Statement)targetNode);
@@ -60,6 +62,8 @@ public class CopyReplaceOperation implements AstOperation{
         return localStatements.stream()
             .filter(s -> getEndLineNumber(s).orElseThrow() < getBeginLineNumber(targetStatement).orElseThrow())
             .filter(s -> (s instanceof BlockStmt) == false)
+            .filter(s -> (s instanceof SwitchStmt) == false)
+            .filter(s -> (s instanceof SwitchEntryStmt) == false)
             .collect(Collectors.toList());
     }
 
