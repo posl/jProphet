@@ -29,7 +29,7 @@ public class CopyReplaceOperation implements AstOperation{
     @Override
     public List<CompilationUnit> exec(Node targetNode){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
-        if (targetNode instanceof Statement && !(targetNode instanceof BlockStmt) && !(targetNode instanceof SwitchEntryStmt)){
+        if (targetNode instanceof Statement && !(targetNode instanceof BlockStmt)  && !(targetNode instanceof SwitchEntryStmt)){
             //修正対象のステートメントの属するメソッドノードを取得
             //メソッド内のステートメント(修正対象のステートメントより前のもの)を収集
             List<Statement> statements = collectLocalStatementsBeforeTarget((Statement)targetNode);
@@ -74,10 +74,12 @@ public class CopyReplaceOperation implements AstOperation{
      * @return compilationUnitのリスト
      */
     private List<CompilationUnit> copyAndPasteReplacedStatementToBeforeTarget(Statement statement, Node targetNode){
+        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
         Node copiedNode = NodeUtility.insertNodeWithNewLine(statement, targetNode);
+        if (copiedNode == null) return candidates;
         List<Node> copiedNodeDescendants = NodeUtility.getAllDescendantNodes(copiedNode);
 
-        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+        
         for (Node descendant : copiedNodeDescendants){
             VariableReplacementOperation vr = new VariableReplacementOperation();
             List<CompilationUnit> copiedNodeList = vr.exec(descendant);

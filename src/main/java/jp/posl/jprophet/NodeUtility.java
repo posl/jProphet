@@ -122,6 +122,7 @@ public class NodeUtility {
      * previousNodeとnextNodeの間にnodeToInsertを挿入する
      * nodeToInsertとnextNodeの間の空白の数,インデント,改行の数は,previousNodeとnextNodeの間のそれらと等しくなる
      * 行の先頭(末尾)にノードを挿入しようとすると,一つ上の行(下の行)に挿入される
+     * 挿入後のコードがパースできない場合nullを返す
      * @param nodeToInsert 挿入するノード
      * @param previousNode 挿入するノードの前のノード
      * @param nextNode 挿入するノードの後ろのノード
@@ -163,7 +164,8 @@ public class NodeUtility {
     /**
      * targetNodeの直前の行にnodeToInsertを入れる
      * nodeToInsertのインデントはtargetNodeのインデントと同じ
-     * Statementノードよりも小さい単位のノードを渡すとエラーが起きる
+     * Statementノードよりも小さい単位のノードを渡すとnullが返される
+     * 挿入後のコードがパースできない場合nullを返す
      * @param nodeToInsert 挿入するノード
      * @param targetNode 挿入するノードの後ろのノード
      * @return 挿入したノード
@@ -222,6 +224,7 @@ public class NodeUtility {
      * Statementノードよりも小さい単位のノードを挿入する際に利用
      * x = 0; を int x = 0; にするなど
      * nodeToInsertとtargetNodeの間には空白が1つ入る
+     * 挿入後のコードがパースできない場合nullを返す
      * @param nodeToInsert 挿入するノード
      * @param targetNode 挿入するノードの後ろのノード
      * @return 挿入したノード
@@ -256,6 +259,7 @@ public class NodeUtility {
 
     /**
      * targetNodeをnodeToReplaceに置換する
+     * 置換後のコードがパースできない場合nullを返す
      * @param nodeToReplace 置換された後のノード
      * @param targetNode 置換される前のノード
      * @return 置換後のASTノード
@@ -364,6 +368,7 @@ public class NodeUtility {
      * @return 見つけたノード
      */
     public static Node findNodeInCompilationUnitByBeginRange(CompilationUnit compilationUnit, Node node, Range range) {
+        if (compilationUnit == null) return null;
         List<Node> nodes = NodeUtility.getAllDescendantNodes(compilationUnit);
         Node newNode = nodes.stream().filter(n -> {
             return n.equals(node) && n.getRange().orElseThrow().begin.equals(range.begin);
