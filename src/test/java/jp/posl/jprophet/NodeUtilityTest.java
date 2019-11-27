@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.JavaToken;
@@ -13,10 +12,8 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.IfStmt;
-import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 
@@ -118,10 +115,10 @@ public class NodeUtilityTest {
         String reparsedSource = null;
         String reparsedSource2 = null;
 
-        Node insertNode = NodeUtility.insertNodeBetweenNodes(nodeToInsert, previousNode, nextNode);
-        Node insertNode2 = NodeUtility.insertNodeWithNewLine(nodeToInsert, nextNode);
-        CompilationUnit insertedCompilationUnit = insertNode.findCompilationUnit().orElseThrow();
-        CompilationUnit insertedCompilationUnit2 = insertNode2.findCompilationUnit().orElseThrow();
+        Node insertedNode = NodeUtility.insertNodeBetweenNodes(nodeToInsert, previousNode, nextNode);
+        Node insertedNode2 = NodeUtility.insertNodeWithNewLine(nodeToInsert, nextNode);
+        CompilationUnit insertedCompilationUnit = insertedNode.findCompilationUnit().orElseThrow();
+        CompilationUnit insertedCompilationUnit2 = insertedNode2.findCompilationUnit().orElseThrow();
         LexicalPreservingPrinter.setup(insertedCompilationUnit);
         LexicalPreservingPrinter.setup(insertedCompilationUnit2);
         reparsedSource = LexicalPreservingPrinter.print(insertedCompilationUnit);
@@ -150,11 +147,11 @@ public class NodeUtilityTest {
             .append("}\n")
             .toString();
         
-        String insertStatementSource = new StringBuilder().append("")
+        String sourceOfStatementToInsert = new StringBuilder().append("")
             .append("int x = 0;\n")
             .toString();
 
-        Statement insertStatement = JavaParser.parseStatement(insertStatementSource);
+        Statement statementToInsert = JavaParser.parseStatement(sourceOfStatementToInsert);
 
 
         Node previousNode = nodeList.get(1); //la = "hoge";
@@ -163,8 +160,8 @@ public class NodeUtilityTest {
         String reparsedSource = null;
         String reparsedSource2 = null;
 
-        Node insertedStatement = NodeUtility.insertNodeBetweenNodes(insertStatement, previousNode, nextNode);
-        Node insertedStatement2 = NodeUtility.insertNodeWithNewLine(insertStatement, nextNode);
+        Node insertedStatement = NodeUtility.insertNodeBetweenNodes(statementToInsert, previousNode, nextNode);
+        Node insertedStatement2 = NodeUtility.insertNodeWithNewLine(statementToInsert, nextNode);
         CompilationUnit insertedCompilationUnit = insertedStatement.findCompilationUnit().orElseThrow();
         CompilationUnit insertedCompilationUnit2 = insertedStatement2.findCompilationUnit().orElseThrow();
         LexicalPreservingPrinter.setup(insertedCompilationUnit);
@@ -199,8 +196,8 @@ public class NodeUtilityTest {
 
         String reparsedSource = null;
 
-        Node insertNode = NodeUtility.insertNodeInOneLine(string, targetNode);
-        CompilationUnit insertedCompilationUnit = insertNode.findCompilationUnit().orElseThrow();
+        Node insertedNode = NodeUtility.insertNodeInOneLine(string, targetNode);
+        CompilationUnit insertedCompilationUnit = insertedNode.findCompilationUnit().orElseThrow();
         LexicalPreservingPrinter.setup(insertedCompilationUnit);
         reparsedSource = LexicalPreservingPrinter.print(insertedCompilationUnit);
 
@@ -227,10 +224,10 @@ public class NodeUtilityTest {
 
         String reparsedSource = null;
 
-        Node replaceNode = nodeList.get(0); //String la = "b";
+        Node nodeToReplaceWith = nodeList.get(0); //String la = "b";
         Node targetNode = nodeList.get(2); //ld = "huga";
 
-        Node replacedNode = NodeUtility.replaceNode(replaceNode, targetNode);
+        Node replacedNode = NodeUtility.replaceNode(nodeToReplaceWith, targetNode);
         CompilationUnit replacedCompilationUnit = replacedNode.findCompilationUnit().orElseThrow();
         LexicalPreservingPrinter.setup(replacedCompilationUnit);
         reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
@@ -256,12 +253,12 @@ public class NodeUtilityTest {
             .append("}\n")
             .toString();
         
-        Node replaceNode = nodeList.get(1).getChildNodes().get(0).getChildNodes().get(1); //"hoge"
+        Node nodeToReplaceWith = nodeList.get(1).getChildNodes().get(0).getChildNodes().get(1); //"hoge"
         Node targetNode = nodeList.get(2).getChildNodes().get(0).getChildNodes().get(1); //"huga"
         
         String reparsedSource = null;
 
-        Node replacedStatement = NodeUtility.replaceNode(replaceNode, targetNode);
+        Node replacedStatement = NodeUtility.replaceNode(nodeToReplaceWith, targetNode);
         CompilationUnit replacedCompilationUnit = replacedStatement.findCompilationUnit().orElseThrow();
         LexicalPreservingPrinter.setup(replacedCompilationUnit);
         reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
@@ -315,6 +312,9 @@ public class NodeUtilityTest {
         return;
     }
 
+    /**
+     * TokenRangeを持たないノード(複数行のもの)が挿入できるかテスト
+     */
     @Test public void testForInsertNodeNotHaveToken(){
 
         String expectedSource = new StringBuilder().append("")
@@ -330,9 +330,8 @@ public class NodeUtilityTest {
             .append("}\n")
             .toString();
         
-        //Node replaceNode = new ExpressionStmt (new MethodCallExpr("methodCall")); //methodCall();
-        Node insertNode = new IfStmt(new MethodCallExpr("methodCall"), nodeList.get(1), null);
-        Node targetNode = nodeList.get(2); //"ld = "huga";"
+        Node insertNode = new IfStmt(new MethodCallExpr("methodCall"), nodeList.get(1), null); //if (methodCall()) \n la = "hoge";
+        Node targetNode = nodeList.get(2); //ld = "huga";
         
         String reparsedSource = null;
 
@@ -347,7 +346,7 @@ public class NodeUtilityTest {
         return;
     }
     /**
-     * TokenRangeをもたないノードが置換できるかテスト
+     * TokenRangeをもたないノード(複数行のもの)が置換できるかテスト
      */
     @Test public void testForReplaceNodeNotHaveToken(){
 
@@ -363,18 +362,15 @@ public class NodeUtilityTest {
             .append("}\n")
             .toString();
         
-        //Node replaceNode = new ExpressionStmt (new MethodCallExpr("methodCall")); //methodCall();
-        Node replaceNode = new IfStmt(new MethodCallExpr("methodCall"), nodeList.get(1), null);
-        Node targetNode = nodeList.get(2); //"ld = "huga";"
+        Node nodeToReplaceWith = new IfStmt(new MethodCallExpr("methodCall"), nodeList.get(1), null); //if (methodCall()) \n la = "hoge";
+        Node targetNode = nodeList.get(2); //ld = "huga";
         
         String reparsedSource = null;
 
-        Node replacedStatement = NodeUtility.replaceNode(replaceNode, targetNode);
+        Node replacedStatement = NodeUtility.replaceNode(nodeToReplaceWith, targetNode);
         CompilationUnit replacedCompilationUnit = replacedStatement.findCompilationUnit().orElseThrow();
         LexicalPreservingPrinter.setup(replacedCompilationUnit);
         reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
-        System.out.println(reparsedSource);
-        System.out.println(expectedSource);
         assertThat(reparsedSource).isEqualTo(expectedSource);
 
         return;
