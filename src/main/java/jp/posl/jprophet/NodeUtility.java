@@ -251,9 +251,9 @@ public class NodeUtility {
     public static Node replaceNode(Node nodeToReplace, Node targetNode) {
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
         Node nodeToReplaceWithToken = nodeToReplace;
-        if (!nodeToReplace.getTokenRange().isPresent()){
-            nodeToReplaceWithToken = NodeUtility.parseNode(nodeToReplace);
-        }
+        //if (!nodeToReplace.getTokenRange().isPresent()){
+        nodeToReplaceWithToken = NodeUtility.parseNode(nodeToReplace);
+        //}
 
         JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
         JavaToken replaceToken = nodeToReplaceWithToken.getTokenRange().orElseThrow().getBegin();
@@ -265,6 +265,18 @@ public class NodeUtility {
         while (true){
             beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, replaceToken.getKind(), replaceToken.getText(), null, null));
             if (replaceToken.getRange().equals(endTokenOfReplace.getRange())) break;
+            if (replaceToken.getKind() == JavaToken.Kind.UNIX_EOL.getKind()){
+                JavaToken insertToken = targetNode.getTokenRange().orElseThrow().getBegin();
+
+                while (!insertToken.getText().equals("\n")){
+                insertToken = insertToken.getPreviousToken().orElseThrow();
+                }
+                insertToken = insertToken.getNextToken().orElseThrow();
+                while (!insertToken.getRange().equals(targetNode.getTokenRange().orElseThrow().getBegin().getRange())){
+                    beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, insertToken.getKind(), insertToken.getText(), null, null));   
+                    insertToken = insertToken.getNextToken().orElseThrow();
+                }
+            }
             replaceToken = replaceToken.getNextToken().orElseThrow();
         }
 
