@@ -24,15 +24,15 @@ public class VariableReplacementOperationTest{
         final String targetStatement = 
                 "        this.mb(\"hoge\", \"fuga\");\n";
         final String beforeTargetStatement = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("    private String fa = \"a\";\n\n")
-            .append("    private String fb = \"a\";\n\n")
+            .append("public class A {\n")
+            .append("    private String fa = \"a\";\n")
+            .append("    private String fb = \"a\";\n")
             .append("    private void ma(String pa, String pb) {\n")
             .append("        String la = \"b\";\n")
             .toString();
 
         final String afterTargetStatement = new StringBuilder().append("")
-            .append("    }\n\n")
+            .append("    }\n")
             .append("    private void mb(String a, String b) {\n")
             .append("    }\n")
             .append("}\n")
@@ -89,8 +89,8 @@ public class VariableReplacementOperationTest{
         final String targetStatement = 
                 "        la = \"hoge\";\n"; 
         final String beforeTargetStatement = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("    private String fa = \"a\";\n\n")
+            .append("public class A {\n")
+            .append("    private String fa = \"a\";\n")
             .append("    private void ma(String pa) {\n")
             .append("        String la = \"a\";\n")
             .append("        String lb = \"b\";\n")
@@ -166,7 +166,7 @@ public class VariableReplacementOperationTest{
                 "        la = lb;\n"; 
 
         final String source = new StringBuilder().append("")
-        .append("public class A {\n\n")
+        .append("public class A {\n")
         .append("    private void ma() {\n")
         .append("        String la = \"a\";\n")
         .append("        String lb = \"b\";\n")
@@ -178,7 +178,7 @@ public class VariableReplacementOperationTest{
         final String expectedTargetStatement = 
                 "        la = lb;\n"; 
         final String expectedSource = new StringBuilder().append("")
-        .append("public class A {\n\n")
+        .append("public class A {\n")
         .append("    private void ma() {\n")
         .append("        String la = \"a\";\n")
         .append("        String lb = \"b\";\n")
@@ -245,7 +245,7 @@ public class VariableReplacementOperationTest{
                 "        hoge(0);\n"; 
 
         final String beforeTargetStatement = new StringBuilder().append("")
-            .append("public class A {\n\n")
+            .append("public class A {\n")
             .append("    private void ma() {\n")
             .append("        int la = 1;\n")
             .toString();

@@ -13,7 +13,11 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 
 public class NodeUtilityTest {
@@ -306,6 +310,36 @@ public class NodeUtilityTest {
         LexicalPreservingPrinter.setup(insertedCompilationUnit);
         reparsedSource = LexicalPreservingPrinter.print(insertedCompilationUnit);
 
+        assertThat(reparsedSource).isEqualTo(expectedSource);
+
+        return;
+    }
+
+    /**
+     * TokenRangeをもたないノードが置換できるかテスト
+     */
+    @Test public void testForReplaceNodeNotHaveToken(){
+
+        String expectedSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("   private String fa = \"a\";\n")
+            .append("   private void ma(String pa, String pb) {\n")
+            .append("       String la = \"b\";\n")
+            .append("       la = \"hoge\";\n")
+            .append("       methodCall();\n")
+            .append("   }\n")
+            .append("}\n")
+            .toString();
+        
+        Node replaceNode = new ExpressionStmt (new MethodCallExpr("methodCall")); //methodCall();
+        Node targetNode = nodeList.get(2); //"ld = "huga";"
+        
+        String reparsedSource = null;
+
+        Node replacedStatement = NodeUtility.replaceNode(replaceNode, targetNode);
+        CompilationUnit replacedCompilationUnit = replacedStatement.findCompilationUnit().orElseThrow();
+        LexicalPreservingPrinter.setup(replacedCompilationUnit);
+        reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
         assertThat(reparsedSource).isEqualTo(expectedSource);
 
         return;

@@ -156,7 +156,7 @@ public class NodeUtility {
         
         CompilationUnit compilationUnit = copiedAfterNode.findCompilationUnit().orElseThrow();
         CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, nodeToInsertWithToken, beginRangeOfAfter);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeToInsertWithToken, beginRangeOfAfter);
         return copiedInsertNode;
     }
 
@@ -201,7 +201,7 @@ public class NodeUtility {
         
         CompilationUnit compilationUnit = copiedAfterNode.findCompilationUnit().orElseThrow();
         CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, nodeToInsertWithToken, beginRangeOfAfter);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeToInsertWithToken, beginRangeOfAfter);
         return copiedInsertNode;
     }
 
@@ -238,7 +238,7 @@ public class NodeUtility {
         
         CompilationUnit compilationUnit = copiedAfterNode.findCompilationUnit().orElseThrow();
         CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, nodeToInsertWithToken, beginRangeOfAfter);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeToInsertWithToken, beginRangeOfAfter);
         return copiedInsertNode;
     }
 
@@ -286,7 +286,7 @@ public class NodeUtility {
 
         CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
         CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, nodeToReplaceWithToken, beginRangeOfTarget);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeToReplaceWithToken, beginRangeOfTarget);
         return copiedInsertNode;
     }
 
@@ -339,7 +339,7 @@ public class NodeUtility {
      * @param range 探したいノードのrange
      * @return 見つけたノード
      */
-    public static Node findNodeInCompilationUnitByLine(CompilationUnit compilationUnit, Node node, Range range) {
+    public static Node findNodeInCompilationUnitByBeginRange(CompilationUnit compilationUnit, Node node, Range range) {
         List<Node> nodes = NodeUtility.getAllDescendantNodes(compilationUnit);
         Node newNode = nodes.stream().filter(n -> {
             return n.equals(node) && n.getRange().orElseThrow().begin.equals(range.begin);
