@@ -315,6 +315,37 @@ public class NodeUtilityTest {
         return;
     }
 
+    @Test public void testForInsertNodeNotHaveToken(){
+
+        String expectedSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("   private String fa = \"a\";\n")
+            .append("   private void ma(String pa, String pb) {\n")
+            .append("       String la = \"b\";\n")
+            .append("       la = \"hoge\";\n")
+            .append("       if (methodCall())\n")
+            .append("           la = \"hoge\";\n")
+            .append("       ld = \"huga\";\n")
+            .append("   }\n")
+            .append("}\n")
+            .toString();
+        
+        //Node replaceNode = new ExpressionStmt (new MethodCallExpr("methodCall")); //methodCall();
+        Node insertNode = new IfStmt(new MethodCallExpr("methodCall"), nodeList.get(1), null);
+        Node targetNode = nodeList.get(2); //"ld = "huga";"
+        
+        String reparsedSource = null;
+
+        Node replacedStatement = NodeUtility.insertNodeWithNewLine(insertNode, targetNode);
+        CompilationUnit replacedCompilationUnit = replacedStatement.findCompilationUnit().orElseThrow();
+        LexicalPreservingPrinter.setup(replacedCompilationUnit);
+        reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
+        System.out.println(reparsedSource);
+        System.out.println(expectedSource);
+        assertThat(reparsedSource).isEqualTo(expectedSource);
+
+        return;
+    }
     /**
      * TokenRangeをもたないノードが置換できるかテスト
      */
@@ -348,4 +379,6 @@ public class NodeUtilityTest {
 
         return;
     }
+
+
 }

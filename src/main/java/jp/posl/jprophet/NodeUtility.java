@@ -171,20 +171,34 @@ public class NodeUtility {
     public static Node insertNodeWithNewLine(Node nodeToInsert, Node targetNode) {
         Node copiedAfterNode = NodeUtility.deepCopyByReparse(targetNode);
         Node nodeToInsertWithToken = nodeToInsert;
-        if (!nodeToInsert.getTokenRange().isPresent()){
-            nodeToInsertWithToken = NodeUtility.parseNode(nodeToInsert);
-        }
+        //if (!nodeToInsert.getTokenRange().isPresent()){
+        nodeToInsertWithToken = NodeUtility.parseNode(nodeToInsert);
+        //}
 
-        JavaToken beginTokenOfAfter = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
+        JavaToken beginTokenOfTarget = copiedAfterNode.getTokenRange().orElseThrow().getBegin();
         JavaToken insertToken = nodeToInsertWithToken.getTokenRange().orElseThrow().getBegin();
         final JavaToken endTokenOfInsert = nodeToInsertWithToken.getTokenRange().orElseThrow().getEnd();
         final JavaToken originalBeginTokenOfAfter = targetNode.getTokenRange().orElseThrow().getBegin();
 
-        final Range beginRangeOfAfter = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
+        final Range beginRangeOfTarget = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
 
         while (true){
-            beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));
+            beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, insertToken.getKind(), insertToken.getText(), null, null));
             if (insertToken.getRange().equals(endTokenOfInsert.getRange())) break;
+
+            //複数行を挿入する時のインデントの調節
+            if (insertToken.getKind() == JavaToken.Kind.UNIX_EOL.getKind()){
+                JavaToken spaceToken = targetNode.getTokenRange().orElseThrow().getBegin();
+
+                while (!spaceToken.getText().equals("\n")){
+                spaceToken = spaceToken.getPreviousToken().orElseThrow();
+                }
+                spaceToken = spaceToken.getNextToken().orElseThrow();
+                while (!spaceToken.getRange().equals(targetNode.getTokenRange().orElseThrow().getBegin().getRange())){
+                    beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, spaceToken.getKind(), spaceToken.getText(), null, null));   
+                    spaceToken = spaceToken.getNextToken().orElseThrow();
+                }
+            }
             insertToken = insertToken.getNextToken().orElseThrow();
         }
 
@@ -195,13 +209,13 @@ public class NodeUtility {
         }
 
         while (!insertToken.getRange().equals(originalBeginTokenOfAfter.getRange())){
-            beginTokenOfAfter.insert(new JavaToken(beginRangeOfAfter, insertToken.getKind(), insertToken.getText(), null, null));   
+            beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, insertToken.getKind(), insertToken.getText(), null, null));   
             insertToken = insertToken.getNextToken().orElseThrow();
         }
         
         CompilationUnit compilationUnit = copiedAfterNode.findCompilationUnit().orElseThrow();
         CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeToInsertWithToken, beginRangeOfAfter);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeToInsertWithToken, beginRangeOfTarget);
         return copiedInsertNode;
     }
 
@@ -265,16 +279,18 @@ public class NodeUtility {
         while (true){
             beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, replaceToken.getKind(), replaceToken.getText(), null, null));
             if (replaceToken.getRange().equals(endTokenOfReplace.getRange())) break;
-            if (replaceToken.getKind() == JavaToken.Kind.UNIX_EOL.getKind()){
-                JavaToken insertToken = targetNode.getTokenRange().orElseThrow().getBegin();
 
-                while (!insertToken.getText().equals("\n")){
-                insertToken = insertToken.getPreviousToken().orElseThrow();
+            //複数行置換する時のインデントの調整
+            if (replaceToken.getKind() == JavaToken.Kind.UNIX_EOL.getKind()){
+                JavaToken spaceToken = targetNode.getTokenRange().orElseThrow().getBegin();
+
+                while (!spaceToken.getText().equals("\n")){
+                spaceToken = spaceToken.getPreviousToken().orElseThrow();
                 }
-                insertToken = insertToken.getNextToken().orElseThrow();
-                while (!insertToken.getRange().equals(targetNode.getTokenRange().orElseThrow().getBegin().getRange())){
-                    beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, insertToken.getKind(), insertToken.getText(), null, null));   
-                    insertToken = insertToken.getNextToken().orElseThrow();
+                spaceToken = spaceToken.getNextToken().orElseThrow();
+                while (!spaceToken.getRange().equals(targetNode.getTokenRange().orElseThrow().getBegin().getRange())){
+                    beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, spaceToken.getKind(), spaceToken.getText(), null, null));   
+                    spaceToken = spaceToken.getNextToken().orElseThrow();
                 }
             }
             replaceToken = replaceToken.getNextToken().orElseThrow();
