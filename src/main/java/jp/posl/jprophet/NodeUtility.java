@@ -48,7 +48,7 @@ public class NodeUtility {
      */
     public static Node deepCopy(Node node) {
         CompilationUnit cu = node.findCompilationUnit().get();
-
+        
         CompilationUnit newCu = cu.clone();
         List<Node> nodes = NodeUtility.getAllDescendantNodes(newCu);
         Node newNode = nodes.stream().filter(n -> {
@@ -229,8 +229,8 @@ public class NodeUtility {
 
     /**
      * targetNodeをnodeToReplaceに置換する
-     * @param reolaceNode 置換された後のノード
-     * @param originalNode 置換される前のノード
+     * @param nodeToReplace 置換された後のノード
+     * @param targetNode 置換される前のノード
      * @return 置換後のASTノード
      */
     public static Node replaceNode(Node nodeToReplace, Node targetNode) {
@@ -317,7 +317,7 @@ public class NodeUtility {
      * compilationUnitから行単位でノードを探す
      * @param compilationUnit パースし直した後のcompilationUnit
      * @param node パースし直す前の探したいノード
-     * @param beginLine 探したいノードの最初の行番号
+     * @param range 探したいノードのrange
      * @return 見つけたノード
      */
     public static Node findNodeInCompilationUnitByLine(CompilationUnit compilationUnit, Node node, Range range) {
