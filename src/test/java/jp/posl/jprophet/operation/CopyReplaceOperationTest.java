@@ -235,7 +235,7 @@ public class CopyReplaceOperationTest{
     /**
      * 少し複雑なコードで動作するかどうかテスト
      */
-    @Test public void testtest(){
+    @Test public void testForRun(){
 
         final String targetSource = new StringBuilder().append("")
             .append("public class A {\n")
