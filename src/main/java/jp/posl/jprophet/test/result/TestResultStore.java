@@ -24,7 +24,7 @@ public class TestResultStore {
 
     /**
      * テスト結果と適用した修正パッチを追加する
-     * @param results テスト結果
+     * @param testResults テスト結果
      * @param patch 修正パッチ
      */
     public void addTestResults(List<TestResult> testResults, PatchCandidate patch) {
