@@ -58,8 +58,8 @@ public class CtrlFlowIntroductionOperationTest {
         List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
         List<String> candidateSources = new ArrayList<String>();
         for(Node node : nodes){
-            CtrlFlowIntroductionOperation vr = new CtrlFlowIntroductionOperation();
-            candidateSources.addAll(vr.exec(node).stream()
+            CtrlFlowIntroductionOperation cfo = new CtrlFlowIntroductionOperation();
+            candidateSources.addAll(cfo.exec(node).stream()
                 .map(ru -> ru.findCompilationUnit().get().toString()) 
                 .collect(Collectors.toList())
             );
@@ -120,9 +120,9 @@ public class CtrlFlowIntroductionOperationTest {
             .append("}\n")
             .toString());
 
-        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
+        List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
         List<String> candidateSources = new ArrayList<String>();
-        for(Node node : repairUnits){
+        for(Node node : nodes) {
             CtrlFlowIntroductionOperation cfo = new CtrlFlowIntroductionOperation();
             candidateSources.addAll(cfo.exec(node).stream()
                 .map(n -> n.findCompilationUnit().get().toString()) 

@@ -58,7 +58,7 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
      */
     private Expression insertIfStmtWithAbstCond(Node nextNode, Statement stmtInIfBlockToInsert) {
         final String abstractConditionName = "ABST_HOLE";
-        final IfStmt newIfStmt =  (IfStmt)JavaParser.parseStatement((new IfStmt(null, new MethodCallExpr(abstractConditionName), stmtInIfBlockToInsert, null)).toString());
+        final IfStmt newIfStmt =  (IfStmt)JavaParser.parseStatement((new IfStmt(new MethodCallExpr(abstractConditionName), stmtInIfBlockToInsert, null)).toString());
         final IfStmt insertedIfStmt = (IfStmt)NodeUtility.insertNodeWithNewLine(newIfStmt, nextNode);
         final Expression abstCondition = insertedIfStmt.getCondition();
         return abstCondition;
