@@ -15,6 +15,7 @@ import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.stmt.WhileStmt;
 
 import jp.posl.jprophet.NodeUtility;
 
@@ -41,7 +42,7 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
         final List<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
         final Expression abstConditionOfIfReturn = this.insertIfStmtWithAbstCond(targetNode, new ReturnStmt());
         compilationUnits.addAll(this.collectConcreteConditions(abstConditionOfIfReturn));
-        if(targetNode.findParent(ForStmt.class).isPresent()) {
+        if(targetNode.findParent(ForStmt.class).isPresent() || targetNode.findParent(WhileStmt.class).isPresent()) {
             final Expression abstConditionOfIfBreak = this.insertIfStmtWithAbstCond(targetNode, new BreakStmt((SimpleName) null));
             compilationUnits.addAll(this.collectConcreteConditions(abstConditionOfIfBreak));
         }
