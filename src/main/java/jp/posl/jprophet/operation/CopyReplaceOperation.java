@@ -58,7 +58,9 @@ public class CopyReplaceOperation implements AstOperation{
         List<Statement> localStatements = methodNode.findAll(Statement.class);
 
         //targetStatementを含むそれより後ろの行の要素を全て消す
-        //BlockStmtを全て除外する
+        //BlockStmt, SwitchStmt, SwitchEntryStmtを全て除外する
+        //TODO 除外していないfor文やif文は,コピペされた後,ブロックの中身のExpressionが置換される
+        //TODO このようなコピペが必要でないならforStmtやifStmt,whileStmtにもfilterをかける
         return localStatements.stream()
             .filter(s -> getEndLineNumber(s).orElseThrow() < getBeginLineNumber(targetStatement).orElseThrow())
             .filter(s -> (s instanceof BlockStmt) == false)
