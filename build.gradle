@@ -81,6 +81,7 @@ dependencies {
     compile group: 'com.github.javaparser', name: 'javaparser-symbol-solver-core', version: '3.5.15'
     compile group: 'com.github.spotbugs', name: 'spotbugs', version: '3.1.12'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile group: 'org.apache.maven', name: 'maven-model', version: '3.5.3'
 }
 
 // Define the main class for the application

@@ -6,8 +6,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 
 public class MavenProject implements Project {
@@ -18,6 +24,7 @@ public class MavenProject implements Project {
     private List<String> testFileFqns;
     private List<String> classPaths;
     private String rootPath;
+    private static final String configFileName = "pom.xml";
 
     /**
      * mavenプロジェクトからソースファイルとテストファイルを収集 
@@ -182,10 +189,57 @@ public class MavenProject implements Project {
 
 
     private List<String> buildClassFilePaths() {
-        return new ArrayList<String>();
+        final Path pomFilePath = Paths.get(this.rootPath + "/" + configFileName);
+        return extractDependencyPaths(pomFilePath).stream()
+            .map(p -> p.toString())
+            .collect(Collectors.toList());
     }
 
-
+    private List<Path> extractDependencyPaths(final Path pomFilePath) {
+        final List<Path> list = new ArrayList<>();
+        try {
+          final String userHome = System.getProperty("user.home");
+          final MavenXpp3Reader reader = new MavenXpp3Reader();
+          final Model model = reader.read(Files.newBufferedReader(pomFilePath));
+          final Path repositoryPath = Paths.get(userHome)
+              .resolve(".m2")
+              .resolve("repository");
+    
+          for (final Object object : model.getDependencies()) {
+            if (!(object instanceof Dependency)) {
+              continue;
+            }
+            final Dependency dependency = (Dependency) object;
+    
+            Path path = repositoryPath;
+            final String groupId = dependency.getGroupId();
+            for (final String string : groupId.split("\\.")) {
+              path = path.resolve(string);
+            }
+    
+            final Path libPath = path.resolve(dependency.getArtifactId())
+                .resolve(dependency.getVersion());
+            if (!Files.isDirectory(libPath)) {
+              continue;
+            }
+    
+            Files.find(libPath, Integer.MAX_VALUE, (p, attr) -> p.toString()
+                .endsWith(".jar"))
+                .forEach(list::add);
+    
+            Files.find(libPath, Integer.MAX_VALUE, (p, attr) -> p.toString()
+                .endsWith(".pom"))
+                .map(this::extractDependencyPaths)
+                .flatMap(Collection::stream)
+                .forEach(list::add);
+          }
+        } catch (final IOException | XmlPullParserException e) {            
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+        }
+        return list;
+      }
     
 
 }
