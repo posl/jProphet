@@ -1,5 +1,6 @@
 package jp.posl.jprophet.test.executor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,15 +39,15 @@ public class SpotBugsTestExecutor implements TestExecutor {
         final UnitTestExecutor unitTestExecutor = new UnitTestExecutor();
         final boolean isSuccess = unitTestExecutor.exec(config).get(0).getIsSuccess();
         if(isSuccess) {
-            final SpotBugsExecutor spotBugsExecutor = new SpotBugsExecutor();
-            spotBugsExecutor.exec(config, spotbugsResultFileName);
+            final SpotBugsExecutor spotBugsExecutor = new SpotBugsExecutor(spotbugsResultFileName);
+            spotBugsExecutor.exec(config);
             final SpotBugsResultXMLReader spotBugsResultXMLReader = new SpotBugsResultXMLReader();
             final List<SpotBugsWarning> beforeWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(beforeResultFilePath, config.getTargetProject());
-            final List<SpotBugsWarning> afterWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(SpotBugsExecutor.getResultFilePath(spotbugsResultFileName), config.getTargetProject());
+            final List<SpotBugsWarning> afterWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(spotBugsExecutor.getResultFilePath(), config.getTargetProject());
             return createResults(beforeWarnings, afterWarnings);
         }
         else {
-            return List.of(new SpotBugsTestResult(false, new SpotBugsWarning("", "", 0, 0), 0));   
+            return new ArrayList<TestResult>();
         }
     }
 
