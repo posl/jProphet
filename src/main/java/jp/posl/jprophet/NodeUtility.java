@@ -27,7 +27,7 @@ public final class NodeUtility {
      */
     public static Node deepCopy(Node node) {
         CompilationUnit cu = node.findCompilationUnit().get();
-
+        
         CompilationUnit newCu = cu.clone();
         List<Node> nodes = NodeUtility.getAllDescendantNodes(newCu);
         Node newNode = nodes.stream().filter(n -> {
@@ -297,7 +297,7 @@ public final class NodeUtility {
      * compilationUnitから行単位でノードを探す
      * @param compilationUnit パースし直した後のcompilationUnit
      * @param node パースし直す前の探したいノード
-     * @param beginLine 探したいノードの最初の行番号
+     * @param range 探したいノードのrange
      * @return 見つけたノード
      */
     public static Node findNodeInCompilationUnitByLine(CompilationUnit compilationUnit, Node node, Range range) {
