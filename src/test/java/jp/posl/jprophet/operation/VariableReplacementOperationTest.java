@@ -76,8 +76,6 @@ public class VariableReplacementOperationTest{
                 candidateSources.add(LexicalPreservingPrinter.print(cUnit));
             }
         }
-        System.out.println(candidateSources);
-        System.out.println(expectedSources);
         assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
         return;
     }

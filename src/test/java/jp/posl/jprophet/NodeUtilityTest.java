@@ -339,8 +339,6 @@ public class NodeUtilityTest {
         CompilationUnit replacedCompilationUnit = replacedStatement.findCompilationUnit().orElseThrow();
         LexicalPreservingPrinter.setup(replacedCompilationUnit);
         reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
-        System.out.println(reparsedSource);
-        System.out.println(expectedSource);
         assertThat(reparsedSource).isEqualTo(expectedSource);
 
         return;
