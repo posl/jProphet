@@ -74,9 +74,9 @@ public class CopyReplaceOperationTest{
             })
             .collect(Collectors.toList());
 
-        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
+        List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
         List<String> candidateSources = new ArrayList<String>();
-        for(Node node : repairUnits){
+        for(Node node : nodes){
             CopyReplaceOperation cr = new CopyReplaceOperation();
             List<CompilationUnit> cUnits = cr.exec(node);
             for (CompilationUnit cUnit : cUnits){
@@ -155,9 +155,9 @@ public class CopyReplaceOperationTest{
             })
             .collect(Collectors.toList()));
 
-        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
+        List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
         List<String> candidateSources = new ArrayList<String>();
-        for(Node node : repairUnits){
+        for(Node node : nodes){
             CopyReplaceOperation cr = new CopyReplaceOperation();
             List<CompilationUnit> cUnits = cr.exec(node);
             for (CompilationUnit cUnit : cUnits){
@@ -177,9 +177,9 @@ public class CopyReplaceOperationTest{
         .append("import java.util.List;\n")
         .toString();
 
-        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(sourceThatHasNothingToReplace);
+        List<Node> nodes = NodeUtility.getAllNodesFromCode(sourceThatHasNothingToReplace);
         List<Node> candidates = new ArrayList<Node>();
-        for(Node node : repairUnits){
+        for(Node node : nodes){
             CopyReplaceOperation cr = new CopyReplaceOperation();
             candidates.addAll(cr.exec(node));
         }
@@ -217,9 +217,9 @@ public class CopyReplaceOperationTest{
         .append("}\n")
         .toString();
 
-        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(source);
+        List<Node> nodes = NodeUtility.getAllNodesFromCode(source);
         List<String> candidateSources = new ArrayList<String>();
-        for(Node node : repairUnits){
+        for(Node node : nodes){
             CopyReplaceOperation cr = new CopyReplaceOperation();
             List<CompilationUnit> cUnits = cr.exec(node);
             for (CompilationUnit cUnit : cUnits){
@@ -259,9 +259,9 @@ public class CopyReplaceOperationTest{
             .append("}\n")
             .toString();
 
-        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
+        List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
         List<String> candidateSources = new ArrayList<String>();
-        for(Node node : repairUnits){
+        for(Node node : nodes){
             CopyReplaceOperation cr = new CopyReplaceOperation();
             List<CompilationUnit> cUnits = cr.exec(node);
             for (CompilationUnit cUnit : cUnits){
@@ -303,9 +303,9 @@ public class CopyReplaceOperationTest{
             .append("}\n")
             .toString();
 
-        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
+        List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
         List<String> candidateSources = new ArrayList<String>();
-        for(Node node : repairUnits){
+        for(Node node : nodes){
             CopyReplaceOperation cr = new CopyReplaceOperation();
             List<CompilationUnit> cUnits = cr.exec(node);
             for (CompilationUnit cUnit : cUnits){

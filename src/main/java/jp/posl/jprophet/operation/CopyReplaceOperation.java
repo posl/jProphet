@@ -78,9 +78,9 @@ public class CopyReplaceOperation implements AstOperation{
     private List<CompilationUnit> copyAndPasteReplacedStatementToBeforeTarget(Statement statement, Node targetNode){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
         Node copiedNode = NodeUtility.insertNodeWithNewLine(statement, targetNode);
+        //ノードのコピペが不適切な場合空のcandidatesを返す
         if (copiedNode == null) return candidates;
         List<Node> copiedNodeDescendants = NodeUtility.getAllDescendantNodes(copiedNode);
-
         
         for (Node descendant : copiedNodeDescendants){
             VariableReplacementOperation vr = new VariableReplacementOperation();
