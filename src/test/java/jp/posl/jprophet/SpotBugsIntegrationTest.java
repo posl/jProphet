@@ -39,12 +39,7 @@ public class SpotBugsIntegrationTest {
     @Before
     public void SetUpOperations() {
         this.operations = new ArrayList<AstOperation>(Arrays.asList(
-            new CondRefinementOperation(),
-            new CondIntroductionOperation(), 
-            new CtrlFlowIntroductionOperation(), 
-            new InsertInitOperation(), 
-            new VariableReplacementOperation(),
-            new CopyReplaceOperation()
+            new VariableReplacementOperation()
         ));
 
     }
