@@ -21,24 +21,13 @@ import jp.posl.jprophet.RepairConfiguration;
  */
 public class SpotBugsExecutor {
 
-    private final String resultFileName;
     private final static String resultDir = "./tmp/SBresult";
-
-
-    /**
-     * SpotBugs実行クラスの作成
-     * @param resultFileName 実行結果のファイル名
-     */
-    public SpotBugsExecutor(final String resultFileName) {
-        this.resultFileName = resultFileName;
-    }
-
 
     /**
      * プロジェクトをビルドし、SpotBugsを適用する
      * @param config 対象のプロジェクトのconfig
      */
-    public void exec(RepairConfiguration config) {
+    public void exec(RepairConfiguration config, String resultFileName) {
         final ProjectBuilder projectBuilder = new ProjectBuilder();
         projectBuilder.build(config);
         final File dir = new File(resultDir);
@@ -46,7 +35,7 @@ public class SpotBugsExecutor {
             dir.mkdir();
         }
         try {
-            runSpotBugs(config);
+            runSpotBugs(config, resultFileName);
         }
         catch(FilterException|IOException|InterruptedException e) {
             System.err.println(e.getMessage());
@@ -62,11 +51,11 @@ public class SpotBugsExecutor {
      * @throws IOException
      * @throws InterruptedException
      */
-    private void runSpotBugs(RepairConfiguration config) throws FilterException, IOException, InterruptedException {       
+    private void runSpotBugs(RepairConfiguration config, String resultFileName) throws FilterException, IOException, InterruptedException {       
         final FindBugs2 findBugs = new FindBugs2();
         final TextUICommandLine commandLine = new TextUICommandLine();  
         final Project SB_project = new Project();
-        final String[] argv = new String[]{"-xml", "-output", getResultFilePath(), config.getBuildPath()};
+        final String[] argv = new String[]{"-xml", "-output", getResultFilePath(resultFileName), config.getBuildPath()};
         final List<String> dirList = new ArrayList<String>();
         dirList.add(config.getBuildPath());
         SB_project.addSourceDirs(dirList);
@@ -79,10 +68,11 @@ public class SpotBugsExecutor {
 
 
     /**
-     * 実行結果ファイルのパスを返す
+     * 実行結果ファイル名からファイルのパスに変換する
+     * @param resultFileName 実行結果ファイル名
      * @return 実行結果ファイルのパス
      */
-    public String getResultFilePath() {
+    public static String getResultFilePath(String resultFileName) {
         return resultDir + "/" + resultFileName + ".xml";
     }
 
