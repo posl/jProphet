@@ -20,14 +20,8 @@ import java.util.List;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.JavaToken;
-import com.github.javaparser.Position;
-import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 
 import org.apache.commons.io.FileUtils;
 

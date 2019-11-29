@@ -187,18 +187,9 @@ public class NodeUtility {
             if (insertToken.getRange().equals(endTokenOfInsert.getRange())) break;
 
             //複数行を挿入する時のインデントの調節
-            if (insertToken.getKind() == JavaToken.Kind.UNIX_EOL.getKind()){
-                JavaToken spaceToken = targetNode.getTokenRange().orElseThrow().getBegin();
-
-                while (!spaceToken.getText().equals("\n")){
-                spaceToken = spaceToken.getPreviousToken().orElseThrow();
-                }
-                spaceToken = spaceToken.getNextToken().orElseThrow();
-                while (!spaceToken.getRange().equals(targetNode.getTokenRange().orElseThrow().getBegin().getRange())){
-                    beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, spaceToken.getKind(), spaceToken.getText(), null, null));   
-                    spaceToken = spaceToken.getNextToken().orElseThrow();
-                }
-            }
+            if (insertToken.getKind() == JavaToken.Kind.UNIX_EOL.getKind())
+                NodeUtility.adjustmentIndent(targetNode, beginTokenOfTarget, beginRangeOfTarget);
+            
             insertToken = insertToken.getNextToken().orElseThrow();
         }
 
@@ -281,18 +272,9 @@ public class NodeUtility {
             if (replaceToken.getRange().equals(endTokenOfReplace.getRange())) break;
 
             //複数行置換する時のインデントの調整
-            if (replaceToken.getKind() == JavaToken.Kind.UNIX_EOL.getKind()){
-                JavaToken spaceToken = targetNode.getTokenRange().orElseThrow().getBegin();
-
-                while (!spaceToken.getText().equals("\n")){
-                spaceToken = spaceToken.getPreviousToken().orElseThrow();
-                }
-                spaceToken = spaceToken.getNextToken().orElseThrow();
-                while (!spaceToken.getRange().equals(targetNode.getTokenRange().orElseThrow().getBegin().getRange())){
-                    beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, spaceToken.getKind(), spaceToken.getText(), null, null));   
-                    spaceToken = spaceToken.getNextToken().orElseThrow();
-                }
-            }
+            if (replaceToken.getKind() == JavaToken.Kind.UNIX_EOL.getKind())
+                NodeUtility.adjustmentIndent(targetNode, beginTokenOfTarget, beginRangeOfTarget);
+            
             replaceToken = replaceToken.getNextToken().orElseThrow();
         }
 
@@ -388,7 +370,7 @@ public class NodeUtility {
         try {
             cu = JavaParser.parse(source);
         } catch (ParseProblemException e){
-            //パースできなかったときはcuにnullを入れておく
+            //パースできなかったときはcuにnullを入れる
             cu = null;
         }
         return cu;
@@ -409,5 +391,18 @@ public class NodeUtility {
             parsedNode = null;
         }
         return parsedNode;
+    }
+
+    private static void adjustmentIndent(Node originalNode, JavaToken beginTokenOfTarget, Range beginRangeOfTarget){
+        JavaToken spaceToken = originalNode.getTokenRange().orElseThrow().getBegin();
+
+        while (!spaceToken.getText().equals("\n")){
+        spaceToken = spaceToken.getPreviousToken().orElseThrow();
+        }
+        spaceToken = spaceToken.getNextToken().orElseThrow();
+        while (!spaceToken.getRange().equals(originalNode.getTokenRange().orElseThrow().getBegin().getRange())){
+            beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, spaceToken.getKind(), spaceToken.getText(), null, null));   
+            spaceToken = spaceToken.getNextToken().orElseThrow();
+        }
     }
 }
