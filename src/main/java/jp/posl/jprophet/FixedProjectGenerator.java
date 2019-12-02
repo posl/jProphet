@@ -53,8 +53,6 @@ public class FixedProjectGenerator {
         final String fixedFilePath   = patchCandidate.getFilePath();
         final File   fixedFile       = new File(fixedProjectPath + fixedFilePath.replace(originalProjectPath, ""));
         CompilationUnit cu = patchCandidate.getCompilationUnit();
-        //ComipationUnitがnullの場合,元のコードのまま
-        if (cu == null) return;
         LexicalPreservingPrinter.setup(cu);
         final String fixedSourceCode = LexicalPreservingPrinter.print(cu);
 
