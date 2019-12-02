@@ -102,6 +102,38 @@ public class FixedProjectGeneratorTest{
         assertThat(lines.get(modifiedLineNumber)).contains("private");
     }
 
+    /**
+     * パッチ候補のCompilationUnitがnullだった場合,元のソースコードをそのまま返すかテスト
+     */
+    @Test public void testForNullPatch(){
+        String targetFilePath = "src/test/resources/testGradleProject01/src/main/java/testGradleProject01/App.java";
+        String targetFileFqn = "testGradleProject01.App";
+        FixedProjectGenerator fpg = new FixedProjectGenerator();
+        PatchCandidate nullPatchCandidate = new DefaultPatchCandidate(null, null, targetFilePath, targetFileFqn, AstOperation.class);
+
+        List<String> linesBeforeExec;
+        try {
+            linesBeforeExec = FileUtils.readLines(new File(targetFilePath), "utf-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+            return;
+        }
+
+        fpg.exec(config, nullPatchCandidate);
+
+        List<String> linesAfterExec;
+        try {
+            linesAfterExec = FileUtils.readLines(new File(resultDir + projectFilePaths.get(0)), "utf-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+            return;
+        }
+        assertThat(linesAfterExec).containsOnlyElementsOf(linesBeforeExec);
+        return;
+    }
+
     @After public void cleanUp(){
         try {
             FileUtils.deleteDirectory(new File(this.resultDir));
