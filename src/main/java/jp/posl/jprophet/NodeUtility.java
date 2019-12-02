@@ -12,35 +12,12 @@ import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.CompilationUnit;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
-public class NodeUtility {
-
-    /**
-     * ノードの子ノードを幅優先で探索し，与えられたインデックスのノードを返す
-     * 
-     * @param node 検索対象の親ノード
-     * @param targetIndex レベル順（幅優先）のインデックス
-     * @return レベル順でtargetIndex番目のノード
-     */
-    public static Optional<Node> findByLevelOrderIndex(Node node, int targetIndex){
-        List<Node> childNodes = new LinkedList<Node>(node.getChildNodes());
-        for(int i = 0;;i++){
-            if(childNodes.isEmpty()){ 
-                return Optional.empty();
-            }
-            Node head = childNodes.remove(0);
-            if(i == targetIndex){
-                return Optional.of(head); 
-            }
-            childNodes.addAll(head.getChildNodes());
-        }
-    }
+public final class NodeUtility {
 
     /**
      * Nodeインスタンスのディープコピーを作成する
@@ -170,6 +147,7 @@ public class NodeUtility {
      * @param nodeToInsert 挿入するノード
      * @param targetNode 挿入するノードの後ろのノード
      * @return 挿入したノード
+     * @exception NoSuchElementException "new Expression()"などで生成したTokenRangeなどが設定されていないノードを渡すと発生
      */
     public static Node insertNodeWithNewLine(Node nodeToInsert, Node targetNode) {
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
@@ -251,7 +229,7 @@ public class NodeUtility {
     /**
      * targetNodeをnodeToReplaceに置換する
      * 置換後のコードがパースできない場合nullを返す
-     * @param nodeToReplace 置換された後のノード
+     * @param nodeToReplaceWith 置換された後のノード
      * @param targetNode 置換される前のノード
      * @return 置換後のASTノード
      */

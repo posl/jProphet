@@ -21,8 +21,6 @@ public class VariableReplacementOperationTest{
      * 引数を変数に置換する機能のテスト
      */
     @Test public void testForArgumentReplace(){
-        final String targetStatement = 
-                "        this.mb(\"hoge\", \"fuga\");\n";
         final String beforeTargetStatement = new StringBuilder().append("")
             .append("public class A {\n")
             .append("    private String fa = \"a\";\n")
@@ -30,7 +28,8 @@ public class VariableReplacementOperationTest{
             .append("    private void ma(String pa, String pb) {\n")
             .append("        String la = \"b\";\n")
             .toString();
-
+        final String targetStatement = 
+                    "        this.mb(\"hoge\", \"fuga\");\n";
         final String afterTargetStatement = new StringBuilder().append("")
             .append("    }\n")
             .append("    private void mb(String a, String b) {\n")
