@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BinaryExpr;
@@ -44,21 +45,26 @@ public class ConditionGenerator {
         final List<Expression> newConditions = new ArrayList<Expression>();
         booleanVarNames.stream()
             .forEach(name -> {
-                final BinaryExpr isTrue = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(true), Operator.EQUALS);
-                if (isTrue != null)
+                try {
+                    final BinaryExpr isTrue = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(true), Operator.EQUALS);
                     newConditions.add(isTrue);
-                final BinaryExpr isFalse = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(false), Operator.EQUALS);
-                if (isFalse != null)
+                } catch (ParseProblemException e) {}
+                try {
+                    final BinaryExpr isFalse = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(false), Operator.EQUALS);
                     newConditions.add(isFalse);
+                } catch (ParseProblemException e) {}
+                    
             });
         allVarNames.stream()
             .forEach(name -> {
-                final BinaryExpr isNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.EQUALS);
-                if (isNull != null)
+                try {
+                    final BinaryExpr isNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.EQUALS);
                     newConditions.add(isNull);
-                final BinaryExpr isNotNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.NOT_EQUALS);
-                if (isNotNull != null)
+                } catch (ParseProblemException e){}
+                try {
+                    final BinaryExpr isNotNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.NOT_EQUALS);
                     newConditions.add(isNotNull);
+                } catch (ParseProblemException e) {}
             });
         
         Expression trueComparison = this.replaceWithExpr(targetCondition, new BooleanLiteralExpr(true));
@@ -113,7 +119,7 @@ public class ConditionGenerator {
      * @param operator BinaryExprの演算子
      * @return 置換後のBinaryExpr
      */
-    private BinaryExpr replaceWithBinaryExpr(Expression exprToReplace, String leftExprName, Expression rightExpr, Operator operator){
+    private BinaryExpr replaceWithBinaryExpr(Expression exprToReplace, String leftExprName, Expression rightExpr, Operator operator) throws ParseProblemException{
         final BinaryExpr newBinaryExpr = new BinaryExpr(new NameExpr(leftExprName), rightExpr, operator);
         final BinaryExpr insertedBinaryExpr = (BinaryExpr)this.replaceWithExpr(exprToReplace, newBinaryExpr);
         return insertedBinaryExpr;
@@ -125,7 +131,7 @@ public class ConditionGenerator {
      * @param exprToReplaceWith 新しいExpression
      * @return 置換後の新しいExpression
      */
-    private Expression replaceWithExpr(Expression exprToReplace, Expression exprToReplaceWith){
+    private Expression replaceWithExpr(Expression exprToReplace, Expression exprToReplaceWith) throws ParseProblemException{
         final Expression newCondition = (Expression)NodeUtility.deepCopyByReparse(exprToReplace); 
         final Expression insertedExpr = (Expression)NodeUtility.replaceNode(JavaParser.parseExpression(exprToReplaceWith.toString()), newCondition);
         return insertedExpr;

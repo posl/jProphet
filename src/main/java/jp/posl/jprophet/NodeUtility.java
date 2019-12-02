@@ -106,7 +106,7 @@ public final class NodeUtility {
      * @param nextNode 挿入するノードの後ろのノード
      * @return 挿入したノード
      */
-    public static Node insertNodeBetweenNodes (Node nodeToInsert, Node previousNode, Node nextNode) {
+    public static Node insertNodeBetweenNodes (Node nodeToInsert, Node previousNode, Node nextNode) throws ParseProblemException{
         Node copiedNextNode = NodeUtility.deepCopyByReparse(nextNode);
         Node nodeWithTokenToInsert = nodeToInsert;
         if (!nodeToInsert.getTokenRange().isPresent()){
@@ -147,9 +147,8 @@ public final class NodeUtility {
      * @param nodeToInsert 挿入するノード
      * @param targetNode 挿入するノードの後ろのノード
      * @return 挿入したノード
-     * @exception NoSuchElementException "new Expression()"などで生成したTokenRangeなどが設定されていないノードを渡すと発生
      */
-    public static Node insertNodeWithNewLine(Node nodeToInsert, Node targetNode) {
+    public static Node insertNodeWithNewLine(Node nodeToInsert, Node targetNode) throws ParseProblemException{
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
         Node nodeWithTokenToInsert = NodeUtility.parseNode(nodeToInsert);
 
@@ -198,7 +197,7 @@ public final class NodeUtility {
      * @param targetNode 挿入するノードの後ろのノード
      * @return 挿入したノード
      */
-    public static Node insertNodeInOneLine(Node nodeToInsert, Node targetNode) {
+    public static Node insertNodeInOneLine(Node nodeToInsert, Node targetNode) throws ParseProblemException{
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
         Node nodeWithTokenToInsert = nodeToInsert;
         if (!nodeToInsert.getTokenRange().isPresent()){
@@ -233,7 +232,7 @@ public final class NodeUtility {
      * @param targetNode 置換される前のノード
      * @return 置換後のASTノード
      */
-    public static Node replaceNode(Node nodeToReplaceWith, Node targetNode) {
+    public static Node replaceNode(Node nodeToReplaceWith, Node targetNode) throws ParseProblemException{
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
         Node nodeWithTokenToReplaceWith = NodeUtility.parseNode(nodeToReplaceWith);
 
@@ -284,7 +283,7 @@ public final class NodeUtility {
      * @param targetNode 
      * @return
      */
-    public static CompilationUnit insertTokenWithNewLine(TokenRange tokenRange, Node targetNode) {
+    public static CompilationUnit insertTokenWithNewLine(TokenRange tokenRange, Node targetNode) throws ParseProblemException{
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
 
         JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
@@ -340,16 +339,11 @@ public final class NodeUtility {
      * @param compilationUnit パースし直すcompilationUnit
      * @return パースし直したcompilationUnit
      */
-    public static CompilationUnit reparseCompilationUnit(CompilationUnit compilationUnit) {
+    public static CompilationUnit reparseCompilationUnit(CompilationUnit compilationUnit) throws ParseProblemException{
         LexicalPreservingPrinter.setup(compilationUnit);
         String source = LexicalPreservingPrinter.print(compilationUnit);
         CompilationUnit cu;
-        try {
-            cu = JavaParser.parse(source);
-        } catch (ParseProblemException e){
-            //パースできなかったときはcuにnullを入れる
-            cu = null;
-        }
+        cu = JavaParser.parse(source);
         return cu;
     }
 

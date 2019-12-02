@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.Expression;
@@ -40,13 +41,20 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
         if(targetNode instanceof BlockStmt) return new ArrayList<>();
 
         final List<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
-        final Expression abstConditionOfIfReturn = this.insertIfStmtWithAbstCond(targetNode, new ReturnStmt());
-        if (abstConditionOfIfReturn == null) return compilationUnits;
-        compilationUnits.addAll(this.collectConcreteConditions(abstConditionOfIfReturn));
+        try {
+            final Expression abstConditionOfIfReturn = this.insertIfStmtWithAbstCond(targetNode, new ReturnStmt());
+            compilationUnits.addAll(this.collectConcreteConditions(abstConditionOfIfReturn));
+        }catch (ParseProblemException e){
+            return compilationUnits;
+        }
         if(targetNode.findParent(ForStmt.class).isPresent() || targetNode.findParent(WhileStmt.class).isPresent()) {
-            final Expression abstConditionOfIfBreak = this.insertIfStmtWithAbstCond(targetNode, new BreakStmt((SimpleName) null));
-            if (abstConditionOfIfBreak == null) return compilationUnits;
-            compilationUnits.addAll(this.collectConcreteConditions(abstConditionOfIfBreak));
+
+            try {
+                final Expression abstConditionOfIfBreak = this.insertIfStmtWithAbstCond(targetNode, new BreakStmt((SimpleName) null));
+                compilationUnits.addAll(this.collectConcreteConditions(abstConditionOfIfBreak));
+            } catch (ParseProblemException e){
+                return compilationUnits;
+            }
         }
 
         return compilationUnits;
@@ -59,11 +67,10 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
      * @param stmtInIfBlockToInsert 挿入するif文のブロック内の文
      * @return 挿入したif文における穴あきの条件式
      */
-    private Expression insertIfStmtWithAbstCond(Node nextNode, Statement stmtInIfBlockToInsert) {
+    private Expression insertIfStmtWithAbstCond(Node nextNode, Statement stmtInIfBlockToInsert) throws ParseProblemException{
         final String abstractConditionName = "ABST_HOLE";
         final IfStmt newIfStmt =  (IfStmt)JavaParser.parseStatement((new IfStmt(new MethodCallExpr(abstractConditionName), stmtInIfBlockToInsert, null)).toString());
         final IfStmt insertedIfStmt = (IfStmt)NodeUtility.insertNodeWithNewLine(newIfStmt, nextNode);
-        if (insertedIfStmt == null) return null;
         final Expression abstCondition = insertedIfStmt.getCondition();
         return abstCondition;
     }

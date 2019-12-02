@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.Parameter;
@@ -131,9 +132,11 @@ public class VariableReplacementOperation implements AstOperation {
                     continue;
                 }
                 Node newCandidate = NodeUtility.deepCopyByReparse(node);
-                Node replacedCandidate = NodeUtility.replaceNode(constructExpr.apply(varName), ((AssignExpr)newCandidate).getValue());
-                if (replacedCandidate != null){
+                try {
+                    Node replacedCandidate = NodeUtility.replaceNode(constructExpr.apply(varName), ((AssignExpr)newCandidate).getValue());
                     candidates.add(replacedCandidate.findCompilationUnit().orElseThrow());
+                } catch (ParseProblemException e){
+
                 }
             }
         }
@@ -161,9 +164,11 @@ public class VariableReplacementOperation implements AstOperation {
                     }
                     Node newCandidate = NodeUtility.deepCopyByReparse(node);
                     MethodCallExpr methodCallExpr = (MethodCallExpr)newCandidate;
-                    Node replacedCandidate = NodeUtility.replaceNode(constructExpr.apply(varName), methodCallExpr.getArgument(i));
-                    if (replacedCandidate != null){
+                    try {
+                        Node replacedCandidate = NodeUtility.replaceNode(constructExpr.apply(varName), methodCallExpr.getArgument(i));
                         candidates.add(replacedCandidate.findCompilationUnit().orElseThrow());
+                    } catch (ParseProblemException e){
+                        
                     }
                 }
             }

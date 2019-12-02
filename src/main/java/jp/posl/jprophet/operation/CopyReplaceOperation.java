@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
+import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
@@ -77,9 +78,12 @@ public class CopyReplaceOperation implements AstOperation{
      */
     private List<CompilationUnit> copyAndPasteReplacedStatementToBeforeTarget(Statement statement, Node targetNode){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
-        Node copiedNode = NodeUtility.insertNodeWithNewLine(statement, targetNode);
-        //ノードのコピペが不適切な場合空のcandidatesを返す
-        if (copiedNode == null) return candidates;
+        Node copiedNode;
+        try{
+            copiedNode = NodeUtility.insertNodeWithNewLine(statement, targetNode);
+        }catch (ParseProblemException e){
+            return candidates;
+        }
         List<Node> copiedNodeDescendants = NodeUtility.getAllDescendantNodes(copiedNode);
         
         for (Node descendant : copiedNodeDescendants){
