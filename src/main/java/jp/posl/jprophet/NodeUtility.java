@@ -370,6 +370,12 @@ public final class NodeUtility {
         return parsedNode;
     }
 
+    /**
+     * インデントの調節をする
+     * @param originalNode パースし直す前のtargetNode
+     * @param beginTokenOfTarget targetNodeの先頭のトークン
+     * @param beginRangeOfTarget targetNodeの先頭のトークンのレンジ
+     */
     private static void adjustmentIndent(Node originalNode, JavaToken beginTokenOfTarget, Range beginRangeOfTarget){
         JavaToken spaceToken = originalNode.getTokenRange().orElseThrow().getBegin();
 
