@@ -45,19 +45,25 @@ public class ConditionGenerator {
         booleanVarNames.stream()
             .forEach(name -> {
                 final BinaryExpr isTrue = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(true), Operator.EQUALS);
-                newConditions.add(isTrue);
+                if (isTrue != null)
+                    newConditions.add(isTrue);
                 final BinaryExpr isFalse = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(false), Operator.EQUALS);
-                newConditions.add(isFalse);
+                if (isFalse != null)
+                    newConditions.add(isFalse);
             });
         allVarNames.stream()
             .forEach(name -> {
                 final BinaryExpr isNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.EQUALS);
-                newConditions.add(isNull);
+                if (isNull != null)
+                    newConditions.add(isNull);
                 final BinaryExpr isNotNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.NOT_EQUALS);
-                newConditions.add(isNotNull);
+                if (isNotNull != null)
+                    newConditions.add(isNotNull);
             });
-
-        newConditions.add(this.replaceWithExpr(targetCondition, new BooleanLiteralExpr(true)));
+        
+        Expression trueComparison = this.replaceWithExpr(targetCondition, new BooleanLiteralExpr(true));
+        if (trueComparison != null)
+            newConditions.add(trueComparison);
             
         return newConditions;
     }

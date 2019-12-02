@@ -41,9 +41,11 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
 
         final List<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
         final Expression abstConditionOfIfReturn = this.insertIfStmtWithAbstCond(targetNode, new ReturnStmt());
+        if (abstConditionOfIfReturn == null) return compilationUnits;
         compilationUnits.addAll(this.collectConcreteConditions(abstConditionOfIfReturn));
         if(targetNode.findParent(ForStmt.class).isPresent() || targetNode.findParent(WhileStmt.class).isPresent()) {
             final Expression abstConditionOfIfBreak = this.insertIfStmtWithAbstCond(targetNode, new BreakStmt((SimpleName) null));
+            if (abstConditionOfIfBreak == null) return compilationUnits;
             compilationUnits.addAll(this.collectConcreteConditions(abstConditionOfIfBreak));
         }
 
@@ -61,6 +63,7 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
         final String abstractConditionName = "ABST_HOLE";
         final IfStmt newIfStmt =  (IfStmt)JavaParser.parseStatement((new IfStmt(new MethodCallExpr(abstractConditionName), stmtInIfBlockToInsert, null)).toString());
         final IfStmt insertedIfStmt = (IfStmt)NodeUtility.insertNodeWithNewLine(newIfStmt, nextNode);
+        if (insertedIfStmt == null) return null;
         final Expression abstCondition = insertedIfStmt.getCondition();
         return abstCondition;
     }
