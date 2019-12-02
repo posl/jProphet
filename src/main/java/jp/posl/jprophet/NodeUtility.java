@@ -16,28 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 
-public class NodeUtility {
-
-    /**
-     * ノードの子ノードを幅優先で探索し，与えられたインデックスのノードを返す
-     * 
-     * @param node 検索対象の親ノード
-     * @param targetIndex レベル順（幅優先）のインデックス
-     * @return レベル順でtargetIndex番目のノード
-     */
-    public static Optional<Node> findByLevelOrderIndex(Node node, int targetIndex){
-        List<Node> childNodes = new LinkedList<Node>(node.getChildNodes());
-        for(int i = 0;;i++){
-            if(childNodes.isEmpty()){ 
-                return Optional.empty();
-            }
-            Node head = childNodes.remove(0);
-            if(i == targetIndex){
-                return Optional.of(head); 
-            }
-            childNodes.addAll(head.getChildNodes());
-        }
-    }
+public final class NodeUtility {
 
     /**
      * Nodeインスタンスのディープコピーを作成する
@@ -160,6 +139,7 @@ public class NodeUtility {
      * @param nodeToInsert 挿入するノード
      * @param targetNode 挿入するノードの後ろのノード
      * @return 挿入したノード
+     * @exception NoSuchElementException "new Expression()"などで生成したTokenRangeなどが設定されていないノードを渡すと発生
      */
     public static Node insertNodeWithNewLine(Node nodeToInsert, Node targetNode) {
         Node copiedAfterNode = NodeUtility.deepCopyByReparse(targetNode);
@@ -229,16 +209,16 @@ public class NodeUtility {
 
     /**
      * targetNodeをnodeToReplaceに置換する
-     * @param nodeToReplace 置換された後のノード
+     * @param nodeToReplaceWith 置換された後のノード
      * @param targetNode 置換される前のノード
      * @return 置換後のASTノード
      */
-    public static Node replaceNode(Node nodeToReplace, Node targetNode) {
+    public static Node replaceNode(Node nodeToReplaceWith, Node targetNode) {
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
 
         JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
-        JavaToken replaceToken = nodeToReplace.getTokenRange().orElseThrow().getBegin();
-        final JavaToken endTokenOfReplace = nodeToReplace.getTokenRange().orElseThrow().getEnd();
+        JavaToken replaceToken = nodeToReplaceWith.getTokenRange().orElseThrow().getBegin();
+        final JavaToken endTokenOfReplace = nodeToReplaceWith.getTokenRange().orElseThrow().getEnd();
         final JavaToken endTokenOfTarget = targetNode.getTokenRange().orElseThrow().getEnd();
 
         final Range beginRangeOfTarget = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
@@ -267,7 +247,7 @@ public class NodeUtility {
 
         CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
         CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, nodeToReplace, beginRangeOfTarget);
+        Node copiedInsertNode = NodeUtility.findNodeInCompilationUnitByLine(parsedCompilationUnit, nodeToReplaceWith, beginRangeOfTarget);
         return copiedInsertNode;
     }
 
