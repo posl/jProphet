@@ -3,6 +3,7 @@ package jp.posl.jprophet.operation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -132,10 +133,11 @@ public class VariableReplacementOperation implements AstOperation {
                     continue;
                 }
                 Node newCandidate = NodeUtility.deepCopyByReparse(node);
-                try {
-                    Node replacedCandidate = NodeUtility.replaceNode(constructExpr.apply(varName), ((AssignExpr)newCandidate).getValue());
-                    candidates.add(replacedCandidate.findCompilationUnit().orElseThrow());
-                } catch (ParseProblemException e){}
+                Optional<Node> replacedCandidate = NodeUtility.replaceNode(constructExpr.apply(varName), ((AssignExpr)newCandidate).getValue());
+                try{
+                    candidates.add(replacedCandidate.orElseThrow().findCompilationUnit().orElseThrow());
+                } catch (NoSuchElementException e){}
+                
             }
         }
 
@@ -162,10 +164,10 @@ public class VariableReplacementOperation implements AstOperation {
                     }
                     Node newCandidate = NodeUtility.deepCopyByReparse(node);
                     MethodCallExpr methodCallExpr = (MethodCallExpr)newCandidate;
-                    try {
-                        Node replacedCandidate = NodeUtility.replaceNode(constructExpr.apply(varName), methodCallExpr.getArgument(i));
-                        candidates.add(replacedCandidate.findCompilationUnit().orElseThrow());
-                    } catch (ParseProblemException e){}
+                    Optional<Node> replacedCandidate = NodeUtility.replaceNode(constructExpr.apply(varName), methodCallExpr.getArgument(i));
+                    try{
+                        candidates.add(replacedCandidate.orElseThrow().findCompilationUnit().orElseThrow());
+                    } catch (NoSuchElementException e){}
                 }
             }
         }

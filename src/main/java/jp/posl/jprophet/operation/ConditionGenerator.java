@@ -2,6 +2,8 @@ package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseProblemException;
@@ -45,31 +47,23 @@ public class ConditionGenerator {
         final List<Expression> newConditions = new ArrayList<Expression>();
         booleanVarNames.stream()
             .forEach(name -> {
-                try {
-                    final BinaryExpr isTrue = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(true), Operator.EQUALS);
-                    newConditions.add(isTrue);
-                } catch (ParseProblemException e) {}
-                try {
-                    final BinaryExpr isFalse = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(false), Operator.EQUALS);
-                    newConditions.add(isFalse);
-                } catch (ParseProblemException e) {}
+                final Optional<BinaryExpr> isTrue = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(true), Operator.EQUALS);
+                isTrue.map(newConditions::add);
+
+                final Optional<BinaryExpr> isFalse = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(false), Operator.EQUALS);
+                isFalse.map(newConditions::add);
                     
             });
         allVarNames.stream()
             .forEach(name -> {
-                try {
-                    final BinaryExpr isNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.EQUALS);
-                    newConditions.add(isNull);
-                } catch (ParseProblemException e){}
-                try {
-                    final BinaryExpr isNotNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.NOT_EQUALS);
-                    newConditions.add(isNotNull);
-                } catch (ParseProblemException e) {}
+                final Optional<BinaryExpr> isNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.EQUALS);
+                isNull.map(newConditions::add);
+
+                final Optional<BinaryExpr> isNotNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.NOT_EQUALS);
+                isNotNull.map(newConditions::add);
             });
         
-        try{
-            newConditions.add(this.replaceWithExpr(targetCondition, new BooleanLiteralExpr(true)));
-        } catch (ParseProblemException e) {}
+        this.replaceWithExpr(targetCondition, new BooleanLiteralExpr(true)).map(newConditions::add);
             
         return newConditions;
     }
@@ -119,10 +113,14 @@ public class ConditionGenerator {
      * @param operator BinaryExprの演算子
      * @return 置換後のBinaryExpr
      */
-    private BinaryExpr replaceWithBinaryExpr(Expression exprToReplace, String leftExprName, Expression rightExpr, Operator operator) throws ParseProblemException{
+    private Optional<BinaryExpr> replaceWithBinaryExpr(Expression exprToReplace, String leftExprName, Expression rightExpr, Operator operator) throws ParseProblemException{
         final BinaryExpr newBinaryExpr = new BinaryExpr(new NameExpr(leftExprName), rightExpr, operator);
-        final BinaryExpr insertedBinaryExpr = (BinaryExpr)this.replaceWithExpr(exprToReplace, newBinaryExpr);
-        return insertedBinaryExpr;
+        try {
+            final BinaryExpr insertedBinaryExpr = (BinaryExpr)this.replaceWithExpr(exprToReplace, newBinaryExpr).orElseThrow();
+            return Optional.of(insertedBinaryExpr);
+        } catch(NoSuchElementException e) {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -131,10 +129,14 @@ public class ConditionGenerator {
      * @param exprToReplaceWith 新しいExpression
      * @return 置換後の新しいExpression
      */
-    private Expression replaceWithExpr(Expression exprToReplace, Expression exprToReplaceWith) throws ParseProblemException{
-        final Expression newCondition = (Expression)NodeUtility.deepCopyByReparse(exprToReplace); 
-        final Expression insertedExpr = (Expression)NodeUtility.replaceNode(exprToReplaceWith, newCondition);
-        return insertedExpr;
+    private Optional<Expression> replaceWithExpr(Expression exprToReplace, Expression exprToReplaceWith) throws ParseProblemException{
+        final Expression newCondition = (Expression)NodeUtility.deepCopyByReparse(exprToReplace);
+        try {
+            final Expression insertedExpr = (Expression)(NodeUtility.replaceNode(exprToReplaceWith, newCondition).orElseThrow());
+            return Optional.of(insertedExpr);
+        } catch (NoSuchElementException e){
+            return Optional.empty();
+        }
     }
 
 }

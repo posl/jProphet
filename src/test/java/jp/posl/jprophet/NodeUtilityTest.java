@@ -115,8 +115,8 @@ public class NodeUtilityTest {
         String reparsedSource = null;
         String reparsedSource2 = null;
 
-        Node insertedNode = NodeUtility.insertNodeBetweenNodes(nodeToInsert, previousNode, nextNode);
-        Node insertedNode2 = NodeUtility.insertNodeWithNewLine(nodeToInsert, nextNode);
+        Node insertedNode = NodeUtility.insertNodeBetweenNodes(nodeToInsert, previousNode, nextNode).orElseThrow();
+        Node insertedNode2 = NodeUtility.insertNodeWithNewLine(nodeToInsert, nextNode).orElseThrow();
         CompilationUnit insertedCompilationUnit = insertedNode.findCompilationUnit().orElseThrow();
         CompilationUnit insertedCompilationUnit2 = insertedNode2.findCompilationUnit().orElseThrow();
         LexicalPreservingPrinter.setup(insertedCompilationUnit);
@@ -160,8 +160,8 @@ public class NodeUtilityTest {
         String reparsedSource = null;
         String reparsedSource2 = null;
 
-        Node insertedStatement = NodeUtility.insertNodeBetweenNodes(statementToInsert, previousNode, nextNode);
-        Node insertedStatement2 = NodeUtility.insertNodeWithNewLine(statementToInsert, nextNode);
+        Node insertedStatement = NodeUtility.insertNodeBetweenNodes(statementToInsert, previousNode, nextNode).orElseThrow();
+        Node insertedStatement2 = NodeUtility.insertNodeWithNewLine(statementToInsert, nextNode).orElseThrow();
         CompilationUnit insertedCompilationUnit = insertedStatement.findCompilationUnit().orElseThrow();
         CompilationUnit insertedCompilationUnit2 = insertedStatement2.findCompilationUnit().orElseThrow();
         LexicalPreservingPrinter.setup(insertedCompilationUnit);
@@ -196,7 +196,7 @@ public class NodeUtilityTest {
 
         String reparsedSource = null;
 
-        Node insertedNode = NodeUtility.insertNodeInOneLine(string, targetNode);
+        Node insertedNode = NodeUtility.insertNodeInOneLine(string, targetNode).orElseThrow();
         CompilationUnit insertedCompilationUnit = insertedNode.findCompilationUnit().orElseThrow();
         LexicalPreservingPrinter.setup(insertedCompilationUnit);
         reparsedSource = LexicalPreservingPrinter.print(insertedCompilationUnit);
@@ -227,7 +227,7 @@ public class NodeUtilityTest {
         Node nodeToReplaceWith = nodeList.get(0); //String la = "b";
         Node targetNode = nodeList.get(2); //ld = "huga";
 
-        Node replacedNode = NodeUtility.replaceNode(nodeToReplaceWith, targetNode);
+        Node replacedNode = NodeUtility.replaceNode(nodeToReplaceWith, targetNode).orElseThrow();
         CompilationUnit replacedCompilationUnit = replacedNode.findCompilationUnit().orElseThrow();
         LexicalPreservingPrinter.setup(replacedCompilationUnit);
         reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
@@ -258,7 +258,7 @@ public class NodeUtilityTest {
         
         String reparsedSource = null;
 
-        Node replacedStatement = NodeUtility.replaceNode(nodeToReplaceWith, targetNode);
+        Node replacedStatement = NodeUtility.replaceNode(nodeToReplaceWith, targetNode).orElseThrow();
         CompilationUnit replacedCompilationUnit = replacedStatement.findCompilationUnit().orElseThrow();
         LexicalPreservingPrinter.setup(replacedCompilationUnit);
         reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
@@ -303,7 +303,7 @@ public class NodeUtilityTest {
         TokenRange tokenRange = new TokenRange(begin, end);
 
         String reparsedSource = null;
-        CompilationUnit insertedCompilationUnit = NodeUtility.insertTokenWithNewLine(tokenRange, targetNode);
+        CompilationUnit insertedCompilationUnit = NodeUtility.insertTokenWithNewLine(tokenRange, targetNode).orElseThrow();
         LexicalPreservingPrinter.setup(insertedCompilationUnit);
         reparsedSource = LexicalPreservingPrinter.print(insertedCompilationUnit);
 
@@ -335,7 +335,7 @@ public class NodeUtilityTest {
         
         String reparsedSource = null;
 
-        Node replacedStatement = NodeUtility.insertNodeWithNewLine(insertNode, targetNode);
+        Node replacedStatement = NodeUtility.insertNodeWithNewLine(insertNode, targetNode).orElseThrow();
         CompilationUnit replacedCompilationUnit = replacedStatement.findCompilationUnit().orElseThrow();
         LexicalPreservingPrinter.setup(replacedCompilationUnit);
         reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
@@ -365,7 +365,7 @@ public class NodeUtilityTest {
         
         String reparsedSource = null;
 
-        Node replacedStatement = NodeUtility.replaceNode(nodeToReplaceWith, targetNode);
+        Node replacedStatement = NodeUtility.replaceNode(nodeToReplaceWith, targetNode).orElseThrow();
         CompilationUnit replacedCompilationUnit = replacedStatement.findCompilationUnit().orElseThrow();
         LexicalPreservingPrinter.setup(replacedCompilationUnit);
         reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
