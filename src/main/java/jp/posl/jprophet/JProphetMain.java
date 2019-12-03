@@ -67,7 +67,7 @@ public class JProphetMain {
         }
     }
 
-    private boolean run(RepairConfiguration config, FaultLocalization faultLocalization,
+    public boolean run(RepairConfiguration config, FaultLocalization faultLocalization,
             PatchCandidateGenerator patchCandidateGenerator, List<AstOperation> operations, PlausibilityAnalyzer plausibilityAnalyzer, PatchEvaluator patchEvaluator,
             StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, FixedProjectGenerator fixedProjectGenerator, TestResultStore testResultStore, TestResultExporter testResultExporter
             ) {
