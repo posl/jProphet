@@ -48,7 +48,6 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
             return compilationUnits;
         }
         if(targetNode.findParent(ForStmt.class).isPresent() || targetNode.findParent(WhileStmt.class).isPresent()) {
-
             try {
                 final Expression abstConditionOfIfBreak = this.insertIfStmtWithAbstCond(targetNode, new BreakStmt((SimpleName) null));
                 compilationUnits.addAll(this.collectConcreteConditions(abstConditionOfIfBreak));

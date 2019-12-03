@@ -133,9 +133,9 @@ public final class NodeUtility {
             tokenToInsert = tokenToInsert.getNextToken().orElseThrow();
         }
         
-        CompilationUnit compilationUnit = copiedNextNode.findCompilationUnit().orElseThrow();
-        CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node insertedNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeWithTokenToInsert, beginRangeOfNext);
+        final CompilationUnit compilationUnit = copiedNextNode.findCompilationUnit().orElseThrow();
+        final CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
+        final Node insertedNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeWithTokenToInsert, beginRangeOfNext);
         return insertedNode;
     }
 
@@ -181,9 +181,9 @@ public final class NodeUtility {
             tokenToInsert = tokenToInsert.getNextToken().orElseThrow();
         }
         
-        CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
-        CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node insertedNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeWithTokenToInsert, beginRangeOfTarget);
+        final CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
+        final CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
+        final Node insertedNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeWithTokenToInsert, beginRangeOfTarget);
         return insertedNode;
     }
 
@@ -219,9 +219,9 @@ public final class NodeUtility {
             tokenToInsert = tokenToInsert.getNextToken().orElseThrow();
         }
         
-        CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
-        CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node insertedNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeWithTokenToInsert, beginRangeOfTarget);
+        final CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
+        final CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
+        final Node insertedNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeWithTokenToInsert, beginRangeOfTarget);
         return insertedNode;
     }
 
@@ -270,9 +270,9 @@ public final class NodeUtility {
             tokenToDelete = beginTokenOfTarget.getNextToken().orElseThrow();
         }
 
-        CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
-        CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
-        Node insertedNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeWithTokenToReplaceWith, beginRangeOfTarget);
+        final CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
+        final CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
+        final Node insertedNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeWithTokenToReplaceWith, beginRangeOfTarget);
         return insertedNode;
     }
 
@@ -313,8 +313,8 @@ public final class NodeUtility {
             tokenToInsert = tokenToInsert.getNextToken().orElseThrow();
         }
         
-        CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
-        CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
+        final CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
+        final CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
         return parsedCompilationUnit;
     }
 
@@ -326,7 +326,6 @@ public final class NodeUtility {
      * @return 見つけたノード
      */
     public static Node findNodeInCompilationUnitByBeginRange(CompilationUnit compilationUnit, Node node, Range range) {
-        if (compilationUnit == null) return null;
         List<Node> nodes = NodeUtility.getAllDescendantNodes(compilationUnit);
         Node newNode = nodes.stream().filter(n -> {
             return n.equals(node) && n.getRange().orElseThrow().begin.equals(range.begin);
@@ -342,8 +341,7 @@ public final class NodeUtility {
     public static CompilationUnit reparseCompilationUnit(CompilationUnit compilationUnit) throws ParseProblemException{
         LexicalPreservingPrinter.setup(compilationUnit);
         String source = LexicalPreservingPrinter.print(compilationUnit);
-        CompilationUnit cu;
-        cu = JavaParser.parse(source);
+        CompilationUnit cu = JavaParser.parse(source);
         return cu;
     }
 
@@ -352,14 +350,14 @@ public final class NodeUtility {
      * @param node パースしたいのノード
      * @return パースしたノード
      */
-    public static Node parseNode(Node node){
+    public static Node parseNode(Node node) throws ParseProblemException{
         Node parsedNode;
         if (node instanceof Statement){
             parsedNode = JavaParser.parseStatement(node.toString());
         }else if (node instanceof Expression){
             parsedNode = JavaParser.parseExpression(node.toString());
         }else{
-            parsedNode = null;
+            throw new ParseProblemException(new Throwable());
         }
         return parsedNode;
     }

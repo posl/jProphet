@@ -135,9 +135,7 @@ public class VariableReplacementOperation implements AstOperation {
                 try {
                     Node replacedCandidate = NodeUtility.replaceNode(constructExpr.apply(varName), ((AssignExpr)newCandidate).getValue());
                     candidates.add(replacedCandidate.findCompilationUnit().orElseThrow());
-                } catch (ParseProblemException e){
-
-                }
+                } catch (ParseProblemException e){}
             }
         }
 
@@ -167,9 +165,7 @@ public class VariableReplacementOperation implements AstOperation {
                     try {
                         Node replacedCandidate = NodeUtility.replaceNode(constructExpr.apply(varName), methodCallExpr.getArgument(i));
                         candidates.add(replacedCandidate.findCompilationUnit().orElseThrow());
-                    } catch (ParseProblemException e){
-                        
-                    }
+                    } catch (ParseProblemException e){}
                 }
             }
         }

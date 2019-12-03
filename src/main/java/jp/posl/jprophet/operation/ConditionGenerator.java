@@ -67,9 +67,9 @@ public class ConditionGenerator {
                 } catch (ParseProblemException e) {}
             });
         
-        Expression trueComparison = this.replaceWithExpr(targetCondition, new BooleanLiteralExpr(true));
-        if (trueComparison != null)
-            newConditions.add(trueComparison);
+        try{
+            newConditions.add(this.replaceWithExpr(targetCondition, new BooleanLiteralExpr(true)));
+        } catch (ParseProblemException e) {}
             
         return newConditions;
     }
@@ -133,7 +133,7 @@ public class ConditionGenerator {
      */
     private Expression replaceWithExpr(Expression exprToReplace, Expression exprToReplaceWith) throws ParseProblemException{
         final Expression newCondition = (Expression)NodeUtility.deepCopyByReparse(exprToReplace); 
-        final Expression insertedExpr = (Expression)NodeUtility.replaceNode(JavaParser.parseExpression(exprToReplaceWith.toString()), newCondition);
+        final Expression insertedExpr = (Expression)NodeUtility.replaceNode(exprToReplaceWith, newCondition);
         return insertedExpr;
     }
 
