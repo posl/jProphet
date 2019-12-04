@@ -2,7 +2,6 @@ package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import com.github.javaparser.ast.body.Parameter;
@@ -46,18 +45,18 @@ public class ConditionGenerator {
         booleanVarNames.stream()
             .forEach(name -> {
                 final Optional<BinaryExpr> isTrue = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(true), Operator.EQUALS);
-                isTrue.map(newConditions::add);
+                isTrue.ifPresent(newConditions::add);
 
                 final Optional<BinaryExpr> isFalse = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(false), Operator.EQUALS);
-                isFalse.map(newConditions::add);        
+                isFalse.ifPresent(newConditions::add);        
             });
         allVarNames.stream()
             .forEach(name -> {
                 final Optional<BinaryExpr> isNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.EQUALS);
-                isNull.map(newConditions::add);
+                isNull.ifPresent(newConditions::add);
 
                 final Optional<BinaryExpr> isNotNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.NOT_EQUALS);
-                isNotNull.map(newConditions::add);
+                isNotNull.ifPresent(newConditions::add);
             });
         
         this.replaceWithExpr(targetCondition, new BooleanLiteralExpr(true)).map(newConditions::add);
@@ -112,12 +111,8 @@ public class ConditionGenerator {
      */
     private Optional<BinaryExpr> replaceWithBinaryExpr(Expression exprToReplace, String leftExprName, Expression rightExpr, Operator operator){
         final BinaryExpr newBinaryExpr = new BinaryExpr(new NameExpr(leftExprName), rightExpr, operator);
-        try {
-            final BinaryExpr insertedBinaryExpr = (BinaryExpr)this.replaceWithExpr(exprToReplace, newBinaryExpr).orElseThrow();
-            return Optional.of(insertedBinaryExpr);
-        } catch(NoSuchElementException e) {
-            return Optional.empty();
-        }
+        return this.replaceWithExpr(exprToReplace, newBinaryExpr)
+            .map(expr -> (BinaryExpr)expr);
     }
 
     /**
@@ -128,12 +123,8 @@ public class ConditionGenerator {
      */
     private Optional<Expression> replaceWithExpr(Expression exprToReplace, Expression exprToReplaceWith){
         final Expression newCondition = (Expression)NodeUtility.deepCopyByReparse(exprToReplace);
-        try {
-            final Expression insertedExpr = (Expression)(NodeUtility.replaceNode(exprToReplaceWith, newCondition).orElseThrow());
-            return Optional.of(insertedExpr);
-        } catch (NoSuchElementException e){
-            return Optional.empty();
-        }
+        return NodeUtility.replaceNode(exprToReplaceWith, newCondition)
+            .map(expr -> (Expression)expr);
     }
 
 }

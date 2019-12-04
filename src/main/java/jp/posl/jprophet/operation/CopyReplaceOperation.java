@@ -77,13 +77,10 @@ public class CopyReplaceOperation implements AstOperation{
      */
     private List<CompilationUnit> copyAndPasteReplacedStatementToBeforeTarget(Statement statement, Node targetNode){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
-        Optional<Node> copiedNode = NodeUtility.insertNodeWithNewLine(statement, targetNode);
-        List<Node> copiedNodeDescendants;
-        try {
-            copiedNodeDescendants = NodeUtility.getAllDescendantNodes(copiedNode.orElseThrow());
-        } catch (NoSuchElementException e) {
-            return candidates;
-        }
+        List<Node> copiedNodeDescendants = new ArrayList<Node>();
+        NodeUtility.insertNodeWithNewLine(statement, targetNode)
+            .map(NodeUtility::getAllDescendantNodes)
+            .ifPresent(copiedNodeDescendants::addAll);
         
         for (Node descendant : copiedNodeDescendants){
             VariableReplacementOperation vr = new VariableReplacementOperation();

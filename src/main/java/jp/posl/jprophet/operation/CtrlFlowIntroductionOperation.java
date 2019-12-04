@@ -2,10 +2,8 @@ package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.Expression;
@@ -42,20 +40,14 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
         if(targetNode instanceof BlockStmt) return new ArrayList<>();
 
         final List<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
-        final Optional<Expression> abstConditionOfIfReturn = this.insertIfStmtWithAbstCond(targetNode, new ReturnStmt());
-        try {
-        compilationUnits.addAll(this.collectConcreteConditions(abstConditionOfIfReturn.orElseThrow()));
-        } catch (NoSuchElementException e) {
-            return compilationUnits;
-        }
+        this.insertIfStmtWithAbstCond(targetNode, new ReturnStmt())
+            .map(expr -> collectConcreteConditions((Expression)expr))
+            .ifPresent(compilationUnits::addAll);
 
         if(targetNode.findParent(ForStmt.class).isPresent() || targetNode.findParent(WhileStmt.class).isPresent()) {
-            final Optional<Expression> abstConditionOfIfBreak = this.insertIfStmtWithAbstCond(targetNode, new BreakStmt((SimpleName) null));
-            try {
-                compilationUnits.addAll(this.collectConcreteConditions(abstConditionOfIfBreak.orElseThrow()));
-            } catch (NoSuchElementException e){
-                return compilationUnits;
-            }
+            this.insertIfStmtWithAbstCond(targetNode, new BreakStmt((SimpleName) null))
+                .map(expr -> collectConcreteConditions((Expression)expr))
+                .ifPresent(compilationUnits::addAll);
         }
 
         return compilationUnits;
@@ -70,15 +62,9 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
      */
     private Optional<Expression> insertIfStmtWithAbstCond(Node nextNode, Statement stmtInIfBlockToInsert){
         final String abstractConditionName = "ABST_HOLE";
-        final IfStmt newIfStmt =  (IfStmt)JavaParser.parseStatement((new IfStmt(new MethodCallExpr(abstractConditionName), stmtInIfBlockToInsert, null)).toString());
-        final Optional<Node> insertedIfStmt = NodeUtility.insertNodeWithNewLine(newIfStmt, nextNode);
-        try {
-            final Optional<Expression> abstCondition = Optional.of(((IfStmt)insertedIfStmt.orElseThrow()).getCondition());
-            return abstCondition;
-        } catch (NoSuchElementException e){
-            return Optional.empty();
-        }
-        
+        final IfStmt newIfStmt =  new IfStmt(new MethodCallExpr(abstractConditionName), stmtInIfBlockToInsert, null);
+        return NodeUtility.insertNodeWithNewLine(newIfStmt, nextNode)
+            .map(s -> ((IfStmt)s).getCondition());
     }
 
     /**

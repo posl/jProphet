@@ -109,13 +109,15 @@ public final class NodeUtility {
      */
     public static Optional<Node> insertNodeBetweenNodes (Node nodeToInsert, Node previousNode, Node nextNode){
         Node copiedNextNode = NodeUtility.deepCopyByReparse(nextNode);
-        Node nodeWithTokenToInsert = nodeToInsert;
+        Node nodeWithTokenToInsert;
         if (!nodeToInsert.getTokenRange().isPresent()){
             try {
                 nodeWithTokenToInsert = NodeUtility.parseNode(nodeToInsert).orElseThrow();
             } catch (NoSuchElementException e){
                 return Optional.empty();
             }
+        }else{
+            nodeWithTokenToInsert = nodeToInsert;
         }
 
         JavaToken beginTokenOfNext = copiedNextNode.getTokenRange().orElseThrow().getBegin();
@@ -139,14 +141,8 @@ public final class NodeUtility {
         }
         
         final CompilationUnit compilationUnit = copiedNextNode.findCompilationUnit().orElseThrow();
-        final CompilationUnit parsedCompilationUnit;
-        try {
-            parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit).orElseThrow();
-        } catch(NoSuchElementException e) {
-            return Optional.empty();
-        }
-        final Node insertedNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeWithTokenToInsert, beginRangeOfNext);
-        return Optional.of(insertedNode);
+        return NodeUtility.reparseCompilationUnit(compilationUnit)
+            .map(cu -> NodeUtility.findNodeInCompilationUnitByBeginRange(cu, nodeWithTokenToInsert, beginRangeOfNext));
     }
 
     /**
@@ -197,14 +193,8 @@ public final class NodeUtility {
         }
         
         final CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
-        final CompilationUnit parsedCompilationUnit;
-        try {
-            parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit).orElseThrow();
-        } catch(NoSuchElementException e) {
-            return Optional.empty();
-        }
-        final Node replacedNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeWithTokenToInsert, beginRangeOfTarget);
-        return Optional.of(replacedNode);
+        return NodeUtility.reparseCompilationUnit(compilationUnit)
+            .map(cu -> findNodeInCompilationUnitByBeginRange(cu, nodeWithTokenToInsert, beginRangeOfTarget));
     }
 
     /**
@@ -219,13 +209,15 @@ public final class NodeUtility {
      */
     public static Optional<Node> insertNodeInOneLine(Node nodeToInsert, Node targetNode){
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
-        Node nodeWithTokenToInsert = nodeToInsert;
+        Node nodeWithTokenToInsert;
         if (!nodeToInsert.getTokenRange().isPresent()){
             try {
                 nodeWithTokenToInsert = NodeUtility.parseNode(nodeToInsert).orElseThrow();
             } catch (NoSuchElementException e){
                 return Optional.empty();
             }
+        } else {
+            nodeWithTokenToInsert = NodeUtility.deepCopyByReparse(nodeToInsert);
         }
 
         JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
@@ -244,14 +236,8 @@ public final class NodeUtility {
         }
         
         final CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
-        final CompilationUnit parsedCompilationUnit;
-        try {
-            parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit).orElseThrow();
-        } catch(NoSuchElementException e) {
-            return Optional.empty();
-        }
-        final Node insertedNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeWithTokenToInsert, beginRangeOfTarget);
-        return Optional.of(insertedNode);
+        return NodeUtility.reparseCompilationUnit(compilationUnit)
+            .map(cu -> NodeUtility.findNodeInCompilationUnitByBeginRange(cu, nodeWithTokenToInsert, beginRangeOfTarget));
     }
 
     /**
@@ -266,7 +252,7 @@ public final class NodeUtility {
         Node nodeWithTokenToReplaceWith;
         try {
             nodeWithTokenToReplaceWith = NodeUtility.parseNode(nodeToReplaceWith).orElseThrow();
-        } catch(NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             return Optional.empty();
         }
 
@@ -305,14 +291,9 @@ public final class NodeUtility {
         }
 
         final CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
-        final CompilationUnit parsedCompilationUnit;
-        try {
-            parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit).orElseThrow();
-        } catch(NoSuchElementException e) {
-            return Optional.empty();
-        }
-        final Node replacedNode = NodeUtility.findNodeInCompilationUnitByBeginRange(parsedCompilationUnit, nodeWithTokenToReplaceWith, beginRangeOfTarget);
-        return Optional.of(replacedNode);
+        return NodeUtility.reparseCompilationUnit(compilationUnit)
+            .map(cu -> NodeUtility.findNodeInCompilationUnitByBeginRange(cu, nodeWithTokenToReplaceWith, beginRangeOfTarget));
+        
     }
 
     /**
@@ -353,7 +334,6 @@ public final class NodeUtility {
         }
         
         final CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
-        //final CompilationUnit parsedCompilationUnit = NodeUtility.reparseCompilationUnit(compilationUnit);
         return NodeUtility.reparseCompilationUnit(compilationUnit);
     }
 

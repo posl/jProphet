@@ -3,7 +3,6 @@ package jp.posl.jprophet.operation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -132,10 +131,9 @@ public class VariableReplacementOperation implements AstOperation {
                     continue;
                 }
                 Node newCandidate = NodeUtility.deepCopyByReparse(node);
-                Optional<Node> replacedCandidate = NodeUtility.replaceNode(constructExpr.apply(varName), ((AssignExpr)newCandidate).getValue());
-                try{
-                    candidates.add(replacedCandidate.orElseThrow().findCompilationUnit().orElseThrow());
-                } catch (NoSuchElementException e){}
+                NodeUtility.replaceNode(constructExpr.apply(varName), ((AssignExpr)newCandidate).getValue())
+                    .flatMap(n -> n.findCompilationUnit())
+                    .ifPresent(candidates::add);
                 
             }
         }
@@ -163,10 +161,9 @@ public class VariableReplacementOperation implements AstOperation {
                     }
                     Node newCandidate = NodeUtility.deepCopyByReparse(node);
                     MethodCallExpr methodCallExpr = (MethodCallExpr)newCandidate;
-                    Optional<Node> replacedCandidate = NodeUtility.replaceNode(constructExpr.apply(varName), methodCallExpr.getArgument(i));
-                    try{
-                        candidates.add(replacedCandidate.orElseThrow().findCompilationUnit().orElseThrow());
-                    } catch (NoSuchElementException e){}
+                    NodeUtility.replaceNode(constructExpr.apply(varName), methodCallExpr.getArgument(i))
+                        .flatMap(n -> n.findCompilationUnit())
+                        .ifPresent(candidates::add);
                 }
             }
         }
