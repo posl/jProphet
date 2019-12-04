@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BinaryExpr;
@@ -51,8 +49,7 @@ public class ConditionGenerator {
                 isTrue.map(newConditions::add);
 
                 final Optional<BinaryExpr> isFalse = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(false), Operator.EQUALS);
-                isFalse.map(newConditions::add);
-                    
+                isFalse.map(newConditions::add);        
             });
         allVarNames.stream()
             .forEach(name -> {
@@ -113,7 +110,7 @@ public class ConditionGenerator {
      * @param operator BinaryExprの演算子
      * @return 置換後のBinaryExpr
      */
-    private Optional<BinaryExpr> replaceWithBinaryExpr(Expression exprToReplace, String leftExprName, Expression rightExpr, Operator operator) throws ParseProblemException{
+    private Optional<BinaryExpr> replaceWithBinaryExpr(Expression exprToReplace, String leftExprName, Expression rightExpr, Operator operator){
         final BinaryExpr newBinaryExpr = new BinaryExpr(new NameExpr(leftExprName), rightExpr, operator);
         try {
             final BinaryExpr insertedBinaryExpr = (BinaryExpr)this.replaceWithExpr(exprToReplace, newBinaryExpr).orElseThrow();
@@ -129,7 +126,7 @@ public class ConditionGenerator {
      * @param exprToReplaceWith 新しいExpression
      * @return 置換後の新しいExpression
      */
-    private Optional<Expression> replaceWithExpr(Expression exprToReplace, Expression exprToReplaceWith) throws ParseProblemException{
+    private Optional<Expression> replaceWithExpr(Expression exprToReplace, Expression exprToReplaceWith){
         final Expression newCondition = (Expression)NodeUtility.deepCopyByReparse(exprToReplace);
         try {
             final Expression insertedExpr = (Expression)(NodeUtility.replaceNode(exprToReplaceWith, newCondition).orElseThrow());

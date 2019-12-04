@@ -107,11 +107,15 @@ public final class NodeUtility {
      * @param nextNode 挿入するノードの後ろのノード
      * @return 挿入したノード
      */
-    public static Optional<Node> insertNodeBetweenNodes (Node nodeToInsert, Node previousNode, Node nextNode) throws ParseProblemException{
+    public static Optional<Node> insertNodeBetweenNodes (Node nodeToInsert, Node previousNode, Node nextNode){
         Node copiedNextNode = NodeUtility.deepCopyByReparse(nextNode);
         Node nodeWithTokenToInsert = nodeToInsert;
         if (!nodeToInsert.getTokenRange().isPresent()){
-            nodeWithTokenToInsert = NodeUtility.parseNode(nodeToInsert);
+            try {
+                nodeWithTokenToInsert = NodeUtility.parseNode(nodeToInsert).orElseThrow();
+            } catch (NoSuchElementException e){
+                return Optional.empty();
+            }
         }
 
         JavaToken beginTokenOfNext = copiedNextNode.getTokenRange().orElseThrow().getBegin();
@@ -154,9 +158,14 @@ public final class NodeUtility {
      * @param targetNode 挿入するノードの後ろのノード
      * @return 挿入したノード
      */
-    public static Optional<Node> insertNodeWithNewLine(Node nodeToInsert, Node targetNode) throws ParseProblemException{
+    public static Optional<Node> insertNodeWithNewLine(Node nodeToInsert, Node targetNode){
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
-        Node nodeWithTokenToInsert = NodeUtility.parseNode(nodeToInsert);
+        Node nodeWithTokenToInsert;
+        try {
+            nodeWithTokenToInsert = NodeUtility.parseNode(nodeToInsert).orElseThrow();
+        } catch (NoSuchElementException e){
+            return Optional.empty();
+        }
 
         JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
         JavaToken tokenToInsert = nodeWithTokenToInsert.getTokenRange().orElseThrow().getBegin();
@@ -208,11 +217,15 @@ public final class NodeUtility {
      * @param targetNode 挿入するノードの後ろのノード
      * @return 挿入したノード
      */
-    public static Optional<Node> insertNodeInOneLine(Node nodeToInsert, Node targetNode) throws ParseProblemException{
+    public static Optional<Node> insertNodeInOneLine(Node nodeToInsert, Node targetNode){
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
         Node nodeWithTokenToInsert = nodeToInsert;
         if (!nodeToInsert.getTokenRange().isPresent()){
-            nodeWithTokenToInsert = NodeUtility.parseNode(nodeToInsert);
+            try {
+                nodeWithTokenToInsert = NodeUtility.parseNode(nodeToInsert).orElseThrow();
+            } catch (NoSuchElementException e){
+                return Optional.empty();
+            }
         }
 
         JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
@@ -248,9 +261,14 @@ public final class NodeUtility {
      * @param targetNode 置換される前のノード
      * @return 置換後のASTノード
      */
-    public static Optional<Node> replaceNode(Node nodeToReplaceWith, Node targetNode) throws ParseProblemException{
+    public static Optional<Node> replaceNode(Node nodeToReplaceWith, Node targetNode){
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
-        Node nodeWithTokenToReplaceWith = NodeUtility.parseNode(nodeToReplaceWith);
+        Node nodeWithTokenToReplaceWith;
+        try {
+            nodeWithTokenToReplaceWith = NodeUtility.parseNode(nodeToReplaceWith).orElseThrow();
+        } catch(NoSuchElementException e) {
+            return Optional.empty();
+        }
 
         JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
         JavaToken tokenToReplaceWith = nodeWithTokenToReplaceWith.getTokenRange().orElseThrow().getBegin();
@@ -304,7 +322,7 @@ public final class NodeUtility {
      * @param targetNode 
      * @return
      */
-    public static Optional<CompilationUnit> insertTokenWithNewLine(TokenRange tokenRange, Node targetNode) throws ParseProblemException{
+    public static Optional<CompilationUnit> insertTokenWithNewLine(TokenRange tokenRange, Node targetNode){
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
 
         JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
@@ -374,16 +392,16 @@ public final class NodeUtility {
      * @param node パースしたいのノード
      * @return パースしたノード
      */
-    public static Node parseNode(Node node) throws ParseProblemException{
+    public static Optional<Node> parseNode(Node node){
         Node parsedNode;
         if (node instanceof Statement){
             parsedNode = JavaParser.parseStatement(node.toString());
         }else if (node instanceof Expression){
             parsedNode = JavaParser.parseExpression(node.toString());
         }else{
-            throw new ParseProblemException(new Throwable());
+            return Optional.empty();
         }
-        return parsedNode;
+        return Optional.of(parsedNode);
     }
 
     /**

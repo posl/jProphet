@@ -6,7 +6,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.Expression;
@@ -54,7 +53,7 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
             final Optional<Expression> abstConditionOfIfBreak = this.insertIfStmtWithAbstCond(targetNode, new BreakStmt((SimpleName) null));
             try {
                 compilationUnits.addAll(this.collectConcreteConditions(abstConditionOfIfBreak.orElseThrow()));
-            } catch (ParseProblemException e){
+            } catch (NoSuchElementException e){
                 return compilationUnits;
             }
         }
@@ -69,7 +68,7 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
      * @param stmtInIfBlockToInsert 挿入するif文のブロック内の文
      * @return 挿入したif文における穴あきの条件式
      */
-    private Optional<Expression> insertIfStmtWithAbstCond(Node nextNode, Statement stmtInIfBlockToInsert) throws ParseProblemException{
+    private Optional<Expression> insertIfStmtWithAbstCond(Node nextNode, Statement stmtInIfBlockToInsert){
         final String abstractConditionName = "ABST_HOLE";
         final IfStmt newIfStmt =  (IfStmt)JavaParser.parseStatement((new IfStmt(new MethodCallExpr(abstractConditionName), stmtInIfBlockToInsert, null)).toString());
         final Optional<Node> insertedIfStmt = NodeUtility.insertNodeWithNewLine(newIfStmt, nextNode);
