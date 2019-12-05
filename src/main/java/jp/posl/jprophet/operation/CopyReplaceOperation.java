@@ -11,6 +11,8 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.stmt.SwitchEntryStmt;
+import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
 import jp.posl.jprophet.NodeUtility;
@@ -27,7 +29,7 @@ public class CopyReplaceOperation implements AstOperation{
     @Override
     public List<CompilationUnit> exec(Node targetNode){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
-        if (targetNode instanceof Statement && !(targetNode instanceof BlockStmt)){
+        if (targetNode instanceof Statement && !(targetNode instanceof BlockStmt)  && !(targetNode instanceof SwitchEntryStmt)){
             //修正対象のステートメントの属するメソッドノードを取得
             //メソッド内のステートメント(修正対象のステートメントより前のもの)を収集
             List<Statement> statements = collectLocalStatementsBeforeTarget((Statement)targetNode);
@@ -56,10 +58,14 @@ public class CopyReplaceOperation implements AstOperation{
         List<Statement> localStatements = methodNode.findAll(Statement.class);
 
         //targetStatementを含むそれより後ろの行の要素を全て消す
-        //BlockStmtを全て除外する
+        //BlockStmt, SwitchStmt, SwitchEntryStmtを全て除外する
+        //TODO 除外していないfor文やif文は,コピペされた後,ブロックの中身のExpressionが置換される
+        //TODO このようなコピペが必要でないならforStmtやifStmt,whileStmtにもfilterをかける
         return localStatements.stream()
             .filter(s -> getEndLineNumber(s).orElseThrow() < getBeginLineNumber(targetStatement).orElseThrow())
             .filter(s -> (s instanceof BlockStmt) == false)
+            .filter(s -> (s instanceof SwitchStmt) == false)
+            .filter(s -> (s instanceof SwitchEntryStmt) == false)
             .collect(Collectors.toList());
     }
 
@@ -70,10 +76,12 @@ public class CopyReplaceOperation implements AstOperation{
      * @return compilationUnitのリスト
      */
     private List<CompilationUnit> copyAndPasteReplacedStatementToBeforeTarget(Statement statement, Node targetNode){
-        Node copiedNode = NodeUtility.insertNodeWithNewLine(statement, targetNode);
-        List<Node> copiedNodeDescendants = NodeUtility.getAllDescendantNodes(copiedNode);
-
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+        List<Node> copiedNodeDescendants = new ArrayList<Node>();
+        NodeUtility.insertNodeWithNewLine(statement, targetNode)
+            .map(NodeUtility::getAllDescendantNodes)
+            .ifPresent(copiedNodeDescendants::addAll);
+        
         for (Node descendant : copiedNodeDescendants){
             VariableReplacementOperation vr = new VariableReplacementOperation();
             List<CompilationUnit> copiedNodeList = vr.exec(descendant);

@@ -9,7 +9,8 @@ import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;
 
-import com.github.javaparser.printer.*;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 
 /**
  * 修正パッチ候補を元にプロジェクト全体の生成を行うクラス
@@ -51,7 +52,9 @@ public class FixedProjectGenerator {
     private void generateFixedFile(PatchCandidate patchCandidate, String fixedProjectPath, String originalProjectPath){
         final String fixedFilePath   = patchCandidate.getFilePath();
         final File   fixedFile       = new File(fixedProjectPath + fixedFilePath.replace(originalProjectPath, ""));
-        final String fixedSourceCode = new PrettyPrinter(new PrettyPrinterConfiguration()).print(patchCandidate.getCompilationUnit());
+        CompilationUnit cu = patchCandidate.getCompilationUnit();
+        LexicalPreservingPrinter.setup(cu);
+        final String fixedSourceCode = LexicalPreservingPrinter.print(cu);
 
         try {
             FileUtils.write(fixedFile, fixedSourceCode, "utf-8");

@@ -130,9 +130,11 @@ public class VariableReplacementOperation implements AstOperation {
                 if(originalAssignedValueName.equals(varName)){
                     continue;
                 }
-                Node newCandidate = NodeUtility.deepCopy(node);
-                ((AssignExpr) newCandidate).setValue(constructExpr.apply(varName));
-                candidates.add(newCandidate.findCompilationUnit().orElseThrow());
+                Node newCandidate = NodeUtility.deepCopyByReparse(node);
+                NodeUtility.replaceNode(constructExpr.apply(varName), ((AssignExpr)newCandidate).getValue())
+                    .flatMap(n -> n.findCompilationUnit())
+                    .ifPresent(candidates::add);
+                
             }
         }
 
@@ -157,10 +159,11 @@ public class VariableReplacementOperation implements AstOperation {
                     if(originalArgValue.equals(varName)){
                         continue;
                     }
-                    Node newCandidate = NodeUtility.deepCopy(node);
+                    Node newCandidate = NodeUtility.deepCopyByReparse(node);
                     MethodCallExpr methodCallExpr = (MethodCallExpr)newCandidate;
-                    methodCallExpr.setArgument(i, constructExpr.apply(varName));
-                    candidates.add(newCandidate.findCompilationUnit().orElseThrow());
+                    NodeUtility.replaceNode(constructExpr.apply(varName), methodCallExpr.getArgument(i))
+                        .flatMap(n -> n.findCompilationUnit())
+                        .ifPresent(candidates::add);
                 }
             }
         }
