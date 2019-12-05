@@ -17,71 +17,57 @@ import java.util.stream.Collectors;
 public class CondRefinementOperationTest{
 
     /**
-     * if文が含まれる場合のテスト
+     * 条件文が置換されているかテスト
      */
     @Test public void testForIfStatementCopy(){
 
         final String beforeTargetStatement = new StringBuilder().append("")
             .append("public class A {\n")
             .append("    private String fa = \"a\";\n")
-            .append("    private void ma(String pa) {\n")
-            .append("        String la = \"a\";\n")
+            .append("    private void ma() {\n")
             .append("        String lb = \"b\";\n")
             .toString();
-        
-        final String statementToBeCopied = 
-            "        la = \"hoge\";\n";
 
         final String targetStatement = new StringBuilder().append("")
-            .append("        if (method() && method2()) {\n")
-            .append("            lb = \"huga\";\n")
-            .append("        }\n")
+            .append("        if (method1() && method2()) {\n")
             .toString();
 
         final String afterTargetStatement = new StringBuilder().append("")
+            .append("            lb = \"huga\";\n")
+            .append("        }\n")
             .append("    }\n")
             .append("}\n")
             .toString();
 
         final String targetSource = new StringBuilder().append("")
             .append(beforeTargetStatement)
-            .append(statementToBeCopied)
             .append(targetStatement)
             .append(afterTargetStatement)
             .toString();
 
 
         List<String> expectedTargetSources = new ArrayList<String>();
-        expectedTargetSources.add("        la = la;\n");
-        expectedTargetSources.add("        la = lb;\n");
-        expectedTargetSources.add("        la = this.fa;\n");
-        expectedTargetSources.add("        la = pa;\n");
+        expectedTargetSources.add("        if ((method1() && method2()) || (fa == null)) {\n");
+        expectedTargetSources.add("        if ((method1() && method2()) || (fa != null)) {\n");
+        expectedTargetSources.add("        if ((method1() && method2()) || (lb == null)) {\n");
+        expectedTargetSources.add("        if ((method1() && method2()) || (lb != null)) {\n");
+        expectedTargetSources.add("        if ((method1() && method2()) || (true)) {\n");
+        expectedTargetSources.add("        if ((method1() && method2()) && !(fa == null)) {\n");
+        expectedTargetSources.add("        if ((method1() && method2()) && !(fa != null)) {\n");
+        expectedTargetSources.add("        if ((method1() && method2()) && !(lb == null)) {\n");
+        expectedTargetSources.add("        if ((method1() && method2()) && !(lb != null)) {\n");
+        expectedTargetSources.add("        if ((method1() && method2()) && !(true)) {\n");
+
 
         List<String> expectedSources = expectedTargetSources.stream()
             .map(str -> {
                 return new StringBuilder().append("")
                     .append(beforeTargetStatement)
-                    .append(statementToBeCopied)
                     .append(str)
-                    .append(targetStatement)
                     .append(afterTargetStatement)
                     .toString();
             })
             .collect(Collectors.toList());
-
-        expectedSources.addAll(expectedTargetSources.stream()
-            .map(str -> {
-                return new StringBuilder().append("")
-                    .append(beforeTargetStatement)
-                    .append(statementToBeCopied)
-                    .append("        if (true) {\n")
-                    .append("    " + str)
-                    .append("            lb = \"huga\";\n")
-                    .append("        }\n")
-                    .append(afterTargetStatement)
-                    .toString();
-            })
-            .collect(Collectors.toList()));
 
         List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
         List<String> candidateSources = new ArrayList<String>();
@@ -93,7 +79,7 @@ public class CondRefinementOperationTest{
                 candidateSources.add(LexicalPreservingPrinter.print(cUnit));
             }
         }
-        //assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
+        assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
         return;
     }
 }
