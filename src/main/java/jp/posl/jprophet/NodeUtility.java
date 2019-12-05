@@ -245,12 +245,12 @@ public final class NodeUtility {
     /**
      * targetNodeをnodeToReplaceに置換する
      * 置換後のコードがパースできない場合nullを返す
+     * 置換前のコメントは削除される
      * @param nodeToReplaceWith 置換された後のノード(TokenRange等がnullでもOK)
      * @param targetNode 置換される前のノード
      * @return 置換後のASTノード
-     * @throws NoSuchElementException targetNodeがコメント付きの場合発生する
      */
-    public static Optional<Node> replaceNode(Node nodeToReplaceWith, Node targetNode) throws NoSuchElementException {
+    public static Optional<Node> replaceNode(Node nodeToReplaceWith, Node targetNode) {
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
         Node nodeWithTokenToReplaceWith;
         try {
@@ -263,6 +263,9 @@ public final class NodeUtility {
         JavaToken tokenToReplaceWith = nodeWithTokenToReplaceWith.getTokenRange().orElseThrow().getBegin();
         final JavaToken endTokenOfReplace = nodeWithTokenToReplaceWith.getTokenRange().orElseThrow().getEnd();
         JavaToken endTokenOfTarget = targetNode.getTokenRange().orElseThrow().getEnd();
+
+        // コメントが後ろに付いているノードに対して置換範囲のTokenをコメントの部分まで広げる
+        // よってコメントごと置換されるのでコメントは消える
         if (targetNode.getComment().isPresent()) {
             endTokenOfTarget = targetNode.getComment().get().getTokenRange().orElseThrow().getEnd();
             Range range = endTokenOfTarget.getRange().orElseThrow();
@@ -353,9 +356,8 @@ public final class NodeUtility {
      * @param node パースし直す前の探したいノード
      * @param range 探したいノードのrange
      * @return 見つけたノード
-     * @throws NoSuchElementException
      */
-    public static Node findNodeInCompilationUnitByBeginRange(CompilationUnit compilationUnit, Node node, Range range) throws NoSuchElementException {
+    public static Node findNodeInCompilationUnitByBeginRange(CompilationUnit compilationUnit, Node node, Range range) {
         List<Node> nodes = NodeUtility.getAllDescendantNodes(compilationUnit);
         Node newNode = nodes.stream().filter(n -> {
             return n.equals(node) && n.getRange().orElseThrow().begin.equals(range.begin);
