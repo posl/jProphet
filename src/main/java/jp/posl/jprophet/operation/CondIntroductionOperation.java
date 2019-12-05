@@ -34,24 +34,8 @@ public class CondIntroductionOperation implements AstOperation{
         final IfStmt replacedIfStmt = (IfStmt)NodeUtility.replaceNode(newIfStmt, targetNode).orElseThrow();
         final Expression abstCondition = replacedIfStmt.getCondition();
 
-        List<CompilationUnit> candidates = this.collectConcreteConditions(abstCondition);
+        ConcreteConditions concreteConditions = new ConcreteConditions(abstCondition);
+        List<CompilationUnit> candidates = concreteConditions.getCompilationUnits();
         return candidates;
     }
-
-    /**
-     * 穴あきの条件式から最終的な条件式を生成
-     * @param abstCondition 置換される穴あきの条件式
-     * @return 生成された条件式を含むCompilationUnit
-     */
-    private List<CompilationUnit> collectConcreteConditions(Expression abstCondition) {
-        final ConditionGenerator conditionGenerator = new ConditionGenerator();
-        final List<Expression> concreteConditions = conditionGenerator.generateCondition(abstCondition);
-
-        final List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
-        concreteConditions.stream()
-            .forEach(c -> candidates.add(c.findCompilationUnit().orElseThrow()));
-
-        return candidates;
-    }
-
 }

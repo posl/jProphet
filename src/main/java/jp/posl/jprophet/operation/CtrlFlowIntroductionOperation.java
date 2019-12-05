@@ -41,12 +41,12 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
 
         final List<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
         this.insertIfStmtWithAbstCond(targetNode, new ReturnStmt())
-            .map(expr -> collectConcreteConditions((Expression)expr))
+            .map(expr -> new ConcreteConditions((Expression)expr).getCompilationUnits())
             .ifPresent(compilationUnits::addAll);
 
         if(targetNode.findParent(ForStmt.class).isPresent() || targetNode.findParent(WhileStmt.class).isPresent()) {
             this.insertIfStmtWithAbstCond(targetNode, new BreakStmt((SimpleName) null))
-                .map(expr -> collectConcreteConditions((Expression)expr))
+                .map(expr -> new ConcreteConditions((Expression)expr).getCompilationUnits())
                 .ifPresent(compilationUnits::addAll);
         }
 
@@ -65,21 +65,5 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
         final IfStmt newIfStmt =  new IfStmt(new MethodCallExpr(abstractConditionName), stmtInIfBlockToInsert, null);
         return NodeUtility.insertNodeWithNewLine(newIfStmt, nextNode)
             .map(s -> ((IfStmt)s).getCondition());
-    }
-
-    /**
-     * 穴あきの条件式から最終的な条件式を生成
-     * @param abstCondition 置換される穴あきの条件式
-     * @return 生成された条件式を含むCompilationUnit
-     */
-    private List<CompilationUnit> collectConcreteConditions(Expression abstCondition) {
-        final ConditionGenerator conditionGenerator = new ConditionGenerator();
-        final List<Expression> concreteConditions = conditionGenerator.generateCondition(abstCondition);
-
-        final List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
-        concreteConditions.stream()
-            .forEach(c -> candidates.add(c.findCompilationUnit().orElseThrow()));
-
-        return candidates;
     }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BinaryExpr;
@@ -18,8 +19,8 @@ import jp.posl.jprophet.NodeUtility;
 /**
  * 条件式の生成を行うクラス
  */
-public class ConditionGenerator {
-
+public class ConcreteConditions {
+    private List<Expression> expressions = new ArrayList<Expression>();
     /**
      * 参照可能な変数から以下の複数の条件式を生成する</br>
      * <ul>
@@ -28,40 +29,56 @@ public class ConditionGenerator {
      * <li>true（恒真）</li>
      * </ul>
      * 
-     * @param targetCondition 条件式を生成して置き換えられるExpressionノード
-     * @return 生成された条件式によって置き換えられたtargetConditionノードのリスト 
+     * @param abstCondition 条件式を生成したい箇所のExpressionノード
      */
-	public List<Expression> generateCondition(Expression targetCondition) {
+	public ConcreteConditions(Expression abstCondition) {
         final DeclarationCollector collector = new DeclarationCollector();
         final List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
-        vars.addAll(collector.collectFileds(targetCondition));
-        vars.addAll(collector.collectLocalVarsDeclared(targetCondition));
-        final List<Parameter> parameters = collector.collectParameters(targetCondition);
+        vars.addAll(collector.collectFileds(abstCondition));
+        vars.addAll(collector.collectLocalVarsDeclared(abstCondition));
+        final List<Parameter> parameters = collector.collectParameters(abstCondition);
         
         final List<String> booleanVarNames = this.collectBooleanNames(vars, parameters);
         final List<String> allVarNames = this.collectNames(vars, parameters);
 
-        final List<Expression> newConditions = new ArrayList<Expression>();
         booleanVarNames.stream()
             .forEach(name -> {
-                final Optional<BinaryExpr> isTrue = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(true), Operator.EQUALS);
-                isTrue.ifPresent(newConditions::add);
+                this.replaceWithBinaryExpr(abstCondition, name, new BooleanLiteralExpr(true), Operator.EQUALS)
+                    .ifPresent(this.expressions::add);
 
-                final Optional<BinaryExpr> isFalse = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(false), Operator.EQUALS);
-                isFalse.ifPresent(newConditions::add);        
+                this.replaceWithBinaryExpr(abstCondition, name, new BooleanLiteralExpr(false), Operator.EQUALS)
+                    .ifPresent(this.expressions::add);
             });
         allVarNames.stream()
             .forEach(name -> {
-                final Optional<BinaryExpr> isNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.EQUALS);
-                isNull.ifPresent(newConditions::add);
+                this.replaceWithBinaryExpr(abstCondition, name, new NullLiteralExpr(), Operator.EQUALS)
+                    .ifPresent(this.expressions::add);
 
-                final Optional<BinaryExpr> isNotNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.NOT_EQUALS);
-                isNotNull.ifPresent(newConditions::add);
+                this.replaceWithBinaryExpr(abstCondition, name, new NullLiteralExpr(), Operator.NOT_EQUALS)
+                    .ifPresent(this.expressions::add);
             });
-        
-        this.replaceWithExpr(targetCondition, new BooleanLiteralExpr(true)).map(newConditions::add);
-            
-        return newConditions;
+        this.replaceWithExpr(abstCondition, new BooleanLiteralExpr(true))
+            .ifPresent(this.expressions::add);
+    }
+
+    /**
+     * 条件式を取得 
+     * @return Expressionノードのリスト
+     */
+    public List<Expression> getExpressions(){
+        return this.expressions;
+    }
+
+    /**
+     * 生成した条件式を含んだCompilationUnitを取得
+     * @return CompilationUnitのリスト
+     */
+    public List<CompilationUnit> getCompilationUnits() {
+        final List<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
+        this.expressions.stream()
+            .forEach(c -> compilationUnits.add(c.findCompilationUnit().orElseThrow()));
+
+        return compilationUnits;
     }
     
     /**
