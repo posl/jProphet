@@ -19,7 +19,7 @@ public class CondRefinementOperationTest{
     /**
      * 条件文が置換されているかテスト
      */
-    @Test public void testForIfStatementCopy(){
+    @Test public void testForConditionReplacement(){
 
         final String beforeTargetStatement = new StringBuilder().append("")
             .append("public class A {\n")
