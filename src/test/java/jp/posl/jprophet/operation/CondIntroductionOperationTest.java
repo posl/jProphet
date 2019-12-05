@@ -20,7 +20,7 @@ public class CondIntroductionOperationTest {
             .append("public class A {\n\n")
             .append("    private String fa = \"a\";\n\n")
             .append("    private void ma() {\n")
-            .append("        String la = \"b\";\n")
+            .append("        la = \"b\";\n")
             .append("        fa = \"b\";\n")
             .append("    }\n")
             .append("}\n")
@@ -33,7 +33,7 @@ public class CondIntroductionOperationTest {
             .append("    private String fa = \"a\";\n\n") //ここも
             .append("    private void ma() {\n")
             .append("        if (true)\n")
-            .append("            String la = \"b\";\n")
+            .append("            la = \"b\";\n")
             .append("        fa = \"b\";\n")
             .append("    }\n")
             .append("}\n")
@@ -44,7 +44,7 @@ public class CondIntroductionOperationTest {
             .append("public class A {\n\n")
             .append("    private String fa = \"a\";\n\n")
             .append("    private void ma() {\n")
-            .append("        String la = \"b\";\n")
+            .append("        la = \"b\";\n")
             .append("        if (true)\n")
             .append("            fa = \"b\";\n")
             .append("    }\n")
@@ -62,7 +62,8 @@ public class CondIntroductionOperationTest {
                 .collect(Collectors.toList())
             );
         }
-        //assertThat(candidateSources).containsAll(expectedSources);
+
+        assertThat(candidateSources).containsAll(expectedSources);
         return;
     }
 }
