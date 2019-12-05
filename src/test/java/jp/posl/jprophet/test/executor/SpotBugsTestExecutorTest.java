@@ -40,10 +40,11 @@ public class SpotBugsTestExecutorTest {
      */
     @Test
     public void testForExec() {
-        final SpotBugsExecutor spotBugsExecutor = new SpotBugsExecutor("test");
-        spotBugsExecutor.exec(beforeConfig);
+        final String resultFileName = "test";
+        final SpotBugsExecutor spotBugsExecutor = new SpotBugsExecutor();
+        spotBugsExecutor.exec(beforeConfig, resultFileName);
 
-        final SpotBugsTestExecutor testExecutor = new SpotBugsTestExecutor(spotBugsExecutor.getResultFilePath());
+        final SpotBugsTestExecutor testExecutor = new SpotBugsTestExecutor(SpotBugsExecutor.getResultFilePath(resultFileName));
         final List<TestResult> results01 = testExecutor.exec(afterConfig01);
         final Map<String, String> resultMap01 = results01.get(0).toStringMap();
         assertThat(results01.size()).isEqualTo(1);

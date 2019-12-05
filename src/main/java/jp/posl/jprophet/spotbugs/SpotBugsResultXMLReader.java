@@ -59,7 +59,6 @@ public class SpotBugsResultXMLReader {
         final String filePath = targetLine.attributeValue("classname");
         final int start = Integer.parseInt(targetLine.attributeValue("start"));
         final int end = Integer.parseInt(targetLine.attributeValue("end"));
-        System.out.println(project.getSrcFileFqns().get(0));
         if(project.getSrcFileFqns().contains(filePath)) {          //ソースファイルのワーニングのみを対象とする
             return new SpotBugsWarning(type, filePath, start, end);
         }

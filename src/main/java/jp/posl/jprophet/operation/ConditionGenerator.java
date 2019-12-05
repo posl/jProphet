@@ -2,8 +2,8 @@ package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BinaryExpr;
@@ -44,20 +44,22 @@ public class ConditionGenerator {
         final List<Expression> newConditions = new ArrayList<Expression>();
         booleanVarNames.stream()
             .forEach(name -> {
-                final BinaryExpr isTrue = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(true), Operator.EQUALS);
-                newConditions.add(isTrue);
-                final BinaryExpr isFalse = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(false), Operator.EQUALS);
-                newConditions.add(isFalse);
+                final Optional<BinaryExpr> isTrue = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(true), Operator.EQUALS);
+                isTrue.ifPresent(newConditions::add);
+
+                final Optional<BinaryExpr> isFalse = this.replaceWithBinaryExpr(targetCondition, name, new BooleanLiteralExpr(false), Operator.EQUALS);
+                isFalse.ifPresent(newConditions::add);        
             });
         allVarNames.stream()
             .forEach(name -> {
-                final BinaryExpr isNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.EQUALS);
-                newConditions.add(isNull);
-                final BinaryExpr isNotNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.NOT_EQUALS);
-                newConditions.add(isNotNull);
-            });
+                final Optional<BinaryExpr> isNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.EQUALS);
+                isNull.ifPresent(newConditions::add);
 
-        newConditions.add(this.replaceWithExpr(targetCondition, new BooleanLiteralExpr(true)));
+                final Optional<BinaryExpr> isNotNull = this.replaceWithBinaryExpr(targetCondition, name, new NullLiteralExpr(), Operator.NOT_EQUALS);
+                isNotNull.ifPresent(newConditions::add);
+            });
+        
+        this.replaceWithExpr(targetCondition, new BooleanLiteralExpr(true)).map(newConditions::add);
             
         return newConditions;
     }
@@ -107,10 +109,10 @@ public class ConditionGenerator {
      * @param operator BinaryExprの演算子
      * @return 置換後のBinaryExpr
      */
-    private BinaryExpr replaceWithBinaryExpr(Expression exprToReplace, String leftExprName, Expression rightExpr, Operator operator){
+    private Optional<BinaryExpr> replaceWithBinaryExpr(Expression exprToReplace, String leftExprName, Expression rightExpr, Operator operator){
         final BinaryExpr newBinaryExpr = new BinaryExpr(new NameExpr(leftExprName), rightExpr, operator);
-        final BinaryExpr insertedBinaryExpr = (BinaryExpr)this.replaceWithExpr(exprToReplace, newBinaryExpr);
-        return insertedBinaryExpr;
+        return this.replaceWithExpr(exprToReplace, newBinaryExpr)
+            .map(expr -> (BinaryExpr)expr);
     }
 
     /**
@@ -119,10 +121,10 @@ public class ConditionGenerator {
      * @param exprToReplaceWith 新しいExpression
      * @return 置換後の新しいExpression
      */
-    private Expression replaceWithExpr(Expression exprToReplace, Expression exprToReplaceWith){
-        final Expression newCondition = (Expression)NodeUtility.deepCopyByReparse(exprToReplace); 
-        final Expression insertedExpr = (Expression)NodeUtility.replaceNode(JavaParser.parseExpression(exprToReplaceWith.toString()), newCondition);
-        return insertedExpr;
+    private Optional<Expression> replaceWithExpr(Expression exprToReplace, Expression exprToReplaceWith){
+        final Expression newCondition = (Expression)NodeUtility.deepCopyByReparse(exprToReplace);
+        return NodeUtility.replaceNode(exprToReplaceWith, newCondition)
+            .map(expr -> (Expression)expr);
     }
 
 }
