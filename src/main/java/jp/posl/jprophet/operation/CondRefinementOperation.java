@@ -22,6 +22,9 @@ import jp.posl.jprophet.NodeUtility;
  * 条件を狭める操作と緩める操作の二つを行う
  */
 public class CondRefinementOperation implements AstOperation{
+    /**
+     * {@inheritDoc}
+     */
     public List<CompilationUnit> exec(Node node){
         if (!(node instanceof IfStmt)) return new ArrayList<CompilationUnit>();
 
@@ -39,6 +42,14 @@ public class CondRefinementOperation implements AstOperation{
         return compilationUnits;
     }
 
+    /**
+     * 条件文をexpressionからexpression operation rightExprに書き換える
+     * m() -> m() && m2() など
+     * @param expression 変更前の条件式
+     * @param rightExpr 変更前の条件式に加える条件式
+     * @param operator 比較演算子
+     * @return
+     */
     private Optional<BinaryExpr> replaceWithBinaryExprWithAbst(Expression expression, Expression rightExpr, Operator operator){
         Expression condition = (Expression)NodeUtility.deepCopyByReparse(expression);
         Expression leftExpr = new EnclosedExpr ((Expression)NodeUtility.deepCopyByReparse(expression));
@@ -48,6 +59,11 @@ public class CondRefinementOperation implements AstOperation{
             .map(expr -> (BinaryExpr)expr);
     }
 
+    /**
+     * 穴あきの条件式から最終的な条件式を生成
+     * @param abstCondition 置換される穴あきの条件式
+     * @return 生成された条件式を含むCompilationUnit
+     */
     private List<CompilationUnit> collectConcreteConditions(Expression abstCondition) {
         final ConditionGenerator conditionGenerator = new ConditionGenerator();
         final List<Expression> concreteConditions = conditionGenerator.generateCondition(abstCondition);
