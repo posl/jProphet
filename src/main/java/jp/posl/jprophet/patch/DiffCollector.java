@@ -15,14 +15,14 @@ import java.io.StringReader;
 
 public class DiffCollector {
     private TYPE type;
-    private Chunk<String> oc;
-    private Chunk<String> rc;
+    private Chunk<String> originalCode;
+    private Chunk<String> patchedCode;
 
     public DiffCollector(){
 
     }
     
-    public void exec(String beforeSource, String afterSource) {
+    public void collect(String beforeSource, String afterSource) {
         List<String> original = this.changeStringToList(beforeSource);
         List<String> revised  = this.changeStringToList(afterSource);
 	    Patch<String> diff = DiffUtils.diff(original, revised);
@@ -31,10 +31,16 @@ public class DiffCollector {
 	    for (Delta<String> delta : deltas) {
             this.type = delta.getType();
             System.out.println(type);
-            this.oc = delta.getOriginal();
-            System.out.printf("del: position=%d, lines=%s%n", oc.getPosition() + 1, oc.getLines());
-            this.rc = delta.getRevised();
-            System.out.printf("add: position=%d, lines=%s%n", rc.getPosition() + 1, rc.getLines());
+            this.originalCode = delta.getOriginal();
+            System.out.printf("original: position=%d, lines=%s%n", originalCode.getPosition() + 1, originalCode.getLines());
+            this.patchedCode = delta.getRevised();
+            System.out.printf("patched : position=%d, lines=%s%n", patchedCode.getPosition() + 1, patchedCode.getLines());
+
+            StringBuilder prettySource = new StringBuilder("");
+            for (String str : patchedCode.getLines()){
+                prettySource.append(str + "\n");
+            }
+            System.out.println(prettySource.toString());
 	    }
     }
 

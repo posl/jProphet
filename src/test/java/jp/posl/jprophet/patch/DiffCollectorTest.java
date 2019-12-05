@@ -20,19 +20,21 @@ public class DiffCollectorTest {
             .append("public class A {\n")
             .append("    private void ma() {\n")
             .append("        for (int i = 0; i < 10; i++) {\n")
-            .append("            String la = \"dd\";\n")
+            .append("            if (true)\n\n")
+            .append("                String la = \"b\";\n\n")
             .append("        }\n")
             .append("    }\n")
             .append("}\n")
             .toString();
         DiffCollector diffCollector = new DiffCollector();
-        diffCollector.exec(beforeSource, afterSource);
+        diffCollector.collect(beforeSource, afterSource);
         return;
     }
 
     @Test public void test2(){
         final String targetSource = new StringBuilder().append("")
             .append("public class A {\n")
+            .append("    private void mb() {\n")
             .append("    private void ma() {\n")
             .append("        for (int i = 0; i < 10; i++) {\n")
             .append("            String la = \"b\";\n")
@@ -40,7 +42,9 @@ public class DiffCollectorTest {
             .append("    }\n")
             .append("}\n")
             .toString();
-        List<String> lists = DiffCollector.getLines(targetSource);
+        
+        DiffCollector diffCollector = new DiffCollector();
+        List<String> lists = diffCollector.changeStringToList(targetSource);
         for (String s : lists){
             System.out.println(s);
         }
