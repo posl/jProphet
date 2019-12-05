@@ -52,7 +52,6 @@ public class CondIntroductionOperationTest {
             .toString()
         );
 
-
         List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
         List<String> candidateSources = new ArrayList<String>();
         for(Node node : nodes){
@@ -66,4 +65,5 @@ public class CondIntroductionOperationTest {
         assertThat(candidateSources).containsAll(expectedSources);
         return;
     }
+
 }

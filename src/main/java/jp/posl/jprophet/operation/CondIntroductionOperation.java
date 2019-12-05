@@ -31,7 +31,7 @@ public class CondIntroductionOperation implements AstOperation{
         } catch (Exception e) {
             return new ArrayList<>();
         }
-        final IfStmt replacedIfStmt = (IfStmt)NodeUtility.replaceNode(newIfStmt, targetNode);
+        final IfStmt replacedIfStmt = (IfStmt)NodeUtility.replaceNode(newIfStmt, targetNode).orElseThrow();
         final Expression abstCondition = replacedIfStmt.getCondition();
 
         List<CompilationUnit> candidates = this.collectConcreteConditions(abstCondition);
