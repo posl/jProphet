@@ -29,7 +29,7 @@ public class CondRefinementOperation implements AstOperation{
         if (!(node instanceof IfStmt)) return new ArrayList<CompilationUnit>();
 
         final List<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
-        Expression condition = (Expression)NodeUtility.deepCopyByReparse(((IfStmt)node).getCondition());
+        final Expression condition = (Expression)NodeUtility.deepCopyByReparse(((IfStmt)node).getCondition());
         final String abstractConditionName = "ABST_HOLE";
 
         this.replaceWithBinaryExprWithAbst(condition, new EnclosedExpr (new MethodCallExpr(abstractConditionName)), Operator.OR)
@@ -51,8 +51,8 @@ public class CondRefinementOperation implements AstOperation{
      * @return
      */
     private Optional<BinaryExpr> replaceWithBinaryExprWithAbst(Expression expression, Expression rightExpr, Operator operator){
-        Expression condition = (Expression)NodeUtility.deepCopyByReparse(expression);
-        Expression leftExpr = new EnclosedExpr ((Expression)NodeUtility.deepCopyByReparse(expression));
+        final Expression condition = (Expression)NodeUtility.deepCopyByReparse(expression);
+        final Expression leftExpr = new EnclosedExpr ((Expression)NodeUtility.deepCopyByReparse(expression));
         final BinaryExpr newBinaryExpr = new BinaryExpr(leftExpr, rightExpr, operator);
 
         return NodeUtility.replaceNode(newBinaryExpr, condition)
