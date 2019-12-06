@@ -7,6 +7,7 @@ import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinte
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.JavaToken;
 import com.github.javaparser.ParseProblemException;
+import com.github.javaparser.Position;
 import com.github.javaparser.Range;
 import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.CompilationUnit;
@@ -86,7 +87,8 @@ public final class NodeUtility {
         CompilationUnit compilationUnit = node.findCompilationUnit().orElseThrow();
 
         LexicalPreservingPrinter.setup(compilationUnit);
-        CompilationUnit newCu = JavaParser.parse(LexicalPreservingPrinter.print(compilationUnit));
+        String source = LexicalPreservingPrinter.print(compilationUnit);
+        CompilationUnit newCu = JavaParser.parse(source);
         List<Node> nodes = NodeUtility.getAllDescendantNodes(newCu);
         Node newNode = nodes.stream().filter(n -> {
             return n.equals(node) && n.getRange().equals(node.getRange());
@@ -112,7 +114,7 @@ public final class NodeUtility {
         Node nodeWithTokenToInsert;
         if (!nodeToInsert.getTokenRange().isPresent()){
             try {
-                nodeWithTokenToInsert = NodeUtility.parseNode(nodeToInsert).orElseThrow();
+                nodeWithTokenToInsert = NodeUtility.initTokenRange(nodeToInsert).orElseThrow();
             } catch (NoSuchElementException e){
                 return Optional.empty();
             }
@@ -158,7 +160,7 @@ public final class NodeUtility {
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
         Node nodeWithTokenToInsert;
         try {
-            nodeWithTokenToInsert = NodeUtility.parseNode(nodeToInsert).orElseThrow();
+            nodeWithTokenToInsert = NodeUtility.initTokenRange(nodeToInsert).orElseThrow();
         } catch (NoSuchElementException e){
             return Optional.empty();
         }
@@ -212,7 +214,7 @@ public final class NodeUtility {
         Node nodeWithTokenToInsert;
         if (!nodeToInsert.getTokenRange().isPresent()){
             try {
-                nodeWithTokenToInsert = NodeUtility.parseNode(nodeToInsert).orElseThrow();
+                nodeWithTokenToInsert = NodeUtility.initTokenRange(nodeToInsert).orElseThrow();
             } catch (NoSuchElementException e){
                 return Optional.empty();
             }
@@ -243,15 +245,16 @@ public final class NodeUtility {
     /**
      * targetNodeをnodeToReplaceに置換する
      * 置換後のコードがパースできない場合nullを返す
-     * @param nodeToReplaceWith 置換された後のノード
+     * 置換前のコメントは削除される
+     * @param nodeToReplaceWith 置換された後のノード(TokenRange等がnullでもOK)
      * @param targetNode 置換される前のノード
      * @return 置換後のASTノード
      */
-    public static Optional<Node> replaceNode(Node nodeToReplaceWith, Node targetNode){
+    public static Optional<Node> replaceNode(Node nodeToReplaceWith, Node targetNode) {
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
         Node nodeWithTokenToReplaceWith;
         try {
-            nodeWithTokenToReplaceWith = NodeUtility.parseNode(nodeToReplaceWith).orElseThrow();
+            nodeWithTokenToReplaceWith = NodeUtility.initTokenRange(nodeToReplaceWith).orElseThrow();
         } catch (NoSuchElementException e) {
             return Optional.empty();
         }
@@ -259,7 +262,17 @@ public final class NodeUtility {
         JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
         JavaToken tokenToReplaceWith = nodeWithTokenToReplaceWith.getTokenRange().orElseThrow().getBegin();
         final JavaToken endTokenOfReplace = nodeWithTokenToReplaceWith.getTokenRange().orElseThrow().getEnd();
-        final JavaToken endTokenOfTarget = targetNode.getTokenRange().orElseThrow().getEnd();
+        JavaToken endTokenOfTarget = targetNode.getTokenRange().orElseThrow().getEnd();
+
+        // コメントが後ろに付いているノードに対して置換範囲のTokenをコメントの部分まで広げる
+        // よってコメントごと置換されるのでコメントは消える
+        if (targetNode.getComment().isPresent()) {
+            endTokenOfTarget = targetNode.getComment().get().getTokenRange().orElseThrow().getEnd();
+            Range range = endTokenOfTarget.getRange().orElseThrow();
+            Range newRange = new Range(new Position(range.begin.line, range.end.column + 1), new Position(range.begin.line, range.end.column + 1));
+            JavaToken endTokenOfCopiedTarget = copiedTargetNode.getComment().get().getTokenRange().orElseThrow().getEnd();
+            endTokenOfCopiedTarget.insertAfter(new JavaToken(newRange, JavaToken.Kind.UNIX_EOL.getKind(), "\n", null, null));
+        }
 
         final Range beginRangeOfTarget = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
 
@@ -368,11 +381,13 @@ public final class NodeUtility {
     }
 
     /**
-     * StatementまたはExpression型のノードをパースする
-     * @param node パースしたいのノード
+     * StatementまたはExpression型のノードのtoStringをパースすることで
+     * TokenRangeを設定する
+     * @param node パースしたいのノード(StatementかExpression)
      * @return パースしたノード
      */
-    public static Optional<Node> parseNode(Node node){
+    public static Optional<Node> initTokenRange(Node node){
+        node.removeComment();
         Node parsedNode;
         if (node instanceof Statement){
             parsedNode = JavaParser.parseStatement(node.toString());
