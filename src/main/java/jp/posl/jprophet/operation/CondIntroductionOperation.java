@@ -19,6 +19,9 @@ import jp.posl.jprophet.NodeUtility;
  * 対象のステートメントをif文で挟む
  */
 public class CondIntroductionOperation implements AstOperation{
+    /**
+     * {@inheritDoc}
+     */
     public List<CompilationUnit> exec(Node targetNode){
         if(!(targetNode instanceof Statement)) return new ArrayList<>();
         if(targetNode instanceof BlockStmt) return new ArrayList<>();
@@ -34,8 +37,8 @@ public class CondIntroductionOperation implements AstOperation{
         final IfStmt replacedIfStmt = (IfStmt)NodeUtility.replaceNode(newIfStmt, targetNode).orElseThrow();
         final Expression abstCondition = replacedIfStmt.getCondition();
 
-        ConcreteConditions concreteConditions = new ConcreteConditions(abstCondition);
-        List<CompilationUnit> candidates = concreteConditions.getCompilationUnits();
+        final ConcreteConditions concreteConditions = new ConcreteConditions(abstCondition);
+        final List<CompilationUnit> candidates = concreteConditions.getCompilationUnits();
         return candidates;
     }
 }
