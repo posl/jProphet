@@ -3,7 +3,11 @@ package jp.posl.jprophet.operation;
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
+
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
+
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
@@ -17,18 +21,17 @@ public class VariableReplacementOperationTest{
      * 引数を変数に置換する機能のテスト
      */
     @Test public void testForArgumentReplace(){
-        final String targetStatement = 
-                "       this.mb(\"hoge\", \"fuga\");\n";
         final String beforeTargetStatement = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("    private String fa = \"a\";\n\n")
-            .append("    private String fb = \"a\";\n\n")
+            .append("public class A {\n")
+            .append("    private String fa = \"a\";\n")
+            .append("    private String fb = \"a\";\n")
             .append("    private void ma(String pa, String pb) {\n")
             .append("        String la = \"b\";\n")
             .toString();
-
+        final String targetStatement = 
+                    "        this.mb(\"hoge\", \"fuga\");\n";
         final String afterTargetStatement = new StringBuilder().append("")
-            .append("    }\n\n")
+            .append("    }\n")
             .append("    private void mb(String a, String b) {\n")
             .append("    }\n")
             .append("}\n")
@@ -66,10 +69,11 @@ public class VariableReplacementOperationTest{
         List<String> candidateSources = new ArrayList<String>();
         for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            candidateSources.addAll(vr.exec(node).stream()
-                .map(cu -> cu.toString())
-                .collect(Collectors.toList())
-            );
+            List<CompilationUnit> cUnits = vr.exec(node);
+            for (CompilationUnit cUnit : cUnits){
+                LexicalPreservingPrinter.setup(cUnit);
+                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
+            }
         }
         assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
         return;
@@ -80,10 +84,10 @@ public class VariableReplacementOperationTest{
      */
     @Test public void testForAssignmentReplace(){
         final String targetStatement = 
-                "       la = \"hoge\";\n"; 
+                "        la = \"hoge\";\n"; 
         final String beforeTargetStatement = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("    private String fa = \"a\";\n\n")
+            .append("public class A {\n")
+            .append("    private String fa = \"a\";\n")
             .append("    private void ma(String pa) {\n")
             .append("        String la = \"a\";\n")
             .append("        String lb = \"b\";\n")
@@ -121,10 +125,11 @@ public class VariableReplacementOperationTest{
         List<String> candidateSources = new ArrayList<String>();
         for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            candidateSources.addAll(vr.exec(node).stream()
-                .map(ru -> ru.toString())
-                .collect(Collectors.toList())
-            );
+            List<CompilationUnit> cUnits = vr.exec(node);
+            for (CompilationUnit cUnit : cUnits){
+                LexicalPreservingPrinter.setup(cUnit);
+                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
+            }
         }
 
         assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
@@ -155,10 +160,10 @@ public class VariableReplacementOperationTest{
      */
     @Test public void testThatCandidatesDoesNotContainOriginalInAssignExpr(){
         final String targetStatement = 
-                "       la = lb;\n"; 
+                "        la = lb;\n"; 
 
         final String source = new StringBuilder().append("")
-        .append("public class A {\n\n")
+        .append("public class A {\n")
         .append("    private void ma() {\n")
         .append("        String la = \"a\";\n")
         .append("        String lb = \"b\";\n")
@@ -170,7 +175,7 @@ public class VariableReplacementOperationTest{
         final String expectedTargetStatement = 
                 "        la = lb;\n"; 
         final String expectedSource = new StringBuilder().append("")
-        .append("public class A {\n\n")
+        .append("public class A {\n")
         .append("    private void ma() {\n")
         .append("        String la = \"a\";\n")
         .append("        String lb = \"b\";\n")
@@ -183,10 +188,11 @@ public class VariableReplacementOperationTest{
         List<String> candidateSources = new ArrayList<String>();
         for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            candidateSources.addAll(vr.exec(node).stream()
-                .map(ru -> ru.toString())
-                .collect(Collectors.toList())
-            );
+            List<CompilationUnit> cUnits = vr.exec(node);
+            for (CompilationUnit cUnit : cUnits){
+                LexicalPreservingPrinter.setup(cUnit);
+                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
+            }
         }
 
         assertThat(candidateSources).doesNotContain(expectedSource);
@@ -198,7 +204,7 @@ public class VariableReplacementOperationTest{
      */
     @Test public void testThatCandidatesDoesNotContainOriginalInArgs(){
         final String targetStatement = 
-                "       hoge(la);\n"; 
+                "        hoge(la);\n"; 
 
         final String source = new StringBuilder().append("")
         .append("public class A {\n")
@@ -216,10 +222,11 @@ public class VariableReplacementOperationTest{
         List<String> candidateSources = new ArrayList<String>();
         for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            candidateSources.addAll(vr.exec(node).stream()
-                .map(ru -> ru.toString())
-                .collect(Collectors.toList())
-            );
+            List<CompilationUnit> cUnits = vr.exec(node);
+            for (CompilationUnit cUnit : cUnits){
+                LexicalPreservingPrinter.setup(cUnit);
+                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
+            }
         }
 
         assertThat(candidateSources).doesNotContain(targetStatementAsRepairUnitToString);
@@ -235,7 +242,7 @@ public class VariableReplacementOperationTest{
                 "        hoge(0);\n"; 
 
         final String beforeTargetStatement = new StringBuilder().append("")
-            .append("public class A {\n\n")
+            .append("public class A {\n")
             .append("    private void ma() {\n")
             .append("        int la = 1;\n")
             .toString();
@@ -262,10 +269,11 @@ public class VariableReplacementOperationTest{
         List<String> candidateSources = new ArrayList<String>();
         for(Node node : repairUnits){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            candidateSources.addAll(vr.exec(node).stream()
-                .map(ru -> ru.toString())
-                .collect(Collectors.toList())
-            );
+            List<CompilationUnit> cUnits = vr.exec(node);
+            for (CompilationUnit cUnit : cUnits){
+                LexicalPreservingPrinter.setup(cUnit);
+                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
+            }
         }
 
         assertThat(candidateSources).contains(expectedSource);
