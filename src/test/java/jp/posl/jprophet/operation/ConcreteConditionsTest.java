@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.*;
 
 
 
-public class ConditionGeneratorTest {
+public class ConcreteConditionsTest {
     @Test public void test() {
         String targetSource = new StringBuilder().append("")
             .append("public class A {\n\n") 
@@ -29,8 +29,8 @@ public class ConditionGeneratorTest {
         IfStmt targetIfStmt = JavaParser.parse(targetSource).findFirst(IfStmt.class).get();
         Expression abstCondition = targetIfStmt.getCondition();
 
-        ConditionGenerator condGenerator = new ConditionGenerator();
-        List<Expression> actualCondExpressions = condGenerator.generateCondition(abstCondition);
+        ConcreteConditions concreteConditions = new ConcreteConditions(abstCondition);
+        List<Expression> actualCondExpressions = concreteConditions.getExpressions();
 
         String expectedSourceBeforeTarget = new StringBuilder().append("")
             .append("public class A {\n\n") 

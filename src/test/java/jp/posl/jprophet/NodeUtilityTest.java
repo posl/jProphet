@@ -12,6 +12,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -374,5 +375,62 @@ public class NodeUtilityTest {
         return;
     }
 
+    /**
+     * ReplaceNodeでコメント付きのコードでエラーが出ないかどうかテスト
+     */
+    @Test public void testReplaceNodeForCommentedCode(){
+        final String targetSource = new StringBuilder().append("")
+            .append("public class A {\n\n")
+            .append("    private void ma() {\n")
+            .append("        la = \"b\"; // comment\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        final String expectedSource = new StringBuilder().append("")
+            .append("public class A {\n\n")
+            .append("    private void ma() {\n")
+            .append("        methodCall();\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        Node targetNode = nodes.get(6);
+        Node nodeToReplaceWith = new ExpressionStmt(new MethodCallExpr("methodCall"));
+        Node replacedStatement = NodeUtility.replaceNode(nodeToReplaceWith, targetNode).get();
+
+        CompilationUnit replacedCompilationUnit = replacedStatement.findCompilationUnit().orElseThrow();
+        LexicalPreservingPrinter.setup(replacedCompilationUnit);
+        String reparsedSource = LexicalPreservingPrinter.print(replacedCompilationUnit);
+        assertThat(reparsedSource).contains(expectedSource);
+    }
+
+    /**
+     * ParseNodeでNodeがパースされているか
+     */
+    @Test public void testParseNode(){
+        Node targetNode = new ExpressionStmt(new MethodCallExpr("methodCall"));
+        Node newNode = NodeUtility.initTokenRange(targetNode).get();
+        assertThat(newNode.getTokenRange()).isNotNull();
+    }
+
+    /**
+     * ParseNodeでコメント付きのコードをParseした際にコメントが削除されているかどうか
+     */
+    @Test public void testParseNodeForCommentedCode(){
+        final String targetSource = new StringBuilder().append("")
+            .append("public class A {\n\n")
+            .append("    private void ma() {\n")
+            .append("        la = \"b\"; // comment\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        Node targetNode = nodes.get(6);
+        Node newNode = NodeUtility.initTokenRange(targetNode).get();
+        assertThat(newNode.getComment().isPresent()).isFalse();
+    }
 
 }
