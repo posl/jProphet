@@ -2,6 +2,15 @@ package jp.posl.jprophet.patch;
 
 import java.util.List;
 
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
+
 import org.junit.Test;
 
 public class DiffCollectorTest {
@@ -28,6 +37,19 @@ public class DiffCollectorTest {
             .toString();
         DiffCollector diffCollector = new DiffCollector();
         diffCollector.collect(beforeSource, afterSource);
+
+        /*
+        NodeList<Statement> nodes = new NodeList<Statement>();
+        nodes.add(new ExpressionStmt(new MethodCallExpr("methodCall2")));
+        nodes.add(new ExpressionStmt(new MethodCallExpr("methodCall3")));
+        nodes.add(new ExpressionStmt(new MethodCallExpr("methodCall4")));
+        IfStmt insertNode = new IfStmt(new MethodCallExpr("methodCall"), new BlockStmt(nodes), null);
+        IfStmt test2 = new IfStmt(new MethodCallExpr("methodCall"), insertNode, null); 
+        Statement newStmt = JavaParser.parseStatement(insertNode.toString());
+        Statement newStmt2 = JavaParser.parseStatement(test2.toString());
+        LexicalPreservingPrinter.setup(newStmt);
+        System.out.println(LexicalPreservingPrinter.print(newStmt));
+        */
         return;
     }
 

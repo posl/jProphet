@@ -2,7 +2,6 @@ package jp.posl.jprophet.patch;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import difflib.Chunk;
@@ -22,6 +21,11 @@ public class DiffCollector {
 
     }
     
+    /**
+     * diffの情報を集める
+     * @param beforeSource
+     * @param afterSource
+     */
     public void collect(String beforeSource, String afterSource) {
         List<String> original = this.changeStringToList(beforeSource);
         List<String> revised  = this.changeStringToList(afterSource);
@@ -44,6 +48,11 @@ public class DiffCollector {
 	    }
     }
 
+    /**
+     * Stringを行ごとに分割してリストにする
+     * @param text
+     * @return
+     */
     public List<String> changeStringToList(String text){
         List<String> textList = new ArrayList<String>();
         try (BufferedReader reader = new BufferedReader(new StringReader(text))) {
