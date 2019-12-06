@@ -101,8 +101,10 @@ public class MavenProjectTest{
      * クラスパスを正しく取得できているかの検証
      */
     @Test public void testForClasspaths(){
-        final String classFilePath = System.getProperty("user.home") + "/.m2/repository/";
-        List<String> expectedClassPaths = List.of(classFilePath + "junit/junit/3.8.1/junit-3.8.1.jar");
-        assertThat(this.project.getClassPaths()).containsOnlyElementsOf(expectedClassPaths);
+        List<String> expectedClassFilePaths = List.of(
+            "src/test/resources/testMavenProject01/src/main/resources/junit/junit/3.8.1/junit-3.8.1.jar",
+            "src/test/resources/testMavenProject01/src/main/resources/commons-io/commons-io/2.4/commons-io-2.4.jar"
+        );
+        assertThat(this.project.getClassPaths()).containsOnlyElementsOf(expectedClassFilePaths);
     }
 }

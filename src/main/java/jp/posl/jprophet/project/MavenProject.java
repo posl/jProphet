@@ -48,12 +48,14 @@ public class MavenProject implements Project {
                 .filter(file -> file.isFile())
                 .collect(Collectors.toList());
             
-            this.srcFilePaths = srcFileList.stream().map(f -> 
-                f.getPath()    
-            ).collect(Collectors.toList());
-            this.testFilePaths = testFileList.stream().map(f -> 
-                f.getPath()    
-            ).collect(Collectors.toList());
+            this.srcFilePaths = srcFileList.stream()
+            .map(f -> f.getPath())
+            .filter(s -> s.endsWith(".java"))
+            .collect(Collectors.toList());
+            this.testFilePaths = testFileList.stream()
+            .map(f -> f.getPath())
+            .filter(s -> s.endsWith(".java"))
+            .collect(Collectors.toList());
 
             this.srcFileFqns = this.buildSrcFileFqns();
             this.testFileFqns = this.buildTestFileFqns();
@@ -198,12 +200,12 @@ public class MavenProject implements Project {
     private List<Path> extractDependencyPaths(final Path pomFilePath) {
         final List<Path> list = new ArrayList<>();
         try {
-          final String userHome = System.getProperty("user.home");
           final MavenXpp3Reader reader = new MavenXpp3Reader();
           final Model model = reader.read(Files.newBufferedReader(pomFilePath));
-          final Path repositoryPath = Paths.get(userHome)
-              .resolve(".m2")
-              .resolve("repository");
+          final Path repositoryPath = Paths.get(rootPath)
+              .resolve("src")
+              .resolve("main")
+              .resolve("resources");
     
           for (final Object object : model.getDependencies()) {
             if (!(object instanceof Dependency)) {
@@ -222,7 +224,7 @@ public class MavenProject implements Project {
             if (!Files.isDirectory(libPath)) {
               continue;
             }
-    
+
             Files.find(libPath, Integer.MAX_VALUE, (p, attr) -> p.toString()
                 .endsWith(".jar"))
                 .forEach(list::add);
