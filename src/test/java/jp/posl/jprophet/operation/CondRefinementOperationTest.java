@@ -76,6 +76,7 @@ public class CondRefinementOperationTest{
             List<CompilationUnit> cUnits = cr.exec(node);
             for (CompilationUnit cUnit : cUnits){
                 LexicalPreservingPrinter.setup(cUnit);
+                System.out.println(LexicalPreservingPrinter.print(cUnit));
                 candidateSources.add(LexicalPreservingPrinter.print(cUnit));
             }
         }

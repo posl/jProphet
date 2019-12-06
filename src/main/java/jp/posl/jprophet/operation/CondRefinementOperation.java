@@ -33,10 +33,10 @@ public class CondRefinementOperation implements AstOperation{
         final String abstractConditionName = "ABST_HOLE";
 
         this.replaceWithBinaryExprWithAbst(condition, new EnclosedExpr (new MethodCallExpr(abstractConditionName)), Operator.OR)
-            .map(expr -> this.collectConcreteConditions(((EnclosedExpr)expr.getRight()).getInner()))
+            .map(expr -> new ConcreteConditions(((EnclosedExpr)expr.getRight()).getInner()).getCompilationUnits())
             .ifPresent(compilationUnits::addAll);
         this.replaceWithBinaryExprWithAbst(condition, new UnaryExpr (new EnclosedExpr (new MethodCallExpr(abstractConditionName)), UnaryExpr.Operator.LOGICAL_COMPLEMENT), Operator.AND)
-            .map(expr -> this.collectConcreteConditions(((EnclosedExpr)((UnaryExpr)expr.getRight()).getExpression()).getInner()))
+            .map(expr -> new ConcreteConditions(((EnclosedExpr)((UnaryExpr)expr.getRight()).getExpression()).getInner()).getCompilationUnits())
             .ifPresent(compilationUnits::addAll);
             
         return compilationUnits;
@@ -57,21 +57,5 @@ public class CondRefinementOperation implements AstOperation{
 
         return NodeUtility.replaceNode(newBinaryExpr, condition)
             .map(expr -> (BinaryExpr)expr);
-    }
-
-    /**
-     * 穴あきの条件式から最終的な条件式を生成
-     * @param abstCondition 置換される穴あきの条件式
-     * @return 生成された条件式を含むCompilationUnit
-     */
-    private List<CompilationUnit> collectConcreteConditions(Expression abstCondition) {
-        final ConditionGenerator conditionGenerator = new ConditionGenerator();
-        final List<Expression> concreteConditions = conditionGenerator.generateCondition(abstCondition);
-
-        final List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
-        concreteConditions.stream()
-            .forEach(c -> candidates.add(c.findCompilationUnit().orElseThrow()));
-
-        return candidates;
     }
 } 
