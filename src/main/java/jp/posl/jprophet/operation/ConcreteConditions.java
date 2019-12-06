@@ -17,17 +17,13 @@ import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 import jp.posl.jprophet.NodeUtility;
 
 /**
- * 条件式の生成を行うクラス
+ * 穴あきの条件式を元に具体的な条件式を生成するクラス
  */
 public class ConcreteConditions {
     private List<Expression> expressions = new ArrayList<Expression>();
+
     /**
      * 参照可能な変数から以下の複数の条件式を生成する</br>
-     * <ul>
-     * <li>全ての変数とnullを==と!=で比較</li>
-     * <li>全てのBool変数とtrueを==と!=で比較</li>
-     * <li>true（恒真）</li>
-     * </ul>
      * 
      * @param abstCondition 条件式を生成したい箇所のExpressionノード
      */
@@ -40,25 +36,7 @@ public class ConcreteConditions {
         
         final List<String> booleanVarNames = this.collectBooleanNames(vars, parameters);
         final List<String> allVarNames = this.collectNames(vars, parameters);
-
-        booleanVarNames.stream()
-            .forEach(name -> {
-                this.replaceWithBinaryExpr(abstCondition, name, new BooleanLiteralExpr(true), Operator.EQUALS)
-                    .ifPresent(this.expressions::add);
-
-                this.replaceWithBinaryExpr(abstCondition, name, new BooleanLiteralExpr(false), Operator.EQUALS)
-                    .ifPresent(this.expressions::add);
-            });
-        allVarNames.stream()
-            .forEach(name -> {
-                this.replaceWithBinaryExpr(abstCondition, name, new NullLiteralExpr(), Operator.EQUALS)
-                    .ifPresent(this.expressions::add);
-
-                this.replaceWithBinaryExpr(abstCondition, name, new NullLiteralExpr(), Operator.NOT_EQUALS)
-                    .ifPresent(this.expressions::add);
-            });
-        this.replaceWithExpr(abstCondition, new BooleanLiteralExpr(true))
-            .ifPresent(this.expressions::add);
+        this.generateExpressions(abstCondition, booleanVarNames, allVarNames);
     }
 
     /**
@@ -116,6 +94,39 @@ public class ConcreteConditions {
             .map(p -> p.getNameAsString())
             .forEach(names::add);
         return names;
+    }
+
+    
+    /**
+     * 参照可能な変数名を元に条件式を生成
+     * <ul>
+     * <li>全ての変数とnullを==と!=で比較</li>
+     * <li>全てのBool変数とtrueを==と!=で比較</li>
+     * <li>true（恒真）</li>
+     * </ul>
+     * @param abstCondition 生成して置き換わる条件式
+     * @param booleanVarNames Boolen変数名
+     * @param allVarNames 全ての変数名
+     */
+    private void generateExpressions(Expression abstCondition, List<String> booleanVarNames, List<String> allVarNames) {
+        booleanVarNames.stream()
+            .forEach(name -> {
+                this.replaceWithBinaryExpr(abstCondition, name, new BooleanLiteralExpr(true), Operator.EQUALS)
+                    .ifPresent(this.expressions::add);
+
+                this.replaceWithBinaryExpr(abstCondition, name, new BooleanLiteralExpr(false), Operator.EQUALS)
+                    .ifPresent(this.expressions::add);
+            });
+        allVarNames.stream()
+            .forEach(name -> {
+                this.replaceWithBinaryExpr(abstCondition, name, new NullLiteralExpr(), Operator.EQUALS)
+                    .ifPresent(this.expressions::add);
+
+                this.replaceWithBinaryExpr(abstCondition, name, new NullLiteralExpr(), Operator.NOT_EQUALS)
+                    .ifPresent(this.expressions::add);
+            });
+        this.replaceWithExpr(abstCondition, new BooleanLiteralExpr(true))
+            .ifPresent(this.expressions::add);
     }
 
     /**
