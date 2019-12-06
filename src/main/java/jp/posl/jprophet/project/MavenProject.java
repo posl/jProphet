@@ -189,7 +189,10 @@ public class MavenProject implements Project {
         return filePath.replace(testDirPath, "").replace("/", ".").replace(".java", "");
     }
 
-
+    /**
+     * クラスファイルを取得する
+     * @return クラスファイルのパスのリスト
+     */
     private List<String> buildClassFilePaths() {
         final Path pomFilePath = Paths.get(this.rootPath + "/" + configFileName);
         return extractDependencyPaths(pomFilePath).stream()
@@ -197,15 +200,26 @@ public class MavenProject implements Project {
             .collect(Collectors.toList());
     }
 
+
+    /**
+     * pomファイルから依存ファイルの情報を抜き取る
+     * @param pomFilePath 対象のpomファイルのパス
+     * @return クラスファイルのリスト
+     */
     private List<Path> extractDependencyPaths(final Path pomFilePath) {
         final List<Path> list = new ArrayList<>();
         try {
-          final MavenXpp3Reader reader = new MavenXpp3Reader();
-          final Model model = reader.read(Files.newBufferedReader(pomFilePath));
-          final Path repositoryPath = Paths.get(rootPath)
+            final MavenXpp3Reader reader = new MavenXpp3Reader();
+            final Model model = reader.read(Files.newBufferedReader(pomFilePath));
+            final Path repositoryPath = Paths.get(rootPath)
               .resolve("src")
               .resolve("main")
               .resolve("resources");
+              
+            //final String userHome = System.getProperty("user.home");
+            //final Path repositoryPath = Paths.get(userHome)
+            //  .resolve(".m2")
+            //  .resolve("repository");
     
           for (final Object object : model.getDependencies()) {
             if (!(object instanceof Dependency)) {
