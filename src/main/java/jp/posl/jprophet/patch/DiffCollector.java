@@ -52,14 +52,16 @@ public class DiffCollector {
             int i = 1;
             StringBuilder originalPrettySource = new StringBuilder("");
             for (String str : originalCode.getLines()){
-                originalPrettySource.append((patchedCode.getPosition() + i) + "-" + str + "\n");
+                //ソースコードの行は6桁まで
+                originalPrettySource.append(String.format("%-6s", (patchedCode.getPosition() + i)) + "-" + str + "\n");
                 i++;
             }
 
             i = 1;
             StringBuilder prettySource = new StringBuilder("");
             for (String str : patchedCode.getLines()){
-                prettySource.append((patchedCode.getPosition() + i) + "+" + str + "\n");
+                //ソースコードの行は6桁まで
+                prettySource.append(String.format("%-6s", (patchedCode.getPosition() + i)) + "+" + str + "\n");
                 i++;
             }
             /*
@@ -96,6 +98,10 @@ public class DiffCollector {
         return textList;
     }
 
+    /**
+     * ソースコードのdiffを取得する
+     * @return
+     */
     public String getSourceDiff(){
         return this.sourceDiff;
     }
