@@ -3,13 +3,7 @@ package jp.posl.jprophet.patch;
 import java.util.List;
 
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ExpressionStmt;
-import com.github.javaparser.ast.stmt.IfStmt;
-import com.github.javaparser.ast.stmt.Statement;
-import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
+import com.github.javaparser.ast.CompilationUnit;
 
 import org.junit.Test;
 
@@ -29,34 +23,26 @@ public class DiffCollectorTest {
             .append("public class A {\n")
             .append("    private void ma() {\n")
             .append("        for (int i = 0; i < 10; i++) {\n")
-            .append("            if (true)\n\n")
+            .append("            if (true){\n")
             .append("                String la = \"b\";\n\n")
+            .append("            }\n")
             .append("        }\n")
             .append("    }\n")
             .append("}\n")
             .toString();
-        DiffCollector diffCollector = new DiffCollector();
-        diffCollector.collect(beforeSource, afterSource);
+        
+        CompilationUnit beforeCu = JavaParser.parse(beforeSource);
+        CompilationUnit afterCu = JavaParser.parse(afterSource);
+        DiffCollector diffCollector = new DiffCollector(beforeCu, afterCu);
+        String test = diffCollector.getSourceDiff();
+        System.out.println(test);
 
-        /*
-        NodeList<Statement> nodes = new NodeList<Statement>();
-        nodes.add(new ExpressionStmt(new MethodCallExpr("methodCall2")));
-        nodes.add(new ExpressionStmt(new MethodCallExpr("methodCall3")));
-        nodes.add(new ExpressionStmt(new MethodCallExpr("methodCall4")));
-        IfStmt insertNode = new IfStmt(new MethodCallExpr("methodCall"), new BlockStmt(nodes), null);
-        IfStmt test2 = new IfStmt(new MethodCallExpr("methodCall"), insertNode, null); 
-        Statement newStmt = JavaParser.parseStatement(insertNode.toString());
-        Statement newStmt2 = JavaParser.parseStatement(test2.toString());
-        LexicalPreservingPrinter.setup(newStmt);
-        System.out.println(LexicalPreservingPrinter.print(newStmt));
-        */
         return;
     }
 
     @Test public void test2(){
-        final String targetSource = new StringBuilder().append("")
+        final String beforeSource = new StringBuilder().append("")
             .append("public class A {\n")
-            .append("    private void mb() {\n")
             .append("    private void ma() {\n")
             .append("        for (int i = 0; i < 10; i++) {\n")
             .append("            String la = \"b\";\n")
@@ -65,11 +51,132 @@ public class DiffCollectorTest {
             .append("}\n")
             .toString();
         
-        DiffCollector diffCollector = new DiffCollector();
-        List<String> lists = diffCollector.changeStringToList(targetSource);
-        for (String s : lists){
-            System.out.println(s);
-        }
+        final String afterSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private void ma() {\n")
+            .append("        for (int i = 0; i < 10; i++) {\n")
+            .append("            String lb = \"d\";\n")
+            .append("            String la = \"b\";\n")
+            .append("        }\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+        
+        CompilationUnit beforeCu = JavaParser.parse(beforeSource);
+        CompilationUnit afterCu = JavaParser.parse(afterSource);
+        DiffCollector diffCollector = new DiffCollector(beforeCu, afterCu);
+        String test = diffCollector.getSourceDiff();
+        System.out.println(test);
+
         return;
     }
+
+    @Test public void test3(){
+        final String beforeSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private void ma() {\n")
+            .append("        for (int i = 0; i < 10; i++) {\n")
+            .append("            int n = 0;\n\n")
+            .append("            String la = \"b\";\n")
+            .append("        }\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+        
+        final String afterSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private void ma() {\n")
+            .append("        for (int i = 0; i < 10; i++) {\n")
+            .append("            int n = 0;\n\n")
+            .append("            String la = \"b\";\n")
+            .append("            la = \"c\";\n")
+            .append("        }\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        CompilationUnit beforeCu = JavaParser.parse(beforeSource);
+        CompilationUnit afterCu = JavaParser.parse(afterSource);
+        DiffCollector diffCollector = new DiffCollector(beforeCu, afterCu);
+        String test = diffCollector.getSourceDiff();
+        System.out.println(test);
+
+        return;
+    }
+
+    @Test public void test4(){
+        final String beforeSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private void ma() {\n")
+            .append("        for (int i = 0; i < 10; i++) {\n")
+            .append("            int n = 0;\n\n")
+            .append("            String lb = \"d\";\n\n")
+            .append("            String la = \"b\";\n")
+            .append("        }\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+        
+        final String afterSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private void ma() {\n")
+            .append("        for (int i = 0; i < 10; i++) {\n")
+            .append("            int n = 0;\n\n")
+            .append("            String lb = \"d\";\n\n")
+            .append("            if (true){\n")
+            .append("                String la = \"b\";\n")
+            .append("            }\n")
+            .append("            n = 4;\n")
+            .append("        }\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        CompilationUnit beforeCu = JavaParser.parse(beforeSource);
+        CompilationUnit afterCu = JavaParser.parse(afterSource);
+        DiffCollector diffCollector = new DiffCollector(beforeCu, afterCu);
+        String test = diffCollector.getSourceDiff();
+        System.out.println(test);
+
+        return;
+    }
+
+    @Test public void test5(){
+        final String beforeSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private void ma() {\n")
+            .append("        for (int i = 0; i < 10; i++) {\n")
+            .append("            int n = 0;\n\n")
+            .append("            String lb = \"d\";\n\n")
+            .append("            String la = \"b\";\n")
+            .append("        }\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+        
+        final String afterSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private void ma() {\n")
+            .append("        for (int i = 0; i < 10; i++) {\n")
+            .append("            int n = 0;\n\n")
+            .append("            String lb = \"d\";\n\n")
+            .append("            if (true){\n")
+            .append("                String la = \"b\";\n")
+            .append("            }\n")
+            .append("            n = 4;\n")
+            .append("        }\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        CompilationUnit beforeCu = JavaParser.parse(beforeSource);
+        CompilationUnit afterCu = JavaParser.parse(afterSource);
+        DiffCollector diffCollector = new DiffCollector(beforeCu, afterCu);
+        String test = diffCollector.getSourceDiff();
+        System.out.println(test);
+
+        return;
+    }
+
+
 }
