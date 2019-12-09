@@ -86,6 +86,9 @@ public class DefaultPatchCandidateTest {
         assertThat(actualAppliedOperation).isEqualTo(expectedAppliedOperation);
     }
 
+    /**
+     * toStringのテスト
+     */
     @Test public void testForToString() {
         String diff = this.patchCandidate.toString();
         String expectedDiff = new StringBuilder().append("")

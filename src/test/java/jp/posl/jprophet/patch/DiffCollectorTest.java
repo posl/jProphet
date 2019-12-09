@@ -1,13 +1,16 @@
 package jp.posl.jprophet.patch;
 
-import java.util.List;
-
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 
 import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DiffCollectorTest {
+
+    /**
+     * CondIntroductionで修正された場合のdiffの取得のテスト
+     */
     @Test public void testForCondIntroduction(){
         final String beforeSource = new StringBuilder().append("")
             .append("public class A {\n")
@@ -35,12 +38,21 @@ public class DiffCollectorTest {
         CompilationUnit beforeCu = JavaParser.parse(beforeSource);
         CompilationUnit afterCu = JavaParser.parse(afterSource);
         DiffCollector diffCollector = new DiffCollector(beforeCu, afterCu);
-        String test = diffCollector.getSourceDiff();
-        System.out.println(test);
+        String diff = diffCollector.getSourceDiff();
+        String expectedDiff = new StringBuilder().append("")
+            .append("5     -            la = \"b\";\n\n")
+            .append("5     +            if (true)\n")
+            .append("6     +                la = \"b\";\n\n")
+            .toString();
+        
+        assertThat(diff).isEqualTo(expectedDiff);
 
         return;
     }
 
+    /**
+     * VariableReplacementで修正された場合のdiffの取得のテスト
+     */
     @Test public void testForVariableReplace(){
         final String beforeSource = new StringBuilder().append("")
             .append("public class A {\n")
@@ -67,12 +79,20 @@ public class DiffCollectorTest {
         CompilationUnit beforeCu = JavaParser.parse(beforeSource);
         CompilationUnit afterCu = JavaParser.parse(afterSource);
         DiffCollector diffCollector = new DiffCollector(beforeCu, afterCu);
-        String test = diffCollector.getSourceDiff();
-        System.out.println(test);
+        String diff = diffCollector.getSourceDiff();
+        String expectedDiff = new StringBuilder().append("")
+            .append("5     -            la = \"b\";\n\n")
+            .append("5     +            la = str;\n\n")
+            .toString();
+        
+        assertThat(diff).isEqualTo(expectedDiff);
 
         return;
     }
 
+    /**
+     * CopyReplace修正された場合のdiffの取得のテスト
+     */
     @Test public void testForCopyReplace(){
         final String beforeSource = new StringBuilder().append("")
             .append("public class A {\n")
@@ -102,12 +122,20 @@ public class DiffCollectorTest {
         CompilationUnit beforeCu = JavaParser.parse(beforeSource);
         CompilationUnit afterCu = JavaParser.parse(afterSource);
         DiffCollector diffCollector = new DiffCollector(beforeCu, afterCu);
-        String test = diffCollector.getSourceDiff();
-        System.out.println(test);
+        String diff = diffCollector.getSourceDiff();
+        String expectedDiff = new StringBuilder().append("")
+            .append("\n")
+            .append("6     +            la = str;\n\n")
+            .toString();
+
+        assertThat(diff).isEqualTo(expectedDiff);
 
         return;
     }
 
+    /**
+     * CtrlFlowIntroduction修正された場合のdiffの取得のテスト
+     */
     @Test public void testForCtrlFlowIntroduction(){
         final String beforeSource = new StringBuilder().append("")
             .append("public class A {\n")
@@ -132,12 +160,21 @@ public class DiffCollectorTest {
         CompilationUnit beforeCu = JavaParser.parse(beforeSource);
         CompilationUnit afterCu = JavaParser.parse(afterSource);
         DiffCollector diffCollector = new DiffCollector(beforeCu, afterCu);
-        String test = diffCollector.getSourceDiff();
-        System.out.println(test);
+        String diff = diffCollector.getSourceDiff();
+        String expectedDiff = new StringBuilder().append("")
+            .append("\n")
+            .append("4     +        if (true)\n")
+            .append("5     +            return;\n\n")
+            .toString();
+
+        assertThat(diff).isEqualTo(expectedDiff);
 
         return;
     }
 
+    /**
+     * CondRefinment修正された場合のdiffの取得のテスト
+     */
     @Test public void testForCondRefinement(){
         final String beforeSource = new StringBuilder().append("")
             .append("public class A {\n")
@@ -164,8 +201,13 @@ public class DiffCollectorTest {
         CompilationUnit beforeCu = JavaParser.parse(beforeSource);
         CompilationUnit afterCu = JavaParser.parse(afterSource);
         DiffCollector diffCollector = new DiffCollector(beforeCu, afterCu);
-        String test = diffCollector.getSourceDiff();
-        System.out.println(test);
+        String diff = diffCollector.getSourceDiff();
+        String expectedDiff = new StringBuilder().append("")
+            .append("5     -        if (true)\n\n")
+            .append("5     +        if (true || (la == null))\n\n")
+            .toString();
+
+        assertThat(diff).isEqualTo(expectedDiff);
 
         return;
     }

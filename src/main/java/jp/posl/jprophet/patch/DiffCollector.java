@@ -10,7 +10,6 @@ import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinte
 
 import difflib.Chunk;
 import difflib.Delta;
-import difflib.Delta.TYPE;
 import difflib.DiffUtils;
 import difflib.Patch;
 import java.io.BufferedReader;
@@ -45,7 +44,6 @@ public class DiffCollector {
         StringBuilder sourceDiffBuilder = new StringBuilder("");
 
 	    for (Delta<String> delta : deltas) {
-            TYPE type = delta.getType();
             Chunk<String> originalCode = delta.getOriginal();
             Chunk<String> patchedCode = delta.getRevised();
 
@@ -65,7 +63,7 @@ public class DiffCollector {
                 i++;
             }
 
-            sourceDiffBuilder
+            sourceDiffBuilder.append("")
                 .append(originalPrettySource.toString())
                 .append("\n")
                 .append(prettySource.toString())
