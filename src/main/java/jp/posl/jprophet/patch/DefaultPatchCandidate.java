@@ -96,7 +96,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
             .append("\n")
             .append("used operation  : " + this.operation.getSimpleName())
             .append("\n\n")
-            .append(new DiffCollector(this.targetNodeBeforeFix, fixedCompilationUnit).getSourceDiff())
+            .append(new RepairDiff(this.targetNodeBeforeFix, fixedCompilationUnit).toString())
             .toString();
     }
 }

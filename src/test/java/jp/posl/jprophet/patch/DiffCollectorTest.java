@@ -37,8 +37,8 @@ public class DiffCollectorTest {
         
         CompilationUnit beforeCu = JavaParser.parse(beforeSource);
         CompilationUnit afterCu = JavaParser.parse(afterSource);
-        DiffCollector diffCollector = new DiffCollector(beforeCu, afterCu);
-        String diff = diffCollector.getSourceDiff();
+        RepairDiff diffCollector = new RepairDiff(beforeCu, afterCu);
+        String diff = diffCollector.toString();
         String expectedDiff = new StringBuilder().append("")
             .append("5     -            la = \"b\";\n\n")
             .append("5     +            if (true)\n")
@@ -78,8 +78,8 @@ public class DiffCollectorTest {
         
         CompilationUnit beforeCu = JavaParser.parse(beforeSource);
         CompilationUnit afterCu = JavaParser.parse(afterSource);
-        DiffCollector diffCollector = new DiffCollector(beforeCu, afterCu);
-        String diff = diffCollector.getSourceDiff();
+        RepairDiff diffCollector = new RepairDiff(beforeCu, afterCu);
+        String diff = diffCollector.toString();
         String expectedDiff = new StringBuilder().append("")
             .append("5     -            la = \"b\";\n\n")
             .append("5     +            la = str;\n\n")
@@ -121,8 +121,8 @@ public class DiffCollectorTest {
 
         CompilationUnit beforeCu = JavaParser.parse(beforeSource);
         CompilationUnit afterCu = JavaParser.parse(afterSource);
-        DiffCollector diffCollector = new DiffCollector(beforeCu, afterCu);
-        String diff = diffCollector.getSourceDiff();
+        RepairDiff diffCollector = new RepairDiff(beforeCu, afterCu);
+        String diff = diffCollector.toString();
         String expectedDiff = new StringBuilder().append("")
             .append("\n")
             .append("6     +            la = str;\n\n")
@@ -159,8 +159,8 @@ public class DiffCollectorTest {
 
         CompilationUnit beforeCu = JavaParser.parse(beforeSource);
         CompilationUnit afterCu = JavaParser.parse(afterSource);
-        DiffCollector diffCollector = new DiffCollector(beforeCu, afterCu);
-        String diff = diffCollector.getSourceDiff();
+        RepairDiff diffCollector = new RepairDiff(beforeCu, afterCu);
+        String diff = diffCollector.toString();
         String expectedDiff = new StringBuilder().append("")
             .append("\n")
             .append("4     +        if (true)\n")
@@ -200,8 +200,8 @@ public class DiffCollectorTest {
 
         CompilationUnit beforeCu = JavaParser.parse(beforeSource);
         CompilationUnit afterCu = JavaParser.parse(afterSource);
-        DiffCollector diffCollector = new DiffCollector(beforeCu, afterCu);
-        String diff = diffCollector.getSourceDiff();
+        RepairDiff diffCollector = new RepairDiff(beforeCu, afterCu);
+        String diff = diffCollector.toString();
         String expectedDiff = new StringBuilder().append("")
             .append("5     -        if (true)\n\n")
             .append("5     +        if (true || (la == null))\n\n")

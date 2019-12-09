@@ -18,7 +18,7 @@ import java.io.StringReader;
 /**
  * 修正前と修正後のdiffを集める
  */
-public class DiffCollector {
+public class RepairDiff {
     private String sourceBeforeFix;
     private String fixedSource;
     private String sourceDiff;
@@ -28,7 +28,7 @@ public class DiffCollector {
      * @param targetNodeBeforeFix 修正前のNode
      * @param fixedCompilationUnit 修正後のCompilationUnit
      */
-    public DiffCollector(Node targetNodeBeforeFix, CompilationUnit fixedCompilationUnit){     
+    public RepairDiff(Node targetNodeBeforeFix, CompilationUnit fixedCompilationUnit){     
         LexicalPreservingPrinter.setup(targetNodeBeforeFix.findCompilationUnit().orElseThrow());
         this.sourceBeforeFix =LexicalPreservingPrinter.print(targetNodeBeforeFix.findCompilationUnit().orElseThrow());
 
@@ -102,7 +102,7 @@ public class DiffCollector {
      * ソースコードのdiffを取得する
      * @return
      */
-    public String getSourceDiff(){
+    public String toString(){
         return this.sourceDiff;
     }
 
