@@ -6,8 +6,10 @@ import java.nio.file.Paths;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.JavaToken;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,12 +21,15 @@ public class DefaultPatchCandidateTest {
     private PatchCandidate patchCandidate;
     private String filePath = "src/test/resources/test01.java";
     private CompilationUnit compilationUnit;
+    private CompilationUnit fixedCompilationUnit;
+    private CompilationUnit newFixedCompilationUnit;
     private String fqn = "test01";
     private String operation = "VariableReplacementOperation";
 
     @Before public void setUp() {
         try {
             this.compilationUnit = JavaParser.parse(Paths.get(this.filePath));
+            this.fixedCompilationUnit = JavaParser.parse(Paths.get(this.filePath));
         }
         catch (IOException e){
             e.printStackTrace();
@@ -32,7 +37,11 @@ public class DefaultPatchCandidateTest {
             return;
         }
         Node node = compilationUnit.findRootNode().getChildNodes().get(0).getChildNodes().get(2);
-        this.patchCandidate = new DefaultPatchCandidate(node, node.findCompilationUnit().get(), filePath, fqn, VariableReplacementOperation.class);
+        Node fixedNode = fixedCompilationUnit.findRootNode().getChildNodes().get(0).getChildNodes().get(2);
+        fixedNode.getTokenRange().orElseThrow().getBegin().replaceToken(new JavaToken(node.getTokenRange().orElseThrow().getBegin().getRange().get(), JavaToken.Kind.PRIVATE.getKind(), "private", null, null));
+        LexicalPreservingPrinter.setup(fixedCompilationUnit);
+        this.newFixedCompilationUnit = JavaParser.parse(LexicalPreservingPrinter.print(fixedCompilationUnit));
+        this.patchCandidate = new DefaultPatchCandidate(node, this.newFixedCompilationUnit, filePath, fqn, VariableReplacementOperation.class);
     }
 
     /**
@@ -67,7 +76,7 @@ public class DefaultPatchCandidateTest {
      */
     @Test public void testForGetCompilationUnit() {
         CompilationUnit actualCompilationUnit = this.patchCandidate.getCompilationUnit();
-        CompilationUnit expectedCompilationUnit = this.compilationUnit;
+        CompilationUnit expectedCompilationUnit = this.newFixedCompilationUnit;
         assertThat(actualCompilationUnit).isEqualTo(expectedCompilationUnit);
     }
 
@@ -75,6 +84,18 @@ public class DefaultPatchCandidateTest {
         String actualAppliedOperation = this.patchCandidate.getAppliedOperation();
         String expectedAppliedOperation = this.operation;
         assertThat(actualAppliedOperation).isEqualTo(expectedAppliedOperation);
+    }
+
+    @Test public void testForToString() {
+        String diff = this.patchCandidate.toString();
+        String expectedDiff = new StringBuilder().append("")
+            .append("fixed file path : src/test/resources/test01.java\n")
+            .append("used operation  : VariableReplacementOperation\n\n")
+            .append("3     -   public void a() {\n\n")
+            .append("3     +   private void a() {\n\n")
+            .toString();
+
+        assertThat(diff).isEqualTo(expectedDiff);
     }
 
 }

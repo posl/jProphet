@@ -18,7 +18,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
     private final CompilationUnit fixedCompilationUnit;
     private final String fixedFilePath;
     private final String fixedFileFqn;
-    private Class<? extends AstOperation> operaiton;
+    private Class<? extends AstOperation> operation;
 
     /**
      * 以下の引数の情報を元にパッチ候補を生成 
@@ -34,7 +34,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
         this.fixedCompilationUnit = fixedCompilationUnit;
         this.fixedFilePath = fixedFilePath;
         this.fixedFileFqn = fixedFileFQN;
-        this.operaiton = operation;
+        this.operation = operation;
     }
 
     /**
@@ -82,7 +82,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
      */
      @Override
      public String getAppliedOperation() {
-         return operaiton.getName().replace("jp.posl.jprophet.operation.", "");
+         return operation.getName().replace("jp.posl.jprophet.operation.", "");
      }
 
 
@@ -91,6 +91,12 @@ public class DefaultPatchCandidate implements PatchCandidate {
      */
     @Override
     public String toString(){
-        return this.fixedCompilationUnit.toString();
+        return new StringBuilder().append("")
+            .append("fixed file path : " + this.fixedFilePath)
+            .append("\n")
+            .append("used operation  : " + this.operation.getSimpleName())
+            .append("\n\n")
+            .append(new DiffCollector(this.targetNodeBeforeFix, fixedCompilationUnit).getSourceDiff())
+            .toString();
     }
 }
