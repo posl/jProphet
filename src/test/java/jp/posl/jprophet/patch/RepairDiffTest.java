@@ -43,10 +43,6 @@ public class RepairDiffTest {
             .append("3               String la = \"a\";\n")
             .append("4               for (int i = 0; i < 10; i++) {\n")
             .append("5     -             la = \"b\";\n")
-            .append("6               }\n")
-            .append("7           }\n\n")
-            .append("3               String la = \"a\";\n")
-            .append("4               for (int i = 0; i < 10; i++) {\n")
             .append("5     +             if (true)\n")
             .append("6     +                 la = \"b\";\n")
             .append("7               }\n")
@@ -91,16 +87,11 @@ public class RepairDiffTest {
         String expectedDiff = new StringBuilder().append("")
             .append("1       public class A {\n")
             .append("2     -     private void ma(String str) {\n")
-            .append("3               String la = \"b\";\n")
-            .append("4               for (int i = 0; i < 10; i++) {\n\n")
-            .append("1       public class A {\n")
             .append("2     +     public void ma(String str) {\n")
             .append("3               String la = \"b\";\n")
             .append("4               for (int i = 0; i < 10; i++) {\n\n")
-            .append("")
             .toString();
         
-        System.out.println(diff);
         assertThat(diff).isEqualTo(expectedDiff);
 
         return;
@@ -140,9 +131,6 @@ public class RepairDiffTest {
             .append("5                   la = \"b\";\n")
             .append("6               }\n")
             .append("7     -     }\n")
-            .append("8       }\n\n")
-            .append("5                   la = \"b\";\n")
-            .append("6               }\n")
             .append("7     +         }\n")
             .append("8       }\n\n")
             .toString();
