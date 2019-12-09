@@ -44,8 +44,8 @@ public class DiffCollector {
      * @param afterSource
      */
     private void collect(String beforeSource, String afterSource) {
-        List<String> original = this.changeStringToList(beforeSource);
-        List<String> revised  = this.changeStringToList(afterSource);
+        List<String> original = this.splitTextByLine(beforeSource);
+        List<String> revised  = this.splitTextByLine(afterSource);
 	    Patch<String> diff = DiffUtils.diff(original, revised);
 
         List<Delta<String>> deltas = diff.getDeltas();
@@ -55,20 +55,20 @@ public class DiffCollector {
             Chunk<String> originalCode = delta.getOriginal();
             Chunk<String> patchedCode = delta.getRevised();
 
-            int i = 1;
+            int lineNum = 1;
             StringBuilder originalPrettySource = new StringBuilder("");
             for (String str : originalCode.getLines()){
                 //ソースコードの行は6桁まで
-                originalPrettySource.append(String.format("%-6s", (patchedCode.getPosition() + i)) + "-" + str + "\n");
-                i++;
+                originalPrettySource.append(String.format("%-6s", (patchedCode.getPosition() + lineNum)) + "-" + str + "\n");
+                lineNum++;
             }
 
-            i = 1;
+            lineNum = 1;
             StringBuilder prettySource = new StringBuilder("");
             for (String str : patchedCode.getLines()){
                 //ソースコードの行は6桁まで
-                prettySource.append(String.format("%-6s", (patchedCode.getPosition() + i)) + "+" + str + "\n");
-                i++;
+                prettySource.append(String.format("%-6s", (patchedCode.getPosition() + lineNum)) + "+" + str + "\n");
+                lineNum++;
             }
 
             sourceDiffBuilder.append("")
@@ -85,7 +85,7 @@ public class DiffCollector {
      * @param text
      * @return
      */
-    private List<String> changeStringToList(String text){
+    private List<String> splitTextByLine(String text){
         List<String> textList = new ArrayList<String>();
         try (BufferedReader reader = new BufferedReader(new StringReader(text))) {
             String line = null;
