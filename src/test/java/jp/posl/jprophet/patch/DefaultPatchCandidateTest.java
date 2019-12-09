@@ -94,8 +94,16 @@ public class DefaultPatchCandidateTest {
         String expectedDiff = new StringBuilder().append("")
             .append("fixed file path : src/test/resources/test01.java\n")
             .append("used operation  : VariableReplacementOperation\n\n")
-            .append("3     -   public void a() {\n\n")
-            .append("3     +   private void a() {\n\n")
+            .append("1       public class A {\n")
+            .append("2          String a = \"a\";\n")
+            .append("3     -    public void a() {\n")
+            .append("4             a = \"b\";\n")
+            .append("5          }\n\n")
+            .append("1       public class A {\n")
+            .append("2          String a = \"a\";\n")
+            .append("3     +    private void a() {\n")
+            .append("4             a = \"b\";\n")
+            .append("5          }\n\n")
             .toString();
 
         assertThat(diff).isEqualTo(expectedDiff);

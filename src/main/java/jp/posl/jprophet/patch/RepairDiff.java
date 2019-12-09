@@ -56,25 +56,52 @@ public class RepairDiff {
             Chunk<String> patchedCode = delta.getRevised();
 
             int lineNum = 1;
-            StringBuilder originalPrettySource = new StringBuilder("");
+            final int around = 2; //前後何行を含むか
+            StringBuilder originalDiffSource = new StringBuilder("");
+
+            for (int i = around; i >= 1; i--) {
+                try {
+                    originalDiffSource.append(String.format("%-6s", (originalCode.getPosition() + lineNum - i)) + "  " + original.get(originalCode.getPosition() - i) + "\n");
+                } catch (IndexOutOfBoundsException e){}
+            }
+
             for (String str : originalCode.getLines()){
                 //ソースコードの行は6桁まで
-                originalPrettySource.append(String.format("%-6s", (patchedCode.getPosition() + lineNum)) + "-" + str + "\n");
+                originalDiffSource.append(String.format("%-6s", (originalCode.getPosition() + lineNum)) + "- " + str + "\n");
                 lineNum++;
+            }
+
+            for (int i = 0; i < around; i++) {
+                try {
+                originalDiffSource.append(String.format("%-6s", (originalCode.getPosition() + lineNum + i)) + "  " + original.get(originalCode.getPosition() + i + lineNum - 1) + "\n");
+                } catch (IndexOutOfBoundsException e){}
             }
 
             lineNum = 1;
-            StringBuilder prettySource = new StringBuilder("");
+            StringBuilder patchedDiffSource = new StringBuilder("");
+
+            for (int i = around; i >= 1; i--) {
+                try {
+                patchedDiffSource.append(String.format("%-6s", (patchedCode.getPosition() + lineNum - i)) + "  " + revised.get(patchedCode.getPosition() - i) + "\n");
+                } catch (IndexOutOfBoundsException e){}
+            }
+
             for (String str : patchedCode.getLines()){
                 //ソースコードの行は6桁まで
-                prettySource.append(String.format("%-6s", (patchedCode.getPosition() + lineNum)) + "+" + str + "\n");
+                patchedDiffSource.append(String.format("%-6s", (patchedCode.getPosition() + lineNum)) + "+ " + str + "\n");
                 lineNum++;
             }
 
+            for (int i = 0; i < around; i++) {
+                try {
+                patchedDiffSource.append(String.format("%-6s", (patchedCode.getPosition() + lineNum + i)) + "  " + revised.get(patchedCode.getPosition() + i + lineNum - 1) + "\n");
+                } catch (IndexOutOfBoundsException e){}
+            }
+
             sourceDiffBuilder.append("")
-                .append(originalPrettySource.toString())
+                .append(originalDiffSource.toString())
                 .append("\n")
-                .append(prettySource.toString())
+                .append(patchedDiffSource.toString())
                 .append("\n");
         }
         this.sourceDiff = sourceDiffBuilder.toString();
