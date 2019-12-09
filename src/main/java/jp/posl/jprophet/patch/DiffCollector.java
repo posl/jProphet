@@ -64,18 +64,12 @@ public class DiffCollector {
                 prettySource.append(String.format("%-6s", (patchedCode.getPosition() + i)) + "+" + str + "\n");
                 i++;
             }
-            /*
-            System.out.println(type);
-            System.out.println(originalPrettySource.toString());
-            System.out.println(prettySource.toString());
-            */
-            //types.add(type);
-            //this.originalCodes.add(originalPrettySource.toString());
-            //this.patchedCodes.add(prettySource.toString());
-            sourceDiffBuilder.append(type.toString())
-                .append("\n")
+
+            sourceDiffBuilder
                 .append(originalPrettySource.toString())
-                .append(prettySource.toString());
+                .append("\n")
+                .append(prettySource.toString())
+                .append("\n");
         }
         this.sourceDiff = sourceDiffBuilder.toString();
     }
