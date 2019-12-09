@@ -15,11 +15,19 @@ import difflib.Patch;
 import java.io.BufferedReader;
 import java.io.StringReader;
 
+/**
+ * 修正前と修正後のdiffを集める
+ */
 public class DiffCollector {
     private String sourceBeforeFix;
     private String fixedSource;
     private String sourceDiff;
 
+    /**
+     * targetNodeBeforeFixとfixedCompilationUnitのdiffを生成する
+     * @param targetNodeBeforeFix 修正前のNode
+     * @param fixedCompilationUnit 修正後のCompilationUnit
+     */
     public DiffCollector(Node targetNodeBeforeFix, CompilationUnit fixedCompilationUnit){     
         LexicalPreservingPrinter.setup(targetNodeBeforeFix.findCompilationUnit().orElseThrow());
         this.sourceBeforeFix =LexicalPreservingPrinter.print(targetNodeBeforeFix.findCompilationUnit().orElseThrow());
