@@ -27,9 +27,9 @@ public class MethodReplacementOperationTest {
                     "        this.ma(\"hoge\", \"fuga\");\n";
         final String afterTargetStatement = new StringBuilder().append("")
             .append("    }\n")
-            .append("    private void ma(String a, String b) {\n")
-            .append("    }\n")
             .append("    private void mb(String a, String b) {\n")
+            .append("    }\n")
+            .append("    private void mc(String a, String b) {\n")
             .append("    }\n")
             .append("}\n")
             .toString();
@@ -40,25 +40,30 @@ public class MethodReplacementOperationTest {
             .append(afterTargetStatement)
             .toString();
 
-        String expectedTargetSource = 
-                    "        this.mb(\"hoge\", \"fuga\");\n";
+        List<String> expectedFixedStatements = List.of(
+                    "        this.mb(\"hoge\", \"fuga\");\n",
+                    "        this.mc(\"hoge\", \"fuga\");\n"
+        );
 
-        String expectedSource = new StringBuilder().append("")
-            .append(beforeTargetStatement)
-            .append(expectedTargetSource)
-            .append(afterTargetStatement)
-            .toString();
+        List<String> expectedSources = expectedFixedStatements.stream()
+            .map(expectedTargetStatement -> {
+                return new StringBuilder().append("")
+                    .append(beforeTargetStatement)
+                    .append(expectedTargetStatement)
+                    .append(afterTargetStatement)
+                    .toString();
+            }).collect(Collectors.toList());
 
         List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
-        List<String> candidateSources = new ArrayList<String>();
+        List<String> actualSources = new ArrayList<String>();
         for(Node node : repairUnits){
             List<CompilationUnit> cUnits = new MethodReplacementOperation().exec(node);
             for (CompilationUnit cUnit : cUnits){
                 LexicalPreservingPrinter.setup(cUnit);
-                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
+                actualSources.add(LexicalPreservingPrinter.print(cUnit));
             }
         }
-        // assertThat(candidateSources).contains(expectedSource);
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
         return;
     }
 
