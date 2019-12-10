@@ -6,13 +6,10 @@ import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 
-import org.checkerframework.checker.units.qual.s;
 
 import jp.posl.jprophet.NodeUtility;
 
@@ -20,6 +17,9 @@ import jp.posl.jprophet.NodeUtility;
  * 対象ステートメント中の変数を別のもので置き換える操作を行う
  */
 public class MethodReplacementOperation implements AstOperation {
+    /**
+     * {@inheritDoc}
+     */
     public List<CompilationUnit> exec(Node targetNode) {
         if (!(targetNode instanceof MethodCallExpr)) return new ArrayList<>(); 
         final MethodCallExpr targetMethodCallExpr = (MethodCallExpr) targetNode;
@@ -39,6 +39,12 @@ public class MethodReplacementOperation implements AstOperation {
             });
         return candidates;
     }
+
+    /**
+     * ノードが存在するクラス内のメソッドの名前を集める
+     * @param node 対象ノード
+     * @return メソッド名のリスト
+     */
     private List<String> collectMethodNames(Node node) {
         return node.findRootNode().findAll(MethodDeclaration.class).stream()
             .map(m -> m.getNameAsString())
