@@ -9,9 +9,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RepairDiffTest {
 
     /**
-     * diffが取得できているかテスト
+     * ステートメントを置換した時のdiffが取得できているかテスト
      */
-    @Test public void testForCondIntroduction(){
+    @Test public void testForChangeStatement(){
         final String beforeSource = new StringBuilder().append("")
             .append("public class A {\n")
             .append("    private void ma() {\n")
@@ -135,6 +135,50 @@ public class RepairDiffTest {
             .append("8       }\n\n")
             .toString();
 
+        assertThat(diff).isEqualTo(expectedDiff);
+
+        return;
+    }
+
+    /**
+     * ステートメントを挿入した時のdiffが取得できているかテスト
+     */
+    @Test public void testForInsertStatement(){
+        final String beforeSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private void ma() {\n")
+            .append("        String la = \"a\";\n")
+            .append("        for (int i = 0; i < 10; i++) {\n")
+            .append("            la = \"b\";\n")
+            .append("        }\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+        
+        final String afterSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private void ma() {\n")
+            .append("        String la = \"a\";\n")
+            .append("        for (int i = 0; i < 10; i++) {\n")
+            .append("            la = \"c\";\n")
+            .append("            la = \"b\";\n")
+            .append("        }\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+        
+        CompilationUnit beforeCu = JavaParser.parse(beforeSource);
+        CompilationUnit afterCu = JavaParser.parse(afterSource);
+        RepairDiff diffCollector = new RepairDiff(beforeCu, afterCu);
+        String diff = diffCollector.toString();
+        String expectedDiff = new StringBuilder().append("")
+            .append("3               String la = \"a\";\n")
+            .append("4               for (int i = 0; i < 10; i++) {\n")
+            .append("5     +             la = \"c\";\n")
+            .append("6                   la = \"b\";\n")
+            .append("7               }\n\n")
+            .toString();
+        
         assertThat(diff).isEqualTo(expectedDiff);
 
         return;
