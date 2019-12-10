@@ -221,7 +221,7 @@ public class MavenProject implements Project {
             //  .resolve(".m2")
             //  .resolve("repository");
     
-          for (final Object object : model.getDependencies()) {
+        for (final Object object : model.getDependencies()) {
             if (!(object instanceof Dependency)) {
               continue;
             }
@@ -248,7 +248,7 @@ public class MavenProject implements Project {
                 .map(this::extractDependencyPaths)
                 .flatMap(Collection::stream)
                 .forEach(list::add);
-          }
+            }
         } catch (final IOException | XmlPullParserException e) {            
             System.err.println(e.getMessage());
             e.printStackTrace();
