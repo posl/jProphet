@@ -32,7 +32,7 @@ public class MethodReplacementOperation implements AstOperation {
             .filter(name -> !targetMethodCallExpr.getNameAsString().equals(name))
             .collect(Collectors.toList());
 
-        final List<MethodCallExpr> exprWithReplacedMethodName = this.replaceMethodName(methodNameCandidates, targetMethodCallExpr);
+        final List<MethodCallExpr> exprWithReplacedMethodName = this.replaceMethodName(targetMethodCallExpr, methodNameCandidates);
 
         final List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
         exprWithReplacedMethodName.stream()
@@ -56,9 +56,15 @@ public class MethodReplacementOperation implements AstOperation {
             .collect(Collectors.toList());
     }
 
-    private List<MethodCallExpr> replaceMethodName(List<String> methodName, MethodCallExpr targetExpr) {
+    /**
+     * メソッド名を置換する 
+     * @param targetExpr 置換対象のMethodCallExpr
+     * @param methodNames 新しいメソッド名のリスト
+     * @return 置換後のMethodCallExprのリスト
+     */
+    private List<MethodCallExpr> replaceMethodName(MethodCallExpr targetExpr, List<String> methodNames) {
         final List<MethodCallExpr> methodCallExprWithReplacedMethodName = new ArrayList<MethodCallExpr>();
-        methodName.stream()
+        methodNames.stream()
             .map(name -> new MethodCallExpr(new ThisExpr(), name, targetExpr.getArguments()))
             .forEach(methodCallExpr -> {
                 final Node copiedTargetExpr = NodeUtility.deepCopyByReparse(targetExpr);
