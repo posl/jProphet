@@ -21,15 +21,16 @@ public class MethodReplacementOperationTest {
     @Test public void testForArgumentReplace(){
         final String beforeTargetStatement = new StringBuilder().append("")
             .append("public class A {\n")
-            .append("    private void ma(String pa, String pb) {\n")
+            .append("    private String fa = \"a\";\n")
+            .append("    private void ma() {\n")
             .toString();
         final String targetStatement = 
                     "        this.ma(\"hoge\", \"fuga\");\n";
         final String afterTargetStatement = new StringBuilder().append("")
             .append("    }\n")
-            .append("    private void mb(String a, String b) {\n")
+            .append("    private void mb() {\n")
             .append("    }\n")
-            .append("    private void mc(String a, String b) {\n")
+            .append("    private void mc() {\n")
             .append("    }\n")
             .append("}\n")
             .toString();
@@ -42,7 +43,11 @@ public class MethodReplacementOperationTest {
 
         final List<String> expectedFixedStatements = List.of(
                     "        this.mb(\"hoge\", \"fuga\");\n",
-                    "        this.mc(\"hoge\", \"fuga\");\n"
+                    "        this.mc(\"hoge\", \"fuga\");\n",
+                    "        this.mb(this.fa, \"fuga\");\n",
+                    "        this.mb(\"hoge\", this.fa);\n",
+                    "        this.mc(this.fa, \"fuga\");\n",
+                    "        this.mc(\"hoge\", this.fa);\n"
         );
 
         final List<String> expectedSources = expectedFixedStatements.stream()
