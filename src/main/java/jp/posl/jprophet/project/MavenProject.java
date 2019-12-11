@@ -214,7 +214,8 @@ public class MavenProject implements Project {
             final Path repositoryPath = Paths.get(rootPath)
               .resolve("src")
               .resolve("main")
-              .resolve("resources");
+              .resolve("resources")
+              .resolve("dependency");
               
             //final String userHome = System.getProperty("user.home");
             //final Path repositoryPath = Paths.get(userHome)
