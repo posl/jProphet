@@ -26,13 +26,13 @@ public class ConcreteConditionsTest {
             .append("}\n")
             .toString();
 
-        IfStmt targetIfStmt = JavaParser.parse(targetSource).findFirst(IfStmt.class).get();
-        Expression abstCondition = targetIfStmt.getCondition();
+        final IfStmt targetIfStmt = JavaParser.parse(targetSource).findFirst(IfStmt.class).get();
+        final Expression abstCondition = targetIfStmt.getCondition();
 
-        ConcreteConditions concreteConditions = new ConcreteConditions(abstCondition);
-        List<Expression> actualCondExpressions = concreteConditions.getExpressions();
+        final ConcreteConditions concreteConditions = new ConcreteConditions(abstCondition);
+        final List<Expression> actualCondExpressions = concreteConditions.getExpressions();
 
-        String expectedSourceBeforeTarget = new StringBuilder().append("")
+        final String expectedSourceBeforeTarget = new StringBuilder().append("")
             .append("public class A {\n\n") 
             .append("    boolean fieldBoolVarA;\n\n")
             .append("    private void methodA() {\n")
@@ -40,7 +40,7 @@ public class ConcreteConditionsTest {
             .append("        Object localObjectA;\n\n")
             .toString();
 
-        List<String> expectedTargetSources = List.of(
+        final List<String> expectedTargetSources = List.of(
                     "        if (fieldBoolVarA == true)\n",
                     "        if (fieldBoolVarA == false)\n",
                     "        if (localBoolVarA == true)\n",
@@ -54,13 +54,13 @@ public class ConcreteConditionsTest {
                     "        if (true)\n"
         );
 
-        String expectedSourceAfterTarget = new StringBuilder().append("")
+        final String expectedSourceAfterTarget = new StringBuilder().append("")
             .append("            return;\n")
             .append("    }\n")
             .append("}\n")
             .toString();
         
-        List<IfStmt> expectedIfStmts = expectedTargetSources.stream()
+        final List<IfStmt> expectedIfStmts = expectedTargetSources.stream()
             .map(s -> { 
                 return new StringBuilder()
                     .append(expectedSourceBeforeTarget)
@@ -73,7 +73,7 @@ public class ConcreteConditionsTest {
             })
             .collect(Collectors.toList());
 
-        List<Expression> expectedCondExpressions = expectedIfStmts.stream()
+        final List<Expression> expectedCondExpressions = expectedIfStmts.stream()
             .map(s -> s.getCondition())
             .collect(Collectors.toList());
 

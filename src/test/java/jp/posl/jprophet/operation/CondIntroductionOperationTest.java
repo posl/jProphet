@@ -26,7 +26,7 @@ public class CondIntroductionOperationTest {
             .append("}\n")
             .toString();
 
-        List<String> expectedSources = new ArrayList<String>();
+        final List<String> expectedSources = new ArrayList<String>();
 
         expectedSources.add(new StringBuilder().append("")
             .append("public class A {\n\n") //toString(PrettyPrinter)での出力ではクラス宣言の先頭行の後に空行が入る仕様 
@@ -52,10 +52,10 @@ public class CondIntroductionOperationTest {
             .toString()
         );
 
-        List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        List<String> candidateSources = new ArrayList<String>();
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        final List<String> candidateSources = new ArrayList<String>();
         for(Node node : nodes){
-            CondIntroductionOperation cio = new CondIntroductionOperation();
+            final CondIntroductionOperation cio = new CondIntroductionOperation();
             candidateSources.addAll(cio.exec(node).stream()
                 .map(ru -> ru.findCompilationUnit().get().toString()) 
                 .collect(Collectors.toList())

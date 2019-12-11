@@ -26,11 +26,11 @@ public class MethodReplacementOperation implements AstOperation {
         final boolean hasScopeOfThis = targetMethodCallExpr.getScope().map(s -> s instanceof ThisExpr).orElse(true);
         if(!hasScopeOfThis) return new ArrayList<>();
 
-        List<String> methodNameCandidates = this.collectMethodNames(targetNode).stream()
+        final List<String> methodNameCandidates = this.collectMethodNames(targetNode).stream()
             .filter(name -> !targetMethodCallExpr.getNameAsString().equals(name))
             .collect(Collectors.toList());
 
-        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+        final List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
         methodNameCandidates.stream()
             .forEach(name -> {
                 Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);

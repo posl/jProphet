@@ -30,14 +30,14 @@ public class DeclarationCollectorTest {
             .toString();
         
         final CompilationUnit cu = JavaParser.parse(targetSource);
-        List<VariableDeclarator> expectedFieldDeclarations = new ArrayList<VariableDeclarator>();
+        final List<VariableDeclarator> expectedFieldDeclarations = new ArrayList<VariableDeclarator>();
         cu.findAll(FieldDeclaration.class).stream()
             .map(f -> f.getVariables().stream().collect(Collectors.toList()))
             .forEach(expectedFieldDeclarations::addAll);
 
-        DeclarationCollector collector = new DeclarationCollector();
+        final DeclarationCollector collector = new DeclarationCollector();
         final Node targetNode = cu.findFirst(MethodCallExpr.class).get();
-        List<VariableDeclarator> actualFieldDeclarations = collector.collectFileds(targetNode);
+        final List<VariableDeclarator> actualFieldDeclarations = collector.collectFileds(targetNode);
 
         assertThat(actualFieldDeclarations).containsOnlyElementsOf(expectedFieldDeclarations);
     }
@@ -55,10 +55,10 @@ public class DeclarationCollectorTest {
         
         final CompilationUnit cu = JavaParser.parse(targetSource);
         final Node targetNode = cu.findFirst(MethodCallExpr.class).get();
-        List<VariableDeclarator> expectedLocalVarDeclarations = cu.findAll(VariableDeclarator.class);
+        final List<VariableDeclarator> expectedLocalVarDeclarations = cu.findAll(VariableDeclarator.class);
 
-        DeclarationCollector collector = new DeclarationCollector();
-        List<VariableDeclarator> actualLocalVarDeclarations = collector.collectLocalVarsDeclared(targetNode);
+        final DeclarationCollector collector = new DeclarationCollector();
+        final List<VariableDeclarator> actualLocalVarDeclarations = collector.collectLocalVarsDeclared(targetNode);
 
         assertThat(actualLocalVarDeclarations).containsOnlyElementsOf(expectedLocalVarDeclarations);
     }
@@ -76,12 +76,12 @@ public class DeclarationCollectorTest {
         
         final CompilationUnit cu = JavaParser.parse(targetSource);
         final Node targetNode = cu.findFirst(MethodCallExpr.class).get();
-        List<VariableDeclarator> expectedLocalVarDeclarations = cu.findAll(VariableDeclarator.class).stream()
+        final List<VariableDeclarator> expectedLocalVarDeclarations = cu.findAll(VariableDeclarator.class).stream()
             .filter(v -> v.getNameAsString().equals("la"))
             .collect(Collectors.toList());
 
-        DeclarationCollector collector = new DeclarationCollector();
-        List<VariableDeclarator> actualLocalVarDeclarations = collector.collectLocalVarsDeclared(targetNode);
+        final DeclarationCollector collector = new DeclarationCollector();
+        final List<VariableDeclarator> actualLocalVarDeclarations = collector.collectLocalVarsDeclared(targetNode);
 
         assertThat(actualLocalVarDeclarations).containsOnlyElementsOf(expectedLocalVarDeclarations);
     }
@@ -97,10 +97,10 @@ public class DeclarationCollectorTest {
         
         final CompilationUnit cu = JavaParser.parse(targetSource);
         final Node targetNode = cu.findFirst(MethodCallExpr.class).get();
-        List<Parameter> expectedParameters = cu.findAll(Parameter.class);
+        final List<Parameter> expectedParameters = cu.findAll(Parameter.class);
 
-        DeclarationCollector collector = new DeclarationCollector();
-        List<Parameter> actualParameters = collector.collectParameters(targetNode);
+        final DeclarationCollector collector = new DeclarationCollector();
+        final List<Parameter> actualParameters = collector.collectParameters(targetNode);
 
         assertThat(actualParameters).containsOnlyElementsOf(expectedParameters);
     }

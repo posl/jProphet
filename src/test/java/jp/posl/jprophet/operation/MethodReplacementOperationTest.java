@@ -40,12 +40,12 @@ public class MethodReplacementOperationTest {
             .append(afterTargetStatement)
             .toString();
 
-        List<String> expectedFixedStatements = List.of(
+        final List<String> expectedFixedStatements = List.of(
                     "        this.mb(\"hoge\", \"fuga\");\n",
                     "        this.mc(\"hoge\", \"fuga\");\n"
         );
 
-        List<String> expectedSources = expectedFixedStatements.stream()
+        final List<String> expectedSources = expectedFixedStatements.stream()
             .map(expectedTargetStatement -> {
                 return new StringBuilder().append("")
                     .append(beforeTargetStatement)
@@ -54,10 +54,10 @@ public class MethodReplacementOperationTest {
                     .toString();
             }).collect(Collectors.toList());
 
-        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
-        List<String> actualSources = new ArrayList<String>();
-        for(Node node : repairUnits){
-            List<CompilationUnit> cUnits = new MethodReplacementOperation().exec(node);
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        final List<String> actualSources = new ArrayList<String>();
+        for(Node node : nodes){
+            final List<CompilationUnit> cUnits = new MethodReplacementOperation().exec(node);
             for (CompilationUnit cUnit : cUnits){
                 LexicalPreservingPrinter.setup(cUnit);
                 actualSources.add(LexicalPreservingPrinter.print(cUnit));
