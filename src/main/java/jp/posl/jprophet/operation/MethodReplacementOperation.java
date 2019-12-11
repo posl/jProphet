@@ -32,21 +32,13 @@ public class MethodReplacementOperation implements AstOperation {
             .filter(name -> !targetMethodCallExpr.getNameAsString().equals(name))
             .collect(Collectors.toList());
 
-        final List<MethodCallExpr> methodCallExprWithReplacedMethodName = new ArrayList<MethodCallExpr>();
-        methodNameCandidates.stream()
-            .map(name -> new MethodCallExpr(new ThisExpr(), name, targetMethodCallExpr.getArguments()))
-            .forEach(methodCallExpr -> {
-                final Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
-                NodeUtility.replaceNode(methodCallExpr, copiedTargetNode)
-                    .map(node -> (MethodCallExpr)node)
-                    .ifPresent(methodCallExprWithReplacedMethodName::add);
-            });
+        final List<MethodCallExpr> exprWithReplacedMethodName = this.replaceMethodName(methodNameCandidates, targetMethodCallExpr);
 
         final List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
-        methodCallExprWithReplacedMethodName.stream()
+        exprWithReplacedMethodName.stream()
             .forEach(methodCallExpr -> methodCallExpr.findCompilationUnit()
             .ifPresent(candidates::add));
-        methodCallExprWithReplacedMethodName.stream()
+        exprWithReplacedMethodName.stream()
             .flatMap(methodCallExpr -> new VariableReplacementOperation().exec(methodCallExpr).stream())
             .forEach(candidates::add);
 
@@ -62,5 +54,18 @@ public class MethodReplacementOperation implements AstOperation {
         return node.findRootNode().findAll(MethodDeclaration.class).stream()
             .map(m -> m.getNameAsString())
             .collect(Collectors.toList());
+    }
+
+    private List<MethodCallExpr> replaceMethodName(List<String> methodName, MethodCallExpr targetExpr) {
+        final List<MethodCallExpr> methodCallExprWithReplacedMethodName = new ArrayList<MethodCallExpr>();
+        methodName.stream()
+            .map(name -> new MethodCallExpr(new ThisExpr(), name, targetExpr.getArguments()))
+            .forEach(methodCallExpr -> {
+                final Node copiedTargetExpr = NodeUtility.deepCopyByReparse(targetExpr);
+                NodeUtility.replaceNode(methodCallExpr, copiedTargetExpr)
+                    .map(node -> (MethodCallExpr)node)
+                    .ifPresent(methodCallExprWithReplacedMethodName::add);
+            });
+        return methodCallExprWithReplacedMethodName;
     }
 }
