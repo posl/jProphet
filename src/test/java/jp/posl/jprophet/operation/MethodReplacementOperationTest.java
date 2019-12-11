@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 
 public class MethodReplacementOperationTest {
     /**
-     * 引数を変数に置換する機能のテスト
+     * メソッドと引数を置換する機能のテスト
      */
-    @Test public void testForArgumentReplace(){
+    @Test public void testForMethodReplace(){
         final String beforeTargetStatement = new StringBuilder().append("")
             .append("public class A {\n")
             .append("    private String fa = \"a\";\n")
