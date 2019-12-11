@@ -103,7 +103,7 @@ public class MavenProjectTest{
     @Test public void testForClasspaths(){
         List<String> expectedClassFilePaths = List.of(
             "src/test/resources/testMavenProject01/src/main/resources/dependency/junit/junit/3.8.1/junit-3.8.1.jar",
-            "src/test/resources/testMavenProject01/src/main/resources/dependency/commons-io/commons-io/2.4/commons-io-2.4.jar"
+            // "src/test/resources/testMavenProject01/src/main/resources/dependency/commons-io/commons-io/2.4/commons-io-2.4.jar"
         );
         assertThat(this.project.getClassPaths()).containsOnlyElementsOf(expectedClassFilePaths);
     }
