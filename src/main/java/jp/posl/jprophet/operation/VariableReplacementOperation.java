@@ -27,9 +27,12 @@ import com.github.javaparser.ast.expr.ThisExpr;
  */
 public class VariableReplacementOperation implements AstOperation {
     /**
-     * 変数の置換操作を行い修正パッチ候補を生成する
+     * <h4>変数の置換操作を行い修正パッチ候補を生成する</h4>
+     * <p>
      * 代入文の右辺の値と，メソッド呼び出しの引数を対象に，クラスのメンバ変数及びメソッドのローカル変数，仮引数で置換を行う
      * 一つの修正パッチ候補につき一箇所の置換
+     * </p>
+     * <p>MethodCallExprとAssignExprをtargetNodeとして受け取った場合に置換が行われる</p>
      * @return 生成された修正後のCompilationUnitのリスト
      */
     public List<CompilationUnit> exec(Node targetNode) {
