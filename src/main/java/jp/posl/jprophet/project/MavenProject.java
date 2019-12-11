@@ -216,7 +216,9 @@ public class MavenProject implements Project {
               .resolve("main")
               .resolve("resources")
               .resolve("dependency");
-              
+            
+            //CIでは依存クラスファイルを取得することが難しいため、とりあえず依存ファイルをプロジェクト内に内包して、そこを参照するようにする
+
             //final String userHome = System.getProperty("user.home");
             //final Path repositoryPath = Paths.get(userHome)
             //  .resolve(".m2")
@@ -224,20 +226,20 @@ public class MavenProject implements Project {
     
         for (final Object object : model.getDependencies()) {
             if (!(object instanceof Dependency)) {
-              continue;
+                continue;
             }
             final Dependency dependency = (Dependency) object;
     
             Path path = repositoryPath;
             final String groupId = dependency.getGroupId();
             for (final String string : groupId.split("\\.")) {
-              path = path.resolve(string);
+                path = path.resolve(string);
             }
     
             final Path libPath = path.resolve(dependency.getArtifactId())
                 .resolve(dependency.getVersion());
             if (!Files.isDirectory(libPath)) {
-              continue;
+                continue;
             }
 
             Files.find(libPath, Integer.MAX_VALUE, (p, attr) -> p.toString()
