@@ -43,7 +43,7 @@ public class VariableReplacementOperationTest{
             .append(afterTargetStatement)
             .toString();
 
-        List<String> expectedTargetSources = new ArrayList<String>();
+        final List<String> expectedTargetSources = new ArrayList<String>();
         expectedTargetSources.add("        this.mb(this.fa, \"fuga\");\n");
         expectedTargetSources.add("        this.mb(\"hoge\", this.fa);\n");
         expectedTargetSources.add("        this.mb(this.fb, \"fuga\");\n");
@@ -55,7 +55,7 @@ public class VariableReplacementOperationTest{
         expectedTargetSources.add("        this.mb(pb, \"fuga\");\n");
         expectedTargetSources.add("        this.mb(\"hoge\", pb);\n");
 
-        List<String> expectedSources = expectedTargetSources.stream()
+        final List<String> expectedSources = expectedTargetSources.stream()
             .map(str -> {
                 return new StringBuilder().append("")
                     .append(beforeTargetStatement)
@@ -65,11 +65,11 @@ public class VariableReplacementOperationTest{
             })
             .collect(Collectors.toList());
 
-        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
-        List<String> candidateSources = new ArrayList<String>();
-        for(Node node : repairUnits){
-            VariableReplacementOperation vr = new VariableReplacementOperation();
-            List<CompilationUnit> cUnits = vr.exec(node);
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        final List<String> candidateSources = new ArrayList<String>();
+        for(Node node : nodes){
+            final VariableReplacementOperation vr = new VariableReplacementOperation();
+            final List<CompilationUnit> cUnits = vr.exec(node);
             for (CompilationUnit cUnit : cUnits){
                 LexicalPreservingPrinter.setup(cUnit);
                 candidateSources.add(LexicalPreservingPrinter.print(cUnit));
@@ -105,13 +105,13 @@ public class VariableReplacementOperationTest{
             .toString();
 
 
-        List<String> expectedTargetSources = new ArrayList<String>();
+        final List<String> expectedTargetSources = new ArrayList<String>();
         expectedTargetSources.add("        la = la;\n");
         expectedTargetSources.add("        la = lb;\n");
         expectedTargetSources.add("        la = this.fa;\n");
         expectedTargetSources.add("        la = pa;\n");
 
-        List<String> expectedSources = expectedTargetSources.stream()
+        final List<String> expectedSources = expectedTargetSources.stream()
             .map(str -> {
                 return new StringBuilder().append("")
                     .append(beforeTargetStatement)
@@ -121,11 +121,11 @@ public class VariableReplacementOperationTest{
             })
             .collect(Collectors.toList());
 
-        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
-        List<String> candidateSources = new ArrayList<String>();
-        for(Node node : repairUnits){
-            VariableReplacementOperation vr = new VariableReplacementOperation();
-            List<CompilationUnit> cUnits = vr.exec(node);
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        final List<String> candidateSources = new ArrayList<String>();
+        for(Node node : nodes){
+            final VariableReplacementOperation vr = new VariableReplacementOperation();
+            final List<CompilationUnit> cUnits = vr.exec(node);
             for (CompilationUnit cUnit : cUnits){
                 LexicalPreservingPrinter.setup(cUnit);
                 candidateSources.add(LexicalPreservingPrinter.print(cUnit));
@@ -144,10 +144,10 @@ public class VariableReplacementOperationTest{
         .append("import java.util.List;\n")
         .toString();
 
-        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(sourceThatHasNothingToReplace);
-        List<Node> candidates = new ArrayList<Node>();
-        for(Node node : repairUnits){
-            VariableReplacementOperation vr = new VariableReplacementOperation();
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(sourceThatHasNothingToReplace);
+        final List<Node> candidates = new ArrayList<Node>();
+        for(Node node : nodes){
+            final VariableReplacementOperation vr = new VariableReplacementOperation();
             candidates.addAll(vr.exec(node));
         }
 
@@ -184,11 +184,11 @@ public class VariableReplacementOperationTest{
         .append("}\n")
         .toString();
 
-        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(source);
-        List<String> candidateSources = new ArrayList<String>();
-        for(Node node : repairUnits){
-            VariableReplacementOperation vr = new VariableReplacementOperation();
-            List<CompilationUnit> cUnits = vr.exec(node);
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(source);
+        final List<String> candidateSources = new ArrayList<String>();
+        for(Node node : nodes){
+            final VariableReplacementOperation vr = new VariableReplacementOperation();
+            final List<CompilationUnit> cUnits = vr.exec(node);
             for (CompilationUnit cUnit : cUnits){
                 LexicalPreservingPrinter.setup(cUnit);
                 candidateSources.add(LexicalPreservingPrinter.print(cUnit));
@@ -218,11 +218,11 @@ public class VariableReplacementOperationTest{
 
         final String targetStatementAsRepairUnitToString = "hoge(la)"; 
 
-        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(source);
-        List<String> candidateSources = new ArrayList<String>();
-        for(Node node : repairUnits){
-            VariableReplacementOperation vr = new VariableReplacementOperation();
-            List<CompilationUnit> cUnits = vr.exec(node);
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(source);
+        final List<String> candidateSources = new ArrayList<String>();
+        for(Node node : nodes){
+            final VariableReplacementOperation vr = new VariableReplacementOperation();
+            final List<CompilationUnit> cUnits = vr.exec(node);
             for (CompilationUnit cUnit : cUnits){
                 LexicalPreservingPrinter.setup(cUnit);
                 candidateSources.add(LexicalPreservingPrinter.print(cUnit));
@@ -265,11 +265,11 @@ public class VariableReplacementOperationTest{
             .append(afterTargetStatement)
             .toString();
 
-        List<Node> repairUnits = NodeUtility.getAllNodesFromCode(targetSource);
-        List<String> candidateSources = new ArrayList<String>();
-        for(Node node : repairUnits){
-            VariableReplacementOperation vr = new VariableReplacementOperation();
-            List<CompilationUnit> cUnits = vr.exec(node);
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        final List<String> candidateSources = new ArrayList<String>();
+        for(Node node : nodes){
+            final VariableReplacementOperation vr = new VariableReplacementOperation();
+            final List<CompilationUnit> cUnits = vr.exec(node);
             for (CompilationUnit cUnit : cUnits){
                 LexicalPreservingPrinter.setup(cUnit);
                 candidateSources.add(LexicalPreservingPrinter.print(cUnit));
