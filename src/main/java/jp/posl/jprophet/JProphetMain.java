@@ -52,7 +52,7 @@ public class JProphetMain {
         ));
 
         final JProphetMain jprophet = new JProphetMain();
-        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, plausibilityAnalyzer, patchEvaluator, stagedCondGenerator, testExecutor, fixedProjectGenerator, testResultStore, testResultExporter);
+        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, fixedProjectGenerator, testResultStore, testResultExporter);
         try {
             FileUtils.deleteDirectory(new File(buildDir));
             if(!isRepairSuccess){
