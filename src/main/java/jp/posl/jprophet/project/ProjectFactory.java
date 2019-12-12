@@ -20,7 +20,7 @@ public class ProjectFactory {
         if(config.getTargetProject() instanceof GradleProject) {
             return new GradleProject(projectPath);
         }
-        throw new NoSuchElementException();
+        throw new IllegalArgumentException(); 
     }
 }
 
