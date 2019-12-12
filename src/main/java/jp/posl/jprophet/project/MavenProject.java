@@ -219,16 +219,14 @@ public class MavenProject implements Project {
             
             //CIでは依存クラスファイルを取得することが難しいため、とりあえず依存ファイルをプロジェクト内に内包して、そこを参照するようにする
 
-            //final String userHome = System.getProperty("user.home");
-            //final Path repositoryPath = Paths.get(userHome)
-            //  .resolve(".m2")
-            //  .resolve("repository");
+            /*
+            final String userHome = System.getProperty("user.home");
+            final Path repositoryPath = Paths.get(userHome)
+              .resolve(".m2")
+              .resolve("repository");
+            */
     
-        for (final Object object : model.getDependencies()) {
-            if (!(object instanceof Dependency)) {
-                continue;
-            }
-            final Dependency dependency = (Dependency) object;
+        for (final Dependency dependency : model.getDependencies()) {
     
             Path path = repositoryPath;
             final String groupId = dependency.getGroupId();
