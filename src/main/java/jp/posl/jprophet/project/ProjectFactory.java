@@ -20,6 +20,9 @@ public class ProjectFactory {
         if(config.getTargetProject() instanceof GradleProject) {
             return new GradleProject(projectPath);
         }
+        if(config.getTargetProject() instanceof MavenProject) {
+            return new MavenProject(projectPath);
+        }
         throw new IllegalArgumentException(); 
     }
 }
