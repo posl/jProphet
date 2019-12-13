@@ -72,17 +72,17 @@ public class JProphetMain {
             StagedCondGenerator stagedCondGenerator, TestExecutor testExecutor, FixedProjectGenerator fixedProjectGenerator, TestResultStore testResultStore, TestResultExporter testResultExporter
             ) {
         // フォルトローカライゼーション
-        List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
+        final List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
-        List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations);
+        final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations);
         
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
         patchEvaluator.descendingSortBySuspiciousness(patchCandidates, suspiciousenesses);
         
         // 修正パッチ候補ごとにテスト実行
         for(PatchCandidate patchCandidate: patchCandidates) {
-            Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
+            final Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
             final List<TestResult> results = testExecutor.exec(new RepairConfiguration(config, fixedProject));
             testResultStore.addTestResults(results, patchCandidate);
             if(results.get(0).getIsSuccess()) { //ここが微妙な気がする
