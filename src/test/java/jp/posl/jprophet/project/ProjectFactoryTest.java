@@ -21,4 +21,19 @@ public class ProjectFactoryTest{
         final Project newProject = projectFactory.create(config, projectPath);
         assertThat(newProject instanceof GradleProject).isTrue();
     }
+
+    /**
+     * MavenプロジェクトのProjectオブジェクトが生成できるかテスト
+     */
+    @Test public void testForMavenProject(){
+        final String buildDir = "./tmp/"; 
+        final String resultDir = "./result/"; 
+        final String projectPath = "src/test/resources/MavenFizzBuzz01";
+        final Project project = new MavenProject(projectPath);
+        final RepairConfiguration config = new RepairConfiguration(buildDir, resultDir, project);
+        final ProjectFactory projectFactory = new ProjectFactory();
+
+        final Project newProject = projectFactory.create(config, projectPath);
+        assertThat(newProject instanceof MavenProject).isTrue();
+    }
 }
