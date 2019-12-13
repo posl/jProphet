@@ -46,7 +46,7 @@ public class CondRefinementOperationTest{
             .toString();
 
 
-        List<String> expectedTargetSources = new ArrayList<String>();
+        final List<String> expectedTargetSources = new ArrayList<String>();
         expectedTargetSources.add("        if ((method1() && method2()) || (fa == null)) {\n");
         expectedTargetSources.add("        if ((method1() && method2()) || (fa != null)) {\n");
         expectedTargetSources.add("        if ((method1() && method2()) || (lb == null)) {\n");
@@ -59,7 +59,7 @@ public class CondRefinementOperationTest{
         expectedTargetSources.add("        if ((method1() && method2()) && !(true)) {\n");
 
 
-        List<String> expectedSources = expectedTargetSources.stream()
+        final List<String> expectedSources = expectedTargetSources.stream()
             .map(str -> {
                 return new StringBuilder().append("")
                     .append(beforeTargetStatement)
@@ -69,11 +69,11 @@ public class CondRefinementOperationTest{
             })
             .collect(Collectors.toList());
 
-        List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        List<String> candidateSources = new ArrayList<String>();
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        final List<String> candidateSources = new ArrayList<String>();
         for(Node node : nodes){
-            CondRefinementOperation cr = new CondRefinementOperation();
-            List<CompilationUnit> cUnits = cr.exec(node);
+            final CondRefinementOperation cr = new CondRefinementOperation();
+            final List<CompilationUnit> cUnits = cr.exec(node);
             for (CompilationUnit cUnit : cUnits){
                 LexicalPreservingPrinter.setup(cUnit);
                 candidateSources.add(LexicalPreservingPrinter.print(cUnit));

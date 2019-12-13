@@ -29,7 +29,7 @@ public class CtrlFlowIntroductionOperationTest {
             .append("}\n")
             .toString();
 
-        List<String> expectedSources = new ArrayList<String>();
+        final List<String> expectedSources = new ArrayList<String>();
 
         expectedSources.add(new StringBuilder().append("")
             .append("public class A {\n") //toString(PrettyPrinter)での出力ではクラス宣言の先頭行の後に空行が入る仕様 
@@ -58,11 +58,11 @@ public class CtrlFlowIntroductionOperationTest {
         );
 
 
-        List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        List<String> candidateSources = new ArrayList<String>();
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        final List<String> candidateSources = new ArrayList<String>();
         for(Node node : nodes){
-            CtrlFlowIntroductionOperation cfo = new CtrlFlowIntroductionOperation();
-            List<CompilationUnit> cUnits = cfo.exec(node);
+            final CtrlFlowIntroductionOperation cfo = new CtrlFlowIntroductionOperation();
+            final List<CompilationUnit> cUnits = cfo.exec(node);
             for (CompilationUnit cUnit : cUnits){
                 LexicalPreservingPrinter.setup(cUnit);
                 candidateSources.add(LexicalPreservingPrinter.print(cUnit));
@@ -86,7 +86,7 @@ public class CtrlFlowIntroductionOperationTest {
             .append("}\n")
             .toString();
 
-        List<String> expectedSources = new ArrayList<String>();
+        final List<String> expectedSources = new ArrayList<String>();
 
         expectedSources.add(new StringBuilder().append("")
             .append("public class A {\n")
@@ -112,11 +112,11 @@ public class CtrlFlowIntroductionOperationTest {
             .append("}\n")
             .toString());
 
-        List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        List<String> candidateSources = new ArrayList<String>();
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        final List<String> candidateSources = new ArrayList<String>();
         for(Node node : nodes) {
-            CtrlFlowIntroductionOperation cfo = new CtrlFlowIntroductionOperation();
-            List<CompilationUnit> cUnits = cfo.exec(node);
+            final CtrlFlowIntroductionOperation cfo = new CtrlFlowIntroductionOperation();
+            final List<CompilationUnit> cUnits = cfo.exec(node);
             for (CompilationUnit cUnit : cUnits){
                 LexicalPreservingPrinter.setup(cUnit);
                 candidateSources.add(LexicalPreservingPrinter.print(cUnit));
@@ -140,7 +140,7 @@ public class CtrlFlowIntroductionOperationTest {
             .append("}\n")
             .toString();
 
-        List<String> expectedSources = new ArrayList<String>();
+        final List<String> expectedSources = new ArrayList<String>();
 
         expectedSources.add(new StringBuilder().append("")
             .append("public class A {\n")
@@ -166,11 +166,11 @@ public class CtrlFlowIntroductionOperationTest {
             .append("}\n")
             .toString());
 
-        List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        List<String> candidateSources = new ArrayList<String>();
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        final List<String> candidateSources = new ArrayList<String>();
         for(Node node : nodes) {
-            CtrlFlowIntroductionOperation cfo = new CtrlFlowIntroductionOperation();
-            List<CompilationUnit> cUnits = cfo.exec(node);
+            final CtrlFlowIntroductionOperation cfo = new CtrlFlowIntroductionOperation();
+            final List<CompilationUnit> cUnits = cfo.exec(node);
             for (CompilationUnit cUnit : cUnits){
                 LexicalPreservingPrinter.setup(cUnit);
                 candidateSources.add(LexicalPreservingPrinter.print(cUnit));
@@ -211,15 +211,14 @@ public class CtrlFlowIntroductionOperationTest {
             .append("}\n")
             .toString();
 
-        List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        List<String> candidateSources = new ArrayList<String>();
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        final List<String> candidateSources = new ArrayList<String>();
         for(Node node : nodes){
-            CtrlFlowIntroductionOperation cfo = new CtrlFlowIntroductionOperation();
-            List<CompilationUnit> cUnits = cfo.exec(node);
+            final CtrlFlowIntroductionOperation cfo = new CtrlFlowIntroductionOperation();
+            final List<CompilationUnit> cUnits = cfo.exec(node);
             for (CompilationUnit cUnit : cUnits){
                 LexicalPreservingPrinter.setup(cUnit);
-                String str = LexicalPreservingPrinter.print(cUnit);
-                candidateSources.add(str);
+                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
             }
         }
         return;

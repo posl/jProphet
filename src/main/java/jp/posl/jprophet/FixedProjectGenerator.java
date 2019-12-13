@@ -6,8 +6,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import jp.posl.jprophet.patch.PatchCandidate;
-import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;
+import jp.posl.jprophet.project.ProjectFactory;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
@@ -39,8 +39,8 @@ public class FixedProjectGenerator {
 
         this.generateFixedFile(patchCandidate, fixedProjectPath, originalProjectPath);
 
-        final Project fixedProject = new GradleProject(fixedProjectPath); //TODO: GradleProjetの生成は外部に投げる
-        return fixedProject;
+        ProjectFactory projectFactory = new ProjectFactory();
+        return projectFactory.create(config, fixedProjectPath);
     }
 
     /**

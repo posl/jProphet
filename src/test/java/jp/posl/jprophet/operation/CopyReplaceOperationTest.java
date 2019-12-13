@@ -50,7 +50,7 @@ public class CopyReplaceOperationTest{
             .append(afterTargetStatement)
             .toString();
 
-        List<String> expectedTargetSources = new ArrayList<String>();
+        final List<String> expectedTargetSources = new ArrayList<String>();
         expectedTargetSources.add("        this.mb(this.fa, \"fuga\");\n");
         expectedTargetSources.add("        this.mb(\"hoge\", this.fa);\n");
         expectedTargetSources.add("        this.mb(this.fb, \"fuga\");\n");
@@ -62,7 +62,7 @@ public class CopyReplaceOperationTest{
         expectedTargetSources.add("        this.mb(pb, \"fuga\");\n");
         expectedTargetSources.add("        this.mb(\"hoge\", pb);\n");
 
-        List<String> expectedSources = expectedTargetSources.stream()
+        final List<String> expectedSources = expectedTargetSources.stream()
             .map(str -> {
                 return new StringBuilder().append("")
                     .append(beforeCopiedStatement)
@@ -74,11 +74,11 @@ public class CopyReplaceOperationTest{
             })
             .collect(Collectors.toList());
 
-        List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        List<String> candidateSources = new ArrayList<String>();
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        final List<String> candidateSources = new ArrayList<String>();
         for(Node node : nodes){
-            CopyReplaceOperation cr = new CopyReplaceOperation();
-            List<CompilationUnit> cUnits = cr.exec(node);
+            final CopyReplaceOperation cr = new CopyReplaceOperation();
+            final List<CompilationUnit> cUnits = cr.exec(node);
             for (CompilationUnit cUnit : cUnits){
                 LexicalPreservingPrinter.setup(cUnit);
                 candidateSources.add(LexicalPreservingPrinter.print(cUnit));
