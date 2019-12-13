@@ -43,11 +43,11 @@ public class VariableReplacementOperation implements AstOperation {
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
 
         Function<String, Expression> constructField = fieldName -> new FieldAccessExpr(new ThisExpr(), fieldName);
-        candidates.addAll(this.replaceAssignExprAndArgsWith(targetNode, constructField, fieldNames));
+        candidates.addAll(this.replaceVariables(targetNode, constructField, fieldNames));
 
         Function<String, Expression> constructVar = varName -> new NameExpr(varName);
-        candidates.addAll(this.replaceAssignExprAndArgsWith(targetNode, constructVar, localVarNames));
-        candidates.addAll(this.replaceAssignExprAndArgsWith(targetNode, constructVar, parameterNames));
+        candidates.addAll(this.replaceVariables(targetNode, constructVar, localVarNames));
+        candidates.addAll(this.replaceVariables(targetNode, constructVar, parameterNames));
 
         return candidates;
     }
@@ -102,7 +102,7 @@ public class VariableReplacementOperation implements AstOperation {
      * @param varNames 置換先の変数名のリスト
      * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    private List<CompilationUnit> replaceAssignExprAndArgsWith(Node node, Function<String, Expression> constructVar, List<String> varNames){
+    private List<CompilationUnit> replaceVariables(Node node, Function<String, Expression> constructVar, List<String> varNames){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
 
         candidates.addAll(this.replaceAssignExprWith(node, varNames, constructVar));
