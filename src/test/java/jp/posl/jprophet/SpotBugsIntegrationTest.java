@@ -75,15 +75,13 @@ public class SpotBugsIntegrationTest {
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
         final FaultLocalization        faultLocalization        = new SpotBugsBasedFaultLocalization(config);
         final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
-        final PlausibilityAnalyzer     plausibilityAnalyzer     = new PlausibilityAnalyzer();  
         final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
-        final StagedCondGenerator      stagedCondGenerator      = new StagedCondGenerator();
         final TestExecutor             testExecutor             = new SpotBugsTestExecutor(SpotBugsBasedFaultLocalization.getSpotBugsResultFilePath());
-        final FixedProjectGenerator    fixedProjectGenerator    = new FixedProjectGenerator();
+        final PatchedProjectGenerator  patchedProjectGenerator  = new PatchedProjectGenerator(config);
         final TestResultStore          testResultStore          = new TestResultStore();
         final TestResultExporter       testResultExporter       = new CSVTestResultExporter(resultDir);
         final JProphetMain jprophet = new JProphetMain();
-        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, plausibilityAnalyzer, patchEvaluator, stagedCondGenerator, testExecutor, fixedProjectGenerator, testResultStore, testResultExporter);
+        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, patchedProjectGenerator, testResultStore, testResultExporter);
         try {
             FileUtils.deleteDirectory(new File(buildDir));
             if(!isRepairSuccess){

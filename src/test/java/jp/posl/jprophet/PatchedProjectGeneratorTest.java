@@ -25,7 +25,7 @@ import com.github.javaparser.ast.Node;
 
 import org.apache.commons.io.FileUtils;
 
-public class FixedProjectGeneratorTest{
+public class PatchedProjectGeneratorTest{
     private String projectPath;
     private String targetFilePath;
     private String targetFileFqn;
@@ -33,7 +33,7 @@ public class FixedProjectGeneratorTest{
     private String buildDir;
     private String resultDir;
     private RepairConfiguration config;
-    private FixedProjectGenerator fixedProjectGenerator;
+    private PatchedProjectGenerator patchedProjectGenerator;
 
     @Before public void setUp(){
         this.projectPath = "src/test/resources/testGradleProject01";
@@ -55,7 +55,7 @@ public class FixedProjectGeneratorTest{
         this.buildDir = "./temp/";
         this.resultDir = "./result/";
         this.config = new RepairConfiguration(this.buildDir, this.resultDir, new GradleProject(this.projectPath));
-        this.fixedProjectGenerator = new FixedProjectGenerator();
+        this.patchedProjectGenerator = new PatchedProjectGenerator(this.config);
         CompilationUnit compilationUnit;
         try {
             compilationUnit = JavaParser.parse(Paths.get(this.targetFilePath));
@@ -70,7 +70,7 @@ public class FixedProjectGeneratorTest{
         node.getTokenRange().orElseThrow().getBegin().replaceToken(new JavaToken(node.getTokenRange().orElseThrow().getBegin().getRange().get(), JavaToken.Kind.PRIVATE.getKind(), "private", null, null));
         CompilationUnit cu = NodeUtility.reparseCompilationUnit(node.findCompilationUnit().get()).orElseThrow();
         PatchCandidate patchCandidate = new DefaultPatchCandidate(targetNodeBeforeFix, cu, this.targetFilePath, this.targetFileFqn, AstOperation.class);
-        this.fixedProjectGenerator.exec(config, patchCandidate);
+        this.patchedProjectGenerator.applyPatch(patchCandidate);
        
     }
 
