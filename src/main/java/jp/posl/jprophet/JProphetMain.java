@@ -82,13 +82,15 @@ public class JProphetMain {
         for(PatchCandidate patchCandidate: patchCandidates) {
             Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
             final List<TestResult> results = testExecutor.exec(new RepairConfiguration(config, fixedProject));
-            testResultStore.addTestResults(results, patchCandidate);
-            if(results.get(0).getIsSuccess()) { //ここが微妙な気がする
-                testResultExporter.export(testResultStore);
-                return true;
+            if(results.size() > 0) {
+                testResultStore.addTestResults(results, patchCandidate);
+                if(results.get(0).getIsSuccess()) { //ここが微妙な気がする
+                    testResultExporter.export(testResultStore);
+                    return true;
+                }
             }
         }
         testResultExporter.export(testResultStore);
-        return false;
+        return true;    // SpotBugsの場合はここを必ず通るのでfalseだとまずい
     }
 }

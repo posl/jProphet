@@ -48,8 +48,8 @@ public class SpotBugsTestExecutorTest {
         final List<TestResult> results01 = testExecutor.exec(afterConfig01);
         final Map<String, String> resultMap01 = results01.get(0).toStringMap();
         assertThat(results01.size()).isEqualTo(1);
-        assertThat(resultMap01.get("isSuccess")).isEqualTo("false");
-        assertThat(resultMap01.get("type")).isEqualTo("NM_METHOD_NAMING_CONVENTION");
+        assertThat(resultMap01.get("unitTest")).isEqualTo("PASSED");
+        assertThat(resultMap01.get("fixedWarning")).isEqualTo("NM_METHOD_NAMING_CONVENTION");
         assertThat(resultMap01.get("numOfOccurredWarning")).isEqualTo("1");
         
         final List<TestResult> results02 = testExecutor.exec(afterConfig02);

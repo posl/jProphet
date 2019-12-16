@@ -56,12 +56,14 @@ public class SpotBugsIntegrationTest {
         File file = new File("result/result.csv");
         assertThat(file.exists()).isTrue();
         
+        /*
         try {
             FileUtils.deleteDirectory(new File("./result/"));
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
+        */
 
     }
 

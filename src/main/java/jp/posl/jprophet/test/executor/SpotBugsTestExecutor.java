@@ -1,5 +1,6 @@
 package jp.posl.jprophet.test.executor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,18 +37,13 @@ public class SpotBugsTestExecutor implements TestExecutor {
     @Override
     public List<TestResult> exec(RepairConfiguration config) {
         final UnitTestExecutor unitTestExecutor = new UnitTestExecutor();
-        final boolean isSuccess = unitTestExecutor.exec(config).get(0).getIsSuccess();
-        if(isSuccess) {
-            final SpotBugsExecutor spotBugsExecutor = new SpotBugsExecutor();
-            spotBugsExecutor.exec(config, spotbugsResultFileName);
-            final SpotBugsResultXMLReader spotBugsResultXMLReader = new SpotBugsResultXMLReader();
-            final List<SpotBugsWarning> beforeWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(beforeResultFilePath, config.getTargetProject());
-            final List<SpotBugsWarning> afterWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(SpotBugsExecutor.getResultFilePath(spotbugsResultFileName), config.getTargetProject());
-            return createResults(beforeWarnings, afterWarnings);
-        }
-        else {
-            return List.of(new SpotBugsTestResult(false, new SpotBugsWarning("", "", 0, 0), 0));   
-        }
+        final boolean isPassedUnitTest = unitTestExecutor.exec(config).get(0).getIsSuccess();
+        final SpotBugsExecutor spotBugsExecutor = new SpotBugsExecutor();
+        spotBugsExecutor.exec(config, spotbugsResultFileName);
+        final SpotBugsResultXMLReader spotBugsResultXMLReader = new SpotBugsResultXMLReader();
+        final List<SpotBugsWarning> beforeWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(beforeResultFilePath, config.getTargetProject());
+        final List<SpotBugsWarning> afterWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(SpotBugsExecutor.getResultFilePath(spotbugsResultFileName), config.getTargetProject());
+        return createResults(beforeWarnings, afterWarnings, isPassedUnitTest);
     }
 
 
@@ -57,23 +53,24 @@ public class SpotBugsTestExecutor implements TestExecutor {
      * @param after 修正後のワーニングリスト
      * @return テスト結果のリスト
      */
-    private List<TestResult> createResults(List<SpotBugsWarning> before, List<SpotBugsWarning> after) {
+    private List<TestResult> createResults(List<SpotBugsWarning> before, List<SpotBugsWarning> after, boolean isPassedUnitTest) {
         final Set<SpotBugsWarning> beforeSet = new HashSet<SpotBugsWarning>(before);
         final Set<SpotBugsWarning> afterSet = new HashSet<SpotBugsWarning>(after);
 
         final Set<SpotBugsWarning> fixedSet = new HashSet<SpotBugsWarning>(beforeSet);
         fixedSet.removeAll(afterSet);
 
-        final Set<SpotBugsWarning> unFixedSet = new HashSet<SpotBugsWarning>(beforeSet);
-        unFixedSet.retainAll(afterSet);
-
         final Set<SpotBugsWarning> occurredSet = new HashSet<SpotBugsWarning>(afterSet);
         occurredSet.removeAll(beforeSet);
 
-        final boolean isFixedAll = (unFixedSet.size() == 0);
         final int numOfOccurredWarnings = occurredSet.size();
 
-        return fixedSet.stream().map(warning -> new SpotBugsTestResult(isFixedAll, warning, numOfOccurredWarnings)).collect(Collectors.toList());
+        if(fixedSet.size() > 0) {
+            return fixedSet.stream().map(warning -> new SpotBugsTestResult(isPassedUnitTest, warning, numOfOccurredWarnings)).collect(Collectors.toList());
+        }
+        else {
+            return new ArrayList<>();
+        }
     }
     
 }

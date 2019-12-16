@@ -36,6 +36,7 @@ public class CSVTestResultExporter implements TestResultExporter {
     @Override
     public void export(TestResultStore resultStore) {
 
+
         final File resultDirFile = new File(resultDir);
         if(!resultDirFile.exists()) {
             resultDirFile.mkdir();
@@ -49,7 +50,8 @@ public class CSVTestResultExporter implements TestResultExporter {
 
         
         final List<Map.Entry<TestResult, PatchCandidate>> entryList = new ArrayList<>(resultStore.getPatchResults().entrySet());
-        
+
+        entryList.stream().forEach(e -> System.out.println(e.getValue()));
         final String field = "filePath,line,operation," + String.join(",", entryList.get(0).getKey().toStringMap().keySet());
         recodes.add(field);
 
