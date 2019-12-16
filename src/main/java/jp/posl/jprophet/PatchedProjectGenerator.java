@@ -85,7 +85,7 @@ public class PatchedProjectGenerator {
      */
     private void unpatch(){
         try {
-            FileUtils.copyFile(this.originalFileOfLastPatched, this.lastPatchedFile, false);;
+            FileUtils.copyFile(this.originalFileOfLastPatched, this.lastPatchedFile, false);
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
