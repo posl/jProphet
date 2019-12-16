@@ -35,8 +35,6 @@ public class CSVTestResultExporter implements TestResultExporter {
      */
     @Override
     public void export(TestResultStore resultStore) {
-
-
         final File resultDirFile = new File(resultDir);
         if(!resultDirFile.exists()) {
             resultDirFile.mkdir();
