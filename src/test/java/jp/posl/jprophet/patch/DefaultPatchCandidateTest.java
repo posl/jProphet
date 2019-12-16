@@ -41,7 +41,7 @@ public class DefaultPatchCandidateTest {
         fixedNode.getTokenRange().orElseThrow().getBegin().replaceToken(new JavaToken(node.getTokenRange().orElseThrow().getBegin().getRange().get(), JavaToken.Kind.PRIVATE.getKind(), "private", null, null));
         LexicalPreservingPrinter.setup(fixedCompilationUnit);
         this.newFixedCompilationUnit = JavaParser.parse(LexicalPreservingPrinter.print(fixedCompilationUnit));
-        this.patchCandidate = new DefaultPatchCandidate(node, this.newFixedCompilationUnit, filePath, fqn, VariableReplacementOperation.class);
+        this.patchCandidate = new DefaultPatchCandidate(node, this.newFixedCompilationUnit, filePath, fqn, VariableReplacementOperation.class, 1);
     }
 
     /**
@@ -92,6 +92,7 @@ public class DefaultPatchCandidateTest {
     @Test public void testForToString() {
         String diff = this.patchCandidate.toString();
         String expectedDiff = new StringBuilder().append("")
+            .append("ID : 1\n")
             .append("fixed file path : src/test/resources/test01.java\n")
             .append("used operation  : VariableReplacementOperation\n\n")
             .append("1       public class A {\n")
