@@ -5,6 +5,13 @@ import java.util.Optional;
 import com.github.javaparser.ast.CompilationUnit;
 
 public interface PatchCandidate {
+
+
+    /**
+     * 修正パッチ候補のIDを返す
+     * @return 修正パッチ候補の整数型ID
+     */
+    public int getID();
     /**
      * 修正されたファイルのパス(jProphetプロジェクトのルートから見た相対パス)を返す
      * @return 修正されたファイルのパス

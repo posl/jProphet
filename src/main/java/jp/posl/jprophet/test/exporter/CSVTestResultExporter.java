@@ -3,6 +3,8 @@ package jp.posl.jprophet.test.exporter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -49,14 +51,23 @@ public class CSVTestResultExporter implements TestResultExporter {
         
         final List<Map.Entry<TestResult, PatchCandidate>> entryList = new ArrayList<>(resultStore.getPatchResults().entrySet());
 
-        entryList.stream().forEach(e -> System.out.println(e.getValue()));
-        final String field = "filePath,line,operation," + String.join(",", entryList.get(0).getKey().toStringMap().keySet());
+        final String field = "ID,filePath,line,operation," + String.join(",", entryList.get(0).getKey().toStringMap().keySet());
         recodes.add(field);
+
+        Collections.sort(   //ID順に並び替え
+            entryList,
+            new Comparator<Map.Entry<TestResult, PatchCandidate>>() {
+                @Override
+                public int compare(Map.Entry<TestResult, PatchCandidate> obj1, Map.Entry<TestResult, PatchCandidate> obj2) {
+                    return obj1.getValue().getID() - obj2.getValue().getID();
+                }
+            }
+        );
 
         for (Map.Entry<TestResult, PatchCandidate> entry : entryList) {
             final TestResult result = entry.getKey();
             final PatchCandidate patch = entry.getValue();
-            final String patchLine = patch.getFilePath() + "," + patch.getLineNumber().get() + "," + patch.getAppliedOperation();
+            final String patchLine = patch.getID() + "," + patch.getFilePath() + "," + patch.getLineNumber().get() + "," + patch.getAppliedOperation();
             final String resultLine = String.join(",", result.toStringMap().values());
             final String recode = patchLine + "," + resultLine;
             recodes.add(recode);
