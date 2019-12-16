@@ -22,6 +22,7 @@ import jp.posl.jprophet.test.result.TestResult;
 import jp.posl.jprophet.test.result.TestResultStore;
 import jp.posl.jprophet.test.exporter.TestResultExporter;
 import jp.posl.jprophet.test.exporter.CSVTestResultExporter;
+import jp.posl.jprophet.test.exporter.PatchDiffExporter;
 
 public class JProphetMain {
     public static void main(String[] args) {
@@ -40,7 +41,11 @@ public class JProphetMain {
         final TestExecutor             testExecutor             = new UnitTestExecutor();
         final FixedProjectGenerator    fixedProjectGenerator    = new FixedProjectGenerator();
         final TestResultStore          testResultStore          = new TestResultStore();
-        final TestResultExporter       testResultExporter       = new CSVTestResultExporter(resultDir);
+
+        final List<TestResultExporter> testResultExporters = new ArrayList<TestResultExporter>(Arrays.asList(
+            new CSVTestResultExporter(resultDir),
+            new PatchDiffExporter(resultDir)
+        ));
 
         final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(
             new CondRefinementOperation(),
@@ -52,7 +57,7 @@ public class JProphetMain {
         ));
 
         final JProphetMain jprophet = new JProphetMain();
-        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, fixedProjectGenerator, testResultStore, testResultExporter);
+        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, fixedProjectGenerator, testResultStore, testResultExporters);
         try {
             FileUtils.deleteDirectory(new File(buildDir));
             if(!isRepairSuccess){
@@ -67,7 +72,7 @@ public class JProphetMain {
 
     public boolean run(RepairConfiguration config, FaultLocalization faultLocalization, PatchCandidateGenerator patchCandidateGenerator,
             List<AstOperation> operations, PatchEvaluator patchEvaluator, TestExecutor testExecutor,
-            FixedProjectGenerator fixedProjectGenerator, TestResultStore testResultStore, TestResultExporter testResultExporter
+            FixedProjectGenerator fixedProjectGenerator, TestResultStore testResultStore, List<TestResultExporter> testResultExporters
             ) {
         // フォルトローカライゼーション
         List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
@@ -85,12 +90,12 @@ public class JProphetMain {
             if(results.size() > 0) {
                 testResultStore.addTestResults(results, patchCandidate);
                 if(results.get(0).getIsSuccess()) { //ここが微妙な気がする
-                    testResultExporter.export(testResultStore);
+                    testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
                     return true;
                 }
             }
         }
-        testResultExporter.export(testResultStore);
+        testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
         return true;    // SpotBugsの場合はここを必ず通るのでfalseだとまずい
     }
 }

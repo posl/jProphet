@@ -82,9 +82,12 @@ public class SpotBugsIntegrationTest {
         final TestExecutor             testExecutor             = new SpotBugsTestExecutor(SpotBugsBasedFaultLocalization.getSpotBugsResultFilePath());
         final FixedProjectGenerator    fixedProjectGenerator    = new FixedProjectGenerator();
         final TestResultStore          testResultStore          = new TestResultStore();
-        final TestResultExporter       testResultExporter       = new PatchDiffExporter(resultDir);
+        final List<TestResultExporter> testResultExporters = new ArrayList<TestResultExporter>(Arrays.asList(
+            new CSVTestResultExporter(resultDir),
+            new PatchDiffExporter(resultDir)
+        ));
         final JProphetMain jprophet = new JProphetMain();
-        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, fixedProjectGenerator, testResultStore, testResultExporter);
+        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, fixedProjectGenerator, testResultStore, testResultExporters);
         try {
             FileUtils.deleteDirectory(new File(buildDir));
             if(!isRepairSuccess){
