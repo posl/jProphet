@@ -59,7 +59,7 @@ public class CSVTestResultExporter implements TestResultExporter {
             new Comparator<Map.Entry<TestResult, PatchCandidate>>() {
                 @Override
                 public int compare(Map.Entry<TestResult, PatchCandidate> obj1, Map.Entry<TestResult, PatchCandidate> obj2) {
-                    return obj1.getValue().getID() - obj2.getValue().getID();
+                    return obj1.getValue().getId() - obj2.getValue().getId();
                 }
             }
         );
@@ -67,7 +67,7 @@ public class CSVTestResultExporter implements TestResultExporter {
         for (Map.Entry<TestResult, PatchCandidate> entry : entryList) {
             final TestResult result = entry.getKey();
             final PatchCandidate patch = entry.getValue();
-            final String patchLine = patch.getID() + "," + patch.getFilePath() + "," + patch.getLineNumber().get() + "," + patch.getAppliedOperation();
+            final String patchLine = patch.getId() + "," + patch.getFilePath() + "," + patch.getLineNumber().get() + "," + patch.getAppliedOperation();
             final String resultLine = String.join(",", result.toStringMap().values());
             final String recode = patchLine + "," + resultLine;
             recodes.add(recode);
