@@ -45,7 +45,7 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
         List<Suspiciousness> suspiciousnesses = new ArrayList<Suspiciousness>();;
         TestResults testResults;
         CoverageCollector coverageCollector = new CoverageCollector(buildPath);
-
+        
         try {
             testResults = coverageCollector.exec(sourceClassFileFqns, testClassFileFqns);
             SuspiciousnessCollector suspiciousnessCollector = new SuspiciousnessCollector(testResults, coefficient);

@@ -4,10 +4,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+import org.apache.bcel.classfile.ClassFormatException;
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.data.ExecutionDataStore;
@@ -38,6 +43,7 @@ public class CoverageCollector {
 
         // ここであらかじめビルド済みのクラスファイルをクラスローダーが読み込んでおく
         try {
+            //this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./" + buildpath + "/") });
             this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./" + buildpath + "/") });
         } catch (MalformedURLException e){
             System.err.println(e.getMessage());
@@ -61,14 +67,25 @@ public class CoverageCollector {
         loadInstrumentedClasses(sourceFQNs);
         final List<Class<?>> junitClasses = loadInstrumentedClasses(testFQNs);
 
-        //final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
+    
+        
         for (Class<?> junitClass : junitClasses) {
             final JUnitCore junitCore = new JUnitCore();
-            final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
+            final RunListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
             junitCore.addListener(listener);
             //TODO junitCore.runはどうやって動いているのか調べる
             junitCore.run(junitClass);
         }
+        
+        
+        /*
+        try {
+            final JUnitCore junitCore = new JUnitCore();
+            final RunListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
+            junitCore.addListener(listener);
+            junitCore.run(junitClasses.toArray(new Class<?>[junitClasses.size()]));
+        } catch (Exception e) {}
+        */
 
         return testResults;
     }
@@ -85,6 +102,7 @@ public class CoverageCollector {
         for (final String fqn : fqns) {
             final byte[] instrumentedData = instrument(fqn);
             loadedClasses.add(loadClass(fqn, instrumentedData));
+            //loadedClasses.add(this.memoryClassLoader.loadClass(fqn));
         }
         return loadedClasses;
     }
@@ -126,6 +144,23 @@ public class CoverageCollector {
         return is;
     }
 
+    private URL[] convertClasspathsToURLs(final List<String> classpaths) {
+        return classpaths.stream()
+            .map(cp -> Paths.get(cp).toUri())
+            .map(uri -> toURL(uri))
+            .toArray(URL[]::new);
+    }
+
+    private URL toURL(final URI uri) {
+        try {
+          return uri.toURL();
+        } catch (MalformedURLException e) {
+          // TODO 自動生成された catch ブロック
+          e.printStackTrace();
+        }
+        // TODO
+        return null;
+      }
     /**
      * JUnit実行のイベントリスナー．内部クラス． 
      * JUnit実行前のJaCoCoの初期化，およびJUnit実行後のJaCoCoの結果回収を行う．
