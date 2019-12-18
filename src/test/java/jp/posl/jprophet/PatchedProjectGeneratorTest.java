@@ -69,13 +69,8 @@ public class PatchedProjectGeneratorTest{
         Node node = NodeUtility.deepCopyByReparse(targetNodeBeforeFix);
         node.getTokenRange().orElseThrow().getBegin().replaceToken(new JavaToken(node.getTokenRange().orElseThrow().getBegin().getRange().get(), JavaToken.Kind.PRIVATE.getKind(), "private", null, null));
         CompilationUnit cu = NodeUtility.reparseCompilationUnit(node.findCompilationUnit().get()).orElseThrow();
-<<<<<<< HEAD:src/test/java/jp/posl/jprophet/FixedProjectGeneratorTest.java
         PatchCandidate patchCandidate = new DefaultPatchCandidate(targetNodeBeforeFix, cu, this.targetFilePath, this.targetFileFqn, AstOperation.class, 1);
-        this.fixedProjectGenerator.exec(config, patchCandidate);
-=======
-        PatchCandidate patchCandidate = new DefaultPatchCandidate(targetNodeBeforeFix, cu, this.targetFilePath, this.targetFileFqn, AstOperation.class);
         this.patchedProjectGenerator.applyPatch(patchCandidate);
->>>>>>> master:src/test/java/jp/posl/jprophet/PatchedProjectGeneratorTest.java
        
     }
 

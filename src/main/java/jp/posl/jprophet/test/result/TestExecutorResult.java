@@ -3,6 +3,9 @@ package jp.posl.jprophet.test.result;
 import java.util.List;
 
 
+/**
+ * TestExecutorによるテスト検証の結果を格納するクラス
+ */
 public class TestExecutorResult {
 
     private final boolean isSuccess;
@@ -10,6 +13,7 @@ public class TestExecutorResult {
 
 
     /**
+     * コンストラクタ
      * @param isSuccess テスト検証が成功したか
      * @param testResults テスト検証をした結果のリスト
      */

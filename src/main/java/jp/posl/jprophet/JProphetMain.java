@@ -40,7 +40,7 @@ public class JProphetMain {
         final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
         final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
         final TestExecutor             testExecutor             = new UnitTestExecutor();
-        final PatchedProjectGenerator    patchedProjectGenerator  = new PatchedProjectGenerator(config);
+        final PatchedProjectGenerator  patchedProjectGenerator  = new PatchedProjectGenerator(config);
         final TestResultStore          testResultStore          = new TestResultStore();
 
         final List<TestResultExporter> testResultExporters = new ArrayList<TestResultExporter>(Arrays.asList(
@@ -59,15 +59,11 @@ public class JProphetMain {
 
 
         final JProphetMain jprophet = new JProphetMain();
-<<<<<<< HEAD
-        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, fixedProjectGenerator, testResultStore, testResultExporters);
-=======
-        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, patchedProjectGenerator, testResultStore, testResultExporter);
->>>>>>> master
+        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, patchedProjectGenerator, testResultStore, testResultExporters);
         try {
             FileUtils.deleteDirectory(new File(buildDir));
             if(!isRepairSuccess){
-                FileUtils.deleteDirectory(new File(config.getFixedProjectDirPath() + FilenameUtils.getBaseName(project.getRootPath())));
+                FileUtils.deleteDirectory(new File(config.getFixedProjectDirPath() + FilenameUtils.getBaseName(project.getRootPath()))); //失敗した場合でもログは残す
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());
@@ -77,11 +73,7 @@ public class JProphetMain {
 
     public boolean run(RepairConfiguration config, FaultLocalization faultLocalization, PatchCandidateGenerator patchCandidateGenerator,
             List<AstOperation> operations, PatchEvaluator patchEvaluator, TestExecutor testExecutor,
-<<<<<<< HEAD
-            FixedProjectGenerator fixedProjectGenerator, TestResultStore testResultStore, List<TestResultExporter> testResultExporters
-=======
-            PatchedProjectGenerator patchedProjectGenerator, TestResultStore testResultStore, TestResultExporter testResultExporter
->>>>>>> master
+            PatchedProjectGenerator patchedProjectGenerator, TestResultStore testResultStore, List<TestResultExporter> testResultExporters
             ) {
         // フォルトローカライゼーション
         final List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
@@ -94,19 +86,11 @@ public class JProphetMain {
         
         // 修正パッチ候補ごとにテスト実行
         for(PatchCandidate patchCandidate: patchCandidates) {
-<<<<<<< HEAD
-            Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
-            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, fixedProject));
+            Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
+            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
             testResultStore.addTestResults(result.getTestResults(), patchCandidate);
             if(result.getIsSuccess()) {
                 testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
-=======
-            Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
-            final List<TestResult> results = testExecutor.exec(new RepairConfiguration(config, patchedProject));
-            testResultStore.addTestResults(results, patchCandidate);
-            if(results.get(0).getIsSuccess()) { //ここが微妙な気がする
-                testResultExporter.export(testResultStore);
->>>>>>> master
                 return true;
             }
         }
