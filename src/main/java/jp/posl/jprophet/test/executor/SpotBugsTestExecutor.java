@@ -10,8 +10,9 @@ import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.spotbugs.SpotBugsExecutor;
 import jp.posl.jprophet.spotbugs.SpotBugsResultXMLReader;
 import jp.posl.jprophet.spotbugs.SpotBugsWarning;
-import jp.posl.jprophet.test.result.SpotBugsTestResult;
 import jp.posl.jprophet.test.result.TestResult;
+import jp.posl.jprophet.test.result.SpotBugsTestResult;
+import jp.posl.jprophet.test.result.TestExecutorResult;
 
 /**
  * SpotBugsによってテスト検証を行うクラス
@@ -35,9 +36,9 @@ public class SpotBugsTestExecutor implements TestExecutor {
      * {@inheritDoc}
      */
     @Override
-    public List<TestResult> exec(RepairConfiguration config) {
+    public TestExecutorResult exec(RepairConfiguration config) {
         final UnitTestExecutor unitTestExecutor = new UnitTestExecutor();
-        final boolean isPassedUnitTest = unitTestExecutor.exec(config).get(0).getIsSuccess();
+        final boolean isPassedUnitTest = unitTestExecutor.exec(config).getIsSuccess();
         final SpotBugsExecutor spotBugsExecutor = new SpotBugsExecutor();
         spotBugsExecutor.exec(config, spotbugsResultFileName);
         final SpotBugsResultXMLReader spotBugsResultXMLReader = new SpotBugsResultXMLReader();
@@ -53,7 +54,7 @@ public class SpotBugsTestExecutor implements TestExecutor {
      * @param after 修正後のワーニングリスト
      * @return テスト結果のリスト
      */
-    private List<TestResult> createResults(List<SpotBugsWarning> before, List<SpotBugsWarning> after, boolean isPassedUnitTest) {
+    private TestExecutorResult createResults(List<SpotBugsWarning> before, List<SpotBugsWarning> after, boolean isPassedUnitTest) {
         final Set<SpotBugsWarning> beforeSet = new HashSet<SpotBugsWarning>(before);
         final Set<SpotBugsWarning> afterSet = new HashSet<SpotBugsWarning>(after);
 
@@ -65,6 +66,8 @@ public class SpotBugsTestExecutor implements TestExecutor {
 
         final int numOfOccurredWarnings = occurredSet.size();
 
-        return fixedSet.stream().map(warning -> new SpotBugsTestResult(isPassedUnitTest, warning, numOfOccurredWarnings)).collect(Collectors.toList());
+        final List<TestResult> testResults = fixedSet.stream().map(warning -> new SpotBugsTestResult(isPassedUnitTest, warning, numOfOccurredWarnings)).collect(Collectors.toList());
+
+        return new TestExecutorResult(false, testResults);
     }
 }

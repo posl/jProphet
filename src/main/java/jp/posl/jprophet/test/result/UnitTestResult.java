@@ -24,15 +24,6 @@ public class UnitTestResult implements TestResult {
      * {@inheritDoc}
      */
     @Override
-    public boolean getIsSuccess() {
-        return this.isSuccess;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Map<String, String> toStringMap() {
         return Map.of("isSuccess", String.valueOf(isSuccess));
     }

@@ -45,14 +45,14 @@ public class SpotBugsTestExecutorTest {
         spotBugsExecutor.exec(beforeConfig, resultFileName);
 
         final SpotBugsTestExecutor testExecutor = new SpotBugsTestExecutor(SpotBugsExecutor.getResultFilePath(resultFileName));
-        final List<TestResult> results01 = testExecutor.exec(afterConfig01);
+        final List<TestResult> results01 = testExecutor.exec(afterConfig01).getTestResults();
         final Map<String, String> resultMap01 = results01.get(0).toStringMap();
         assertThat(results01.size()).isEqualTo(1);
         assertThat(resultMap01.get("unitTest")).isEqualTo("PASSED");
         assertThat(resultMap01.get("fixedWarning")).isEqualTo("NM_METHOD_NAMING_CONVENTION");
         assertThat(resultMap01.get("numOfOccurredWarning")).isEqualTo("1");
         
-        final List<TestResult> results02 = testExecutor.exec(afterConfig02);
+        final List<TestResult> results02 = testExecutor.exec(afterConfig02).getTestResults();
         //final Map<String, String> resultMap02 = results02.get(0).toStringMap();
         assertThat(results02.size()).isEqualTo(6);
 

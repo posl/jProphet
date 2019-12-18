@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+
+
 
 /**
  * SpotBugsのワーニング解消機能の結合テスト
@@ -88,8 +91,7 @@ public class SpotBugsIntegrationTest {
         try {
             FileUtils.deleteDirectory(new File(buildDir));
             if(!isRepairSuccess){
-                FileUtils.deleteDirectory(new File(resultDir));
-
+                FileUtils.deleteDirectory(new File(config.getFixedProjectDirPath() + FilenameUtils.getBaseName(project.getRootPath())));
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());

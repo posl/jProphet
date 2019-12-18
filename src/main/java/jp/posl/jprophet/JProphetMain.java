@@ -19,7 +19,7 @@ import jp.posl.jprophet.operation.*;
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.executor.TestExecutor;
 import jp.posl.jprophet.test.executor.UnitTestExecutor;
-import jp.posl.jprophet.test.result.TestResult;
+import jp.posl.jprophet.test.result.TestExecutorResult;
 import jp.posl.jprophet.test.result.TestResultStore;
 import jp.posl.jprophet.test.exporter.TestResultExporter;
 import jp.posl.jprophet.test.exporter.CSVTestResultExporter;
@@ -87,13 +87,11 @@ public class JProphetMain {
         // 修正パッチ候補ごとにテスト実行
         for(PatchCandidate patchCandidate: patchCandidates) {
             Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
-            final List<TestResult> results = testExecutor.exec(new RepairConfiguration(config, fixedProject));
-            if(results.size() > 0) {
-                testResultStore.addTestResults(results, patchCandidate);
-                if(results.get(0).getIsSuccess()) { //ここが微妙な気がする
-                    testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
-                    return true;
-                }
+            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, fixedProject));
+            testResultStore.addTestResults(result.getTestResults(), patchCandidate);
+            if(result.getIsSuccess()) {
+                testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
+                return true;
             }
         }
         testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));

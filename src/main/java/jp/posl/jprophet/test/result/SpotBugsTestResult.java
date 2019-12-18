@@ -31,15 +31,6 @@ public class SpotBugsTestResult implements TestResult {
      * {@inheritDoc}
      */
     @Override
-    public boolean getIsSuccess() {
-        return false;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Map<String, String> toStringMap() {
         return Map.of(
             "unitTest", isPassedUnitTest ? "PASSED" : "FAILED",
