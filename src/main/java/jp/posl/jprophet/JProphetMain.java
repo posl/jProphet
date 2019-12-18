@@ -40,7 +40,7 @@ public class JProphetMain {
         final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
         final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
         final TestExecutor             testExecutor             = new UnitTestExecutor();
-        final FixedProjectGenerator    fixedProjectGenerator    = new FixedProjectGenerator();
+        final PatchedProjectGenerator    patchedProjectGenerator  = new PatchedProjectGenerator(config);
         final TestResultStore          testResultStore          = new TestResultStore();
 
         final List<TestResultExporter> testResultExporters = new ArrayList<TestResultExporter>(Arrays.asList(
@@ -59,7 +59,11 @@ public class JProphetMain {
 
 
         final JProphetMain jprophet = new JProphetMain();
+<<<<<<< HEAD
         final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, fixedProjectGenerator, testResultStore, testResultExporters);
+=======
+        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, patchedProjectGenerator, testResultStore, testResultExporter);
+>>>>>>> master
         try {
             FileUtils.deleteDirectory(new File(buildDir));
             if(!isRepairSuccess){
@@ -73,24 +77,36 @@ public class JProphetMain {
 
     public boolean run(RepairConfiguration config, FaultLocalization faultLocalization, PatchCandidateGenerator patchCandidateGenerator,
             List<AstOperation> operations, PatchEvaluator patchEvaluator, TestExecutor testExecutor,
+<<<<<<< HEAD
             FixedProjectGenerator fixedProjectGenerator, TestResultStore testResultStore, List<TestResultExporter> testResultExporters
+=======
+            PatchedProjectGenerator patchedProjectGenerator, TestResultStore testResultStore, TestResultExporter testResultExporter
+>>>>>>> master
             ) {
         // フォルトローカライゼーション
-        List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
+        final List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
-        List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations);
+        final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations);
         
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
         patchEvaluator.descendingSortBySuspiciousness(patchCandidates, suspiciousenesses);
         
         // 修正パッチ候補ごとにテスト実行
         for(PatchCandidate patchCandidate: patchCandidates) {
+<<<<<<< HEAD
             Project fixedProject = fixedProjectGenerator.exec(config, patchCandidate);
             final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, fixedProject));
             testResultStore.addTestResults(result.getTestResults(), patchCandidate);
             if(result.getIsSuccess()) {
                 testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
+=======
+            Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
+            final List<TestResult> results = testExecutor.exec(new RepairConfiguration(config, patchedProject));
+            testResultStore.addTestResults(results, patchCandidate);
+            if(results.get(0).getIsSuccess()) { //ここが微妙な気がする
+                testResultExporter.export(testResultStore);
+>>>>>>> master
                 return true;
             }
         }
