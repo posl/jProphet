@@ -43,10 +43,10 @@ public class PatchDiffExporter implements TestResultExporter {
             new Comparator<Map.Entry<TestResult, PatchCandidate>>() {
                 @Override
                 public int compare(Map.Entry<TestResult, PatchCandidate> obj1, Map.Entry<TestResult, PatchCandidate> obj2) {
-                    return obj1.getValue().getID() - obj2.getValue().getID();
+                    return obj1.getValue().getId() - obj2.getValue().getId();
                 }
             }
-    );
+        );
 
         final List<String> diffList = entryList.stream().map(e -> e.getValue().toString()).collect(Collectors.toList());
 

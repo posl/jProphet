@@ -65,12 +65,6 @@ public class SpotBugsTestExecutor implements TestExecutor {
 
         final int numOfOccurredWarnings = occurredSet.size();
 
-        if(fixedSet.size() > 0) {
-            return fixedSet.stream().map(warning -> new SpotBugsTestResult(isPassedUnitTest, warning, numOfOccurredWarnings)).collect(Collectors.toList());
-        }
-        else {
-            return new ArrayList<>();
-        }
+        return fixedSet.stream().map(warning -> new SpotBugsTestResult(isPassedUnitTest, warning, numOfOccurredWarnings)).collect(Collectors.toList());
     }
-    
 }

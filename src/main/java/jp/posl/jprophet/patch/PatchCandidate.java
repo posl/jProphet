@@ -11,7 +11,7 @@ public interface PatchCandidate {
      * 修正パッチ候補のIDを返す
      * @return 修正パッチ候補の整数型ID
      */
-    public int getID();
+    public int getId();
     /**
      * 修正されたファイルのパス(jProphetプロジェクトのルートから見た相対パス)を返す
      * @return 修正されたファイルのパス

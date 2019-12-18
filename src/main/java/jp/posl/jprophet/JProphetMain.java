@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;
@@ -56,13 +57,13 @@ public class JProphetMain {
             new CopyReplaceOperation()
         ));
 
+
         final JProphetMain jprophet = new JProphetMain();
         final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, fixedProjectGenerator, testResultStore, testResultExporters);
         try {
             FileUtils.deleteDirectory(new File(buildDir));
             if(!isRepairSuccess){
-                FileUtils.deleteDirectory(new File(resultDir));
-
+                FileUtils.deleteDirectory(new File(config.getFixedProjectDirPath() + FilenameUtils.getBaseName(project.getRootPath())));
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());
@@ -96,6 +97,6 @@ public class JProphetMain {
             }
         }
         testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
-        return true;    // SpotBugsの場合はここを必ず通るのでfalseだとまずい
+        return false;
     }
 }

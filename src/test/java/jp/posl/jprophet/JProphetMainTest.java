@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 
 import jp.posl.jprophet.fl.FaultLocalization;
@@ -74,8 +75,7 @@ public class JProphetMainTest {
         try {
             FileUtils.deleteDirectory(new File(buildDir));
             if(!isRepairSuccess){
-                FileUtils.deleteDirectory(new File(resultDir));
-
+                FileUtils.deleteDirectory(new File(config.getFixedProjectDirPath() + FilenameUtils.getBaseName(project.getRootPath())));
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());

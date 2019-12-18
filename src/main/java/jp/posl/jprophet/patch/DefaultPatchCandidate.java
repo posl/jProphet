@@ -44,7 +44,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
      * {@inheritDoc}
      */
     @Override
-    public int getID() {
+    public int getId() {
         return id;
     }
 
@@ -103,7 +103,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
     @Override
     public String toString(){
         return new StringBuilder().append("")
-            .append("ID : " + this.getID())
+            .append("ID : " + this.getId())
             .append("\n")
             .append("fixed file path : " + this.fixedFilePath)
             .append("\n")
