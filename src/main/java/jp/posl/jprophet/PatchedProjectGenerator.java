@@ -9,8 +9,6 @@ import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.project.ProjectFactory;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 
 /**
  * 修正パッチ候補を元にプロジェクト全体の生成を行うクラス

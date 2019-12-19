@@ -4,10 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
-
 import difflib.Chunk;
 import difflib.Delta;
 import difflib.DiffUtils;
@@ -19,24 +15,17 @@ import java.io.StringReader;
  * 修正前と修正後のdiffを集める
  */
 public class RepairDiff {
-    private String sourceBeforeFix;
-    private String fixedSource;
-    private String sourceDiff;
+    private String diff;
 
     /**
-     * targetNodeBeforeFixとfixedCompilationUnitのdiffを生成する
-     * @param targetNodeBeforeFix 修正前のNode
-     * @param fixedCompilationUnit 修正後のCompilationUnit
+     * diffを生成する
+     * @param beforeSource
+     * @param afterSource
      */
-    public RepairDiff(Node targetNodeBeforeFix, CompilationUnit fixedCompilationUnit){     
-        LexicalPreservingPrinter.setup(targetNodeBeforeFix.findCompilationUnit().orElseThrow());
-        this.sourceBeforeFix =LexicalPreservingPrinter.print(targetNodeBeforeFix.findCompilationUnit().orElseThrow());
-
-        LexicalPreservingPrinter.setup(fixedCompilationUnit);
-        this.fixedSource = LexicalPreservingPrinter.print(fixedCompilationUnit);
-
-        this.collect(sourceBeforeFix, fixedSource);
+    public RepairDiff(String beforeSource, String afterSource){     
+        this.collect(beforeSource, afterSource);
     }
+
     
     /**
      * diffの情報を集める
@@ -91,7 +80,7 @@ public class RepairDiff {
             sourceDiffBuilder.append("\n");
         }
 
-        this.sourceDiff = sourceDiffBuilder.toString();
+        this.diff = sourceDiffBuilder.toString();
     }
 
     /**
@@ -117,7 +106,7 @@ public class RepairDiff {
      * @return
      */
     public String toString(){
-        return this.sourceDiff;
+        return this.diff;
     }
 
 }

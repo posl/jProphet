@@ -19,6 +19,8 @@ public class AstPatchCandidate implements PatchCandidate {
     private final CompilationUnit fixedCompilationUnit;
     private final String fixedFilePath;
     private final String fixedFileFqn;
+    private final String patchedSourceCode;
+    private final String sourceCodeBeforePatch;
     private Class<? extends AstOperation> operation;
 
     /**
@@ -36,6 +38,11 @@ public class AstPatchCandidate implements PatchCandidate {
         this.fixedFilePath = fixedFilePath;
         this.fixedFileFqn = fixedFileFQN;
         this.operation = operation;
+
+        LexicalPreservingPrinter.setup(this.fixedCompilationUnit);
+        this.patchedSourceCode = LexicalPreservingPrinter.print(this.fixedCompilationUnit);
+        LexicalPreservingPrinter.setup(this.targetNodeBeforeFix.findCompilationUnit().orElseThrow());
+        this.sourceCodeBeforePatch = LexicalPreservingPrinter.print(this.targetNodeBeforeFix.findCompilationUnit().orElseThrow());
     }
 
     /**
@@ -89,19 +96,17 @@ public class AstPatchCandidate implements PatchCandidate {
             .append("\n")
             .append("used operation  : " + this.operation.getSimpleName())
             .append("\n\n")
-            .append(new RepairDiff(this.targetNodeBeforeFix, fixedCompilationUnit).toString())
+            .append(new RepairDiff(this.sourceCodeBeforePatch, this.patchedSourceCode).toString())
             .toString();
     }
 
     @Override
     public String getPatchedSourceCode(){
-        LexicalPreservingPrinter.setup(this.fixedCompilationUnit);
-        return LexicalPreservingPrinter.print(this.fixedCompilationUnit);
+        return this.patchedSourceCode;
     }
 
     @Override
     public String getSourceCodeBeforePatch(){
-        LexicalPreservingPrinter.setup(this.targetNodeBeforeFix.findCompilationUnit().orElseThrow());
-        return LexicalPreservingPrinter.print(this.targetNodeBeforeFix.findCompilationUnit().orElseThrow());
+        return this.sourceCodeBeforePatch;
     }
 }

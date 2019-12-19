@@ -35,9 +35,7 @@ public class RepairDiffTest {
             .append("}\n")
             .toString();
         
-        CompilationUnit beforeCu = JavaParser.parse(beforeSource);
-        CompilationUnit afterCu = JavaParser.parse(afterSource);
-        RepairDiff diffCollector = new RepairDiff(beforeCu, afterCu);
+        RepairDiff diffCollector = new RepairDiff(beforeSource, afterSource);
         String diff = diffCollector.toString();
         String expectedDiff = new StringBuilder().append("")
             .append("3               String la = \"a\";\n")
@@ -80,9 +78,7 @@ public class RepairDiffTest {
             .append("}\n")
             .toString();
         
-        CompilationUnit beforeCu = JavaParser.parse(beforeSource);
-        CompilationUnit afterCu = JavaParser.parse(afterSource);
-        RepairDiff diffCollector = new RepairDiff(beforeCu, afterCu);
+        RepairDiff diffCollector = new RepairDiff(beforeSource, afterSource);
         String diff = diffCollector.toString();
         String expectedDiff = new StringBuilder().append("")
             .append("1       public class A {\n")
@@ -123,9 +119,7 @@ public class RepairDiffTest {
             .append("}\n")
             .toString();
 
-        CompilationUnit beforeCu = JavaParser.parse(beforeSource);
-        CompilationUnit afterCu = JavaParser.parse(afterSource);
-        RepairDiff diffCollector = new RepairDiff(beforeCu, afterCu);
+        RepairDiff diffCollector = new RepairDiff(beforeSource, afterSource);
         String diff = diffCollector.toString();
         String expectedDiff = new StringBuilder().append("")
             .append("5                   la = \"b\";\n")
@@ -167,9 +161,7 @@ public class RepairDiffTest {
             .append("}\n")
             .toString();
         
-        CompilationUnit beforeCu = JavaParser.parse(beforeSource);
-        CompilationUnit afterCu = JavaParser.parse(afterSource);
-        RepairDiff diffCollector = new RepairDiff(beforeCu, afterCu);
+        RepairDiff diffCollector = new RepairDiff(beforeSource, afterSource);
         String diff = diffCollector.toString();
         String expectedDiff = new StringBuilder().append("")
             .append("3               String la = \"a\";\n")
