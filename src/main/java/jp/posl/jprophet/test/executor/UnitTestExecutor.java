@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import org.junit.runner.JUnitCore;
 
 import jp.posl.jprophet.project.Project;
-import jp.posl.jprophet.test.result.TestResult;
+import jp.posl.jprophet.test.result.TestExecutorResult;
 import jp.posl.jprophet.test.result.UnitTestResult;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
@@ -45,16 +45,17 @@ public class UnitTestExecutor implements TestExecutor {
      * @return 全てのテスト実行が通ったかどうか
      */
     @Override
-    public List<TestResult> exec(RepairConfiguration config)  {
+    public TestExecutorResult exec(RepairConfiguration config)  {
         try {
             builder.build(config);
             getClassLoader(config.getBuildPath());
             testClasses = loadTestClass(config.getTargetProject());
-            return List.of(new UnitTestResult(runAllTestClass(testClasses)));
+            final boolean result = runAllTestClass(testClasses);
+            return new TestExecutorResult(result, List.of(new UnitTestResult(result)));
         }
         catch (MalformedURLException | ClassNotFoundException e) {
             System.err.println(e.getMessage());
-            return List.of(new UnitTestResult(false));
+            return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
         }
     }
 

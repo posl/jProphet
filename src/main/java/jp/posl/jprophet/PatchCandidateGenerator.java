@@ -28,6 +28,7 @@ public class PatchCandidateGenerator{
     public List<PatchCandidate> exec(Project project, List<AstOperation> operations){
         List<FileLocator> fileLocators = project.getSrcFileLocators();                
         List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
+        int patchCandidateID = 1;
         for(FileLocator fileLocator : fileLocators){
             try {
                 List<String> lines = Files.readAllLines(Paths.get(fileLocator.getPath()), StandardCharsets.UTF_8);
@@ -36,7 +37,8 @@ public class PatchCandidateGenerator{
                 for(Node targetNode : targetNodes){
                     List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
                     for(AppliedOperationResult result : appliedOperationResults){
-                        candidates.add(new DefaultPatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation()));
+                        candidates.add(new DefaultPatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
+                        patchCandidateID += 1;
                     }
                 }
             } catch (IOException e) {

@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;
@@ -18,10 +19,11 @@ import jp.posl.jprophet.operation.*;
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.executor.TestExecutor;
 import jp.posl.jprophet.test.executor.UnitTestExecutor;
-import jp.posl.jprophet.test.result.TestResult;
+import jp.posl.jprophet.test.result.TestExecutorResult;
 import jp.posl.jprophet.test.result.TestResultStore;
 import jp.posl.jprophet.test.exporter.TestResultExporter;
 import jp.posl.jprophet.test.exporter.CSVTestResultExporter;
+import jp.posl.jprophet.test.exporter.PatchDiffExporter;
 
 public class JProphetMain {
     public static void main(String[] args) {
@@ -38,9 +40,13 @@ public class JProphetMain {
         final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
         final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
         final TestExecutor             testExecutor             = new UnitTestExecutor();
-        final PatchedProjectGenerator    patchedProjectGenerator  = new PatchedProjectGenerator(config);
+        final PatchedProjectGenerator  patchedProjectGenerator  = new PatchedProjectGenerator(config);
         final TestResultStore          testResultStore          = new TestResultStore();
-        final TestResultExporter       testResultExporter       = new CSVTestResultExporter(resultDir);
+
+        final List<TestResultExporter> testResultExporters = new ArrayList<TestResultExporter>(Arrays.asList(
+            new CSVTestResultExporter(resultDir),
+            new PatchDiffExporter(resultDir)
+        ));
 
         final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(
             new CondRefinementOperation(),
@@ -51,13 +57,13 @@ public class JProphetMain {
             new CopyReplaceOperation()
         ));
 
+
         final JProphetMain jprophet = new JProphetMain();
-        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, patchedProjectGenerator, testResultStore, testResultExporter);
+        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, patchedProjectGenerator, testResultStore, testResultExporters);
         try {
             FileUtils.deleteDirectory(new File(buildDir));
             if(!isRepairSuccess){
-                FileUtils.deleteDirectory(new File(resultDir));
-
+                FileUtils.deleteDirectory(new File(config.getFixedProjectDirPath() + FilenameUtils.getBaseName(project.getRootPath()))); //失敗した場合でもログは残す
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());
@@ -67,7 +73,7 @@ public class JProphetMain {
 
     public boolean run(RepairConfiguration config, FaultLocalization faultLocalization, PatchCandidateGenerator patchCandidateGenerator,
             List<AstOperation> operations, PatchEvaluator patchEvaluator, TestExecutor testExecutor,
-            PatchedProjectGenerator patchedProjectGenerator, TestResultStore testResultStore, TestResultExporter testResultExporter
+            PatchedProjectGenerator patchedProjectGenerator, TestResultStore testResultStore, List<TestResultExporter> testResultExporters
             ) {
         // フォルトローカライゼーション
         final List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
@@ -81,14 +87,14 @@ public class JProphetMain {
         // 修正パッチ候補ごとにテスト実行
         for(PatchCandidate patchCandidate: patchCandidates) {
             Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
-            final List<TestResult> results = testExecutor.exec(new RepairConfiguration(config, patchedProject));
-            testResultStore.addTestResults(results, patchCandidate);
-            if(results.get(0).getIsSuccess()) { //ここが微妙な気がする
-                testResultExporter.export(testResultStore);
+            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
+            testResultStore.addTestResults(result.getTestResults(), patchCandidate);
+            if(result.canEndRepair()) {
+                testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
                 return true;
             }
         }
-        testResultExporter.export(testResultStore);
+        testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
         return false;
     }
 }

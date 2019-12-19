@@ -3,7 +3,7 @@ package jp.posl.jprophet.test.executor;
 import java.util.List;
 
 import jp.posl.jprophet.RepairConfiguration;
-import jp.posl.jprophet.test.result.TestResult;
+import jp.posl.jprophet.test.result.TestExecutorResult;
 
 /**
  * 修正後のプロジェクトに対してテスト検証を行うインターフェース
@@ -15,6 +15,6 @@ public interface TestExecutor {
      * @param config 対象プロジェクトのconfig
      * @return テスト結果のリスト
      */
-    public List<TestResult> exec(RepairConfiguration config);
+    public TestExecutorResult exec(RepairConfiguration config);
 
 } 

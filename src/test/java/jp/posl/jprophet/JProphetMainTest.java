@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 
 import jp.posl.jprophet.fl.FaultLocalization;
@@ -19,6 +20,7 @@ import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.test.executor.TestExecutor;
 import jp.posl.jprophet.test.executor.UnitTestExecutor;
 import jp.posl.jprophet.test.exporter.CSVTestResultExporter;
+import jp.posl.jprophet.test.exporter.PatchDiffExporter;
 import jp.posl.jprophet.test.exporter.TestResultExporter;
 import jp.posl.jprophet.test.result.TestResultStore;
 import jp.posl.jprophet.operation.*;
@@ -64,14 +66,16 @@ public class JProphetMainTest {
         final TestExecutor             testExecutor             = new UnitTestExecutor();
         final PatchedProjectGenerator  patchedProjectGenerator  = new PatchedProjectGenerator(config);
         final TestResultStore          testResultStore          = new TestResultStore();
-        final TestResultExporter       testResultExporter       = new CSVTestResultExporter(resultDir);
+        final List<TestResultExporter> testResultExporters = new ArrayList<TestResultExporter>(Arrays.asList(
+            new CSVTestResultExporter(resultDir),
+            new PatchDiffExporter(resultDir)
+        ));
         final JProphetMain jprophet = new JProphetMain();
-        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, patchedProjectGenerator, testResultStore, testResultExporter);
+        final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, patchedProjectGenerator, testResultStore, testResultExporters);
         try {
             FileUtils.deleteDirectory(new File(buildDir));
             if(!isRepairSuccess){
-                FileUtils.deleteDirectory(new File(resultDir));
-
+                FileUtils.deleteDirectory(new File(config.getFixedProjectDirPath() + FilenameUtils.getBaseName(project.getRootPath())));
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());

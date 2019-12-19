@@ -8,14 +8,6 @@ import java.util.Map;
  */
 public interface TestResult {
 
-    /**
-     * テストに成功したかどうかを取得する
-     * @return　成功していればtrue、そうでなければfalse
-     */
-    public boolean getIsSuccess();
-
-
-
     //mapにしたのは、結果内容が複数個の場合があるため
     //どういった形式で書き込むかはResultWriterクラスに任せたかった
     //もっといい方法は無いだろうか

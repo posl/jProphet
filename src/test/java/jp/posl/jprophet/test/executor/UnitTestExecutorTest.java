@@ -41,7 +41,7 @@ public class UnitTestExecutorTest {
     @Test
     public void testForExecute() {
 
-        boolean isSuccess01 = this.testExecutor.exec(correctConfig).get(0).getIsSuccess();
+        boolean isSuccess01 = this.testExecutor.exec(correctConfig).canEndRepair();
         assertThat(isSuccess01).isTrue();
         try {
             FileUtils.deleteDirectory(this.buildDir);
@@ -50,7 +50,7 @@ public class UnitTestExecutorTest {
             e.printStackTrace();
         }
 
-        boolean isSuccess02 = this.testExecutor.exec(errorConfig).get(0).getIsSuccess();
+        boolean isSuccess02 = this.testExecutor.exec(errorConfig).canEndRepair();
         assertThat(isSuccess02).isFalse();
         try {
             FileUtils.deleteDirectory(this.buildDir);
