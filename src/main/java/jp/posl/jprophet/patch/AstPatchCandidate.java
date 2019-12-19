@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 
 import jp.posl.jprophet.operation.AstOperation;
 
@@ -13,7 +14,7 @@ import jp.posl.jprophet.operation.AstOperation;
 /**
  * 実際にプログラムの生成が可能なパッチ候補の実装クラス
  */
-public class DefaultPatchCandidate implements PatchCandidate {
+public class AstPatchCandidate implements PatchCandidate {
     private final Node targetNodeBeforeFix;
     private final CompilationUnit fixedCompilationUnit;
     private final String fixedFilePath;
@@ -28,7 +29,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
      * @param fixedFileFQN 修正されたファイルのFQN
      * @param operation 適用されたオペレータのクラス
      */
-    public DefaultPatchCandidate(Node targetNodeBeforeFix, CompilationUnit fixedCompilationUnit, 
+    public AstPatchCandidate(Node targetNodeBeforeFix, CompilationUnit fixedCompilationUnit, 
                                  String fixedFilePath, String fixedFileFQN, Class<? extends AstOperation> operation) {
         this.targetNodeBeforeFix = targetNodeBeforeFix;
         this.fixedCompilationUnit = fixedCompilationUnit;
@@ -51,14 +52,6 @@ public class DefaultPatchCandidate implements PatchCandidate {
     @Override
     public String getFqn(){
         return this.fixedFileFqn;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public CompilationUnit getCompilationUnit(){
-        return this.fixedCompilationUnit;
     }
 
     /**
@@ -98,5 +91,17 @@ public class DefaultPatchCandidate implements PatchCandidate {
             .append("\n\n")
             .append(new RepairDiff(this.targetNodeBeforeFix, fixedCompilationUnit).toString())
             .toString();
+    }
+
+    @Override
+    public String getPatchedSourceCode(){
+        LexicalPreservingPrinter.setup(this.fixedCompilationUnit);
+        return LexicalPreservingPrinter.print(this.fixedCompilationUnit);
+    }
+
+    @Override
+    public String getSourceCodeBeforePatch(){
+        LexicalPreservingPrinter.setup(this.targetNodeBeforeFix.findCompilationUnit().orElseThrow());
+        return LexicalPreservingPrinter.print(this.targetNodeBeforeFix.findCompilationUnit().orElseThrow());
     }
 }

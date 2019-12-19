@@ -57,9 +57,7 @@ public class PatchedProjectGenerator {
 
         final String patchTargetFilePath = patchCandidate.getFilePath();
         final File patchTargetFile = new File(this.patchTargetProjectPath + patchTargetFilePath.replace(this.originalProjectPath, ""));
-        final CompilationUnit cu = patchCandidate.getCompilationUnit();
-        LexicalPreservingPrinter.setup(cu);
-        final String patchedSourceCode = LexicalPreservingPrinter.print(cu);
+        final String patchedSourceCode = patchCandidate.getPatchedSourceCode();
 
         try {
             FileUtils.write(patchTargetFile, patchedSourceCode, "utf-8");

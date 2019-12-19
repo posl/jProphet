@@ -9,7 +9,7 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 
-import jp.posl.jprophet.patch.DefaultPatchCandidate;
+import jp.posl.jprophet.patch.AstPatchCandidate;
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.spotbugs.SpotBugsWarning;
 import jp.posl.jprophet.test.result.SpotBugsTestResult;
@@ -38,12 +38,12 @@ public class CSVTestResultExporterTest {
             new SpotBugsTestResult(true, new SpotBugsWarning("NM_METHOD_NAMING_CONVENTION", "huga", 4, 7), 0)
         );
 
-        PatchCandidate patchCandidate01 = mock(DefaultPatchCandidate.class);
+        PatchCandidate patchCandidate01 = mock(AstPatchCandidate.class);
         when(patchCandidate01.getLineNumber()).thenReturn(Optional.of(6));
         when(patchCandidate01.getFilePath()).thenReturn("hoge");
         when(patchCandidate01.getAppliedOperation()).thenReturn("VariableReplacementOperation");
         
-        PatchCandidate patchCandidate02 = mock(DefaultPatchCandidate.class);
+        PatchCandidate patchCandidate02 = mock(AstPatchCandidate.class);
         when(patchCandidate02.getLineNumber()).thenReturn(Optional.of(4));
         when(patchCandidate02.getFilePath()).thenReturn("huga");
         when(patchCandidate02.getAppliedOperation()).thenReturn("CopyReplaceOperation");

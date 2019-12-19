@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import jp.posl.jprophet.operation.AstOperation;
-import jp.posl.jprophet.patch.DefaultPatchCandidate;
+import jp.posl.jprophet.patch.AstPatchCandidate;
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.project.GradleProject;
 
@@ -69,7 +69,7 @@ public class PatchedProjectGeneratorTest{
         Node node = NodeUtility.deepCopyByReparse(targetNodeBeforeFix);
         node.getTokenRange().orElseThrow().getBegin().replaceToken(new JavaToken(node.getTokenRange().orElseThrow().getBegin().getRange().get(), JavaToken.Kind.PRIVATE.getKind(), "private", null, null));
         CompilationUnit cu = NodeUtility.reparseCompilationUnit(node.findCompilationUnit().get()).orElseThrow();
-        PatchCandidate patchCandidate = new DefaultPatchCandidate(targetNodeBeforeFix, cu, this.targetFilePath, this.targetFileFqn, AstOperation.class);
+        PatchCandidate patchCandidate = new AstPatchCandidate(targetNodeBeforeFix, cu, this.targetFilePath, this.targetFileFqn, AstOperation.class);
         this.patchedProjectGenerator.applyPatch(patchCandidate);
        
     }

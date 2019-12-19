@@ -17,11 +17,6 @@ public interface PatchCandidate {
      */
     public String getFqn();
 
-    /**
-     * 修正されたファイルのCompilationUnitを返す
-     * @return 修正されたファイルのCompilationUnit
-     */
-    public CompilationUnit getCompilationUnit();
 
     /**
      * 修正対象のステートメントのソースファイル全体における行番号を返す 
@@ -44,4 +39,7 @@ public interface PatchCandidate {
      * @return 修正されたAST部分のソースコード
      */
     public String toString();
+
+    public String getPatchedSourceCode();
+    public String getSourceCodeBeforePatch();
 }

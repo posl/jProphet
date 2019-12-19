@@ -14,7 +14,7 @@ import com.github.javaparser.ast.Node;
 import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.operation.AstOperation;
 import jp.posl.jprophet.patch.PatchCandidate;
-import jp.posl.jprophet.patch.DefaultPatchCandidate;
+import jp.posl.jprophet.patch.AstPatchCandidate;
 import jp.posl.jprophet.project.FileLocator;
 import jp.posl.jprophet.project.Project;
 
@@ -53,7 +53,7 @@ public class AstPatchCandidateGenerator implements PatchCandidateGenerator{
         List<Node> targetNodes = NodeUtility.getAllNodesFromCode(sourceCode);
         for(Node targetNode : targetNodes){
             this.applyTemplate(targetNode).stream()
-                .map(result -> new DefaultPatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation()))
+                .map(result -> new AstPatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation()))
                 .forEach(patches::add);
         }
         return patches;
