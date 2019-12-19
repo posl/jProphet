@@ -89,7 +89,7 @@ public class JProphetMain {
             Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
             final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
             testResultStore.addTestResults(result.getTestResults(), patchCandidate);
-            if(result.getIsSuccess()) {
+            if(result.canEndRepair()) {
                 testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
                 return true;
             }

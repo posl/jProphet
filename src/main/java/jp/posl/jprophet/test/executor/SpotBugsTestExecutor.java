@@ -38,7 +38,7 @@ public class SpotBugsTestExecutor implements TestExecutor {
     @Override
     public TestExecutorResult exec(RepairConfiguration config) {
         final UnitTestExecutor unitTestExecutor = new UnitTestExecutor();
-        final boolean isPassedUnitTest = unitTestExecutor.exec(config).getIsSuccess();
+        final boolean isPassedUnitTest = unitTestExecutor.exec(config).canEndRepair();
         final SpotBugsExecutor spotBugsExecutor = new SpotBugsExecutor();
         spotBugsExecutor.exec(config, spotbugsResultFileName);
         final SpotBugsResultXMLReader spotBugsResultXMLReader = new SpotBugsResultXMLReader();

@@ -8,17 +8,17 @@ import java.util.List;
  */
 public class TestExecutorResult {
 
-    private final boolean isSuccess;
+    private final boolean canEndRepair;
     private final List<TestResult> testResults;
 
 
     /**
      * コンストラクタ
-     * @param isSuccess テスト検証が成功したか
+     * @param canEndRepair テスト検証が成功したか
      * @param testResults テスト検証をした結果のリスト
      */
-    public TestExecutorResult(boolean isSuccess, List<TestResult> testResults) {
-        this.isSuccess = isSuccess;
+    public TestExecutorResult(boolean canEndRepair, List<TestResult> testResults) {
+        this.canEndRepair = canEndRepair;
         this.testResults = testResults;
     }
 
@@ -26,8 +26,8 @@ public class TestExecutorResult {
      * テスト検証が成功したかを返す
      * @return 成功していればTrue, そうでなければFalse
      */
-    public boolean getIsSuccess() {
-        return this.isSuccess;
+    public boolean canEndRepair() {
+        return this.canEndRepair;
     } 
 
     /**
