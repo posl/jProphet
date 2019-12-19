@@ -1,4 +1,4 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.patchgenerator;
 
 import org.junit.Test;
 
@@ -22,7 +22,6 @@ import com.github.javaparser.ast.Node;
 
 
 public class PatchCandidateGeneratorTest {
-    private PatchCandidateGenerator patchCandidateGenerator = new PatchCandidateGenerator();
 
     /**
      * テスト用のプロジェクトを用意し
@@ -42,8 +41,9 @@ public class PatchCandidateGeneratorTest {
                 return List.of(targetNode.findCompilationUnit().orElseThrow()); 
             }
         };
+        PatchCandidateGenerator patchCandidateGenerator = new AstPatchCandidateGenerator(List.of(stubOperation));
 
-        List<PatchCandidate> candidates = this.patchCandidateGenerator.exec(stubProject, List.of(stubOperation));
+        List<PatchCandidate> candidates = patchCandidateGenerator.exec(stubProject);
 
         int astNodeNumOfTest01 = 17;
         assertThat(candidates.size()).isEqualTo(astNodeNumOfTest01);

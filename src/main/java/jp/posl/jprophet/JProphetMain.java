@@ -16,6 +16,8 @@ import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.spectrumbased.strategy.*;
 import jp.posl.jprophet.operation.*;
 import jp.posl.jprophet.patch.PatchCandidate;
+import jp.posl.jprophet.patchgenerator.AstPatchCandidateGenerator;
+import jp.posl.jprophet.patchgenerator.PatchCandidateGenerator;
 import jp.posl.jprophet.test.executor.TestExecutor;
 import jp.posl.jprophet.test.executor.UnitTestExecutor;
 import jp.posl.jprophet.test.result.TestResult;
@@ -35,13 +37,6 @@ public class JProphetMain {
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
         final Coefficient              coefficient              = new Jaccard();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
-        final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
-        final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
-        final TestExecutor             testExecutor             = new UnitTestExecutor();
-        final PatchedProjectGenerator    patchedProjectGenerator  = new PatchedProjectGenerator(config);
-        final TestResultStore          testResultStore          = new TestResultStore();
-        final TestResultExporter       testResultExporter       = new CSVTestResultExporter(resultDir);
-
         final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(
             new CondRefinementOperation(),
             new CondIntroductionOperation(), 
@@ -50,6 +45,13 @@ public class JProphetMain {
             new VariableReplacementOperation(),
             new CopyReplaceOperation()
         ));
+        final PatchCandidateGenerator  patchCandidateGenerator  = new AstPatchCandidateGenerator(operations);
+        final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
+        final TestExecutor             testExecutor             = new UnitTestExecutor();
+        final PatchedProjectGenerator  patchedProjectGenerator  = new PatchedProjectGenerator(config);
+        final TestResultStore          testResultStore          = new TestResultStore();
+        final TestResultExporter       testResultExporter       = new CSVTestResultExporter(resultDir);
+
 
         final JProphetMain jprophet = new JProphetMain();
         final boolean isRepairSuccess = jprophet.run(config, faultLocalization, patchCandidateGenerator, operations, patchEvaluator, testExecutor, patchedProjectGenerator, testResultStore, testResultExporter);
@@ -73,7 +75,7 @@ public class JProphetMain {
         final List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
-        final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations);
+        final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(config.getTargetProject());
         
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
         patchEvaluator.descendingSortBySuspiciousness(patchCandidates, suspiciousenesses);

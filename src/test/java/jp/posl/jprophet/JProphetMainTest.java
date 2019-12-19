@@ -14,6 +14,8 @@ import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Jaccard;
 import jp.posl.jprophet.operation.AstOperation;
+import jp.posl.jprophet.patchgenerator.AstPatchCandidateGenerator;
+import jp.posl.jprophet.patchgenerator.PatchCandidateGenerator;
 import jp.posl.jprophet.project.MavenProject;
 import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.test.executor.TestExecutor;
@@ -59,7 +61,7 @@ public class JProphetMainTest {
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
         final Coefficient              coefficient              = new Jaccard();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
-        final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
+        final PatchCandidateGenerator  patchCandidateGenerator  = new AstPatchCandidateGenerator(operations);
         final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
         final TestExecutor             testExecutor             = new UnitTestExecutor();
         final PatchedProjectGenerator  patchedProjectGenerator  = new PatchedProjectGenerator(config);

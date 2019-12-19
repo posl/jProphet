@@ -13,6 +13,8 @@ import jp.posl.jprophet.test.result.TestResultStore;
 import jp.posl.jprophet.fl.FaultLocalization;
 import jp.posl.jprophet.fl.spotbugsbased.SpotBugsBasedFaultLocalization;
 import jp.posl.jprophet.operation.*;
+import jp.posl.jprophet.patchgenerator.AstPatchCandidateGenerator;
+import jp.posl.jprophet.patchgenerator.PatchCandidateGenerator;
 import jp.posl.jprophet.project.GradleProject;
 
 import static org.assertj.core.api.Assertions.*;
@@ -74,7 +76,7 @@ public class SpotBugsIntegrationTest {
         final Project                  project                  = new GradleProject(projectPath);
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
         final FaultLocalization        faultLocalization        = new SpotBugsBasedFaultLocalization(config);
-        final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
+        final PatchCandidateGenerator  patchCandidateGenerator  = new AstPatchCandidateGenerator(this.operations);
         final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
         final TestExecutor             testExecutor             = new SpotBugsTestExecutor(SpotBugsBasedFaultLocalization.getSpotBugsResultFilePath());
         final PatchedProjectGenerator  patchedProjectGenerator  = new PatchedProjectGenerator(config);
