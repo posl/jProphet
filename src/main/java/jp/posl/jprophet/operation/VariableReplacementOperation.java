@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
@@ -122,19 +123,15 @@ public class VariableReplacementOperation implements AstOperation {
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
 
         if (node instanceof AssignExpr) {
+            Expression originalAssignedValue = ((AssignExpr)node).getValue();
+            String originalAssignedValueName = originalAssignedValue.findFirst(SimpleName.class)
+                .map(v -> v.asString())
+                .orElse(originalAssignedValue.toString());
             for(String varName: varNames){
-                Expression originalAssignedValue = ((AssignExpr)node).getValue();
-                String originalAssignedValueName; 
-                try {
-                    originalAssignedValueName = originalAssignedValue.findFirst(SimpleName.class).orElseThrow().asString();
-                } catch (NoSuchElementException e) {
-                    originalAssignedValueName = originalAssignedValue.toString();
-                }
                 if(originalAssignedValueName.equals(varName)){
                     continue;
                 }
-                Node newCandidate = NodeUtility.deepCopyByReparse(node);
-                NodeUtility.replaceNode(constructExpr.apply(varName), ((AssignExpr)newCandidate).getValue())
+                NodeUtility.replaceNode(constructExpr.apply(varName), ((AssignExpr)node).getValue())
                     .flatMap(n -> n.findCompilationUnit())
                     .ifPresent(candidates::add);
                 
@@ -155,16 +152,13 @@ public class VariableReplacementOperation implements AstOperation {
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
 
         if (node instanceof MethodCallExpr){
-            final int argc = ((MethodCallExpr)(node)).getArguments().size(); 
+            List<Expression> args = ((MethodCallExpr)(node)).getArguments();
             for(String varName: varNames){
-                for(int i = 0; i < argc; i++){
-                    String originalArgValue = ((MethodCallExpr)node).getArgument(i).toString();
-                    if(originalArgValue.equals(varName)){
+                for(Expression arg: args){
+                    if(arg.toString().equals(varName)){
                         continue;
                     }
-                    Node newCandidate = NodeUtility.deepCopyByReparse(node);
-                    MethodCallExpr methodCallExpr = (MethodCallExpr)newCandidate;
-                    NodeUtility.replaceNode(constructExpr.apply(varName), methodCallExpr.getArgument(i))
+                    NodeUtility.replaceNode(constructExpr.apply(varName), arg)
                         .flatMap(n -> n.findCompilationUnit())
                         .ifPresent(candidates::add);
                 }
