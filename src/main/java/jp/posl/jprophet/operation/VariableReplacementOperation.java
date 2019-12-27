@@ -2,13 +2,11 @@ package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
@@ -21,6 +19,7 @@ import jp.posl.jprophet.NodeUtility;
 
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.ThisExpr;
+import com.github.javaparser.ast.stmt.IfStmt;
 
 
 /**
@@ -98,32 +97,33 @@ public class VariableReplacementOperation implements AstOperation {
     /**
      * 代入式の右辺とメソッド呼び出しの実引数を置換する
      * 
-     * @param node 置換対象
+     * @param targetNode 置換対象
      * @param constructVar 変数名からExpressionノードを作成する関数
      * @param varNames 置換先の変数名のリスト
      * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    private List<CompilationUnit> replaceVariables(Node node, Function<String, Expression> constructVar, List<String> varNames){
+    private List<CompilationUnit> replaceVariables(Node targetNode, Function<String, Expression> constructVar, List<String> varNames){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
 
-        candidates.addAll(this.replaceAssignExprWith(node, varNames, constructVar));
-        candidates.addAll(this.replaceArgsWith(node, varNames, constructVar));
+        candidates.addAll(this.replaceAssignExpr(targetNode, varNames, constructVar));
+        candidates.addAll(this.replaceArgs(targetNode, varNames, constructVar));
+        candidates.addAll(this.replaceNameExprInIfCondition(targetNode, varNames, constructVar));
 
         return candidates;
     }
 
     /**
      * 代入文における右辺の変数を置換する 
-     * @param node 置換対象 
+     * @param targetNode 置換対象 
      * @param varNames 置換先の変数名のリスト
      * @param constructExpr 置換後の変数のASTノードを生成するラムダ式
      * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    private List<CompilationUnit> replaceAssignExprWith(Node node, List<String> varNames, Function<String, Expression> constructExpr){
+    private List<CompilationUnit> replaceAssignExpr(Node targetNode, List<String> varNames, Function<String, Expression> constructExpr){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
 
-        if (node instanceof AssignExpr) {
-            Expression originalAssignedValue = ((AssignExpr)node).getValue();
+        if (targetNode instanceof AssignExpr) {
+            Expression originalAssignedValue = ((AssignExpr)targetNode).getValue();
             String originalAssignedValueName = originalAssignedValue.findFirst(SimpleName.class)
                 .map(v -> v.asString())
                 .orElse(originalAssignedValue.toString());
@@ -131,28 +131,26 @@ public class VariableReplacementOperation implements AstOperation {
                 if(originalAssignedValueName.equals(varName)){
                     continue;
                 }
-                NodeUtility.replaceNode(constructExpr.apply(varName), ((AssignExpr)node).getValue())
+                NodeUtility.replaceNode(constructExpr.apply(varName), ((AssignExpr)targetNode).getValue())
                     .flatMap(n -> n.findCompilationUnit())
                     .ifPresent(candidates::add);
-                
             }
         }
-
         return candidates;        
     }
 
     /**
      * メソッド呼び出しの引数における変数の置換を行う 
-     * @param node 置換対象 
+     * @param targetNode 置換対象 
      * @param varNames 置換先の変数名のリスト
      * @param constructExpr 置換後の変数のASTノードを生成するラムダ式
      * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    private List<CompilationUnit> replaceArgsWith(Node node, List<String> varNames, Function<String, Expression> constructExpr){
+    private List<CompilationUnit> replaceArgs(Node targetNode, List<String> varNames, Function<String, Expression> constructExpr){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
 
-        if (node instanceof MethodCallExpr){
-            List<Expression> args = ((MethodCallExpr)(node)).getArguments();
+        if (targetNode instanceof MethodCallExpr){
+            List<Expression> args = ((MethodCallExpr)targetNode).getArguments();
             for(String varName: varNames){
                 for(Expression arg: args){
                     if(arg.toString().equals(varName)){
@@ -164,7 +162,33 @@ public class VariableReplacementOperation implements AstOperation {
                 }
             }
         }
-
         return candidates; 
+    }
+
+    /**
+     * if文の条件式の変数を置換する
+     * @param targetNode 置換対象 
+     * @param varNames 置換先の変数名のリスト
+     * @param constructExpr 置換後の変数のASTノードを生成するラムダ式
+     * @return 置換によって生成された修正後のCompilationUnitのリスト
+     */
+    private List<CompilationUnit> replaceNameExprInIfCondition(Node targetNode, List<String> varNames, Function<String, Expression> constructExpr){
+        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+        
+        if (targetNode instanceof IfStmt) {
+            Expression condition = ((IfStmt)targetNode).getCondition();
+            List<NameExpr> varsInCondition = condition.findAll(NameExpr.class);
+            for(NameExpr var: varsInCondition){
+                for(String varName: varNames){
+                    if(var.toString().equals(varName)){
+                        continue;
+                    }
+                    NodeUtility.replaceNode(constructExpr.apply(varName), var)
+                        .flatMap(n -> n.findCompilationUnit())
+                        .ifPresent(candidates::add);
+                }
+            }
+        }
+        return candidates;        
     }
 }
