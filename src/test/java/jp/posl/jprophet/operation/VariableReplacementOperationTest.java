@@ -1,6 +1,5 @@
 package jp.posl.jprophet.operation;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
@@ -84,8 +83,6 @@ public class VariableReplacementOperationTest{
      * 代入文の左辺をプログラム中の変数で置換できるかテスト 
      */
     @Test public void testForAssignmentReplace(){
-        final String targetStatement = 
-                "        la = \"hoge\";\n"; 
         final String beforeTargetStatement = new StringBuilder().append("")
             .append("public class A {\n")
             .append("    private String fa = \"a\";\n")
@@ -93,6 +90,8 @@ public class VariableReplacementOperationTest{
             .append("        String la = \"a\";\n")
             .append("        String lb = \"b\";\n")
             .toString();
+        final String targetStatement = 
+                    "        la = \"hoge\";\n"; 
 
         final String afterTargetStatement = new StringBuilder().append("")
             .append("    }\n")
@@ -370,6 +369,61 @@ public class VariableReplacementOperationTest{
         expectedTargetSources.add("        if(lb) \n");
         expectedTargetSources.add("        if(this.fa) \n");
         expectedTargetSources.add("        if(pa) \n");
+
+        final List<String> expectedSources = expectedTargetSources.stream()
+            .map(str -> {
+                return new StringBuilder().append("")
+                    .append(beforeTargetStatement)
+                    .append(str)
+                    .append(afterTargetStatement)
+                    .toString();
+            })
+            .collect(Collectors.toList());
+
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        final List<String> candidateSources = new ArrayList<String>();
+        for(Node node : nodes){
+            final VariableReplacementOperation vr = new VariableReplacementOperation();
+            final List<CompilationUnit> cUnits = vr.exec(node);
+            for (CompilationUnit cUnit : cUnits){
+                LexicalPreservingPrinter.setup(cUnit);
+                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
+            }
+        }
+
+        assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
+        return;
+    }
+
+    /**
+     * returnされる変数を置換できるかテスト 
+     */
+    @Test public void testVarInReturnStmt(){
+        final String beforeTargetStatement = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private String fa = \"a\";\n")
+            .append("    private String ma(String pa) {\n")
+            .append("        String la = \"a\";\n")
+            .append("        String lb = \"b\";\n")
+            .toString();
+        final String targetStatement = 
+                   ("        return la;\n");
+        final String afterTargetStatement = new StringBuilder().append("")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        final String targetSource = new StringBuilder().append("")
+            .append(beforeTargetStatement)
+            .append(targetStatement)
+            .append(afterTargetStatement)
+            .toString();
+
+
+        final List<String> expectedTargetSources = new ArrayList<String>();
+        expectedTargetSources.add("        return lb;\n");
+        expectedTargetSources.add("        return this.fa;\n");
+        expectedTargetSources.add("        return pa;\n");
 
         final List<String> expectedSources = expectedTargetSources.stream()
             .map(str -> {

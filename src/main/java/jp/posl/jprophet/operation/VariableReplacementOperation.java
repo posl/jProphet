@@ -20,6 +20,7 @@ import jp.posl.jprophet.NodeUtility;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 
 
 /**
@@ -108,6 +109,7 @@ public class VariableReplacementOperation implements AstOperation {
         candidates.addAll(this.replaceAssignExpr(targetNode, varNames, constructVar));
         candidates.addAll(this.replaceArgs(targetNode, varNames, constructVar));
         candidates.addAll(this.replaceNameExprInIfCondition(targetNode, varNames, constructVar));
+        candidates.addAll(this.replaceVarInReturnStmt(targetNode, varNames, constructVar));
 
         return candidates;
     }
@@ -188,6 +190,31 @@ public class VariableReplacementOperation implements AstOperation {
                         .ifPresent(candidates::add);
                 }
             }
+        }
+        return candidates;        
+    }
+
+    /**
+     * returnされる変数を置換する
+     * @param targetNode 置換対象 
+     * @param varNames 置換先の変数名のリスト
+     * @param constructExpr 置換後の変数のASTノードを生成するラムダ式
+     * @return 置換によって生成された修正後のCompilationUnitのリスト
+     */
+    private List<CompilationUnit> replaceVarInReturnStmt(Node targetNode, List<String> varNames, Function<String, Expression> constructExpr){
+        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+        
+        if (targetNode instanceof ReturnStmt) {
+            ((ReturnStmt)targetNode).getExpression().ifPresent(var -> {
+                for(String varName: varNames){
+                    if(var.toString().equals(varName)){
+                        continue;
+                    }
+                    NodeUtility.replaceNode(constructExpr.apply(varName), var)
+                        .flatMap(n -> n.findCompilationUnit())
+                        .ifPresent(candidates::add);
+                }
+            });
         }
         return candidates;        
     }
