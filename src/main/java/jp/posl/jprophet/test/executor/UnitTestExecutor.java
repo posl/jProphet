@@ -12,7 +12,12 @@ import jp.posl.jprophet.test.result.UnitTestResult;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
 
+import static org.mockito.ArgumentMatchers.refEq;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 
 /**
@@ -50,10 +55,11 @@ public class UnitTestExecutor implements TestExecutor {
             builder.build(config);
             getClassLoader(config.getBuildPath());
             testClasses = loadTestClass(config.getTargetProject());
-            final boolean result = runAllTestClass(testClasses);
+            //final boolean result = runAllTestClass(testClasses);
+            final boolean result = testByCommand(config);
             return new TestExecutorResult(result, List.of(new UnitTestResult(result)));
         }
-        catch (MalformedURLException | ClassNotFoundException e) {
+        catch (Exception e) {
             System.err.println(e.getMessage());
             return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
         }
@@ -98,9 +104,25 @@ public class UnitTestExecutor implements TestExecutor {
         final JUnitCore junitCore = new JUnitCore();
         for (Class<?> testClass : testClasses){
             final boolean isSuccess = junitCore.run(testClass).wasSuccessful();
-            if(!isSuccess) return false;
+            //if(!isSuccess) return false;
+            if(!isSuccess)
+                System.out.println(testClass.getName());
         }
         return true;
+    }
+
+    private boolean testByCommand(RepairConfiguration config) throws Exception {
+        Runtime runtime = Runtime.getRuntime();
+        String[] Command = { "mvn", "test" };
+        Process p = null;
+        File dir = new File(config.getTargetProject().getRootPath());
+
+        p = runtime.exec(Command, null, dir);
+        p.waitFor();
+        BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        final boolean isSuccess = br.lines().filter(l -> l.contains("BUILD SUCCESS")).count() > 0;
+
+        return isSuccess;
     }
 
 }

@@ -48,6 +48,11 @@ public class ProjectBuilder {
         compilationOptions.add(config.getBuildPath());
         compilationOptions.add("-encoding");
         compilationOptions.add("UTF-8");
+        compilationOptions.add("-source");
+        compilationOptions.add("1.8");
+        compilationOptions.add("-target");
+        compilationOptions.add("1.8");
+
         compilationOptions.add("-classpath");
         compilationOptions.add(String.join(CLASSPATH_SEPARATOR,
                 project.getClassPaths()));

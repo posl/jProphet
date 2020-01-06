@@ -1,0 +1,13 @@
+ID,fileFQN,line,operation,unitTest,fixedWarning
+1,org.apache.commons.lang3.BooleanUtils,552,CondRefinementOperation,FAILED,---
+2,org.apache.commons.lang3.BooleanUtils,552,CondRefinementOperation,FAILED,---
+3,org.apache.commons.lang3.BooleanUtils,552,CondRefinementOperation,FAILED,---
+4,org.apache.commons.lang3.BooleanUtils,552,CondRefinementOperation,FAILED,---
+5,org.apache.commons.lang3.BooleanUtils,552,CondRefinementOperation,FAILED,---
+6,org.apache.commons.lang3.BooleanUtils,552,CondRefinementOperation,PASSED,ES_COMPARING_PARAMETER_STRING_WITH_EQ
+7,org.apache.commons.lang3.BooleanUtils,552,CondIntroductionOperation,FAILED,---
+8,org.apache.commons.lang3.BooleanUtils,552,CondIntroductionOperation,FAILED,---
+9,org.apache.commons.lang3.BooleanUtils,552,CondIntroductionOperation,FAILED,---
+10,org.apache.commons.lang3.BooleanUtils,552,CtrlFlowIntroductionOperation,FAILED,---
+11,org.apache.commons.lang3.BooleanUtils,552,CtrlFlowIntroductionOperation,FAILED,---
+12,org.apache.commons.lang3.BooleanUtils,552,CtrlFlowIntroductionOperation,FAILED,---

@@ -60,10 +60,17 @@ public final class NodeUtility {
      * @return ディープコピーされた子孫ノードのリスト
      */
     public static List<Node> getAllCopiedDescendantNodes(Node parentNode) {
-        List<Node> descendantNodes = NodeUtility.getAllDescendantNodes(parentNode); 
+        List<Node> descendantNodes = NodeUtility.getAllDescendantNodes(parentNode);
+        /* 
         List<Node> copiedDescendantNodes = descendantNodes.stream()
-            .map(NodeUtility::deepCopy)
+            .map(NodeUtility::deepCopyByReparse)
             .collect(Collectors.toList());
+            */
+        List<Node> copiedDescendantNodes = new ArrayList<>();   
+        for (Node node : descendantNodes) {
+            Node copiedNode = NodeUtility.deepCopyByReparse(node);
+            copiedDescendantNodes.add(copiedNode);
+        }
 
         return copiedDescendantNodes;
     }
@@ -75,7 +82,7 @@ public final class NodeUtility {
      * @return ASTノードのリスト
      */
     public static List<Node> getAllNodesFromCode(String sourceCode) {
-        return NodeUtility.getAllCopiedDescendantNodes(JavaParser.parse(sourceCode));
+        return NodeUtility.getAllDescendantNodes(JavaParser.parse(sourceCode));
     }
 
     /**

@@ -15,6 +15,7 @@ import jp.posl.jprophet.fl.FaultLocalization;
 import jp.posl.jprophet.fl.spotbugsbased.SpotBugsBasedFaultLocalization;
 import jp.posl.jprophet.operation.*;
 import jp.posl.jprophet.project.GradleProject;
+import jp.posl.jprophet.project.MavenProject;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -46,7 +47,6 @@ public class SpotBugsIntegrationTest {
             new CondRefinementOperation(),
             new CondIntroductionOperation(), 
             new CtrlFlowIntroductionOperation(), 
-            new InsertInitOperation(), 
             new VariableReplacementOperation(),
             new CopyReplaceOperation()
         ));
@@ -59,7 +59,7 @@ public class SpotBugsIntegrationTest {
      */
     @Test
     public void testForRoughConstantValue() {
-        String project = "src/test/resources/testSBProject02";
+        String project = "src/test/resources/lang";
         runjProphet(project);
         
         File file = new File("result/result.csv");
@@ -80,7 +80,7 @@ public class SpotBugsIntegrationTest {
      * @param projectPath 対象のプロジェクトのパス
      */
     private void runjProphet(String projectPath) {
-        final Project                  project                  = new GradleProject(projectPath);
+        final Project                  project                  = new MavenProject(projectPath);
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
         final FaultLocalization        faultLocalization        = new SpotBugsBasedFaultLocalization(config);
         final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();

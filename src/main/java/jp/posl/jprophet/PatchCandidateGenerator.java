@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 
@@ -16,6 +17,8 @@ import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.patch.DefaultPatchCandidate;
 import jp.posl.jprophet.project.FileLocator;
 import jp.posl.jprophet.project.Project;
+import jp.posl.jprophet.spotbugs.SpotBugsResultXMLReader;
+import jp.posl.jprophet.spotbugs.SpotBugsWarning;
 
 
 public class PatchCandidateGenerator{
@@ -25,27 +28,50 @@ public class PatchCandidateGenerator{
      * @param project 修正パッチ候補を生成する対象のプロジェクト 
      * @return 条件式が抽象化された修正パッチ候補のリスト
      */
+
+    public static String file = "org/apache/commons/lang3/BooleanUtils";
+    
     public List<PatchCandidate> exec(Project project, List<AstOperation> operations){
+        
+        System.out.println("generating patch...");
+        int lineNum = 65;
+
         List<FileLocator> fileLocators = project.getSrcFileLocators();                
         List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
-        int patchCandidateID = 1;
-        for(FileLocator fileLocator : fileLocators){
+        int patchCandidateID = 13;
+
+        String dirPath = "src/test/resources/lang/src/main/java/";
+        FileLocator fileLocator = new FileLocator(
+            dirPath + file + ".java",
+            file.replace("/", "."));
+        //for(FileLocator fileLocator : fileLocators){
+            //if(!fileLocator.getFqn().equals(FQN)) continue;
             try {
                 List<String> lines = Files.readAllLines(Paths.get(fileLocator.getPath()), StandardCharsets.UTF_8);
                 String sourceCode = String.join("\n", lines);
                 List<Node> targetNodes = NodeUtility.getAllNodesFromCode(sourceCode);
                 for(Node targetNode : targetNodes){
-                    List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
-                    for(AppliedOperationResult result : appliedOperationResults){
-                        candidates.add(new DefaultPatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
-                        patchCandidateID += 1;
+                    try {
+                        Range range = targetNode.getRange().get();
+                        if(range.begin.line != lineNum) continue;
+                            List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
+                            for(AppliedOperationResult result : appliedOperationResults){
+                                PatchCandidate candidate = new DefaultPatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID);
+                                candidates.add(candidate);
+                                System.out.println(fileLocator.getFqn() + " : " + targetNode.getRange().get().begin.line + " - " + targetNode.getRange().get().end.line + "  " + result.getOperation());
+                                patchCandidateID += 1;
+                            }
+                        
                     }
+                    catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                    
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                break;
             }
-        }
+        //}
 
         return candidates;
     }
@@ -60,7 +86,10 @@ public class PatchCandidateGenerator{
         List<AppliedOperationResult> appliedOperationResults = new ArrayList<AppliedOperationResult>();
 
         operations.stream()
-            .map(o -> o.exec(node).stream().map(c -> new AppliedOperationResult(c, o.getClass())).collect(Collectors.toList()))
+            .map(o -> {
+                System.out.println(o.getClass().toString());
+                return o.exec(node).stream().map(c -> new AppliedOperationResult(c, o.getClass())).collect(Collectors.toList());
+            })
             .forEach(appliedOperationResults::addAll);
 
         return appliedOperationResults;

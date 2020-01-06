@@ -37,14 +37,18 @@ public class SpotBugsTestExecutor implements TestExecutor {
      */
     @Override
     public TestExecutorResult exec(RepairConfiguration config) {
+        /*
         final UnitTestExecutor unitTestExecutor = new UnitTestExecutor();
+        System.out.println("testing...");
         final boolean isPassedUnitTest = unitTestExecutor.exec(config).canEndRepair();
+        */
         final SpotBugsExecutor spotBugsExecutor = new SpotBugsExecutor();
+        System.out.println("checking spotbugs...");
         spotBugsExecutor.exec(config, spotbugsResultFileName);
         final SpotBugsResultXMLReader spotBugsResultXMLReader = new SpotBugsResultXMLReader();
         final List<SpotBugsWarning> beforeWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(beforeResultFilePath, config.getTargetProject());
         final List<SpotBugsWarning> afterWarnings = spotBugsResultXMLReader.readAllSpotBugsWarnings(SpotBugsExecutor.getResultFilePath(spotbugsResultFileName), config.getTargetProject());
-        return createResults(beforeWarnings, afterWarnings, isPassedUnitTest);
+        return createResults(beforeWarnings, afterWarnings, config);
     }
 
 
@@ -54,7 +58,7 @@ public class SpotBugsTestExecutor implements TestExecutor {
      * @param after 修正後のワーニングリスト
      * @return テスト結果のリスト
      */
-    private TestExecutorResult createResults(List<SpotBugsWarning> before, List<SpotBugsWarning> after, boolean isPassedUnitTest) {
+    private TestExecutorResult createResults(List<SpotBugsWarning> before, List<SpotBugsWarning> after, RepairConfiguration config) {
         final Set<SpotBugsWarning> beforeSet = new HashSet<SpotBugsWarning>(before);
         final Set<SpotBugsWarning> afterSet = new HashSet<SpotBugsWarning>(after);
 
@@ -64,9 +68,19 @@ public class SpotBugsTestExecutor implements TestExecutor {
         final Set<SpotBugsWarning> occurredSet = new HashSet<SpotBugsWarning>(afterSet);
         occurredSet.removeAll(beforeSet);
 
-        final int numOfOccurredWarnings = occurredSet.size();
+        final List<String> occurredWarnings = occurredSet.stream().map(warning -> warning.getType()).collect(Collectors.toList());
 
-        final List<TestResult> testResults = fixedSet.stream().map(warning -> new SpotBugsTestResult(isPassedUnitTest, warning, numOfOccurredWarnings)).collect(Collectors.toList());
+        List<TestResult> testResults = new ArrayList<TestResult>();
+        System.out.println("fixed:" + fixedSet.size() + "  occured:" + occurredSet.size());
+        if(fixedSet.size() > 0 && occurredWarnings.size() == 0) {
+            final UnitTestExecutor unitTestExecutor = new UnitTestExecutor();
+            System.out.println("testing...");
+            final boolean passed = unitTestExecutor.exec(config).canEndRepair();
+            testResults = fixedSet.stream().map(warning -> new SpotBugsTestResult(passed, warning, occurredWarnings.size())).collect(Collectors.toList());
+        }
+        else {
+            testResults.add(new SpotBugsTestResult(false, new SpotBugsWarning("---", "", 0, 0), 0));
+        }
 
         return new TestExecutorResult(false, testResults);
     }

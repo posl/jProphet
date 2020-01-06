@@ -51,7 +51,7 @@ public class CSVTestResultExporter implements TestResultExporter {
         
         final List<Map.Entry<TestResult, PatchCandidate>> entryList = new ArrayList<>(resultStore.getPatchResults().entrySet());
 
-        final String field = "ID,filePath,line,operation," + String.join(",", entryList.get(0).getKey().toStringMap().keySet());
+        final String field = "ID,fileFQN,line,operation," + String.join(",", entryList.get(0).getKey().toStringMap().keySet());
         recodes.add(field);
 
         Collections.sort(   //ID順に並び替え
@@ -67,7 +67,7 @@ public class CSVTestResultExporter implements TestResultExporter {
         for (Map.Entry<TestResult, PatchCandidate> entry : entryList) {
             final TestResult result = entry.getKey();
             final PatchCandidate patch = entry.getValue();
-            final String patchLine = patch.getId() + "," + patch.getFilePath() + "," + patch.getLineNumber().get() + "," + patch.getAppliedOperation();
+            final String patchLine = patch.getId() + "," + patch.getFqn() + "," + patch.getLineNumber().get() + "," + patch.getAppliedOperation();
             final String resultLine = String.join(",", result.toStringMap().values());
             final String recode = patchLine + "," + resultLine;
             recodes.add(recode);

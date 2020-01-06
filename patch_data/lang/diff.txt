@@ -1,0 +1,169 @@
+ID : 1
+fixed file path : src/test/resources/lang/src/main/java/org/apache/commons/lang3/BooleanUtils.java
+used operation  : CondRefinementOperation
+
+550             
+551             
+552   -         if (str == "true") {
+552   +         if ((str == "true") || (str == null)) {
+553                 return Boolean.TRUE;
+554             }
+
+
+
+ID : 2
+fixed file path : src/test/resources/lang/src/main/java/org/apache/commons/lang3/BooleanUtils.java
+used operation  : CondRefinementOperation
+
+550             
+551             
+552   -         if (str == "true") {
+552   +         if ((str == "true") || (str != null)) {
+553                 return Boolean.TRUE;
+554             }
+
+
+
+ID : 3
+fixed file path : src/test/resources/lang/src/main/java/org/apache/commons/lang3/BooleanUtils.java
+used operation  : CondRefinementOperation
+
+550             
+551             
+552   -         if (str == "true") {
+552   +         if ((str == "true") || (true)) {
+553                 return Boolean.TRUE;
+554             }
+
+
+
+ID : 4
+fixed file path : src/test/resources/lang/src/main/java/org/apache/commons/lang3/BooleanUtils.java
+used operation  : CondRefinementOperation
+
+550             
+551             
+552   -         if (str == "true") {
+552   +         if ((str == "true") && !(str == null)) {
+553                 return Boolean.TRUE;
+554             }
+
+
+
+ID : 5
+fixed file path : src/test/resources/lang/src/main/java/org/apache/commons/lang3/BooleanUtils.java
+used operation  : CondRefinementOperation
+
+550             
+551             
+552   -         if (str == "true") {
+552   +         if ((str == "true") && !(str != null)) {
+553                 return Boolean.TRUE;
+554             }
+
+
+
+ID : 6
+fixed file path : src/test/resources/lang/src/main/java/org/apache/commons/lang3/BooleanUtils.java
+used operation  : CondRefinementOperation
+
+550             
+551             
+552   -         if (str == "true") {
+552   +         if ((str == "true") && !(true)) {
+553                 return Boolean.TRUE;
+554             }
+
+
+
+ID : 7
+fixed file path : src/test/resources/lang/src/main/java/org/apache/commons/lang3/BooleanUtils.java
+used operation  : CondIntroductionOperation
+
+550             
+551             
+552   -         if (str == "true") {
+553   -             return Boolean.TRUE;
+554   -         }
+552   +         if (str == null)
+553   +             if (str == "true") {
+554   +                 return Boolean.TRUE;
+555   +             }
+556             if (str == null) {
+557                 return null;
+
+
+
+ID : 8
+fixed file path : src/test/resources/lang/src/main/java/org/apache/commons/lang3/BooleanUtils.java
+used operation  : CondIntroductionOperation
+
+550             
+551             
+552   -         if (str == "true") {
+553   -             return Boolean.TRUE;
+554   -         }
+552   +         if (str != null)
+553   +             if (str == "true") {
+554   +                 return Boolean.TRUE;
+555   +             }
+556             if (str == null) {
+557                 return null;
+
+
+
+ID : 9
+fixed file path : src/test/resources/lang/src/main/java/org/apache/commons/lang3/BooleanUtils.java
+used operation  : CondIntroductionOperation
+
+550             
+551             
+552   -         if (str == "true") {
+553   -             return Boolean.TRUE;
+554   -         }
+552   +         if (true)
+553   +             if (str == "true") {
+554   +                 return Boolean.TRUE;
+555   +             }
+556             if (str == null) {
+557                 return null;
+
+
+
+ID : 10
+fixed file path : src/test/resources/lang/src/main/java/org/apache/commons/lang3/BooleanUtils.java
+used operation  : CtrlFlowIntroductionOperation
+
+550             
+551             
+552   +         if (str == null)
+553   +             return;
+554             if (str == "true") {
+555                 return Boolean.TRUE;
+
+
+
+ID : 11
+fixed file path : src/test/resources/lang/src/main/java/org/apache/commons/lang3/BooleanUtils.java
+used operation  : CtrlFlowIntroductionOperation
+
+550             
+551             
+552   +         if (str != null)
+553   +             return;
+554             if (str == "true") {
+555                 return Boolean.TRUE;
+
+
+
+ID : 12
+fixed file path : src/test/resources/lang/src/main/java/org/apache/commons/lang3/BooleanUtils.java
+used operation  : CtrlFlowIntroductionOperation
+
+550             
+551             
+552   +         if (true)
+553   +             return;
+554             if (str == "true") {
+555                 return Boolean.TRUE;
+

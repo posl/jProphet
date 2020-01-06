@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import jp.posl.jprophet.project.GradleProject;
+import jp.posl.jprophet.project.MavenProject;
 import jp.posl.jprophet.RepairConfiguration;
 
 public class SpotBugsExecutorTest {
@@ -24,12 +25,14 @@ public class SpotBugsExecutorTest {
         final RepairConfiguration config = new RepairConfiguration("./tmp/SBout", null, new GradleProject("src/test/resources/testSBProject01"));
         executor.exec(config, resultFileName);
         assertThat(new File(SpotBugsExecutor.getResultFilePath(resultFileName)).exists()).isTrue();
+        /*
         try {
             FileUtils.deleteDirectory(new File("./tmp"));
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
+        */
     }
 
 }

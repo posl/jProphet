@@ -211,20 +211,20 @@ public class MavenProject implements Project {
         try {
             final MavenXpp3Reader reader = new MavenXpp3Reader();
             final Model model = reader.read(Files.newBufferedReader(pomFilePath));
+            /*
             final Path repositoryPath = Paths.get(rootPath)
               .resolve("src")
               .resolve("main")
               .resolve("resources")
               .resolve("dependency");
+              */
             
             //CIでは依存クラスファイルを取得することが難しいため、とりあえず依存ファイルをプロジェクト内に内包して、そこを参照するようにする
 
-            /*
             final String userHome = System.getProperty("user.home");
             final Path repositoryPath = Paths.get(userHome)
               .resolve(".m2")
               .resolve("repository");
-            */
     
         for (final Dependency dependency : model.getDependencies()) {
     

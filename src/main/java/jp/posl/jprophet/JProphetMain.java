@@ -85,7 +85,9 @@ public class JProphetMain {
         patchEvaluator.descendingSortBySuspiciousness(patchCandidates, suspiciousenesses);
         
         // 修正パッチ候補ごとにテスト実行
+        int num = 1;
         for(PatchCandidate patchCandidate: patchCandidates) {
+            System.out.println(num + " / " + patchCandidates.size());            
             Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
             final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
             testResultStore.addTestResults(result.getTestResults(), patchCandidate);
@@ -93,6 +95,7 @@ public class JProphetMain {
                 testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
                 return true;
             }
+            num++;
         }
         testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
         return false;

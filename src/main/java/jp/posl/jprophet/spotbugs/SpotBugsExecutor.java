@@ -12,8 +12,10 @@ import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.TextUICommandLine;
 import edu.umd.cs.findbugs.filter.FilterException;
+import jp.posl.jprophet.PatchCandidateGenerator;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
+import jp.posl.jprophet.patch.PatchCandidate;
 
 
 /**
@@ -52,18 +54,34 @@ public class SpotBugsExecutor {
      * @throws InterruptedException
      */
     private void runSpotBugs(RepairConfiguration config, String resultFileName) throws FilterException, IOException, InterruptedException {       
+        /*
         final FindBugs2 findBugs = new FindBugs2();
         final TextUICommandLine commandLine = new TextUICommandLine();  
         final Project SB_project = new Project();
         final String[] argv = new String[]{"-xml", "-output", getResultFilePath(resultFileName), config.getBuildPath()};
         final List<String> dirList = new ArrayList<String>();
         dirList.add(config.getBuildPath());
-        SB_project.addSourceDirs(dirList);
+        //SB_project.addSourceDirs(dirList);
+        //SB_project.addFile("src/test/resources/testSBProject01/build/classes/java/testSBProject01/App2.class");
         findBugs.setProject(SB_project);
         FindBugs.processCommandLine(commandLine, argv, findBugs);
         FindBugs.runMain(findBugs, commandLine);
         findBugs.execute();
         findBugs.close();
+        */
+        Runtime runtime = Runtime.getRuntime();
+        final String inputPath = config.getBuildPath() + PatchCandidateGenerator.file + ".class";
+        final String outputPath = getResultFilePath(resultFileName);
+        String[] commands = { "spotbugs", "-textui", "-output", outputPath, inputPath };
+        try {
+            Process process = runtime.exec(commands, null, new File("./"));
+            process.waitFor();
+            //BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            //System.out.println(br.readLine());
+        } catch (IOException|InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
 
