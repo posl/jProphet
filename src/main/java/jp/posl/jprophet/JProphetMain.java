@@ -39,8 +39,17 @@ public class JProphetMain {
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
         final Coefficient              coefficient              = new Jaccard();
         final List<SpecificationStrategy> specificationStrategyList = new ArrayList<SpecificationStrategy>();
-        specificationStrategyList.add(new SpecificBugsWavy("FizzBuzz01.FizzBuzz", 11, 1, 2, 0.2));
+
+        specificationStrategyList.add(new SpecificOneLineBug("FizzBuzz01.FizzBuzz", 12, 1));
+        //specificationStrategyList.add(new SpecificBugsByRange("FizzBuzz01.FizzBuzz", 4, 12, 1));
+        //specificationStrategyList.add(new SpecificBugsWavy("FizzBuzz01.FizzBuzz", 9, 1, 2, 0.2));
+        //specificationStrategyList.add(new SpecificBugsWavy("FizzBuzz01.FizzBuzz", 10, 1, 2, 0.2));
+        //specificationStrategyList.add(new SpecificBugsWavy("FizzBuzz01.FizzBuzz", 11, 1, 2, 0.2));
+        //specificationStrategyList.add(new SpecificBugsWavy("FizzBuzz01.FizzBuzz", 12, 1, 2, 0.2));
+        //specificationStrategyList.add(new SpecificBugsWavy("FizzBuzz01.FizzBuzz", 13, 1, 2, 0.2));
+
         final FaultLocalization        faultLocalization        = new ManualSpecification(config, specificationStrategyList);
+        //final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
         final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
         final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
         final TestExecutor             testExecutor             = new UnitTestExecutor();
@@ -80,7 +89,27 @@ public class JProphetMain {
             PatchedProjectGenerator patchedProjectGenerator, TestResultStore testResultStore, List<TestResultExporter> testResultExporters
             ) {
         // フォルトローカライゼーション
-        final List<Suspiciousness> suspiciousnesses = faultLocalization.exec();
+        //final List<Suspiciousness> suspiciousnesses = faultLocalization.exec();
+
+        //FL+manualするとき上を消して下にする
+        
+        final List<Suspiciousness> suspiciousnesses1 = faultLocalization.exec();
+        final List<Suspiciousness> suspiciousnesses2 = new SpectrumBasedFaultLocalization(config, new Jaccard()).exec();
+        List<Suspiciousness> suspiciousnesses = new ArrayList<Suspiciousness>();
+        //suspiciousnesses1とsuspiciousnesses2の要素を比較して大きい方をとる処理
+        for (int i = 0; i < suspiciousnesses1.size(); i++) {
+            try {
+                if (suspiciousnesses1.get(i).getValue() < suspiciousnesses2.get(i).getValue()){
+                    suspiciousnesses.add(suspiciousnesses2.get(i));
+                } else {
+                    suspiciousnesses.add(suspiciousnesses1.get(i));
+                }
+            } catch (Exception e) {
+                suspiciousnesses.add(suspiciousnesses1.get(i));
+            }
+        }
+        
+
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
         final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations);
