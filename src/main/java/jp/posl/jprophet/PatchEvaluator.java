@@ -45,8 +45,11 @@ public class PatchEvaluator {
                 if(diff > 0){
                     return 1;
                 }
-                else {
+                else if (diff < 0){
                     return -1;
+                }
+                else {
+                    return 0;
                 }
             }
 
