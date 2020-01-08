@@ -83,8 +83,6 @@ public class VariableReplacementOperationTest{
      * 代入文の左辺をプログラム中の変数で置換できるかテスト 
      */
     @Test public void testForAssignmentReplace(){
-        final String targetStatement = 
-                "        la = \"hoge\";\n"; 
         final String beforeTargetStatement = new StringBuilder().append("")
             .append("public class A {\n")
             .append("    private String fa = \"a\";\n")
@@ -92,6 +90,8 @@ public class VariableReplacementOperationTest{
             .append("        String la = \"a\";\n")
             .append("        String lb = \"b\";\n")
             .toString();
+        final String targetStatement = 
+                    "        la = \"hoge\";\n"; 
 
         final String afterTargetStatement = new StringBuilder().append("")
             .append("    }\n")
@@ -277,6 +277,176 @@ public class VariableReplacementOperationTest{
         }
 
         assertThat(candidateSources).contains(expectedSource);
+        return;
+    }
+
+    /**
+     * If文の条件式中の比較文の変数を置換できるかテスト 
+     */
+    @Test public void testForReplaceBinExprInIfStmt(){
+        final String beforeTargetStatement = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private String fa = \"a\";\n")
+            .append("    private void ma(String pa) {\n")
+            .append("        String la = \"a\";\n")
+            .append("        String lb = \"b\";\n")
+            .toString();
+        final String targetStatement = 
+                    "        if(la == lb) \n"; 
+        final String afterTargetStatement = new StringBuilder().append("")
+            .append("            return;\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        final String targetSource = new StringBuilder().append("")
+            .append(beforeTargetStatement)
+            .append(targetStatement)
+            .append(afterTargetStatement)
+            .toString();
+
+
+        final List<String> expectedTargetSources = new ArrayList<String>();
+        expectedTargetSources.add("        if(lb == lb) \n");
+        expectedTargetSources.add("        if(this.fa == lb) \n");
+        expectedTargetSources.add("        if(pa == lb) \n");
+        expectedTargetSources.add("        if(la == la) \n");
+        expectedTargetSources.add("        if(la == this.fa) \n");
+        expectedTargetSources.add("        if(la == pa) \n");
+
+        final List<String> expectedSources = expectedTargetSources.stream()
+            .map(str -> {
+                return new StringBuilder().append("")
+                    .append(beforeTargetStatement)
+                    .append(str)
+                    .append(afterTargetStatement)
+                    .toString();
+            })
+            .collect(Collectors.toList());
+
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        final List<String> candidateSources = new ArrayList<String>();
+        for(Node node : nodes){
+            final VariableReplacementOperation vr = new VariableReplacementOperation();
+            final List<CompilationUnit> cUnits = vr.exec(node);
+            for (CompilationUnit cUnit : cUnits){
+                LexicalPreservingPrinter.setup(cUnit);
+                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
+            }
+        }
+
+        assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
+        return;
+    }
+
+    /**
+     * If文の条件式中の比較文の変数を置換できるかテスト 
+     */
+    @Test public void testForVarReplaceInIfStmt(){
+        final String beforeTargetStatement = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private String fa = \"a\";\n")
+            .append("    private void ma(String pa) {\n")
+            .append("        String la = \"a\";\n")
+            .append("        String lb = \"b\";\n")
+            .toString();
+        final String targetStatement = 
+                    "        if(la) \n"; 
+        final String afterTargetStatement = new StringBuilder().append("")
+            .append("            return;\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        final String targetSource = new StringBuilder().append("")
+            .append(beforeTargetStatement)
+            .append(targetStatement)
+            .append(afterTargetStatement)
+            .toString();
+
+
+        final List<String> expectedTargetSources = new ArrayList<String>();
+        expectedTargetSources.add("        if(lb) \n");
+        expectedTargetSources.add("        if(this.fa) \n");
+        expectedTargetSources.add("        if(pa) \n");
+
+        final List<String> expectedSources = expectedTargetSources.stream()
+            .map(str -> {
+                return new StringBuilder().append("")
+                    .append(beforeTargetStatement)
+                    .append(str)
+                    .append(afterTargetStatement)
+                    .toString();
+            })
+            .collect(Collectors.toList());
+
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        final List<String> candidateSources = new ArrayList<String>();
+        for(Node node : nodes){
+            final VariableReplacementOperation vr = new VariableReplacementOperation();
+            final List<CompilationUnit> cUnits = vr.exec(node);
+            for (CompilationUnit cUnit : cUnits){
+                LexicalPreservingPrinter.setup(cUnit);
+                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
+            }
+        }
+
+        assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
+        return;
+    }
+
+    /**
+     * returnされる変数を置換できるかテスト 
+     */
+    @Test public void testVarInReturnStmt(){
+        final String beforeTargetStatement = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private String fa = \"a\";\n")
+            .append("    private String ma(String pa) {\n")
+            .append("        String la = \"a\";\n")
+            .append("        String lb = \"b\";\n")
+            .toString();
+        final String targetStatement = 
+                   ("        return la;\n");
+        final String afterTargetStatement = new StringBuilder().append("")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        final String targetSource = new StringBuilder().append("")
+            .append(beforeTargetStatement)
+            .append(targetStatement)
+            .append(afterTargetStatement)
+            .toString();
+
+
+        final List<String> expectedTargetSources = new ArrayList<String>();
+        expectedTargetSources.add("        return lb;\n");
+        expectedTargetSources.add("        return this.fa;\n");
+        expectedTargetSources.add("        return pa;\n");
+
+        final List<String> expectedSources = expectedTargetSources.stream()
+            .map(str -> {
+                return new StringBuilder().append("")
+                    .append(beforeTargetStatement)
+                    .append(str)
+                    .append(afterTargetStatement)
+                    .toString();
+            })
+            .collect(Collectors.toList());
+
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        final List<String> candidateSources = new ArrayList<String>();
+        for(Node node : nodes){
+            final VariableReplacementOperation vr = new VariableReplacementOperation();
+            final List<CompilationUnit> cUnits = vr.exec(node);
+            for (CompilationUnit cUnit : cUnits){
+                LexicalPreservingPrinter.setup(cUnit);
+                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
+            }
+        }
+
+        assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
         return;
     }
 }
