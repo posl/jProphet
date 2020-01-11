@@ -40,7 +40,7 @@ public class JProphetMain {
         final Coefficient              coefficient              = new Jaccard();
         final List<SpecificationStrategy> specificationStrategyList = new ArrayList<SpecificationStrategy>();
 
-        specificationStrategyList.add(new SpecificOneLineBug("FizzBuzz01.FizzBuzz", 12, 1));
+        //specificationStrategyList.add(new SpecificOneLineBug("FizzBuzz01.FizzBuzz", 11, 1));
         //specificationStrategyList.add(new SpecificBugsByRange("FizzBuzz01.FizzBuzz", 4, 12, 1));
         //specificationStrategyList.add(new SpecificBugsWavy("FizzBuzz01.FizzBuzz", 9, 1, 2, 0.2));
         //specificationStrategyList.add(new SpecificBugsWavy("FizzBuzz01.FizzBuzz", 10, 1, 2, 0.2));
@@ -48,8 +48,10 @@ public class JProphetMain {
         //specificationStrategyList.add(new SpecificBugsWavy("FizzBuzz01.FizzBuzz", 12, 1, 2, 0.2));
         //specificationStrategyList.add(new SpecificBugsWavy("FizzBuzz01.FizzBuzz", 13, 1, 2, 0.2));
 
-        final FaultLocalization        faultLocalization        = new ManualSpecification(config, specificationStrategyList);
-        //final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
+        specificationStrategyList.add(new SpecificOneLineBug("QuickSort.QSort", 21, 1));
+
+        //final FaultLocalization        faultLocalization        = new ManualSpecification(config, specificationStrategyList);
+        final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
         final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
         final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
         final TestExecutor             testExecutor             = new UnitTestExecutor();
@@ -67,7 +69,8 @@ public class JProphetMain {
             new CtrlFlowIntroductionOperation(), 
             new InsertInitOperation(), 
             new VariableReplacementOperation(),
-            new CopyReplaceOperation()
+            new CopyReplaceOperation(),
+            new MethodReplacementOperation()
         ));
 
 
@@ -89,10 +92,10 @@ public class JProphetMain {
             PatchedProjectGenerator patchedProjectGenerator, TestResultStore testResultStore, List<TestResultExporter> testResultExporters
             ) {
         // フォルトローカライゼーション
-        //final List<Suspiciousness> suspiciousnesses = faultLocalization.exec();
+        final List<Suspiciousness> suspiciousnesses = faultLocalization.exec();
 
         //FL+manualするとき上を消して下にする
-        
+        /*
         final List<Suspiciousness> suspiciousnesses1 = faultLocalization.exec();
         final List<Suspiciousness> suspiciousnesses2 = new SpectrumBasedFaultLocalization(config, new Jaccard()).exec();
         List<Suspiciousness> suspiciousnesses = new ArrayList<Suspiciousness>();
@@ -108,6 +111,7 @@ public class JProphetMain {
                 suspiciousnesses.add(suspiciousnesses1.get(i));
             }
         }
+        */
         
 
         
@@ -118,6 +122,7 @@ public class JProphetMain {
         patchEvaluator.descendingSortBySuspiciousness(patchCandidates, suspiciousnesses);
 
         //パッチを順位をcsvに書き出し
+        
         final String resultDir = "./result/";
         final String resultFilePath = "rank.csv";
         final File resultDirFile = new File(resultDir);
@@ -134,9 +139,10 @@ public class JProphetMain {
         for (PatchCandidate patchCandidate : patchCandidates) {
             final String patchLine = patchCandidate.getId() + "," + patchCandidate.getFilePath() + "," + patchCandidate.getLineNumber().get() + "," + patchCandidate.getAppliedOperation();
             Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
-            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
-            final String resultLine = "," + result.canEndRepair();
-            final String recode = patchLine + resultLine;
+            //final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
+            //final String resultLine = "," + result.canEndRepair();
+            //final String recode = patchLine + resultLine;
+            final String recode = patchLine;
             recodes.add(recode);
         }
         try {
@@ -145,6 +151,7 @@ public class JProphetMain {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
+        
 
         //疑惑値のリストをcsvに
         final String resultDir2 = "./result/";
@@ -159,7 +166,7 @@ public class JProphetMain {
         }
         final List<String> recodes2 = new ArrayList<String>();
         final String field2 = "FQN,Line,Value";
-        recodes.add(field2);
+        recodes2.add(field2);
         for (Suspiciousness susp : suspiciousnesses) {
             final String recode = susp.getFQN() + "," + susp.getLineNumber() + "," + susp.getValue();
             recodes2.add(recode);
@@ -173,6 +180,7 @@ public class JProphetMain {
         
         // 修正パッチ候補ごとにテスト実行
         for(PatchCandidate patchCandidate: patchCandidates) {
+            System.out.println(patchCandidate);
             Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
             final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
             testResultStore.addTestResults(result.getTestResults(), patchCandidate);

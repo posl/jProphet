@@ -45,6 +45,32 @@ public class JProphetMainTest {
         }
     }
 
+    @Test public void testQuickSort(){
+        String[] project = {"src/test/resources/QuickSort"};
+        JProphetMain.main(project);
+        File file = new File("src/test/resources/QuickSort");
+        assertThat(file.exists()).isTrue();
+        try {
+            FileUtils.deleteDirectory(new File("./result/"));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @Test public void testBubbleSort(){
+        String[] project = {"src/test/resources/BubbleSortProject"};
+        JProphetMain.main(project);
+        File file = new File("src/test/resources/BubbleSortProject");
+        assertThat(file.exists()).isTrue();
+        try {
+            FileUtils.deleteDirectory(new File("./result/"));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 
     @Test public void testForMavenProject() {
         final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(
