@@ -5,6 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import jp.posl.jprophet.project.Project;
+import jp.posl.jprophet.spotbugs.SpotBugsResultXMLReader;
+import jp.posl.jprophet.spotbugs.SpotBugsWarning;
 import jp.posl.jprophet.test.executor.SpotBugsTestExecutor;
 import jp.posl.jprophet.test.executor.TestExecutor;
 import jp.posl.jprophet.test.exporter.CSVTestResultExporter;
@@ -37,6 +39,10 @@ public class SpotBugsIntegrationTest {
     private final String buildDir = "./tmp/"; 
     private final String resultDir = "./result/"; 
     private List<AstOperation> operations;
+    public static String nowFile;
+    public static int lineStart;
+    public static int lineEnd;
+    public static int id = 914;
 
     /**
      * オペレーションの準備
@@ -59,12 +65,22 @@ public class SpotBugsIntegrationTest {
      */
     @Test
     public void testForRoughConstantValue() {
-        String project = "src/test/resources/lang";
-        runjProphet(project);
+        String projectName = "src/test/resources/time";
+        Project project = new MavenProject(projectName);
+        SpotBugsResultXMLReader reader = new SpotBugsResultXMLReader();
+        List<SpotBugsWarning> list = reader.readAllSpotBugsWarnings("patch_data/time/warnings.xml", project);
+
+        for (SpotBugsWarning spotBugsWarning : list) {
+            System.out.println(spotBugsWarning.getType());
+            //nowFile = spotBugsWarning.getFqn().replace(".", "/");
+            //lineStart = spotBugsWarning.getStartLine();
+            //lineEnd = spotBugsWarning.getStartLine();
+            //runjProphet(projectName);
+        }
         
+        /*
         File file = new File("result/result.csv");
         assertThat(file.exists()).isTrue();
-        /*
         try {
             FileUtils.deleteDirectory(new File("./result/"));
         } catch (IOException e) {

@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 
+import jp.posl.jprophet.SpotBugsIntegrationTest;
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.result.TestResult;
 import jp.posl.jprophet.test.result.TestResultStore;
@@ -18,7 +19,7 @@ import jp.posl.jprophet.test.result.TestResultStore;
 public class PatchDiffExporter implements TestResultExporter {
 
     private final String resultDir;
-    private final String resultFileName = "diff.txt";
+    private final String resultFileName = "diff";
 
     public PatchDiffExporter(String resultDir) {
         this.resultDir = resultDir;
@@ -31,7 +32,7 @@ public class PatchDiffExporter implements TestResultExporter {
             resultDirFile.mkdir();
         }
 
-        final File outputFile = new File(resultDir + resultFileName);
+        final File outputFile = new File(resultDir + resultFileName + SpotBugsIntegrationTest.id + ".txt");
         if(outputFile.exists()) {
             outputFile.delete();
         }
@@ -51,7 +52,7 @@ public class PatchDiffExporter implements TestResultExporter {
         final List<String> diffList = entryList.stream().map(e -> e.getValue().toString()).collect(Collectors.toList());
 
         try {
-            FileUtils.write(outputFile, String.join("\n\n", diffList), "utf-8");
+            FileUtils.write(outputFile, String.join("\n\n", diffList), "utf-8", true);
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();

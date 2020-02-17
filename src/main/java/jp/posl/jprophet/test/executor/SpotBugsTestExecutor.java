@@ -72,7 +72,7 @@ public class SpotBugsTestExecutor implements TestExecutor {
 
         List<TestResult> testResults = new ArrayList<TestResult>();
         System.out.println("fixed:" + fixedSet.size() + "  occured:" + occurredSet.size());
-        if(fixedSet.size() > 0 && occurredWarnings.size() == 0) {
+        if(fixedSet.size() > 0 && occurredWarnings.size() < fixedSet.size()) {
             final UnitTestExecutor unitTestExecutor = new UnitTestExecutor();
             System.out.println("testing...");
             final boolean passed = unitTestExecutor.exec(config).canEndRepair();

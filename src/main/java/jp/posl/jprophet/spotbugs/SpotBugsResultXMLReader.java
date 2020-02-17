@@ -56,7 +56,7 @@ public class SpotBugsResultXMLReader {
         sourceLines.addAll(bugInstance.selectNodes("./Method/SourceLine"));
         sourceLines.addAll(bugInstance.selectNodes("./Class/SourceLine"));
         final Element targetLine = (Element) sourceLines.get(0);
-        final String filePath = targetLine.attributeValue("classname");
+        final String filePath = targetLine.attributeValue("sourcepath").replace(".java", "").replace("/", ".");
         final int start = Integer.parseInt(targetLine.attributeValue("start"));
         final int end = Integer.parseInt(targetLine.attributeValue("end"));
         if(project.getSrcFileFqns().contains(filePath)) {          //ソースファイルのワーニングのみを対象とする

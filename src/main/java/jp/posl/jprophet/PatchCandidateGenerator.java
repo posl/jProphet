@@ -29,21 +29,18 @@ public class PatchCandidateGenerator{
      * @return 条件式が抽象化された修正パッチ候補のリスト
      */
 
-    public static String file = "org/apache/commons/lang3/BooleanUtils";
     
     public List<PatchCandidate> exec(Project project, List<AstOperation> operations){
         
-        System.out.println("generating patch...");
-        int lineNum = 65;
+        System.out.println("generating patch..." + " --- " + SpotBugsIntegrationTest.nowFile);
 
         List<FileLocator> fileLocators = project.getSrcFileLocators();                
         List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
-        int patchCandidateID = 13;
 
-        String dirPath = "src/test/resources/lang/src/main/java/";
+        String dirPath = "src/test/resources/time/src/main/java/";
         FileLocator fileLocator = new FileLocator(
-            dirPath + file + ".java",
-            file.replace("/", "."));
+            dirPath + SpotBugsIntegrationTest.nowFile + ".java",
+            SpotBugsIntegrationTest.nowFile.replace("/", "."));
         //for(FileLocator fileLocator : fileLocators){
             //if(!fileLocator.getFqn().equals(FQN)) continue;
             try {
@@ -53,13 +50,13 @@ public class PatchCandidateGenerator{
                 for(Node targetNode : targetNodes){
                     try {
                         Range range = targetNode.getRange().get();
-                        if(range.begin.line != lineNum) continue;
+                        if(range.begin.line < SpotBugsIntegrationTest.lineStart || range.begin.line > SpotBugsIntegrationTest.lineEnd) continue;
                             List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
                             for(AppliedOperationResult result : appliedOperationResults){
-                                PatchCandidate candidate = new DefaultPatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID);
+                                PatchCandidate candidate = new DefaultPatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), SpotBugsIntegrationTest.id);
                                 candidates.add(candidate);
                                 System.out.println(fileLocator.getFqn() + " : " + targetNode.getRange().get().begin.line + " - " + targetNode.getRange().get().end.line + "  " + result.getOperation());
-                                patchCandidateID += 1;
+                                SpotBugsIntegrationTest.id += 1;
                             }
                         
                     }

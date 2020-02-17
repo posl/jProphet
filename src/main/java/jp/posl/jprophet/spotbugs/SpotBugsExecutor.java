@@ -15,6 +15,7 @@ import edu.umd.cs.findbugs.filter.FilterException;
 import jp.posl.jprophet.PatchCandidateGenerator;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
+import jp.posl.jprophet.SpotBugsIntegrationTest;
 import jp.posl.jprophet.patch.PatchCandidate;
 
 
@@ -70,7 +71,7 @@ public class SpotBugsExecutor {
         findBugs.close();
         */
         Runtime runtime = Runtime.getRuntime();
-        final String inputPath = config.getBuildPath() + PatchCandidateGenerator.file + ".class";
+        final String inputPath = config.getBuildPath() + SpotBugsIntegrationTest.nowFile + ".class";
         final String outputPath = getResultFilePath(resultFileName);
         String[] commands = { "spotbugs", "-textui", "-output", outputPath, inputPath };
         try {

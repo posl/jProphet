@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
+import jp.posl.jprophet.SpotBugsIntegrationTest;
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.result.TestResult;
 import jp.posl.jprophet.test.result.TestResultStore;
@@ -21,7 +22,7 @@ import jp.posl.jprophet.test.result.TestResultStore;
 public class CSVTestResultExporter implements TestResultExporter {
 
     private final String resultDir;
-    private final String resultFilePath = "result.csv";
+    private final String resultFilePath = "result";
 
 
     /**
@@ -42,7 +43,7 @@ public class CSVTestResultExporter implements TestResultExporter {
             resultDirFile.mkdir();
         }
 
-        final File outputFile = new File(resultDir + resultFilePath);
+        final File outputFile = new File(resultDir + resultFilePath + SpotBugsIntegrationTest.id + ".csv");
         if(outputFile.exists()) {
             outputFile.delete();
         }
@@ -75,7 +76,7 @@ public class CSVTestResultExporter implements TestResultExporter {
 
         
         try {
-            FileUtils.write(outputFile, String.join("\n", recodes), "utf-8");
+            FileUtils.write(outputFile, String.join("\n", recodes), "utf-8", true);
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
