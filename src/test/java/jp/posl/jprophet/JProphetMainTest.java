@@ -71,6 +71,45 @@ public class JProphetMainTest {
         }
     }
 
+    @Test public void testHeapSort(){
+        String[] project = {"src/test/resources/HeapSortProject"};
+        JProphetMain.main(project);
+        File file = new File("src/test/resources/HeapSortProject");
+        assertThat(file.exists()).isTrue();
+        try {
+            FileUtils.deleteDirectory(new File("./result/"));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @Test public void testMergeSort(){
+        String[] project = {"src/test/resources/MergeSortProject"};
+        JProphetMain.main(project);
+        File file = new File("src/test/resources/MergeSortProject");
+        assertThat(file.exists()).isTrue();
+        try {
+            FileUtils.deleteDirectory(new File("./result/"));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @Test public void testBynarySearch(){
+        String[] project = {"src/test/resources/BynarySearchProject"};
+        JProphetMain.main(project);
+        File file = new File("src/test/resources/BynarySearchProject");
+        assertThat(file.exists()).isTrue();
+        try {
+            FileUtils.deleteDirectory(new File("./result/"));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 
     @Test public void testForMavenProject() {
         final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(

@@ -37,21 +37,22 @@ public class JProphetMain {
         }
         final Project                  project                  = new GradleProject(projectPath);
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
-        final Coefficient              coefficient              = new Jaccard();
+        //final Coefficient              coefficient              = new Jaccard();
+        final Coefficient              coefficient              = new Ochiai();
         final List<SpecificationStrategy> specificationStrategyList = new ArrayList<SpecificationStrategy>();
 
-        //specificationStrategyList.add(new SpecificOneLineBug("FizzBuzz01.FizzBuzz", 11, 1));
-        //specificationStrategyList.add(new SpecificBugsByRange("FizzBuzz01.FizzBuzz", 4, 12, 1));
-        //specificationStrategyList.add(new SpecificBugsWavy("FizzBuzz01.FizzBuzz", 9, 1, 2, 0.2));
-        //specificationStrategyList.add(new SpecificBugsWavy("FizzBuzz01.FizzBuzz", 10, 1, 2, 0.2));
-        //specificationStrategyList.add(new SpecificBugsWavy("FizzBuzz01.FizzBuzz", 11, 1, 2, 0.2));
-        //specificationStrategyList.add(new SpecificBugsWavy("FizzBuzz01.FizzBuzz", 12, 1, 2, 0.2));
-        //specificationStrategyList.add(new SpecificBugsWavy("FizzBuzz01.FizzBuzz", 13, 1, 2, 0.2));
+        //specificationStrategyList.add(new SpecificOneLineBug("BynarySearchProject.BynarySearch", 13, 1));
+        //specificationStrategyList.add(new SpecificBugsByRange("BynarySearchProject.BynarySearch", 12, 19, 1));
+        //specificationStrategyList.add(new SpecificBugsWavy("BynarySearchProject.BynarySearch", 11, 1, 2, 0.2));
+        //specificationStrategyList.add(new SpecificBugsWavy("BynarySearchProject.BynarySearch", 12, 1, 2, 0.2));
+        //specificationStrategyList.add(new SpecificBugsWavy("BynarySearchProject.BynarySearch", 13, 1, 2, 0.2));
+        //specificationStrategyList.add(new SpecificBugsWavy("BynarySearchProject.BynarySearch", 14, 1, 2, 0.2));
+        specificationStrategyList.add(new SpecificBugsWavy("BynarySearchProject.BynarySearch", 15, 1, 2, 0.2));
 
-        specificationStrategyList.add(new SpecificOneLineBug("QuickSort.QSort", 21, 1));
+        //specificationStrategyList.add(new SpecificOneLineBug("HeapSortProject.HeapSort", 56, 1));
 
-        //final FaultLocalization        faultLocalization        = new ManualSpecification(config, specificationStrategyList);
-        final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
+        final FaultLocalization        faultLocalization        = new ManualSpecification(config, specificationStrategyList);
+        //final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
         final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
         final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
         final TestExecutor             testExecutor             = new UnitTestExecutor();
@@ -64,8 +65,8 @@ public class JProphetMain {
         ));
 
         final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(
-            new CondRefinementOperation(),
-            new CondIntroductionOperation(), 
+            //new CondRefinementOperation(),
+            //new CondIntroductionOperation(), 
             new CtrlFlowIntroductionOperation(), 
             new InsertInitOperation(), 
             new VariableReplacementOperation(),
@@ -92,12 +93,13 @@ public class JProphetMain {
             PatchedProjectGenerator patchedProjectGenerator, TestResultStore testResultStore, List<TestResultExporter> testResultExporters
             ) {
         // フォルトローカライゼーション
-        final List<Suspiciousness> suspiciousnesses = faultLocalization.exec();
+        //final List<Suspiciousness> suspiciousnesses = faultLocalization.exec();
 
-        //FL+manualするとき上を消して下にする
-        /*
+        //FL+manualするとき上を消して下にする(run()に渡すのはmanual)
+        
         final List<Suspiciousness> suspiciousnesses1 = faultLocalization.exec();
-        final List<Suspiciousness> suspiciousnesses2 = new SpectrumBasedFaultLocalization(config, new Jaccard()).exec();
+        //final List<Suspiciousness> suspiciousnesses2 = new SpectrumBasedFaultLocalization(config, new Jaccard()).exec();
+        final List<Suspiciousness> suspiciousnesses2 = new SpectrumBasedFaultLocalization(config, new Ochiai()).exec();
         List<Suspiciousness> suspiciousnesses = new ArrayList<Suspiciousness>();
         //suspiciousnesses1とsuspiciousnesses2の要素を比較して大きい方をとる処理
         for (int i = 0; i < suspiciousnesses1.size(); i++) {
@@ -111,7 +113,7 @@ public class JProphetMain {
                 suspiciousnesses.add(suspiciousnesses1.get(i));
             }
         }
-        */
+        
         
 
         
@@ -181,6 +183,7 @@ public class JProphetMain {
         // 修正パッチ候補ごとにテスト実行
         for(PatchCandidate patchCandidate: patchCandidates) {
             System.out.println(patchCandidate);
+            if (patchCandidate.getId() == 233) continue;
             Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
             final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
             testResultStore.addTestResults(result.getTestResults(), patchCandidate);

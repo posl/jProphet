@@ -13,6 +13,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.SwitchEntryStmt;
 import com.github.javaparser.ast.stmt.SwitchStmt;
+import com.github.javaparser.ast.stmt.WhileStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
 import jp.posl.jprophet.NodeUtility;
@@ -66,6 +67,7 @@ public class CopyReplaceOperation implements AstOperation{
             .filter(s -> (s instanceof BlockStmt) == false)
             .filter(s -> (s instanceof SwitchStmt) == false)
             .filter(s -> (s instanceof SwitchEntryStmt) == false)
+            .filter(s -> (s instanceof WhileStmt) == false)
             .collect(Collectors.toList());
     }
 
