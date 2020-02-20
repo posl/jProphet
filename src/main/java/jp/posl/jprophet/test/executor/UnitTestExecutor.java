@@ -27,6 +27,7 @@ public class UnitTestExecutor implements TestExecutor {
     //そうするとメイン関数を変更する事になるのでとりあえず後回し
     
     private final String gradleTestPath = "/src/test/java/"; //出来ればgradleから取得したい
+    private final long waitTime = 5000;
 
 
     /**
@@ -97,7 +98,18 @@ public class UnitTestExecutor implements TestExecutor {
     private boolean runAllTestClass(List<Class<?>> classes){
         final JUnitCore junitCore = new JUnitCore();
         for (Class<?> testClass : testClasses){
-            final boolean isSuccess = junitCore.run(testClass).wasSuccessful();
+
+            //ここをタイムアウト処理する
+            //final boolean isSuccess = junitCore.run(testClass).wasSuccessful();
+            Thread testThread = new TestThread(junitCore, testClass);
+            testThread.start();
+            try {
+                //waitTime ms たったらスキップ
+                testThread.join(waitTime);
+            } catch (InterruptedException e) {
+                //TODO: handle exception
+            }
+            final boolean isSuccess = ((TestThread) testThread).getIsSuccess();
             if(!isSuccess) return false;
         }
         return true;
@@ -105,3 +117,23 @@ public class UnitTestExecutor implements TestExecutor {
 
 }
 
+class TestThread extends Thread {
+    private JUnitCore junitCore;
+    private Class<?> testClass;
+    public boolean isSuccess;
+
+    public TestThread(JUnitCore junitCore, Class<?> testClass){
+        this.junitCore = junitCore;
+        this.testClass = testClass;
+        this.isSuccess = false;
+    }
+
+    @Override
+    public void run(){
+        this.isSuccess = junitCore.run(testClass).wasSuccessful();
+    }
+
+    public boolean getIsSuccess(){
+        return this.isSuccess;
+    }
+}
