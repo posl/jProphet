@@ -111,6 +111,9 @@ public class CoverageCollectorTest{
         }
     }
 
+    /**
+     * 無限ループ等で実行時間が長くなった時のテスト
+     */
     @Test public void testForLoop(){
         CoverageCollector coverageCollector = new CoverageCollector("looptmp");
         boolean isSuccess;

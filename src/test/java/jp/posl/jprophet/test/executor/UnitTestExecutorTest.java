@@ -63,6 +63,7 @@ public class UnitTestExecutorTest {
             e.printStackTrace();
         }
 
+        //無限ループ等で実行時間が長くなった場合の処理
         boolean isSuccess03 = this.testExecutor.exec(loopConfig).canEndRepair();
         assertThat(isSuccess03).isFalse();
         try {

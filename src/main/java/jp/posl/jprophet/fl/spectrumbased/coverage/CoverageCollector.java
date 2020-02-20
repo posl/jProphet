@@ -30,7 +30,7 @@ public class CoverageCollector {
     private final Instrumenter jacocoInstrumenter;
     private final RuntimeData jacocoRuntimeData;
 
-    private final long waitTime = 5000;
+    private final long waitTime = 5000; //タイムアウトさせる時間[ms]
 
     public CoverageCollector(String buildpath) {
         this.memoryClassLoader = null;
@@ -68,8 +68,8 @@ public class CoverageCollector {
             final JUnitCore junitCore = new JUnitCore();
             final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
             junitCore.addListener(listener);
-            //ここをタイムアウト処理にする
             
+            //タイムアウト処理
             Thread testThread = new TestThread(junitCore, junitClass);
             testThread.start();
             try {
@@ -78,8 +78,6 @@ public class CoverageCollector {
             } catch (InterruptedException e) {
                 //TODO: handle exception
             }
-            
-            //junitCore.run(junitClass);
         }
 
         return testResults;
