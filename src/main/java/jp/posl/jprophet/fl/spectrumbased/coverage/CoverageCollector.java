@@ -30,6 +30,8 @@ public class CoverageCollector {
     private final Instrumenter jacocoInstrumenter;
     private final RuntimeData jacocoRuntimeData;
 
+    private final long waitTime = 5000;
+
     public CoverageCollector(String buildpath) {
         this.memoryClassLoader = null;
         this.jacocoRuntime = new LoggerRuntime();
@@ -66,8 +68,18 @@ public class CoverageCollector {
             final JUnitCore junitCore = new JUnitCore();
             final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
             junitCore.addListener(listener);
-            //TODO junitCore.runはどうやって動いているのか調べる
-            junitCore.run(junitClass);
+            //ここをタイムアウト処理にする
+            
+            Thread testThread = new TestThread(junitCore, junitClass);
+            testThread.start();
+            try {
+                //waitTime ms たったらスキップ
+                testThread.join(waitTime);
+            } catch (InterruptedException e) {
+                //TODO: handle exception
+            }
+            
+            //junitCore.run(junitClass);
         }
 
         return testResults;
@@ -251,4 +263,19 @@ public class CoverageCollector {
         }
     }
 
+}
+
+class TestThread extends Thread {
+    private JUnitCore junitCore;
+    private Class<?> junitClass;
+
+    public TestThread(JUnitCore junitCore, Class<?> junitClass){
+        this.junitCore = junitCore;
+        this.junitClass = junitClass;
+    }
+
+    @Override
+    public void run(){
+        junitCore.run(junitClass);
+    }
 }
