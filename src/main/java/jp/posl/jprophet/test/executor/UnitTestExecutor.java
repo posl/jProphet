@@ -103,7 +103,7 @@ public class UnitTestExecutor implements TestExecutor {
             Thread testThread = new TestThread(junitCore, testClass);
             testThread.start();
             try {
-                //waitTime ms たったらスキップ
+                //waitTime ms 経過でスキップ
                 testThread.join(waitTime);
             } catch (InterruptedException e) {
                 //TODO: handle exception

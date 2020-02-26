@@ -73,7 +73,7 @@ public class CoverageCollector {
             Thread testThread = new TestThread(junitCore, junitClass);
             testThread.start();
             try {
-                //waitTime ms たったらスキップ
+                //waitTime ms 経過でスキップ
                 testThread.join(waitTime);
             } catch (InterruptedException e) {
                 //TODO: handle exception
@@ -250,11 +250,11 @@ public class CoverageCollector {
          * @param description テストの実行情報
          */
         private void addJacocoCoverageToTestResults(final CoverageBuilder coverageBuilder,
-                final Description description) {
+            final Description description) {
             final String testMethodFQN = getTestMethodName(description);
             final boolean isFailed = isFailed(description);
             List<Coverage> coverages = coverageBuilder.getClasses().stream().map(c -> new Coverage(c))
-                    .collect(Collectors.toList());
+                .collect(Collectors.toList());
 
             final TestResult testResult = new TestResult(testMethodFQN, isFailed, coverages);
             testResults.add(testResult);
