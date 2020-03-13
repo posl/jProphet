@@ -19,6 +19,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
     private final String fixedFilePath;
     private final String fixedFileFqn;
     private Class<? extends AstOperation> operation;
+    private final int id;
 
     /**
      * 以下の引数の情報を元にパッチ候補を生成 
@@ -29,12 +30,22 @@ public class DefaultPatchCandidate implements PatchCandidate {
      * @param operation 適用されたオペレータのクラス
      */
     public DefaultPatchCandidate(Node targetNodeBeforeFix, CompilationUnit fixedCompilationUnit, 
-                                 String fixedFilePath, String fixedFileFQN, Class<? extends AstOperation> operation) {
+                                 String fixedFilePath, String fixedFileFQN, Class<? extends AstOperation> operation, int id) {
         this.targetNodeBeforeFix = targetNodeBeforeFix;
         this.fixedCompilationUnit = fixedCompilationUnit;
         this.fixedFilePath = fixedFilePath;
         this.fixedFileFqn = fixedFileFQN;
         this.operation = operation;
+        this.id = id;
+    }
+
+ 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getId() {
+        return id;
     }
 
     /**
@@ -92,6 +103,8 @@ public class DefaultPatchCandidate implements PatchCandidate {
     @Override
     public String toString(){
         return new StringBuilder().append("")
+            .append("ID : " + this.getId())
+            .append("\n")
             .append("fixed file path : " + this.fixedFilePath)
             .append("\n")
             .append("used operation  : " + this.operation.getSimpleName())

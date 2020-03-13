@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 
@@ -14,27 +15,15 @@ import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.test.result.TestResult;
 import jp.posl.jprophet.test.result.TestResultStore;
 
-
-/**
- * テスト結果と修正パッチを受け取り、CSVファイルとして書き込みを行うクラス
- */
-public class CSVTestResultExporter implements TestResultExporter {
+public class PatchDiffExporter implements TestResultExporter {
 
     private final String resultDir;
-    private final String resultFilePath = "result.csv";
+    private final String resultFileName = "diff.txt";
 
-
-    /**
-     * CSVTestResultExporterのコンストラクタ
-     */
-    public CSVTestResultExporter(String resultDir) {
+    public PatchDiffExporter(String resultDir) {
         this.resultDir = resultDir;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void export(TestResultStore resultStore) {
         final File resultDirFile = new File(resultDir);
@@ -42,17 +31,12 @@ public class CSVTestResultExporter implements TestResultExporter {
             resultDirFile.mkdir();
         }
 
-        final File outputFile = new File(resultDir + resultFilePath);
+        final File outputFile = new File(resultDir + resultFileName);
         if(outputFile.exists()) {
             outputFile.delete();
         }
-        final List<String> recodes = new ArrayList<String>();
 
-        
         final List<Map.Entry<TestResult, PatchCandidate>> entryList = new ArrayList<>(resultStore.getPatchResults().entrySet());
-
-        final String field = "ID,filePath,line,operation," + String.join(",", entryList.get(0).getKey().toStringMap().keySet());
-        recodes.add(field);
 
         Collections.sort(   //ID順に並び替え
             entryList,
@@ -64,23 +48,17 @@ public class CSVTestResultExporter implements TestResultExporter {
             }
         );
 
-        for (Map.Entry<TestResult, PatchCandidate> entry : entryList) {
-            final TestResult result = entry.getKey();
-            final PatchCandidate patch = entry.getValue();
-            final String patchLine = patch.getId() + "," + patch.getFilePath() + "," + patch.getLineNumber().get() + "," + patch.getAppliedOperation();
-            final String resultLine = String.join(",", result.toStringMap().values());
-            final String recode = patchLine + "," + resultLine;
-            recodes.add(recode);
-        }
+        final List<String> diffList = entryList.stream().map(e -> e.getValue().toString()).collect(Collectors.toList());
 
-        
         try {
-            FileUtils.write(outputFile, String.join("\n", recodes), "utf-8");
+            FileUtils.write(outputFile, String.join("\n\n", diffList), "utf-8");
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
-        
     }
 
+
+
+    
 }

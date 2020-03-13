@@ -2,7 +2,6 @@ package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -20,6 +19,8 @@ import jp.posl.jprophet.NodeUtility;
 
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.ThisExpr;
+import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 
 
 /**
@@ -43,11 +44,11 @@ public class VariableReplacementOperation implements AstOperation {
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
 
         Function<String, Expression> constructField = fieldName -> new FieldAccessExpr(new ThisExpr(), fieldName);
-        candidates.addAll(this.replaceAssignExprAndArgsWith(targetNode, constructField, fieldNames));
+        candidates.addAll(this.replaceVariables(targetNode, constructField, fieldNames));
 
         Function<String, Expression> constructVar = varName -> new NameExpr(varName);
-        candidates.addAll(this.replaceAssignExprAndArgsWith(targetNode, constructVar, localVarNames));
-        candidates.addAll(this.replaceAssignExprAndArgsWith(targetNode, constructVar, parameterNames));
+        candidates.addAll(this.replaceVariables(targetNode, constructVar, localVarNames));
+        candidates.addAll(this.replaceVariables(targetNode, constructVar, parameterNames));
 
         return candidates;
     }
@@ -97,80 +98,124 @@ public class VariableReplacementOperation implements AstOperation {
     /**
      * 代入式の右辺とメソッド呼び出しの実引数を置換する
      * 
-     * @param node 置換対象
+     * @param targetNode 置換対象
      * @param constructVar 変数名からExpressionノードを作成する関数
      * @param varNames 置換先の変数名のリスト
      * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    private List<CompilationUnit> replaceAssignExprAndArgsWith(Node node, Function<String, Expression> constructVar, List<String> varNames){
+    private List<CompilationUnit> replaceVariables(Node targetNode, Function<String, Expression> constructVar, List<String> varNames){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
 
-        candidates.addAll(this.replaceAssignExprWith(node, varNames, constructVar));
-        candidates.addAll(this.replaceArgsWith(node, varNames, constructVar));
+        candidates.addAll(this.replaceAssignExpr(targetNode, varNames, constructVar));
+        candidates.addAll(this.replaceArgs(targetNode, varNames, constructVar));
+        candidates.addAll(this.replaceNameExprInIfCondition(targetNode, varNames, constructVar));
+        candidates.addAll(this.replaceVarInReturnStmt(targetNode, varNames, constructVar));
 
         return candidates;
     }
 
     /**
      * 代入文における右辺の変数を置換する 
-     * @param node 置換対象 
+     * @param targetNode 置換対象 
      * @param varNames 置換先の変数名のリスト
      * @param constructExpr 置換後の変数のASTノードを生成するラムダ式
      * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    private List<CompilationUnit> replaceAssignExprWith(Node node, List<String> varNames, Function<String, Expression> constructExpr){
+    private List<CompilationUnit> replaceAssignExpr(Node targetNode, List<String> varNames, Function<String, Expression> constructExpr){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
 
-        if (node instanceof AssignExpr) {
+        if (targetNode instanceof AssignExpr) {
+            Expression originalAssignedValue = ((AssignExpr)targetNode).getValue();
+            String originalAssignedValueName = originalAssignedValue.findFirst(SimpleName.class)
+                .map(v -> v.asString())
+                .orElse(originalAssignedValue.toString());
             for(String varName: varNames){
-                Expression originalAssignedValue = ((AssignExpr)node).getValue();
-                String originalAssignedValueName; 
-                try {
-                    originalAssignedValueName = originalAssignedValue.findFirst(SimpleName.class).orElseThrow().asString();
-                } catch (NoSuchElementException e) {
-                    originalAssignedValueName = originalAssignedValue.toString();
-                }
                 if(originalAssignedValueName.equals(varName)){
                     continue;
                 }
-                Node newCandidate = NodeUtility.deepCopyByReparse(node);
-                NodeUtility.replaceNode(constructExpr.apply(varName), ((AssignExpr)newCandidate).getValue())
+                NodeUtility.replaceNode(constructExpr.apply(varName), ((AssignExpr)targetNode).getValue())
                     .flatMap(n -> n.findCompilationUnit())
                     .ifPresent(candidates::add);
-                
             }
         }
-
         return candidates;        
     }
 
     /**
      * メソッド呼び出しの引数における変数の置換を行う 
-     * @param node 置換対象 
+     * @param targetNode 置換対象 
      * @param varNames 置換先の変数名のリスト
      * @param constructExpr 置換後の変数のASTノードを生成するラムダ式
      * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    private List<CompilationUnit> replaceArgsWith(Node node, List<String> varNames, Function<String, Expression> constructExpr){
+    private List<CompilationUnit> replaceArgs(Node targetNode, List<String> varNames, Function<String, Expression> constructExpr){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
 
-        if (node instanceof MethodCallExpr){
-            final int argc = ((MethodCallExpr)(node)).getArguments().size(); 
+        if (targetNode instanceof MethodCallExpr){
+            List<Expression> args = ((MethodCallExpr)targetNode).getArguments();
             for(String varName: varNames){
-                for(int i = 0; i < argc; i++){
-                    String originalArgValue = ((MethodCallExpr)node).getArgument(i).toString();
-                    if(originalArgValue.equals(varName)){
+                for(Expression arg: args){
+                    if(arg.toString().equals(varName)){
                         continue;
                     }
-                    Node newCandidate = NodeUtility.deepCopyByReparse(node);
-                    MethodCallExpr methodCallExpr = (MethodCallExpr)newCandidate;
-                    NodeUtility.replaceNode(constructExpr.apply(varName), methodCallExpr.getArgument(i))
+                    NodeUtility.replaceNode(constructExpr.apply(varName), arg)
                         .flatMap(n -> n.findCompilationUnit())
                         .ifPresent(candidates::add);
                 }
             }
         }
-
         return candidates; 
+    }
+
+    /**
+     * if文の条件式の変数を置換する
+     * @param targetNode 置換対象 
+     * @param varNames 置換先の変数名のリスト
+     * @param constructExpr 置換後の変数のASTノードを生成するラムダ式
+     * @return 置換によって生成された修正後のCompilationUnitのリスト
+     */
+    private List<CompilationUnit> replaceNameExprInIfCondition(Node targetNode, List<String> varNames, Function<String, Expression> constructExpr){
+        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+        
+        if (targetNode instanceof IfStmt) {
+            Expression condition = ((IfStmt)targetNode).getCondition();
+            List<NameExpr> varsInCondition = condition.findAll(NameExpr.class);
+            for(NameExpr var: varsInCondition){
+                for(String varName: varNames){
+                    if(var.toString().equals(varName)){
+                        continue;
+                    }
+                    NodeUtility.replaceNode(constructExpr.apply(varName), var)
+                        .flatMap(n -> n.findCompilationUnit())
+                        .ifPresent(candidates::add);
+                }
+            }
+        }
+        return candidates;        
+    }
+
+    /**
+     * returnされる変数を置換する
+     * @param targetNode 置換対象 
+     * @param varNames 置換先の変数名のリスト
+     * @param constructExpr 置換後の変数のASTノードを生成するラムダ式
+     * @return 置換によって生成された修正後のCompilationUnitのリスト
+     */
+    private List<CompilationUnit> replaceVarInReturnStmt(Node targetNode, List<String> varNames, Function<String, Expression> constructExpr){
+        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+        
+        if (targetNode instanceof ReturnStmt) {
+            ((ReturnStmt)targetNode).getExpression().ifPresent(var -> {
+                for(String varName: varNames){
+                    if(var.toString().equals(varName)){
+                        continue;
+                    }
+                    NodeUtility.replaceNode(constructExpr.apply(varName), var)
+                        .flatMap(n -> n.findCompilationUnit())
+                        .ifPresent(candidates::add);
+                }
+            });
+        }
+        return candidates;        
     }
 }

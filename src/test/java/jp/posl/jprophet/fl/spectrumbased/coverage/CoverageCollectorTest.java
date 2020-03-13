@@ -23,6 +23,13 @@ public class CoverageCollectorTest{
     private List<String> TestClassFilePaths = new ArrayList<String>();
     private TestResults testResults = new TestResults();
 
+    private String loopProjectPath;
+    private RepairConfiguration loopConfig;
+    private ProjectBuilder loopProjectBuilder = new ProjectBuilder();
+    private List<String> loopSourceClassFilePaths = new ArrayList<String>();
+    private List<String> loopTestClassFilePaths = new ArrayList<String>();
+    private TestResults loopTestResults = new TestResults();
+
 
     @Before public void setup(){
         this.projectPath = "src/test/resources/testFLProject";
@@ -40,6 +47,16 @@ public class CoverageCollectorTest{
         this.TestClassFilePaths.add("testFLProject.IfstatementTest");
 
         projectBuilder.build(config);
+
+        this.loopProjectPath = "src/test/resources/testGradleProject03";
+        this.loopConfig = new RepairConfiguration("./looptmp/", null, new GradleProject(this.loopProjectPath));
+        this.loopSourceClassFilePaths.add("testGradleProject02.App");
+        this.loopSourceClassFilePaths.add("testGradleProject02.App2");
+        this.loopTestClassFilePaths.add("testGradleProject02.App2Test");
+        this.loopTestClassFilePaths.add("testGradleProject02.AppTest");
+
+
+        loopProjectBuilder.build(loopConfig);
     
     }
 
@@ -87,6 +104,34 @@ public class CoverageCollectorTest{
 
         try {
             FileUtils.deleteDirectory(new File("./TEtmp/"));
+            FileUtils.deleteDirectory(new File("./looptmp/"));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 無限ループ等で実行時間が長くなった時のテスト
+     */
+    @Test public void testForLoop(){
+        CoverageCollector coverageCollector = new CoverageCollector("looptmp");
+        boolean isSuccess;
+        try {
+            loopTestResults = coverageCollector.exec(loopSourceClassFilePaths, loopTestClassFilePaths);
+            isSuccess = true;
+        } 
+        catch (Exception e){
+            isSuccess = false;
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+
+        assertThat(isSuccess).isTrue();
+
+        try {
+            FileUtils.deleteDirectory(new File("./TEtmp/"));
+            FileUtils.deleteDirectory(new File("./looptmp/"));
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();

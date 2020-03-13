@@ -35,6 +35,8 @@ public class CoverageCollector {
     private final Instrumenter jacocoInstrumenter;
     private final RuntimeData jacocoRuntimeData;
 
+    private final long waitTime = 5000; //タイムアウトさせる時間[ms]
+
     public CoverageCollector(String buildpath) {
         this.memoryClassLoader = null;
         this.jacocoRuntime = new LoggerRuntime();
@@ -73,8 +75,16 @@ public class CoverageCollector {
             final JUnitCore junitCore = new JUnitCore();
             final RunListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
             junitCore.addListener(listener);
-            //TODO junitCore.runはどうやって動いているのか調べる
-            junitCore.run(junitClass);
+            
+            //タイムアウト処理
+            Thread testThread = new TestThread(junitCore, junitClass);
+            testThread.start();
+            try {
+                //waitTime ms 経過でスキップ
+                testThread.join(waitTime);
+            } catch (InterruptedException e) {
+                //TODO: handle exception
+            }
         }
         
         
@@ -275,15 +285,30 @@ public class CoverageCollector {
          * @param description テストの実行情報
          */
         private void addJacocoCoverageToTestResults(final CoverageBuilder coverageBuilder,
-                final Description description) {
+            final Description description) {
             final String testMethodFQN = getTestMethodName(description);
             final boolean isFailed = isFailed(description);
             List<Coverage> coverages = coverageBuilder.getClasses().stream().map(c -> new Coverage(c))
-                    .collect(Collectors.toList());
+                .collect(Collectors.toList());
 
             final TestResult testResult = new TestResult(testMethodFQN, isFailed, coverages);
             testResults.add(testResult);
         }
     }
 
+}
+
+class TestThread extends Thread {
+    private JUnitCore junitCore;
+    private Class<?> junitClass;
+
+    public TestThread(JUnitCore junitCore, Class<?> junitClass){
+        this.junitCore = junitCore;
+        this.junitClass = junitClass;
+    }
+
+    @Override
+    public void run(){
+        junitCore.run(junitClass);
+    }
 }

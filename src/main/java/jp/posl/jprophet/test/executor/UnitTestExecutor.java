@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import org.junit.runner.JUnitCore;
 
 import jp.posl.jprophet.project.Project;
-import jp.posl.jprophet.test.result.TestResult;
+import jp.posl.jprophet.test.result.TestExecutorResult;
 import jp.posl.jprophet.test.result.UnitTestResult;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
@@ -27,6 +27,7 @@ public class UnitTestExecutor implements TestExecutor {
     //そうするとメイン関数を変更する事になるのでとりあえず後回し
     
     private final String gradleTestPath = "/src/test/java/"; //出来ればgradleから取得したい
+    private final long waitTime = 5000; //タイムアウトさせる時間[ms]
 
 
     /**
@@ -45,16 +46,17 @@ public class UnitTestExecutor implements TestExecutor {
      * @return 全てのテスト実行が通ったかどうか
      */
     @Override
-    public List<TestResult> exec(RepairConfiguration config)  {
+    public TestExecutorResult exec(RepairConfiguration config)  {
         try {
             builder.build(config);
             getClassLoader(config.getBuildPath());
             testClasses = loadTestClass(config.getTargetProject());
-            return List.of(new UnitTestResult(runAllTestClass(testClasses)));
+            final boolean result = runAllTestClass(testClasses);
+            return new TestExecutorResult(result, List.of(new UnitTestResult(result)));
         }
         catch (MalformedURLException | ClassNotFoundException e) {
             System.err.println(e.getMessage());
-            return List.of(new UnitTestResult(false));
+            return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
         }
     }
 
@@ -96,7 +98,17 @@ public class UnitTestExecutor implements TestExecutor {
     private boolean runAllTestClass(List<Class<?>> classes){
         final JUnitCore junitCore = new JUnitCore();
         for (Class<?> testClass : testClasses){
-            final boolean isSuccess = junitCore.run(testClass).wasSuccessful();
+
+            //タイムアウト処理
+            Thread testThread = new TestThread(junitCore, testClass);
+            testThread.start();
+            try {
+                //waitTime ms 経過でスキップ
+                testThread.join(waitTime);
+            } catch (InterruptedException e) {
+                //TODO: handle exception
+            }
+            final boolean isSuccess = ((TestThread) testThread).getIsSuccess();
             if(!isSuccess) return false;
         }
         return true;
@@ -104,3 +116,23 @@ public class UnitTestExecutor implements TestExecutor {
 
 }
 
+class TestThread extends Thread {
+    private JUnitCore junitCore;
+    private Class<?> testClass;
+    public boolean isSuccess;
+
+    public TestThread(JUnitCore junitCore, Class<?> testClass){
+        this.junitCore = junitCore;
+        this.testClass = testClass;
+        this.isSuccess = false;
+    }
+
+    @Override
+    public void run(){
+        this.isSuccess = junitCore.run(testClass).wasSuccessful();
+    }
+
+    public boolean getIsSuccess(){
+        return this.isSuccess;
+    }
+}
