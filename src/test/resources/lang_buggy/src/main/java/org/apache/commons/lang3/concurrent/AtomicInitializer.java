@@ -1,24 +1,24 @@
-
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
-
- *      http:
-
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-
+ */
 package org.apache.commons.lang3.concurrent;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-
+/**
  * <p>
  * A specialized implementation of the {@code ConcurrentInitializer} interface
  * based on an {@link AtomicReference} variable.
@@ -59,24 +59,24 @@ import java.util.concurrent.atomic.AtomicReference;
  * uninitialized object is small. If there is high parallelism,
  * {@link LazyInitializer} is more appropriate.
  * </p>
-
+ *
  * @since 3.0
  * @version $Id$
  * @param <T> the type of the object managed by this initializer class
-
+ */
 public abstract class AtomicInitializer<T> implements ConcurrentInitializer<T> {
     
     private final AtomicReference<T> reference = new AtomicReference<T>();
 
-    
+    /**
      * Returns the object managed by this initializer. The object is created if
      * it is not available yet and stored internally. This method always returns
      * the same object.
-    
+     *
      * @return the object created by this {@code AtomicInitializer}
      * @throws ConcurrentException if an error occurred during initialization of
      * the object
-
+     */
     @Override
     public T get() throws ConcurrentException {
         T result = reference.get();
@@ -84,7 +84,7 @@ public abstract class AtomicInitializer<T> implements ConcurrentInitializer<T> {
         if (result == null) {
             result = initialize();
             if (!reference.compareAndSet(null, result)) {
-                
+                // another thread has initialized the reference
                 result = reference.get();
             }
         }
@@ -92,16 +92,16 @@ public abstract class AtomicInitializer<T> implements ConcurrentInitializer<T> {
         return result;
     }
 
-    
+    /**
      * Creates and initializes the object managed by this {@code
      * AtomicInitializer}. This method is called by {@link #get()} when the
      * managed object is not available yet. An implementation can focus on the
      * creation of the object. No synchronization is needed, as this is already
      * handled by {@code get()}. As stated by the class comment, it is possible
      * that this method is called multiple times.
-    
+     *
      * @return the managed data object
      * @throws ConcurrentException if an error occurs during object creation
-
+     */
     protected abstract T initialize() throws ConcurrentException;
 }

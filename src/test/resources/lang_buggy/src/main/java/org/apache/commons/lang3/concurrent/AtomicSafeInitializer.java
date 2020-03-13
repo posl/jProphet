@@ -1,24 +1,24 @@
-
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
-
- *      http:
-
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-
+ */
 package org.apache.commons.lang3.concurrent;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-
+/**
  * <p>
  * A specialized {@code ConcurrentInitializer} implementation which is similar
  * to {@link AtomicInitializer}, but ensures that the {@link #initialize()}
@@ -48,11 +48,11 @@ import java.util.concurrent.atomic.AtomicReference;
  * platform to decide which implementation is suitable for their specific use
  * case.
  * </p>
-
+ *
  * @since 3.0
  * @version $Id$
  * @param <T> the type of the object managed by this initializer class
-
+ */
 public abstract class AtomicSafeInitializer<T> implements
         ConcurrentInitializer<T> {
     
@@ -62,13 +62,13 @@ public abstract class AtomicSafeInitializer<T> implements
     
     private final AtomicReference<T> reference = new AtomicReference<T>();
 
-    
+    /**
      * Get (and initialize, if not initialized yet) the required object
-    
+     *
      * @return lazily initialized object
      * @throws ConcurrentException if the initialization of the object causes an
      * exception
-
+     */
     @Override
     public final T get() throws ConcurrentException {
         T result;
@@ -82,16 +82,16 @@ public abstract class AtomicSafeInitializer<T> implements
         return result;
     }
 
-    
+    /**
      * Creates and initializes the object managed by this
      * {@code AtomicInitializer}. This method is called by {@link #get()} when
      * the managed object is not available yet. An implementation can focus on
      * the creation of the object. No synchronization is needed, as this is
      * already handled by {@code get()}. This method is guaranteed to be called
      * only once.
-    
+     *
      * @return the managed data object
      * @throws ConcurrentException if an error occurs during object creation
-
+     */
     protected abstract T initialize() throws ConcurrentException;
 }
