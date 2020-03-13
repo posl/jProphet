@@ -1,4 +1,4 @@
-/*
+
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -6,17 +6,17 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+
 package org.apache.commons.lang3.builder;
 
-/**
+
  * <p>
  * The Builder interface is designed to designate a class as a <em>builder</em> 
  * object in the Builder design pattern. Builders are capable of creating and 
@@ -48,15 +48,15 @@ package org.apache.commons.lang3.builder;
  * 
  *     public FontBuilder bold() {
  *         this.font = this.font.deriveFont(Font.BOLD);
- *         return this; // Reference returned so calls can be chained
+ *         return this; 
  *     }
  *     
  *     public FontBuilder size(float pointSize) {
  *         this.font = this.font.deriveFont(pointSize);
- *         return this; // Reference returned so calls can be chained
+ *         return this; 
  *     }
  * 
- *     // Other Font construction methods
+ *     
  * 
  *     public Font build() {
  *         return this.font;
@@ -76,14 +76,14 @@ package org.apache.commons.lang3.builder;
  * 
  * @since 3.0
  * @version $Id$
- */
+
 public interface Builder<T> {
 
-    /**
+    
      * Returns a reference to the object being constructed or result being 
      * calculated by the builder.
      * 
      * @return the object constructed or result calculated by the builder.
-     */
+
     T build();
 }

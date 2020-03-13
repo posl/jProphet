@@ -1,4 +1,4 @@
-/*
+
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -6,14 +6,14 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+
 package org.apache.commons.lang3.exception;
 
 import java.io.Serializable;
@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-/**
+
  * Default implementation of the context storing the label-value pairs for contexted exceptions.
  * <p>
  * This implementation is serializable, however this is dependent on the values that
@@ -37,7 +37,7 @@ import org.apache.commons.lang3.tuple.Pair;
  * @see ContextedException
  * @see ContextedRuntimeException
  * @since 3.0
- */
+
 public class DefaultExceptionContext implements ExceptionContext, Serializable {
 
     
@@ -46,18 +46,18 @@ public class DefaultExceptionContext implements ExceptionContext, Serializable {
     
     private final List<Pair<String, Object>> contextValues = new ArrayList<Pair<String,Object>>();
 
-    /**
+    
      * {@inheritDoc}
-     */
+
     @Override
     public DefaultExceptionContext addContextValue(final String label, final Object value) {
         contextValues.add(new ImmutablePair<String, Object>(label, value));
         return this;
     }
 
-    /**
+    
      * {@inheritDoc}
-     */
+
     @Override
     public DefaultExceptionContext setContextValue(final String label, final Object value) {
         for (final Iterator<Pair<String, Object>> iter = contextValues.iterator(); iter.hasNext();) {
@@ -70,9 +70,9 @@ public class DefaultExceptionContext implements ExceptionContext, Serializable {
         return this;
     }
 
-    /**
+    
      * {@inheritDoc}
-     */
+
     @Override
     public List<Object> getContextValues(final String label) {
         final List<Object> values = new ArrayList<Object>();
@@ -84,9 +84,9 @@ public class DefaultExceptionContext implements ExceptionContext, Serializable {
         return values;
     }
 
-    /**
+    
      * {@inheritDoc}
-     */
+
     @Override
     public Object getFirstContextValue(final String label) {
         for (final Pair<String, Object> pair : contextValues) {
@@ -97,9 +97,9 @@ public class DefaultExceptionContext implements ExceptionContext, Serializable {
         return null;
     }
 
-    /**
+    
      * {@inheritDoc}
-     */
+
     @Override
     public Set<String> getContextLabels() {
         final Set<String> labels = new HashSet<String>();
@@ -109,20 +109,20 @@ public class DefaultExceptionContext implements ExceptionContext, Serializable {
         return labels;
     }
 
-    /**
+    
      * {@inheritDoc}
-     */
+
     @Override
     public List<Pair<String, Object>> getContextEntries() {
         return contextValues;
     }
 
-    /**
+    
      * Builds the message containing the contextual information.
      * 
      * @param baseMessage  the base exception message <b>without</b> context information appended
      * @return the exception message <b>with</b> context information appended, never null
-     */
+
     @Override
     public String getFormattedExceptionMessage(final String baseMessage){
         final StringBuilder buffer = new StringBuilder(256);

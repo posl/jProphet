@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.lang3;
 
 import java.lang.annotation.Annotation;
@@ -24,30 +24,30 @@ import java.util.Arrays;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-/**
- * <p>Helper methods for working with {@link Annotation} instances.</p>
- *
- * <p>This class contains various utility methods that make working with
- * annotations simpler.</p>
- *
- * <p>{@link Annotation} instances are always proxy objects; unfortunately
- * dynamic proxies cannot be depended upon to know how to implement certain
- * methods in the same manner as would be done by "natural" {@link Annotation}s.
- * The methods presented in this class can be used to avoid that possibility. It
- * is of course also possible for dynamic proxies to actually delegate their
- * e.g. {@link Annotation#equals(Object)}/{@link Annotation#hashCode()}/
- * {@link Annotation#toString()} implementations to {@link AnnotationUtils}.</p>
- *
- * <p>#ThreadSafe#</p>
- *
- * @since 3.0
- * @version $Id$
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 public class AnnotationUtils {
 
-    /**
-     * A style that prints annotations as recommended.
-     */
+    
+    
+
     private static final ToStringStyle TO_STRING_STYLE = new ToStringStyle() {
         
         private static final long serialVersionUID = 1L;
@@ -65,15 +65,15 @@ public class AnnotationUtils {
             setArrayEnd("]");
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        
+        
+
         @Override
         protected String getShortClassName(final java.lang.Class<?> cls) {
             Class<? extends Annotation> annotationType = null;
             for (final Class<?> iface : ClassUtils.getAllInterfaces(cls)) {
                 if (Annotation.class.isAssignableFrom(iface)) {
-                    @SuppressWarnings("unchecked") // OK because we just checked the assignability
+                    @SuppressWarnings("unchecked") 
                     final
                     Class<? extends Annotation> found = (Class<? extends Annotation>) iface;
                     annotationType = found;
@@ -84,9 +84,9 @@ public class AnnotationUtils {
                     .insert(0, '@').toString();
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        
+        
+
         @Override
         protected void appendDetail(final StringBuffer buffer, final String fieldName, Object value) {
             if (value instanceof Annotation) {
@@ -97,28 +97,28 @@ public class AnnotationUtils {
 
     };
 
-    /**
-     * <p>{@code AnnotationUtils} instances should NOT be constructed in
-     * standard programming. Instead, the class should be used statically.</p>
-     *
-     * <p>This constructor is public to permit tools that require a JavaBean
-     * instance to operate.</p>
-     */
+    
+    
+    
+    
+    
+    
+
     public AnnotationUtils() {
     }
 
-    //-----------------------------------------------------------------------
-    /**
-     * <p>Checks if two annotations are equal using the criteria for equality
-     * presented in the {@link Annotation#equals(Object)} API docs.</p>
-     *
-     * @param a1 the first Annotation to compare, {@code null} returns
-     * {@code false} unless both are {@code null}
-     * @param a2 the second Annotation to compare, {@code null} returns
-     * {@code false} unless both are {@code null}
-     * @return {@code true} if the two annotations are {@code equal} or both
-     * {@code null}
-     */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
     public static boolean equals(final Annotation a1, final Annotation a2) {
         if (a1 == a2) {
             return true;
@@ -152,18 +152,18 @@ public class AnnotationUtils {
         return true;
     }
 
-    /**
-     * <p>Generate a hash code for the given annotation using the algorithm
-     * presented in the {@link Annotation#hashCode()} API docs.</p>
-     *
-     * @param a the Annotation for a hash code calculation is desired, not
-     * {@code null}
-     * @return the calculated hash code
-     * @throws RuntimeException if an {@code Exception} is encountered during
-     * annotation member access
-     * @throws IllegalStateException if an annotation method invocation returns
-     * {@code null}
-     */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
     public static int hashCode(final Annotation a) {
         int result = 0;
         final Class<? extends Annotation> type = a.annotationType();
@@ -184,19 +184,19 @@ public class AnnotationUtils {
         return result;
     }
 
-    /**
-     * <p>Generate a string representation of an Annotation, as suggested by
-     * {@link Annotation#toString()}.</p>
-     *
-     * @param a the annotation of which a string representation is desired
-     * @return the standard string representation of an annotation, not
-     * {@code null}
-     */
+    
+    
+    
+    
+    
+    
+    
+
     public static String toString(final Annotation a) {
         final ToStringBuilder builder = new ToStringBuilder(a, TO_STRING_STYLE);
         for (final Method m : a.annotationType().getDeclaredMethods()) {
             if (m.getParameterTypes().length > 0) {
-                continue; //wtf?
+                continue; 
             }
             try {
                 builder.append(m.getName(), m.invoke(a));
@@ -209,17 +209,17 @@ public class AnnotationUtils {
         return builder.build();
     }
 
-    /**
-     * <p>Checks if the specified type is permitted as an annotation member.</p>
-     *
-     * <p>The Java language specification only permits certain types to be used
-     * in annotations. These include {@link String}, {@link Class}, primitive
-     * types, {@link Annotation}, {@link Enum}, and single-dimensional arrays of
-     * these types.</p>
-     *
-     * @param type the type to check, {@code null}
-     * @return {@code true} if the type is a valid type to use in an annotation
-     */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
     public static boolean isValidAnnotationMemberType(Class<?> type) {
         if (type == null) {
             return false;
@@ -231,16 +231,16 @@ public class AnnotationUtils {
                 || String.class.equals(type) || Class.class.equals(type);
     }
 
-    //besides modularity, this has the advantage of autoboxing primitives:
-    /**
-     * Helper method for generating a hash code for a member of an annotation.
-     *
-     * @param name the name of the member
-     * @param value the value of the member
-     * @return a hash code for this member
-     */
+    
+    
+    
+    
+    
+    
+    
+
     private static int hashMember(final String name, final Object value) {
-        final int part1 = name.hashCode() * 127;
+        final int part1 = name.hashCode()
         if (value.getClass().isArray()) {
             return part1 ^ arrayMemberHash(value.getClass().getComponentType(), value);
         }
@@ -250,16 +250,16 @@ public class AnnotationUtils {
         return part1 ^ value.hashCode();
     }
 
-    /**
-     * Helper method for checking whether two objects of the given type are
-     * equal. This method is used to compare the parameters of two annotation
-     * instances.
-     *
-     * @param type the type of the objects to be compared
-     * @param o1 the first object
-     * @param o2 the second object
-     * @return a flag whether these objects are equal
-     */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
     private static boolean memberEquals(final Class<?> type, final Object o1, final Object o2) {
         if (o1 == o2) {
             return true;
@@ -276,14 +276,14 @@ public class AnnotationUtils {
         return o1.equals(o2);
     }
 
-    /**
-     * Helper method for comparing two objects of an array type.
-     *
-     * @param componentType the component type of the array
-     * @param o1 the first object
-     * @param o2 the second object
-     * @return a flag whether these objects are equal
-     */
+    
+    
+    
+    
+    
+    
+    
+
     private static boolean arrayMemberEquals(final Class<?> componentType, final Object o1, final Object o2) {
         if (componentType.isAnnotation()) {
             return annotationArrayMemberEquals((Annotation[]) o1, (Annotation[]) o2);
@@ -315,13 +315,13 @@ public class AnnotationUtils {
         return Arrays.equals((Object[]) o1, (Object[]) o2);
     }
 
-    /**
-     * Helper method for comparing two arrays of annotations.
-     *
-     * @param a1 the first array
-     * @param a2 the second array
-     * @return a flag whether these arrays are equal
-     */
+    
+    
+    
+    
+    
+    
+
     private static boolean annotationArrayMemberEquals(final Annotation[] a1, final Annotation[] a2) {
         if (a1.length != a2.length) {
             return false;
@@ -334,13 +334,13 @@ public class AnnotationUtils {
         return true;
     }
 
-    /**
-     * Helper method for generating a hash code for an array.
-     *
-     * @param componentType the component type of the array
-     * @param o the array
-     * @return a hash code for the specified array
-     */
+    
+    
+    
+    
+    
+    
+
     private static int arrayMemberHash(final Class<?> componentType, final Object o) {
         if (componentType.equals(Byte.TYPE)) {
             return Arrays.hashCode((byte[]) o);

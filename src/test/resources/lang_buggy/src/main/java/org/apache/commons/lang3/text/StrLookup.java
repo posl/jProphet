@@ -1,24 +1,24 @@
-/*
+
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+
+ *      http:
+
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+
 package org.apache.commons.lang3.text;
 
 import java.util.Map;
 
-/**
+
  * Lookup a String key to a String value.
  * <p>
  * This class represents the simplest form of a string to string map.
@@ -30,26 +30,26 @@ import java.util.Map;
  * <p>
  * For example, it would be possible to implement a lookup that used the
  * key as a primary key, and looked up the value on demand from the database
- *
+
  * @since 2.2
  * @version $Id$
- */
+
 public abstract class StrLookup<V> {
 
-    /**
+    
      * Lookup that always returns null.
-     */
+
     private static final StrLookup<String> NONE_LOOKUP;
-    /**
+    
      * Lookup that uses System properties.
-     */
+
     private static final StrLookup<String> SYSTEM_PROPERTIES_LOOKUP;
     static {
         NONE_LOOKUP = new MapStrLookup<String>(null);
         StrLookup<String> lookup = null;
         try {
             final Map<?, ?> propMap = System.getProperties();
-            @SuppressWarnings("unchecked") // System property keys and values are always Strings
+            @SuppressWarnings("unchecked") 
             final Map<String, String> properties = (Map<String, String>) propMap;
             lookup = new MapStrLookup<String>(properties);
         } catch (final SecurityException ex) {
@@ -58,17 +58,17 @@ public abstract class StrLookup<V> {
         SYSTEM_PROPERTIES_LOOKUP = lookup;
     }
 
-    //-----------------------------------------------------------------------
-    /**
+    
+    
      * Returns a lookup which always returns null.
-     *
+    
      * @return a lookup that always returns null, not null
-     */
+
     public static StrLookup<?> noneLookup() {
         return NONE_LOOKUP;
     }
 
-    /**
+    
      * Returns a lookup which uses {@link System#getProperties() System properties}
      * to lookup the key to value.
      * <p>
@@ -76,36 +76,36 @@ public abstract class StrLookup<V> {
      * be returned from every lookup.
      * <p>
      * If a null key is used, this lookup will throw a NullPointerException.
-     *
+    
      * @return a lookup using system properties, not null
-     */
+
     public static StrLookup<String> systemPropertiesLookup() {
         return SYSTEM_PROPERTIES_LOOKUP;
     }
 
-    /**
+    
      * Returns a lookup which looks up values using a map.
      * <p>
      * If the map is null, then null will be returned from every lookup.
      * The map result object is converted to a string using toString().
-     *
+    
      * @param <V> the type of the values supported by the lookup
      * @param map  the map of keys to values, may be null
      * @return a lookup using the map, not null
-     */
+
     public static <V> StrLookup<V> mapLookup(final Map<String, V> map) {
         return new MapStrLookup<V>(map);
     }
 
-    //-----------------------------------------------------------------------
-    /**
+    
+    
      * Constructor.
-     */
+
     protected StrLookup() {
         super();
     }
 
-    /**
+    
      * Looks up a String key to a String value.
      * <p>
      * The internal implementation may use any mechanism to return the value.
@@ -127,36 +127,36 @@ public abstract class StrLookup<V> {
      * </pre>
      * @param key  the key to be looked up, may be null
      * @return the matching value, null if no match
-     */
+
     public abstract String lookup(String key);
 
-    //-----------------------------------------------------------------------
-    /**
+    
+    
      * Lookup implementation that uses a Map.
-     */
+
     static class MapStrLookup<V> extends StrLookup<V> {
 
         
         private final Map<String, V> map;
 
-        /**
+        
          * Creates a new instance backed by a Map.
-         *
+        
          * @param map  the map of keys to values, may be null
-         */
+
         MapStrLookup(final Map<String, V> map) {
             this.map = map;
         }
 
-        /**
+        
          * Looks up a String key to a String value using the map.
          * <p>
          * If the map is null, then null is returned.
          * The map result object is converted to a string using toString().
-         *
+        
          * @param key  the key to be looked up, may be null
          * @return the matching value, null if no match
-         */
+
         @Override
         public String lookup(final String key) {
             if (map == null) {

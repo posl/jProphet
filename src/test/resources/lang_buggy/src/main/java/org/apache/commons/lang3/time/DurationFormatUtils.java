@@ -1,4 +1,4 @@
-/*
+
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -6,14 +6,14 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+
 package org.apache.commons.lang3.time;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
+
  * <p>Duration formatting utilities and constants. The following table describes the tokens 
  * used in the pattern language for formatting. </p>
  * <table border="1">
@@ -37,33 +37,33 @@ import org.apache.commons.lang3.StringUtils;
  *  <tr><td>s</td><td>seconds</td></tr>
  *  <tr><td>S</td><td>milliseconds</td></tr>
  * </table>
- *
+
  * @since 2.1
  * @version $Id$
- */
+
 public class DurationFormatUtils {
 
-    /**
+    
      * <p>DurationFormatUtils instances should NOT be constructed in standard programming.</p>
-     *
+    
      * <p>This constructor is public to permit tools that require a JavaBean instance
      * to operate.</p>
-     */
+
     public DurationFormatUtils() {
         super();
     }
 
-    /**
+    
      * <p>Pattern used with <code>FastDateFormat</code> and <code>SimpleDateFormat</code>
      * for the ISO8601 period format used in durations.</p>
      * 
      * @see org.apache.commons.lang3.time.FastDateFormat
      * @see java.text.SimpleDateFormat
-     */
+
     public static final String ISO_EXTENDED_FORMAT_PATTERN = "'P'yyyy'Y'M'M'd'DT'H'H'm'M's.S'S'";
 
-    //-----------------------------------------------------------------------
-    /**
+    
+    
      * <p>Formats the time gap as a string.</p>
      * 
      * <p>The format used is ISO8601-like:
@@ -71,12 +71,12 @@ public class DurationFormatUtils {
      * 
      * @param durationMillis  the duration to format
      * @return the formatted duration, not null
-     */
+
     public static String formatDurationHMS(final long durationMillis) {
         return formatDuration(durationMillis, "H:mm:ss.SSS");
     }
 
-    /**
+    
      * <p>Formats the time gap as a string.</p>
      * 
      * <p>The format used is the ISO8601 period format.</p>
@@ -86,12 +86,12 @@ public class DurationFormatUtils {
      * 
      * @param durationMillis  the duration to format
      * @return the formatted duration, not null
-     */
+
     public static String formatDurationISO(final long durationMillis) {
         return formatDuration(durationMillis, ISO_EXTENDED_FORMAT_PATTERN, false);
     }
 
-    /**
+    
      * <p>Formats the time gap as a string, using the specified format, and padding with zeros and 
      * using the default timezone.</p>
      * 
@@ -101,12 +101,12 @@ public class DurationFormatUtils {
      * @param durationMillis  the duration to format
      * @param format  the way in which to format the duration, not null
      * @return the formatted duration, not null
-     */
+
     public static String formatDuration(final long durationMillis, final String format) {
         return formatDuration(durationMillis, format, true);
     }
 
-    /**
+    
      * <p>Formats the time gap as a string, using the specified format.
      * Padding the left hand side of numbers with zeroes is optional and 
      * the timezone may be specified.</p>
@@ -118,7 +118,7 @@ public class DurationFormatUtils {
      * @param format  the way in which to format the duration, not null
      * @param padWithZeros  whether to pad the left hand side of numbers with 0's
      * @return the formatted duration, not null
-     */
+
     public static String formatDuration(long durationMillis, final String format, final boolean padWithZeros) {
 
         final Token[] tokens = lexx(format);
@@ -152,7 +152,7 @@ public class DurationFormatUtils {
         return format(tokens, 0, 0, days, hours, minutes, seconds, milliseconds, padWithZeros);
     }
 
-    /**
+    
      * <p>Formats an elapsed time into a plurialization correct string.</p>
      * 
      * <p>This method formats durations using the days and lower fields of the
@@ -162,18 +162,18 @@ public class DurationFormatUtils {
      * @param suppressLeadingZeroElements  suppresses leading 0 elements
      * @param suppressTrailingZeroElements  suppresses trailing 0 elements
      * @return the formatted text in days/hours/minutes/seconds, not null
-     */
+
     public static String formatDurationWords(
         final long durationMillis,
         final boolean suppressLeadingZeroElements,
         final boolean suppressTrailingZeroElements) {
 
-        // This method is generally replacable by the format method, but 
-        // there are a series of tweaks and special cases that require 
-        // trickery to replicate.
+        
+        
+        
         String duration = formatDuration(durationMillis, "d' days 'H' hours 'm' minutes 's' seconds'");
         if (suppressLeadingZeroElements) {
-            // this is a temporary marker on the front. Like ^ in regexp.
+            
             duration = " " + duration;
             String tmp = StringUtils.replaceOnce(duration, " 0 days", "");
             if (tmp.length() != duration.length()) {
@@ -189,7 +189,7 @@ public class DurationFormatUtils {
                 }
             }
             if (duration.length() != 0) {
-                // strip the space off again
+                
                 duration = duration.substring(1);
             }
         }
@@ -207,7 +207,7 @@ public class DurationFormatUtils {
                 }
             }
         }
-        // handle plurals
+        
         duration = " " + duration;
         duration = StringUtils.replaceOnce(duration, " 1 seconds", " 1 second");
         duration = StringUtils.replaceOnce(duration, " 1 minutes", " 1 minute");
@@ -216,8 +216,8 @@ public class DurationFormatUtils {
         return duration.trim();
     }
 
-    //-----------------------------------------------------------------------
-    /**
+    
+    
      * <p>Formats the time gap as a string.</p>
      * 
      * <p>The format used is the ISO8601 period format.</p>
@@ -225,12 +225,12 @@ public class DurationFormatUtils {
      * @param startMillis  the start of the duration to format
      * @param endMillis  the end of the duration to format
      * @return the formatted duration, not null
-     */
+
     public static String formatPeriodISO(final long startMillis, final long endMillis) {
         return formatPeriod(startMillis, endMillis, ISO_EXTENDED_FORMAT_PATTERN, false, TimeZone.getDefault());
     }
 
-    /**
+    
      * <p>Formats the time gap as a string, using the specified format.
      * Padding the left hand side of numbers with zeroes is optional.
      * 
@@ -238,16 +238,16 @@ public class DurationFormatUtils {
      * @param endMillis  the end of the duration
      * @param format  the way in which to format the duration, not null
      * @return the formatted duration, not null
-     */
+
     public static String formatPeriod(final long startMillis, final long endMillis, final String format) {
         return formatPeriod(startMillis, endMillis, format, true, TimeZone.getDefault());
     }
 
-    /**
+    
      * <p>Formats the time gap as a string, using the specified format.
      * Padding the left hand side of numbers with zeroes is optional and 
      * the timezone may be specified. </p>
-     *
+    
      * <p>When calculating the difference between months/days, it chooses to 
      * calculate months first. So when working out the number of months and 
      * days between January 15th and March 10th, it choose 1 month and 
@@ -255,8 +255,8 @@ public class DurationFormatUtils {
      * calculating days forwards, and not the 1 month and 26 days gained by 
      * choosing March -> February = 1 month and then calculating days 
      * backwards. </p>
-     *
-     * <p>For more control, the <a href="http://joda-time.sf.net/">Joda-Time</a>
+    
+     * <p>For more control, the <a href="http:
      * library is recommended.</p>
      * 
      * @param startMillis  the start of the duration
@@ -265,26 +265,26 @@ public class DurationFormatUtils {
      * @param padWithZeros  whether to pad the left hand side of numbers with 0's
      * @param timezone  the millis are defined in
      * @return the formatted duration, not null
-     */
+
     public static String formatPeriod(final long startMillis, final long endMillis, final String format, final boolean padWithZeros, 
             final TimeZone timezone) {
 
-        // Used to optimise for differences under 28 days and 
-        // called formatDuration(millis, format); however this did not work 
-        // over leap years. 
-        // TODO: Compare performance to see if anything was lost by 
-        // losing this optimisation. 
+        
+        
+        
+        
+        
         
         final Token[] tokens = lexx(format);
 
-        // timezones get funky around 0, so normalizing everything to GMT 
-        // stops the hours being off
+        
+        
         final Calendar start = Calendar.getInstance(timezone);
         start.setTime(new Date(startMillis));
         final Calendar end = Calendar.getInstance(timezone);
         end.setTime(new Date(endMillis));
 
-        // initial estimates
+        
         int milliseconds = end.get(Calendar.MILLISECOND) - start.get(Calendar.MILLISECOND);
         int seconds = end.get(Calendar.SECOND) - start.get(Calendar.SECOND);
         int minutes = end.get(Calendar.MINUTE) - start.get(Calendar.MINUTE);
@@ -293,7 +293,7 @@ public class DurationFormatUtils {
         int months = end.get(Calendar.MONTH) - start.get(Calendar.MONTH);
         int years = end.get(Calendar.YEAR) - start.get(Calendar.YEAR);
 
-        // each initial estimate is adjusted in case it is under 0
+        
         while (milliseconds < 0) {
             milliseconds += 1000;
             seconds -= 1;
@@ -330,19 +330,19 @@ public class DurationFormatUtils {
                 }
             }
         } else {
-            // there are no M's in the format string
+            
 
             if( !Token.containsTokenWithValue(tokens, y) ) {
                 int target = end.get(Calendar.YEAR);
                 if (months < 0) {
-                    // target is end-year -1
+                    
                     target -= 1;
                 }
                 
                 while (start.get(Calendar.YEAR) != target) {
                     days += start.getActualMaximum(Calendar.DAY_OF_YEAR) - start.get(Calendar.DAY_OF_YEAR);
                     
-                    // Not sure I grok why this is needed, but the brutal tests show it is
+                    
                     if (start instanceof GregorianCalendar &&
                             start.get(Calendar.MONTH) == Calendar.FEBRUARY &&
                             start.get(Calendar.DAY_OF_MONTH) == 29) {
@@ -372,9 +372,9 @@ public class DurationFormatUtils {
             
         }
 
-        // The rest of this code adds in values that 
-        // aren't requested. This allows the user to ask for the 
-        // number of months and get the real count and not just 0->11.
+        
+        
+        
 
         if (!Token.containsTokenWithValue(tokens, d)) {
             hours += 24 * days;
@@ -396,8 +396,8 @@ public class DurationFormatUtils {
         return format(tokens, years, months, days, hours, minutes, seconds, milliseconds, padWithZeros);
     }
 
-    //-----------------------------------------------------------------------
-    /**
+    
+    
      * <p>The internal method to do the formatting.</p>
      * 
      * @param tokens  the tokens
@@ -410,7 +410,7 @@ public class DurationFormatUtils {
      * @param milliseconds  the number of millis
      * @param padWithZeros  whether to pad
      * @return the formatted string
-     */
+
     static String format(final Token[] tokens, final int years, final int months, final int days, final int hours, final int minutes, final int seconds,
             int milliseconds, final boolean padWithZeros) {
         final StringBuilder buffer = new StringBuilder();
@@ -474,31 +474,31 @@ public class DurationFormatUtils {
     static final Object s = "s";
     static final Object S = "S";
     
-    /**
+    
      * Parses a classic date format string into Tokens
-     *
+    
      * @param format  the format to parse, not null
      * @return array of Token[]
-     */
+
     static Token[] lexx(final String format) {
         final char[] array = format.toCharArray();
         final ArrayList<Token> list = new ArrayList<Token>(array.length);
 
         boolean inLiteral = false;
-        // Although the buffer is stored in a Token, the Tokens are only
-        // used internally, so cannot be accessed by other threads
+        
+        
         StringBuilder buffer = null;
         Token previous = null;
         final int sz = array.length;
         for (int i = 0; i < sz; i++) {
             final char ch = array[i];
             if (inLiteral && ch != '\'') {
-                buffer.append(ch); // buffer can't be null if inLiteral is true
+                buffer.append(ch); 
                 continue;
             }
             Object value = null;
             switch (ch) {
-            // TODO: Need to handle escaping of '
+            
             case '\'':
                 if (inLiteral) {
                     buffer = null;
@@ -552,19 +552,19 @@ public class DurationFormatUtils {
         return list.toArray(new Token[list.size()]);
     }
 
-    //-----------------------------------------------------------------------
-    /**
+    
+    
      * Element that is parsed from the format pattern.
-     */
+
     static class Token {
 
-        /**
+        
          * Helper method to determine if a set of tokens contain a value
-         *
+        
          * @param tokens set to look in
          * @param value to look for
          * @return boolean <code>true</code> if contained
-         */
+
         static boolean containsTokenWithValue(final Token[] tokens, final Object value) {
             final int sz = tokens.length;
             for (int i = 0; i < sz; i++) {
@@ -578,59 +578,59 @@ public class DurationFormatUtils {
         private final Object value;
         private int count;
 
-        /**
+        
          * Wraps a token around a value. A value would be something like a 'Y'.
-         *
+        
          * @param value to wrap
-         */
+
         Token(final Object value) {
             this.value = value;
             this.count = 1;
         }
 
-        /**
+        
          * Wraps a token around a repeated number of a value, for example it would 
          * store 'yyyy' as a value for y and a count of 4.
-         *
+        
          * @param value to wrap
          * @param count to wrap
-         */
+
         Token(final Object value, final int count) {
             this.value = value;
             this.count = count;
         }
 
-        /**
+        
          * Adds another one of the value
-         */
+
         void increment() { 
             count++;
         }
 
-        /**
+        
          * Gets the current number of values represented
-         *
+        
          * @return int number of values represented
-         */
+
         int getCount() {
             return count;
         }
 
-        /**
+        
          * Gets the particular value this token represents.
          * 
          * @return Object value
-         */
+
         Object getValue() {
             return value;
         }
 
-        /**
+        
          * Supports equality of this Token to another Token.
-         *
+        
          * @param obj2 Object to consider equality of
          * @return boolean <code>true</code> if equal
-         */
+
         @Override
         public boolean equals(final Object obj2) {
             if (obj2 instanceof Token) {
@@ -652,23 +652,23 @@ public class DurationFormatUtils {
             return false;
         }
 
-        /**
+        
          * Returns a hash code for the token equal to the 
          * hash code for the token's value. Thus 'TT' and 'TTTT' 
          * will have the same hash code. 
-         *
+        
          * @return The hash code for the token
-         */
+
         @Override
         public int hashCode() {
             return this.value.hashCode();
         }
 
-        /**
+        
          * Represents this token as a String.
-         *
+        
          * @return String representation of the token
-         */
+
         @Override
         public String toString() {
             return StringUtils.repeat(this.value.toString(), this.count);
