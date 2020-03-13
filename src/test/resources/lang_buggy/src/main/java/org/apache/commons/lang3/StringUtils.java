@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -110,23 +110,23 @@ import java.util.regex.Pattern;
  * @since 1.0
  * @version $Id$
  */
-//@Immutable
+
 public class StringUtils {
-    // Performance testing notes (JDK 1.4, Jul03, scolebourne)
-    // Whitespace:
-    // Character.isWhitespace() is faster than WHITESPACE.indexOf()
-    // where WHITESPACE is a string of all whitespace characters
-    //
-    // Character access:
-    // String.charAt(n) versus toCharArray(), then array[n]
-    // String.charAt(n) is about 15% worse for a 10K string
-    // They are about equal for a length 50 string
-    // String.charAt(n) is about 4 times better for a length 3 string
-    // String.charAt(n) is best bet overall
-    //
-    // Append:
-    // String.concat about twice as fast as StringBuffer.append
-    // (not sure who tested this)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     /**
      * A String for a space character.
@@ -144,7 +144,7 @@ public class StringUtils {
     /**
      * A String for linefeed LF ("\n").
      * 
-     * @see <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6">JLF: Escape Sequences
+     * @see <a href="http:
      *      for Character and String Literals</a>
      * @since 3.2
      */
@@ -153,7 +153,7 @@ public class StringUtils {
     /**
      * A String for carriage return CR ("\r").
      * 
-     * @see <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6">JLF: Escape Sequences
+     * @see <a href="http:
      *      for Character and String Literals</a>
      * @since 3.2
      */
@@ -192,8 +192,8 @@ public class StringUtils {
         super();
     }
 
-    // Empty checks
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Checks if a CharSequence is empty ("") or null.</p>
      *
@@ -286,8 +286,8 @@ public class StringUtils {
         return !StringUtils.isBlank(cs);
     }
 
-    // Trim
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Removes control characters (char &lt;= 32) from both
      * ends of this String, handling {@code null} by returning
@@ -367,8 +367,8 @@ public class StringUtils {
         return str == null ? EMPTY : str.trim();
     }
 
-    // Stripping
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Strips whitespace from the start and end of a String.</p>
      *
@@ -575,8 +575,8 @@ public class StringUtils {
         return str.substring(0, end);
     }
 
-    // StripAll
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Strips whitespace from the start and end of every String in an array.
      * Whitespace is defined by {@link Character#isWhitespace(char)}.</p>
@@ -654,19 +654,19 @@ public class StringUtils {
      *
      * @since 3.0
      */
-    // See also Lucene's ASCIIFoldingFilter (Lucene 2.9) that replaces accented characters by their unaccented equivalent (and uncommitted bug fix: https://issues.apache.org/jira/browse/LUCENE-1343?focusedCommentId=12858907&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#action_12858907).
+    
     public static String stripAccents(final String input) {
         if(input == null) {
             return null;
         }
-        final Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");//$NON-NLS-1$
+        final Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
         final String decomposed = Normalizer.normalize(input, Normalizer.Form.NFD);
-        // Note that this doesn't correctly remove ligatures...
-        return pattern.matcher(decomposed).replaceAll("");//$NON-NLS-1$
+        
+        return pattern.matcher(decomposed).replaceAll("");
     }
 
-    // Equals
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Compares two CharSequences, returning {@code true} if they represent
      * equal sequences of characters.</p>
@@ -734,8 +734,8 @@ public class StringUtils {
         }
     }
 
-    // IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the first index within a CharSequence, handling {@code null}.
      * This method uses {@link String#indexOf(int, int)} if possible.</p>
@@ -918,7 +918,7 @@ public class StringUtils {
      * @return the n-th index of the search CharSequence,
      *  {@code -1} ({@code INDEX_NOT_FOUND}) if no match or {@code null} string input
      */
-    // Shared code between ordinalIndexOf(String,String,int) and lastOrdinalIndexOf(String,String,int)
+    
     private static int ordinalIndexOf(final CharSequence str, final CharSequence searchStr, final int ordinal, final boolean lastIndex) {
         if (str == null || searchStr == null || ordinal <= 0) {
             return INDEX_NOT_FOUND;
@@ -1025,8 +1025,8 @@ public class StringUtils {
         return INDEX_NOT_FOUND;
     }
 
-    // LastIndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the last index within a CharSequence, handling {@code null}.
      * This method uses {@link String#lastIndexOf(int)} if possible.</p>
@@ -1274,8 +1274,8 @@ public class StringUtils {
         return INDEX_NOT_FOUND;
     }
 
-    // Contains
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Checks if CharSequence contains a search character, handling {@code null}.
      * This method uses {@link String#indexOf(int)} if possible.</p>
@@ -1378,7 +1378,7 @@ public class StringUtils {
      * @see java.lang.Character#isWhitespace
      * @since 3.0
      */
-    // From org.springframework.util.StringUtils, under Apache License 2.0
+    
     public static boolean containsWhitespace(final CharSequence seq) {
         if (isEmpty(seq)) {
             return false;
@@ -1392,8 +1392,8 @@ public class StringUtils {
         return false;
     }
 
-    // IndexOfAny chars
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Search a CharSequence to find the first index of any
      * character in the given set of characters.</p>
@@ -1430,7 +1430,7 @@ public class StringUtils {
             for (int j = 0; j < searchLen; j++) {
                 if (searchChars[j] == ch) {
                     if (i < csLast && j < searchLast && Character.isHighSurrogate(ch)) {
-                        // ch is a supplementary character
+                        
                         if (searchChars[j + 1] == cs.charAt(i + 1)) {
                             return i;
                         }
@@ -1473,8 +1473,8 @@ public class StringUtils {
         return indexOfAny(cs, searchChars.toCharArray());
     }
 
-    // ContainsAny
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Checks if the CharSequence contains any character in the given
      * set of characters.</p>
@@ -1513,14 +1513,14 @@ public class StringUtils {
                 if (searchChars[j] == ch) {
                     if (Character.isHighSurrogate(ch)) {
                         if (j == searchLast) {
-                            // missing low surrogate, fine, like String.indexOf(String)
+                            
                             return true;
                         }
                         if (i < csLast && searchChars[j + 1] == cs.charAt(i + 1)) {
                             return true;
                         }
                     } else {
-                        // ch is in the Basic Multilingual Plane
+                        
                         return true;
                     }
                 }
@@ -1564,8 +1564,8 @@ public class StringUtils {
         return containsAny(cs, CharSequenceUtils.toCharArray(searchChars));
     }
 
-    // IndexOfAnyBut chars
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Searches a CharSequence to find the first index of any
      * character not in the given set of characters.</p>
@@ -1662,8 +1662,8 @@ public class StringUtils {
         return INDEX_NOT_FOUND;
     }
 
-    // ContainsOnly
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Checks if the CharSequence contains only certain characters.</p>
      *
@@ -1687,7 +1687,7 @@ public class StringUtils {
      * @since 3.0 Changed signature from containsOnly(String, char[]) to containsOnly(CharSequence, char...)
      */
     public static boolean containsOnly(final CharSequence cs, final char... valid) {
-        // All these pre-checks are to maintain API with an older version
+        
         if (valid == null || cs == null) {
             return false;
         }
@@ -1730,8 +1730,8 @@ public class StringUtils {
         return containsOnly(cs, validChars.toCharArray());
     }
 
-    // ContainsNone
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Checks that the CharSequence does not contain certain characters.</p>
      *
@@ -1769,14 +1769,14 @@ public class StringUtils {
                 if (searchChars[j] == ch) {
                     if (Character.isHighSurrogate(ch)) {
                         if (j == searchLast) {
-                            // missing low surrogate, fine, like String.indexOf(String)
+                            
                             return false;
                         }
                         if (i < csLast && searchChars[j + 1] == cs.charAt(i + 1)) {
                             return false;
                         }
                     } else {
-                        // ch is in the Basic Multilingual Plane
+                        
                         return false;
                     }
                 }
@@ -1815,8 +1815,8 @@ public class StringUtils {
         return containsNone(cs, invalidChars.toCharArray());
     }
 
-    // IndexOfAny strings
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Find the first index of any of a set of potential substrings.</p>
      *
@@ -1850,7 +1850,7 @@ public class StringUtils {
         }
         final int sz = searchStrs.length;
 
-        // String's can't have a MAX_VALUEth index.
+        
         int ret = Integer.MAX_VALUE;
 
         int tmp = 0;
@@ -1918,8 +1918,8 @@ public class StringUtils {
         return ret;
     }
 
-    // Substring
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Gets a substring from the specified String avoiding exceptions.</p>
      *
@@ -1949,9 +1949,9 @@ public class StringUtils {
             return null;
         }
 
-        // handle negatives, which means last n characters
+        
         if (start < 0) {
-            start = str.length() + start; // remember start is negative
+            start = str.length() + start; 
         }
 
         if (start < 0) {
@@ -2004,20 +2004,20 @@ public class StringUtils {
             return null;
         }
 
-        // handle negatives
+        
         if (end < 0) {
-            end = str.length() + end; // remember end is negative
+            end = str.length() + end; 
         }
         if (start < 0) {
-            start = str.length() + start; // remember start is negative
+            start = str.length() + start; 
         }
 
-        // check length next
+        
         if (end > str.length()) {
             end = str.length();
         }
 
-        // if start is greater than end, return ""
+        
         if (start > end) {
             return EMPTY;
         }
@@ -2032,8 +2032,8 @@ public class StringUtils {
         return str.substring(start, end);
     }
 
-    // Left/Right/Mid
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Gets the leftmost {@code len} characters of a String.</p>
      *
@@ -2141,8 +2141,8 @@ public class StringUtils {
         return str.substring(pos, pos + len);
     }
 
-    // SubStringAfter/SubStringBefore
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Gets the substring before the first occurrence of a separator.
      * The separator is not returned.</p>
@@ -2307,8 +2307,8 @@ public class StringUtils {
         return str.substring(pos + separator.length());
     }
 
-    // Substring between
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Gets the String that is nested in between two instances of the
      * same String.</p>
@@ -2428,11 +2428,11 @@ public class StringUtils {
         return list.toArray(new String [list.size()]);
     }
 
-    // Nested extraction
-    //-----------------------------------------------------------------------
+    
+    
 
-    // Splitting
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Splits the provided text into an array, using whitespace as the
      * separator.
@@ -2697,7 +2697,7 @@ public class StringUtils {
         }
 
         if (separator == null || EMPTY.equals(separator)) {
-            // Split on whitespace.
+            
             return splitWorker(str, null, max, preserveAllTokens);
         }
 
@@ -2718,17 +2718,17 @@ public class StringUtils {
                         end = len;
                         substrings.add(str.substring(beg));
                     } else {
-                        // The following is OK, because String.substring( beg, end ) excludes
-                        // the character at the position 'end'.
+                        
+                        
                         substrings.add(str.substring(beg, end));
 
-                        // Set the starting point for the next search.
-                        // The following is equivalent to beg = end + (separatorLength - 1) + 1,
-                        // which is the right calculation:
+                        
+                        
+                        
                         beg = end + separatorLength;
                     }
                 } else {
-                    // We found a consecutive occurrence of the separator, so skip it.
+                    
                     if (preserveAllTokens) {
                         numberOfSubstrings += 1;
                         if (numberOfSubstrings == max) {
@@ -2741,7 +2741,7 @@ public class StringUtils {
                     beg = end + separatorLength;
                 }
             } else {
-                // String.substring( beg ) goes from 'beg' to the end of the String.
+                
                 substrings.add(str.substring(beg));
                 end = len;
             }
@@ -2750,7 +2750,7 @@ public class StringUtils {
         return substrings.toArray(new String[substrings.size()]);
     }
 
-    // -----------------------------------------------------------------------
+    
     /**
      * <p>Splits the provided text into an array, using whitespace as the
      * separator, preserving all tokens, including empty tokens created by
@@ -2828,7 +2828,7 @@ public class StringUtils {
      * @return an array of parsed Strings, {@code null} if null String input
      */
     private static String[] splitWorker(final String str, final char separatorChar, final boolean preserveAllTokens) {
-        // Performance tuned for 2.0 (JDK1.4)
+        
 
         if (str == null) {
             return null;
@@ -2953,9 +2953,9 @@ public class StringUtils {
      * @return an array of parsed Strings, {@code null} if null String input
      */
     private static String[] splitWorker(final String str, final String separatorChars, final int max, final boolean preserveAllTokens) {
-        // Performance tuned for 2.0 (JDK1.4)
-        // Direct code is quicker than StringTokenizer.
-        // Also, StringTokenizer uses isSpace() not isWhitespace()
+        
+        
+        
 
         if (str == null) {
             return null;
@@ -2970,7 +2970,7 @@ public class StringUtils {
         boolean match = false;
         boolean lastMatch = false;
         if (separatorChars == null) {
-            // Null separator means use whitespace
+            
             while (i < len) {
                 if (Character.isWhitespace(str.charAt(i))) {
                     if (match || preserveAllTokens) {
@@ -2990,7 +2990,7 @@ public class StringUtils {
                 i++;
             }
         } else if (separatorChars.length() == 1) {
-            // Optimise 1 character case
+            
             final char sep = separatorChars.charAt(0);
             while (i < len) {
                 if (str.charAt(i) == sep) {
@@ -3011,7 +3011,7 @@ public class StringUtils {
                 i++;
             }
         } else {
-            // standard case
+            
             while (i < len) {
                 if (separatorChars.indexOf(str.charAt(i)) >= 0) {
                     if (match || preserveAllTokens) {
@@ -3134,8 +3134,8 @@ public class StringUtils {
         return list.toArray(new String[list.size()]);
     }
 
-    // Joining
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Joins the elements of the provided array into a single String
      * containing the provided list of elements.</p>
@@ -3879,8 +3879,8 @@ public class StringUtils {
             separator = EMPTY;
         }
 
-        // endIndex - startIndex > 0:   Len = NofStrings *(len(firstString) + len(separator))
-        //           (Assuming that all Strings are roughly equally long)
+        
+        
         final int noOfItems = endIndex - startIndex;
         if (noOfItems <= 0) {
             return EMPTY;
@@ -3915,7 +3915,7 @@ public class StringUtils {
      */
     public static String join(final Iterator<?> iterator, final char separator) {
 
-        // handle null, zero and one elements before building a buffer
+        
         if (iterator == null) {
             return null;
         }
@@ -3927,8 +3927,8 @@ public class StringUtils {
             return ObjectUtils.toString(first);
         }
 
-        // two or more elements
-        final StringBuilder buf = new StringBuilder(256); // Java default is 16, probably too small
+        
+        final StringBuilder buf = new StringBuilder(256); 
         if (first != null) {
             buf.append(first);
         }
@@ -3959,7 +3959,7 @@ public class StringUtils {
      */
     public static String join(final Iterator<?> iterator, final String separator) {
 
-        // handle null, zero and one elements before building a buffer
+        
         if (iterator == null) {
             return null;
         }
@@ -3971,8 +3971,8 @@ public class StringUtils {
             return ObjectUtils.toString(first);
         }
 
-        // two or more elements
-        final StringBuilder buf = new StringBuilder(256); // Java default is 16, probably too small
+        
+        final StringBuilder buf = new StringBuilder(256); 
         if (first != null) {
             buf.append(first);
         }
@@ -4031,8 +4031,8 @@ public class StringUtils {
         return join(iterable.iterator(), separator);
     }
 
-    // Delete
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Deletes all whitespaces from a String as defined by
      * {@link Character#isWhitespace(char)}.</p>
@@ -4065,8 +4065,8 @@ public class StringUtils {
         return new String(chs, 0, count);
     }
 
-    // Remove
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Removes a substring only if it is at the beginning of a source string,
      * otherwise returns the source string.</p>
@@ -4269,8 +4269,8 @@ public class StringUtils {
         return new String(chars, 0, pos);
     }
 
-    // Replacing
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Replaces a String with another String inside a larger String, once.</p>
      *
@@ -4507,8 +4507,8 @@ public class StringUtils {
      * @since 2.4
      */
     public static String replaceEachRepeatedly(final String text, final String[] searchList, final String[] replacementList) {
-        // timeToLive should be 0 if not used or nothing to replace, else it's
-        // the length of the replace array
+        
+        
         final int timeToLive = searchList == null ? 0 : searchList.length;
         return replaceEach(text, searchList, replacementList, true, timeToLive);
     }
@@ -4564,15 +4564,15 @@ public class StringUtils {
     private static String replaceEach(
             final String text, final String[] searchList, final String[] replacementList, final boolean repeat, final int timeToLive) {
 
-        // mchyzer Performance note: This creates very few new objects (one major goal)
-        // let me know if there are performance requests, we can create a harness to measure
+        
+        
 
         if (text == null || text.length() == 0 || searchList == null ||
                 searchList.length == 0 || replacementList == null || replacementList.length == 0) {
             return text;
         }
 
-        // if recursing, this shouldn't be less than 0
+        
         if (timeToLive < 0) {
             throw new IllegalStateException("Aborting to protect against StackOverflowError - " +
                                             "output of one loop is the input of another");
@@ -4581,7 +4581,7 @@ public class StringUtils {
         final int searchLength = searchList.length;
         final int replacementLength = replacementList.length;
 
-        // make sure lengths are ok, these need to be equal
+        
         if (searchLength != replacementLength) {
             throw new IllegalArgumentException("Search and Replace array lengths don't match: "
                 + searchLength
@@ -4589,16 +4589,16 @@ public class StringUtils {
                 + replacementLength);
         }
 
-        // keep track of which still have matches
+        
         final boolean[] noMoreMatchesForReplIndex = new boolean[searchLength];
 
-        // index on index that the match was found
+        
         int textIndex = -1;
         int replaceIndex = -1;
         int tempIndex = -1;
 
-        // index of replace array that will replace the search string found
-        // NOTE: logic duplicated below START
+        
+        
         for (int i = 0; i < searchLength; i++) {
             if (noMoreMatchesForReplIndex[i] || searchList[i] == null ||
                     searchList[i].length() == 0 || replacementList[i] == null) {
@@ -4606,7 +4606,7 @@ public class StringUtils {
             }
             tempIndex = text.indexOf(searchList[i]);
 
-            // see if we need to keep searching for this
+            
             if (tempIndex == -1) {
                 noMoreMatchesForReplIndex[i] = true;
             } else {
@@ -4616,29 +4616,29 @@ public class StringUtils {
                 }
             }
         }
-        // NOTE: logic mostly below END
+        
 
-        // no search strings found, we are done
+        
         if (textIndex == -1) {
             return text;
         }
 
         int start = 0;
 
-        // get a good guess on the size of the result buffer so it doesn't have to double if it goes over a bit
+        
         int increase = 0;
 
-        // count the replacement text elements that are larger than their corresponding text being replaced
+        
         for (int i = 0; i < searchList.length; i++) {
             if (searchList[i] == null || replacementList[i] == null) {
                 continue;
             }
             final int greater = replacementList[i].length() - searchList[i].length();
             if (greater > 0) {
-                increase += 3 * greater; // assume 3 matches
+                increase += 3 * greater; 
             }
         }
-        // have upper-bound at 20% increase, then let Java take over
+        
         increase = Math.min(increase, text.length() / 5);
 
         final StringBuilder buf = new StringBuilder(text.length() + increase);
@@ -4655,8 +4655,8 @@ public class StringUtils {
             textIndex = -1;
             replaceIndex = -1;
             tempIndex = -1;
-            // find the next earliest match
-            // NOTE: logic mostly duplicated above START
+            
+            
             for (int i = 0; i < searchLength; i++) {
                 if (noMoreMatchesForReplIndex[i] || searchList[i] == null ||
                         searchList[i].length() == 0 || replacementList[i] == null) {
@@ -4664,7 +4664,7 @@ public class StringUtils {
                 }
                 tempIndex = text.indexOf(searchList[i], start);
 
-                // see if we need to keep searching for this
+                
                 if (tempIndex == -1) {
                     noMoreMatchesForReplIndex[i] = true;
                 } else {
@@ -4674,7 +4674,7 @@ public class StringUtils {
                     }
                 }
             }
-            // NOTE: logic duplicated above END
+            
 
         }
         final int textLength = text.length();
@@ -4689,8 +4689,8 @@ public class StringUtils {
         return replaceEach(result, searchList, replacementList, repeat, timeToLive - 1);
     }
 
-    // Replace, character based
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Replaces all occurrences of a character in a String with another.
      * This is a null-safe version of {@link String#replace(char, char)}.</p>
@@ -4783,8 +4783,8 @@ public class StringUtils {
         return str;
     }
 
-    // Overlay
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Overlays part of a String with another String.</p>
      *
@@ -4846,8 +4846,8 @@ public class StringUtils {
             .toString();
     }
 
-    // Chomping
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Removes one newline from end of a String if it's there,
      * otherwise leave it alone.  A newline is &quot;{@code \n}&quot;,
@@ -4931,8 +4931,8 @@ public class StringUtils {
         return removeEnd(str,separator);
     }
 
-    // Chopping
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Remove the last character from a String.</p>
      *
@@ -4973,11 +4973,11 @@ public class StringUtils {
         return ret;
     }
 
-    // Conversion
-    //-----------------------------------------------------------------------
+    
+    
 
-    // Padding
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Repeat a String {@code repeat} times to form a
      * new String.</p>
@@ -4997,7 +4997,7 @@ public class StringUtils {
      *  {@code null} if null String input
      */
     public static String repeat(final String str, final int repeat) {
-        // Performance tuned for 2.0 (JDK1.4)
+        
 
         if (str == null) {
             return null;
@@ -5059,7 +5059,7 @@ public class StringUtils {
         if(str == null || separator == null) {
             return repeat(str, repeat);
         } else {
-            // given that repeat(String, int) is quite optimized, better to rely on it than try and splice this into it
+            
             final String result = repeat(str + separator, repeat);
             return removeEnd(result, separator);
         }
@@ -5076,7 +5076,7 @@ public class StringUtils {
      * </pre>
      *
      * <p>Note: this method doesn't not support padding with
-     * <a href="http://www.unicode.org/glossary/#supplementary_character">Unicode Supplementary Characters</a>
+     * <a href="http:
      * as they require a pair of {@code char}s to be represented.
      * If you are needing to support full I18N of your applications
      * consider using {@link #repeat(String, int)} instead.
@@ -5145,7 +5145,7 @@ public class StringUtils {
         }
         final int pads = size - str.length();
         if (pads <= 0) {
-            return str; // returns original String when possible
+            return str; 
         }
         if (pads > PAD_LIMIT) {
             return rightPad(str, size, String.valueOf(padChar));
@@ -5187,7 +5187,7 @@ public class StringUtils {
         final int strLen = str.length();
         final int pads = size - strLen;
         if (pads <= 0) {
-            return str; // returns original String when possible
+            return str; 
         }
         if (padLen == 1 && pads <= PAD_LIMIT) {
             return rightPad(str, size, padStr.charAt(0));
@@ -5257,7 +5257,7 @@ public class StringUtils {
         }
         final int pads = size - str.length();
         if (pads <= 0) {
-            return str; // returns original String when possible
+            return str; 
         }
         if (pads > PAD_LIMIT) {
             return leftPad(str, size, String.valueOf(padChar));
@@ -5299,7 +5299,7 @@ public class StringUtils {
         final int strLen = str.length();
         final int pads = size - strLen;
         if (pads <= 0) {
-            return str; // returns original String when possible
+            return str; 
         }
         if (padLen == 1 && pads <= PAD_LIMIT) {
             return leftPad(str, size, padStr.charAt(0));
@@ -5334,8 +5334,8 @@ public class StringUtils {
         return cs == null ? 0 : cs.length();
     }
 
-    // Centering
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Centers a String in a larger String of size {@code size}
      * using the space character (' ').<p>
@@ -5444,8 +5444,8 @@ public class StringUtils {
         return str;
     }
 
-    // Case conversion
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts a String to upper case as per {@link String#toUpperCase()}.</p>
      *
@@ -5653,8 +5653,8 @@ public class StringUtils {
         return new String(buffer);
     }
 
-    // Count matches
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Counts how many times the substring appears in the larger string.</p>
      *
@@ -5688,8 +5688,8 @@ public class StringUtils {
         return count;
     }
 
-    // Character Tests
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Checks if the CharSequence contains only Unicode letters.</p>
      *
@@ -6044,8 +6044,8 @@ public class StringUtils {
         return true;
     }
 
-    // Defaults
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Returns either the passed in String,
      * or if the String is {@code null}, an empty String ("").</p>
@@ -6131,8 +6131,8 @@ public class StringUtils {
         return StringUtils.isEmpty(str) ? defaultStr : str;
     }
 
-    // Reversing
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Reverses a String as per {@link StringBuilder#reverse()}.</p>
      *
@@ -6177,15 +6177,15 @@ public class StringUtils {
         if (str == null) {
             return null;
         }
-        // could implement manually, but simple way is to reuse other,
-        // probably slower, methods.
+        
+        
         final String[] strs = split(str, separatorChar);
         ArrayUtils.reverse(strs);
         return join(strs, separatorChar);
     }
 
-    // Abbreviating
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Abbreviates a String using ellipses. This will turn
      * "Now is the time for all good men" into "Now is the time for..."</p>
@@ -6336,8 +6336,8 @@ public class StringUtils {
         return builder.toString();
     }
 
-    // Difference
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Compares two Strings, and returns the portion where they differ.
      * More precisely, return the remainder of the second String,
@@ -6466,9 +6466,9 @@ public class StringUtils {
         int shortestStrLen = Integer.MAX_VALUE;
         int longestStrLen = 0;
 
-        // find the min and max string lengths; this avoids checking to make
-        // sure we are not exceeding the length of the string each time through
-        // the bottom loop.
+        
+        
+        
         for (int i = 0; i < arrayLen; i++) {
             if (css[i] == null) {
                 anyStringNull = true;
@@ -6480,17 +6480,17 @@ public class StringUtils {
             }
         }
 
-        // handle lists containing all nulls or all empty strings
+        
         if (allStringsNull || longestStrLen == 0 && !anyStringNull) {
             return INDEX_NOT_FOUND;
         }
 
-        // handle lists containing some nulls or some empty strings
+        
         if (shortestStrLen == 0) {
             return 0;
         }
 
-        // find the position with the first difference across all strings
+        
         int firstDiff = -1;
         for (int stringPos = 0; stringPos < shortestStrLen; stringPos++) {
             final char comparisonChar = css[0].charAt(stringPos);
@@ -6506,9 +6506,9 @@ public class StringUtils {
         }
 
         if (firstDiff == -1 && shortestStrLen != longestStrLen) {
-            // we compared all of the characters up to the length of the
-            // shortest string and didn't find a match, but the string lengths
-            // vary, so return the length of the shortest string.
+            
+            
+            
             return shortestStrLen;
         }
         return firstDiff;
@@ -6553,22 +6553,22 @@ public class StringUtils {
         }
         final int smallestIndexOfDiff = indexOfDifference(strs);
         if (smallestIndexOfDiff == INDEX_NOT_FOUND) {
-            // all strings were identical
+            
             if (strs[0] == null) {
                 return EMPTY;
             }
             return strs[0];
         } else if (smallestIndexOfDiff == 0) {
-            // there were no common initial characters
+            
             return EMPTY;
         } else {
-            // we found a common initial character sequence
+            
             return strs[0].substring(0, smallestIndexOfDiff);
         }
     }
 
-    // Misc
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Find the Levenshtein distance between two Strings.</p>
      *
@@ -6577,12 +6577,12 @@ public class StringUtils {
      * insertion or substitution).</p>
      *
      * <p>The previous implementation of the Levenshtein distance algorithm
-     * was from <a href="http://www.merriampark.com/ld.htm">http://www.merriampark.com/ld.htm</a></p>
+     * was from <a href="http:
      *
      * <p>Chas Emerick has written an implementation in Java, which avoids an OutOfMemoryError
      * which can occur when my Java implementation is used with very large strings.<br>
      * This implementation of the Levenshtein distance algorithm
-     * is from <a href="http://www.merriampark.com/ldjava.htm">http://www.merriampark.com/ldjava.htm</a></p>
+     * is from <a href="http:
      *
      * <pre>
      * StringUtils.getLevenshteinDistance(null, *)             = IllegalArgumentException
@@ -6627,8 +6627,8 @@ public class StringUtils {
            cause an out of memory condition when calculating the LD over two very large strings.
          */
 
-        int n = s.length(); // length of s
-        int m = t.length(); // length of t
+        int n = s.length(); 
+        int m = t.length(); 
 
         if (n == 0) {
             return m;
@@ -6637,7 +6637,7 @@ public class StringUtils {
         }
 
         if (n > m) {
-            // swap the input strings to consume less memory
+            
             final CharSequence tmp = s;
             s = t;
             t = tmp;
@@ -6645,17 +6645,17 @@ public class StringUtils {
             m = t.length();
         }
 
-        int p[] = new int[n + 1]; //'previous' cost array, horizontally
-        int d[] = new int[n + 1]; // cost array, horizontally
-        int _d[]; //placeholder to assist in swapping p and d
+        int p[] = new int[n + 1]; 
+        int d[] = new int[n + 1]; 
+        int _d[]; 
 
-        // indexes into strings s and t
-        int i; // iterates through s
-        int j; // iterates through t
+        
+        int i; 
+        int j; 
 
-        char t_j; // jth character of t
+        char t_j; 
 
-        int cost; // cost
+        int cost; 
 
         for (i = 0; i <= n; i++) {
             p[i] = i;
@@ -6667,18 +6667,18 @@ public class StringUtils {
 
             for (i = 1; i <= n; i++) {
                 cost = s.charAt(i - 1) == t_j ? 0 : 1;
-                // minimum of cell to the left+1, to the top+1, diagonally left and up +cost
+                
                 d[i] = Math.min(Math.min(d[i - 1] + 1, p[i] + 1), p[i - 1] + cost);
             }
 
-            // copy current distance counts to 'previous row' distance counts
+            
             _d = p;
             p = d;
             d = _d;
         }
 
-        // our last action in the above loop was to switch d and p, so p now
-        // actually has the most recent cost counts
+        
+        
         return p[n];
     }
 
@@ -6692,7 +6692,7 @@ public class StringUtils {
      *
      * <p>This implementation follows from Algorithms on Strings, Trees and Sequences by Dan Gusfield
      * and Chas Emerick's implementation of the Levenshtein distance algorithm from
-     * <a href="http://www.merriampark.com/ld.htm">http://www.merriampark.com/ld.htm</a></p>
+     * <a href="http:
      *
      * <pre>
      * StringUtils.getLevenshteinDistance(null, *, *)             = IllegalArgumentException
@@ -6766,10 +6766,10 @@ public class StringUtils {
         See Algorithms on Strings, Trees and Sequences by Dan Gusfield for some discussion.
          */
 
-        int n = s.length(); // length of s
-        int m = t.length(); // length of t
+        int n = s.length(); 
+        int m = t.length(); 
 
-        // if one string is empty, the edit distance is necessarily the length of the other
+        
         if (n == 0) {
             return m <= threshold ? m : -1;
         } else if (m == 0) {
@@ -6777,7 +6777,7 @@ public class StringUtils {
         }
 
         if (n > m) {
-            // swap the two strings to consume less memory
+            
             final CharSequence tmp = s;
             s = t;
             t = tmp;
@@ -6785,58 +6785,58 @@ public class StringUtils {
             m = t.length();
         }
 
-        int p[] = new int[n + 1]; // 'previous' cost array, horizontally
-        int d[] = new int[n + 1]; // cost array, horizontally
-        int _d[]; // placeholder to assist in swapping p and d
+        int p[] = new int[n + 1]; 
+        int d[] = new int[n + 1]; 
+        int _d[]; 
 
-        // fill in starting table values
+        
         final int boundary = Math.min(n, threshold) + 1;
         for (int i = 0; i < boundary; i++) {
             p[i] = i;
         }
-        // these fills ensure that the value above the rightmost entry of our 
-        // stripe will be ignored in following loop iterations
+        
+        
         Arrays.fill(p, boundary, p.length, Integer.MAX_VALUE);
         Arrays.fill(d, Integer.MAX_VALUE);
 
-        // iterates through t
+        
         for (int j = 1; j <= m; j++) {
-            final char t_j = t.charAt(j - 1); // jth character of t
+            final char t_j = t.charAt(j - 1); 
             d[0] = j;
 
-            // compute stripe indices, constrain to array size
+            
             final int min = Math.max(1, j - threshold);
             final int max = Math.min(n, j + threshold);
 
-            // the stripe may lead off of the table if s and t are of different sizes
+            
             if (min > max) {
                 return -1;
             }
 
-            // ignore entry left of leftmost
+            
             if (min > 1) {
                 d[min - 1] = Integer.MAX_VALUE;
             }
 
-            // iterates through [min, max] in s
+            
             for (int i = min; i <= max; i++) {
                 if (s.charAt(i - 1) == t_j) {
-                    // diagonally left and up
+                    
                     d[i] = p[i - 1];
                 } else {
-                    // 1 + minimum of cell to the left, to the top, diagonally left and up
+                    
                     d[i] = 1 + Math.min(Math.min(d[i - 1], p[i]), p[i - 1]);
                 }
             }
 
-            // copy current distance counts to 'previous row' distance counts
+            
             _d = p;
             p = d;
             d = _d;
         }
 
-        // if p[n] is greater than the threshold, there's no guarantee on it being the correct
-        // distance
+        
+        
         if (p[n] <= threshold) {
             return p[n];
         } else {
@@ -6844,8 +6844,8 @@ public class StringUtils {
         }
     }
 
-    // startsWith
-    //-----------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Check if a CharSequence starts with a specified prefix.</p>
@@ -6951,8 +6951,8 @@ public class StringUtils {
         return false;
     }
 
-    // endsWith
-    //-----------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Check if a CharSequence ends with a specified suffix.</p>
@@ -7033,7 +7033,7 @@ public class StringUtils {
     /**
      * <p>
      * Similar to <a
-     * href="http://www.w3.org/TR/xpath/#function-normalize-space">http://www.w3.org/TR/xpath/#function-normalize
+     * href="http:
      * -space</a>
      * </p>
      * <p>
@@ -7042,7 +7042,7 @@ public class StringUtils {
      * and then replacing sequences of whitespace characters by a single space.
      * </p>
      * In XML Whitespace characters are the same as those allowed by the <a
-     * href="http://www.w3.org/TR/REC-xml/#NT-S">S</a> production, which is S ::= (#x20 | #x9 | #xD | #xA)+
+     * href="http:
      * <p>
      * Java's regexp pattern \s defines whitespace as [ \t\n\x0B\f\r]
      * <p>
@@ -7065,7 +7065,7 @@ public class StringUtils {
      * @see Pattern
      * @see #trim(String)
      * @see <a
-     *      href="http://www.w3.org/TR/xpath/#function-normalize-space">http://www.w3.org/TR/xpath/#function-normalize-space</a>
+     *      href="http:
      * @param str the source String to normalize whitespaces from, may be null
      * @return the modified string with whitespace normalized, {@code null} if null String input
      *

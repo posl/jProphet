@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -473,20 +473,20 @@ public class ReflectionToStringBuilder extends ToStringBuilder {
      */
     protected boolean accept(final Field field) {
         if (field.getName().indexOf(ClassUtils.INNER_CLASS_SEPARATOR_CHAR) != -1) {
-            // Reject field from inner class.
+            
             return false;
         }
         if (Modifier.isTransient(field.getModifiers()) && !this.isAppendTransients()) {
-            // Reject transient fields.
+            
             return false;
         }
         if (Modifier.isStatic(field.getModifiers()) && !this.isAppendStatics()) {
-            // Reject static fields.
+            
             return false;
         }
         if (this.excludeFieldNames != null
             && Arrays.binarySearch(this.excludeFieldNames, field.getName()) >= 0) {
-            // Reject fields from the getExcludeFieldNames list.
+            
             return false;
         }
         return true;
@@ -516,15 +516,15 @@ public class ReflectionToStringBuilder extends ToStringBuilder {
             final String fieldName = field.getName();
             if (this.accept(field)) {
                 try {
-                    // Warning: Field.get(Object) creates wrappers objects
-                    // for primitive types.
+                    
+                    
                     final Object fieldValue = this.getValue(field);
                     this.append(fieldName, fieldValue);
                 } catch (final IllegalAccessException ex) {
-                    //this can't happen. Would get a Security exception
-                    // instead
-                    //throw a runtime exception in case the impossible
-                    // happens.
+                    
+                    
+                    
+                    
                     throw new InternalError("Unexpected IllegalAccessException: " + ex.getMessage());
                 }
             }
@@ -642,7 +642,7 @@ public class ReflectionToStringBuilder extends ToStringBuilder {
         if (excludeFieldNamesParam == null) {
             this.excludeFieldNames = null;
         } else {
-            //clone and remove nulls
+            
             this.excludeFieldNames = toNoNullStringArray(excludeFieldNamesParam);
             Arrays.sort(this.excludeFieldNames);
         }

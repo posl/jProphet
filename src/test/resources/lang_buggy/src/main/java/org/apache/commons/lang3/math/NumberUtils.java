@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -78,7 +78,7 @@ public class NumberUtils {
         super();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Convert a <code>String</code> to an <code>int</code>, returning
      * <code>zero</code> if the conversion fails.</p>
@@ -281,7 +281,7 @@ public class NumberUtils {
       }
     }
 
-     //-----------------------------------------------------------------------
+     
      /**
      * <p>Convert a <code>String</code> to a <code>byte</code>, returning
      * <code>zero</code> if the conversion fails.</p>
@@ -380,41 +380,41 @@ public class NumberUtils {
         }
     }
 
-    //-----------------------------------------------------------------------
-    // must handle Long, Float, Integer, Float, Short,
-    //                  BigDecimal, BigInteger and Byte
-    // useful methods:
-    // Byte.decode(String)
-    // Byte.valueOf(String,int radix)
-    // Byte.valueOf(String)
-    // Double.valueOf(String)
-    // Float.valueOf(String)
-    // Float.valueOf(String)
-    // Integer.valueOf(String,int radix)
-    // Integer.valueOf(String)
-    // Integer.decode(String)
-    // Integer.getInteger(String)
-    // Integer.getInteger(String,int val)
-    // Integer.getInteger(String,Integer val)
-    // Integer.valueOf(String)
-    // Double.valueOf(String)
-    // new Byte(String)
-    // Long.valueOf(String)
-    // Long.getLong(String)
-    // Long.getLong(String,int)
-    // Long.getLong(String,Integer)
-    // Long.valueOf(String,int)
-    // Long.valueOf(String)
-    // Short.valueOf(String)
-    // Short.decode(String)
-    // Short.valueOf(String,int)
-    // Short.valueOf(String)
-    // new BigDecimal(String)
-    // new BigInteger(String)
-    // new BigInteger(String,int radix)
-    // Possible inputs:
-    // 45 45.5 45E7 4.5E7 Hex Oct Binary xxxF xxxD xxxf xxxd
-    // plus minus everything. Prolly more. A lot are not separable.
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     /**
      * <p>Turns a string value into a java.lang.Number.</p>
@@ -454,7 +454,7 @@ public class NumberUtils {
         if (StringUtils.isBlank(str)) {
             throw new NumberFormatException("A blank string is not a valid number");
         }
-        // Need to deal with all possible hex prefixes here
+        
         final String[] hex_prefixes = {"0x", "0X", "-0x", "-0X", "#", "-#"};
         int pfxLen = 0;
         for(final String pfx : hex_prefixes) {
@@ -463,12 +463,12 @@ public class NumberUtils {
                 break;
             }
         }
-        if (pfxLen > 0) { // we have a hex number
+        if (pfxLen > 0) { 
             final int hexDigits = str.length() - pfxLen;
-            if (hexDigits > 16) { // too many for Long
+            if (hexDigits > 16) { 
                 return createBigInteger(str);
             }
-            if (hexDigits > 8) { // too many for an int
+            if (hexDigits > 8) { 
                 return createLong(str);
             }
             return createInteger(str);
@@ -478,15 +478,15 @@ public class NumberUtils {
         String dec;
         String exp;
         final int decPos = str.indexOf('.');
-        final int expPos = str.indexOf('e') + str.indexOf('E') + 1; // assumes both not present
-        // if both e and E are present, this is caught by the checks on expPos (which prevent IOOBE)
-        // and the parsing which will detect if e or E appear in a number due to using the wrong offset
+        final int expPos = str.indexOf('e') + str.indexOf('E') + 1; 
+        
+        
 
-        int numDecimals = 0; // Check required precision (LANG-693)
-        if (decPos > -1) { // there is a decimal point
+        int numDecimals = 0; 
+        if (decPos > -1) { 
 
-            if (expPos > -1) { // there is an exponent
-                if (expPos < decPos || expPos > str.length()) { // prevents double exponent causing IOOBE
+            if (expPos > -1) { 
+                if (expPos < decPos || expPos > str.length()) { 
                     throw new NumberFormatException(str + " is not a valid number.");
                 }
                 dec = str.substring(decPos + 1, expPos);
@@ -494,10 +494,10 @@ public class NumberUtils {
                 dec = str.substring(decPos + 1);
             }
             mant = str.substring(0, decPos);
-            numDecimals = dec.length(); // gets number of digits past the decimal to ensure no loss of precision for floating point numbers.
+            numDecimals = dec.length(); 
         } else {
             if (expPos > -1) {
-                if (expPos > str.length()) { // prevents double exponent causing IOOBE
+                if (expPos > str.length()) { 
                     throw new NumberFormatException(str + " is not a valid number.");
                 }
                 mant = str.substring(0, expPos);
@@ -512,7 +512,7 @@ public class NumberUtils {
             } else {
                 exp = null;
             }
-            //Requesting a specific type..
+            
             final String numeric = str.substring(0, str.length() - 1);
             final boolean allZeros = isAllZeros(mant) && isAllZeros(exp);
             switch (lastChar) {
@@ -523,8 +523,8 @@ public class NumberUtils {
                         && (numeric.charAt(0) == '-' && isDigits(numeric.substring(1)) || isDigits(numeric))) {
                         try {
                             return createLong(numeric);
-                        } catch (final NumberFormatException nfe) { // NOPMD
-                            // Too big for a long
+                        } catch (final NumberFormatException nfe) { 
+                            
                         }
                         return createBigInteger(numeric);
 
@@ -535,15 +535,15 @@ public class NumberUtils {
                     try {
                         final Float f = NumberUtils.createFloat(numeric);
                         if (!(f.isInfinite() || (f.floatValue() == 0.0F && !allZeros))) {
-                            //If it's too big for a float or the float value = 0 and the string
-                            //has non-zeros in it, then float does not have the precision we want
+                            
+                            
                             return f;
                         }
 
-                    } catch (final NumberFormatException nfe) { // NOPMD
-                        // ignore the bad number
+                    } catch (final NumberFormatException nfe) { 
+                        
                     }
-                    //$FALL-THROUGH$
+                    
                 case 'd' :
                 case 'D' :
                     try {
@@ -551,59 +551,59 @@ public class NumberUtils {
                         if (!(d.isInfinite() || (d.floatValue() == 0.0D && !allZeros))) {
                             return d;
                         }
-                    } catch (final NumberFormatException nfe) { // NOPMD
-                        // ignore the bad number
+                    } catch (final NumberFormatException nfe) { 
+                        
                     }
                     try {
                         return createBigDecimal(numeric);
-                    } catch (final NumberFormatException e) { // NOPMD
-                        // ignore the bad number
+                    } catch (final NumberFormatException e) { 
+                        
                     }
-                    //$FALL-THROUGH$
+                    
                 default :
                     throw new NumberFormatException(str + " is not a valid number.");
 
             }
         }
-        //User doesn't have a preference on the return type, so let's start
-        //small and go from there...
+        
+        
         if (expPos > -1 && expPos < str.length() - 1) {
             exp = str.substring(expPos + 1, str.length());
         } else {
             exp = null;
         }
-        if (dec == null && exp == null) { // no decimal point and no exponent
-            //Must be an Integer, Long, Biginteger
+        if (dec == null && exp == null) { 
+            
             try {
                 return createInteger(str);
-            } catch (final NumberFormatException nfe) { // NOPMD
-                // ignore the bad number
+            } catch (final NumberFormatException nfe) { 
+                
             }
             try {
                 return createLong(str);
-            } catch (final NumberFormatException nfe) { // NOPMD
-                // ignore the bad number
+            } catch (final NumberFormatException nfe) { 
+                
             }
             return createBigInteger(str);
         }
 
-        //Must be a Float, Double, BigDecimal
+        
         final boolean allZeros = isAllZeros(mant) && isAllZeros(exp);
         try {
                 final Float f = createFloat(str);
                 if (!(f.isInfinite() || (f.floatValue() == 0.0F && !allZeros))) {
                     return f;
                 }
-        } catch (final NumberFormatException nfe) { // NOPMD
-            // ignore the bad number
+        } catch (final NumberFormatException nfe) { 
+            
         }
         try {
                 final Double d = createDouble(str);
                 if (!(d.isInfinite() || (d.doubleValue() == 0.0D && !allZeros))) {
                     return d;
                 }
-        } catch (final NumberFormatException nfe) { // NOPMD
-            // ignore the bad number
+        } catch (final NumberFormatException nfe) { 
+            
         }
 
         return createBigDecimal(str);
@@ -629,7 +629,7 @@ public class NumberUtils {
         return str.length() > 0;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Convert a <code>String</code> to a <code>Float</code>.</p>
      *
@@ -676,7 +676,7 @@ public class NumberUtils {
         if (str == null) {
             return null;
         }
-        // decode() handles 0xAABD and 0777 (hex and octal) as well.
+        
         return Integer.decode(str);
     }
 
@@ -711,23 +711,23 @@ public class NumberUtils {
         if (str == null) {
             return null;
         }
-        int pos = 0; // offset within string
+        int pos = 0; 
         int radix = 10;
-        boolean negate = false; // need to negate later?
+        boolean negate = false; 
         if (str.startsWith("-")) {
             negate = true;
             pos = 1;
         }
-        if (str.startsWith("0x", pos) || str.startsWith("0x", pos)) { // hex
+        if (str.startsWith("0x", pos) || str.startsWith("0x", pos)) { 
             radix = 16;
             pos += 2;
-        } else if (str.startsWith("#", pos)) { // alternative hex (allowed by Long/Integer)
+        } else if (str.startsWith("#", pos)) { 
             radix = 16;
             pos ++;
-        } else if (str.startsWith("0", pos) && str.length() > pos + 1) { // octal; so long as there are additional digits
+        } else if (str.startsWith("0", pos) && str.length() > pos + 1) { 
             radix = 8;
             pos ++;
-        } // default is to treat as decimal
+        } 
 
         final BigInteger value = new BigInteger(str.substring(pos), radix);
         return negate ? value.negate() : value;
@@ -746,22 +746,22 @@ public class NumberUtils {
         if (str == null) {
             return null;
         }
-        // handle JDK1.3.1 bug where "" throws IndexOutOfBoundsException
+        
         if (StringUtils.isBlank(str)) {
             throw new NumberFormatException("A blank string is not a valid number");
         }
         if (str.trim().startsWith("--")) {
-            // this is protection for poorness in java.lang.BigDecimal.
-            // it accepts this as a legal value, but it does not appear 
-            // to be in specification of class. OS X Java parses it to 
-            // a wrong value.
+            
+            
+            
+            
             throw new NumberFormatException(str + " is not a valid number.");
         }
         return new BigDecimal(str);
     }
 
-    // Min in array
-    //--------------------------------------------------------------------
+    
+    
     /**
      * <p>Returns the minimum value in an array.</p>
      * 
@@ -771,10 +771,10 @@ public class NumberUtils {
      * @throws IllegalArgumentException if <code>array</code> is empty
      */
     public static long min(final long[] array) {
-        // Validates input
+        
         validateArray(array);
     
-        // Finds and returns min
+        
         long min = array[0];
         for (int i = 1; i < array.length; i++) {
             if (array[i] < min) {
@@ -794,10 +794,10 @@ public class NumberUtils {
      * @throws IllegalArgumentException if <code>array</code> is empty
      */
     public static int min(final int[] array) {
-        // Validates input
+        
         validateArray(array);
     
-        // Finds and returns min
+        
         int min = array[0];
         for (int j = 1; j < array.length; j++) {
             if (array[j] < min) {
@@ -817,10 +817,10 @@ public class NumberUtils {
      * @throws IllegalArgumentException if <code>array</code> is empty
      */
     public static short min(final short[] array) {
-        // Validates input
+        
         validateArray(array);
     
-        // Finds and returns min
+        
         short min = array[0];
         for (int i = 1; i < array.length; i++) {
             if (array[i] < min) {
@@ -840,10 +840,10 @@ public class NumberUtils {
      * @throws IllegalArgumentException if <code>array</code> is empty
      */
     public static byte min(final byte[] array) {
-        // Validates input
+        
         validateArray(array);
     
-        // Finds and returns min
+        
         byte min = array[0];
         for (int i = 1; i < array.length; i++) {
             if (array[i] < min) {
@@ -864,10 +864,10 @@ public class NumberUtils {
      * @see IEEE754rUtils#min(double[]) IEEE754rUtils for a version of this method that handles NaN differently
      */
     public static double min(final double[] array) {
-        // Validates input
+        
         validateArray(array);
     
-        // Finds and returns min
+        
         double min = array[0];
         for (int i = 1; i < array.length; i++) {
             if (Double.isNaN(array[i])) {
@@ -891,10 +891,10 @@ public class NumberUtils {
      * @see IEEE754rUtils#min(float[]) IEEE754rUtils for a version of this method that handles NaN differently
      */
     public static float min(final float[] array) {
-        // Validates input
+        
         validateArray(array);
     
-        // Finds and returns min
+        
         float min = array[0];
         for (int i = 1; i < array.length; i++) {
             if (Float.isNaN(array[i])) {
@@ -908,8 +908,8 @@ public class NumberUtils {
         return min;
     }
 
-    // Max in array
-    //--------------------------------------------------------------------
+    
+    
     /**
      * <p>Returns the maximum value in an array.</p>
      * 
@@ -919,10 +919,10 @@ public class NumberUtils {
      * @throws IllegalArgumentException if <code>array</code> is empty
      */
     public static long max(final long[] array) {
-        // Validates input
+        
         validateArray(array);
 
-        // Finds and returns max
+        
         long max = array[0];
         for (int j = 1; j < array.length; j++) {
             if (array[j] > max) {
@@ -942,10 +942,10 @@ public class NumberUtils {
      * @throws IllegalArgumentException if <code>array</code> is empty
      */
     public static int max(final int[] array) {
-        // Validates input
+        
         validateArray(array);
     
-        // Finds and returns max
+        
         int max = array[0];
         for (int j = 1; j < array.length; j++) {
             if (array[j] > max) {
@@ -965,10 +965,10 @@ public class NumberUtils {
      * @throws IllegalArgumentException if <code>array</code> is empty
      */
     public static short max(final short[] array) {
-        // Validates input
+        
         validateArray(array);
     
-        // Finds and returns max
+        
         short max = array[0];
         for (int i = 1; i < array.length; i++) {
             if (array[i] > max) {
@@ -988,10 +988,10 @@ public class NumberUtils {
      * @throws IllegalArgumentException if <code>array</code> is empty
      */
     public static byte max(final byte[] array) {
-        // Validates input
+        
         validateArray(array);
     
-        // Finds and returns max
+        
         byte max = array[0];
         for (int i = 1; i < array.length; i++) {
             if (array[i] > max) {
@@ -1012,10 +1012,10 @@ public class NumberUtils {
      * @see IEEE754rUtils#max(double[]) IEEE754rUtils for a version of this method that handles NaN differently
      */
     public static double max(final double[] array) {
-        // Validates input
+        
         validateArray(array);
 
-        // Finds and returns max
+        
         double max = array[0];
         for (int j = 1; j < array.length; j++) {
             if (Double.isNaN(array[j])) {
@@ -1039,10 +1039,10 @@ public class NumberUtils {
      * @see IEEE754rUtils#max(float[]) IEEE754rUtils for a version of this method that handles NaN differently
      */
     public static float max(final float[] array) {
-        // Validates input
+        
         validateArray(array);
 
-        // Finds and returns max
+        
         float max = array[0];
         for (int j = 1; j < array.length; j++) {
             if (Float.isNaN(array[j])) {
@@ -1070,8 +1070,8 @@ public class NumberUtils {
         }
     }
      
-    // 3 param min
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Gets the minimum of three <code>long</code> values.</p>
      * 
@@ -1176,8 +1176,8 @@ public class NumberUtils {
         return Math.min(Math.min(a, b), c);
     }
 
-    // 3 param max
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Gets the maximum of three <code>long</code> values.</p>
      * 
@@ -1282,7 +1282,7 @@ public class NumberUtils {
         return Math.max(Math.max(a, b), c);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Checks whether the <code>String</code> contains only
      * digit characters.</p>
@@ -1328,14 +1328,14 @@ public class NumberUtils {
         boolean hasDecPoint = false;
         boolean allowSigns = false;
         boolean foundDigit = false;
-        // deal with any possible sign up front
+        
         final int start = (chars[0] == '-') ? 1 : 0;
         if (sz > start + 1 && chars[start] == '0' && chars[start + 1] == 'x') {
             int i = start + 2;
             if (i == sz) {
-                return false; // str == "0x"
+                return false; 
             }
-            // checking hex (it can't be anything else)
+            
             for (; i < chars.length; i++) {
                 if ((chars[i] < '0' || chars[i] > '9')
                     && (chars[i] < 'a' || chars[i] > 'f')
@@ -1345,11 +1345,11 @@ public class NumberUtils {
             }
             return true;
         }
-        sz--; // don't want to loop to the last char, check it afterwords
-              // for type qualifiers
+        sz--; 
+              
         int i = start;
-        // loop to the next to last char or to the last char if we need another digit to
-        // make a valid number (e.g. chars[0..5] = "1234E")
+        
+        
         while (i < sz || (i < sz + 1 && allowSigns && !foundDigit)) {
             if (chars[i] >= '0' && chars[i] <= '9') {
                 foundDigit = true;
@@ -1357,14 +1357,14 @@ public class NumberUtils {
 
             } else if (chars[i] == '.') {
                 if (hasDecPoint || hasExp) {
-                    // two decimal points or dec in exponent   
+                    
                     return false;
                 }
                 hasDecPoint = true;
             } else if (chars[i] == 'e' || chars[i] == 'E') {
-                // we've already taken care of hex.
+                
                 if (hasExp) {
-                    // two E's
+                    
                     return false;
                 }
                 if (!foundDigit) {
@@ -1377,7 +1377,7 @@ public class NumberUtils {
                     return false;
                 }
                 allowSigns = false;
-                foundDigit = false; // we need a digit after the E
+                foundDigit = false; 
             } else {
                 return false;
             }
@@ -1385,19 +1385,19 @@ public class NumberUtils {
         }
         if (i < chars.length) {
             if (chars[i] >= '0' && chars[i] <= '9') {
-                // no type qualifier, OK
+                
                 return true;
             }
             if (chars[i] == 'e' || chars[i] == 'E') {
-                // can't have an E at the last byte
+                
                 return false;
             }
             if (chars[i] == '.') {
                 if (hasDecPoint || hasExp) {
-                    // two decimal points or dec in exponent
+                    
                     return false;
                 }
-                // single trailing decimal point after non-exponent is ok
+                
                 return foundDigit;
             }
             if (!allowSigns
@@ -1409,14 +1409,14 @@ public class NumberUtils {
             }
             if (chars[i] == 'l'
                 || chars[i] == 'L') {
-                // not allowing L with an exponent or decimal point
+                
                 return foundDigit && !hasExp && !hasDecPoint;
             }
-            // last character is illegal
+            
             return false;
         }
-        // allowSigns is true iff the val ends in 'E'
-        // found digit it to make sure weird stuff like '.' and '1E-' doesn't pass
+        
+        
         return !allowSigns && foundDigit;
     }
 

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -71,7 +71,7 @@ public class LookupTranslator extends CharSequenceTranslator {
         if (index + longest > input.length()) {
             max = input.length() - index;
         }
-        // descend so as to get a greedy algorithm
+        
         for (int i = max; i >= shortest; i--) {
             final CharSequence subSeq = input.subSequence(index, index + i);
             final CharSequence result = lookupMap.get(subSeq.toString());

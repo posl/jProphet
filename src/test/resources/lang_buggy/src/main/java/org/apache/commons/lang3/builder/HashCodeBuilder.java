@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ import org.apache.commons.lang3.ArrayUtils;
  *
  * <p>
  * This class enables a good <code>hashCode</code> method to be built for any class. It follows the rules laid out in
- * the book <a href="http://www.oracle.com/technetwork/java/effectivejava-136174.html">Effective Java</a> by Joshua Bloch. Writing a
+ * the book <a href="http:
  * good <code>hashCode</code> method is actually quite difficult. This class aims to simplify the process.
  * </p>
  *
@@ -62,8 +62,8 @@ import org.apache.commons.lang3.ArrayUtils;
  *   ...
  *
  *   public int hashCode() {
- *     // you pick a hard-coded, randomly chosen, non-zero, odd number
- *     // ideally different for each class
+ *     
+ *     
  *     return new HashCodeBuilder(17, 37).
  *       append(name).
  *       append(age).
@@ -186,8 +186,8 @@ public class HashCodeBuilder implements Builder<Integer> {
                         final Object fieldValue = field.get(object);
                         builder.append(fieldValue);
                     } catch (final IllegalAccessException e) {
-                        // this can't happen. Would get a Security exception instead
-                        // throw a runtime exception in case the impossible happens.
+                        
+                        
                         throw new InternalError("Unexpected IllegalAccessException");
                     }
                 }
@@ -417,7 +417,7 @@ public class HashCodeBuilder implements Builder<Integer> {
         return reflectionHashCode(object, ReflectionToStringBuilder.toNoNullStringArray(excludeFields));
     }
 
-    // -------------------------------------------------------------------------
+    
 
     /**
      * <p>
@@ -489,7 +489,7 @@ public class HashCodeBuilder implements Builder<Integer> {
         if (registry != null) {
             registry.remove(new IDKey(value));
             synchronized (HashCodeBuilder.class) {
-                //read again
+                
                 registry = getRegistry();
                 if (registry != null && registry.isEmpty()) {
                     REGISTRY.remove();
@@ -598,7 +598,7 @@ public class HashCodeBuilder implements Builder<Integer> {
         return this;
     }
 
-    // -------------------------------------------------------------------------
+    
 
     /**
      * <p>
@@ -614,7 +614,7 @@ public class HashCodeBuilder implements Builder<Integer> {
         return this;
     }
 
-    // -------------------------------------------------------------------------
+    
 
     /**
      * <p>
@@ -780,10 +780,10 @@ public class HashCodeBuilder implements Builder<Integer> {
      *            the long to add to the <code>hashCode</code>
      * @return this
      */
-    // NOTE: This method uses >> and not >>> as Effective Java and
-    //       Long.hashCode do. Ideally we should switch to >>> at
-    //       some stage. There are backwards compat issues, so
-    //       that will have to wait for the time being. cf LANG-342.
+    
+    
+    
+    
     public HashCodeBuilder append(final long value) {
         iTotal = iTotal * iConstant + ((int) (value ^ (value >> 32)));
         return this;
@@ -824,8 +824,8 @@ public class HashCodeBuilder implements Builder<Integer> {
 
         } else {
             if(object.getClass().isArray()) {
-                // 'Switch' on type of array, to dispatch to the correct handler
-                // This handles multi dimensional arrays
+                
+                
                 if (object instanceof long[]) {
                     append((long[]) object);
                 } else if (object instanceof int[]) {
@@ -843,7 +843,7 @@ public class HashCodeBuilder implements Builder<Integer> {
                 } else if (object instanceof boolean[]) {
                     append((boolean[]) object);
                 } else {
-                    // Not an array of primitives
+                    
                     append((Object[]) object);
                 }
             } else {

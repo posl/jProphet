@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -185,7 +185,7 @@ public class ConstructorUtils {
         return ctor.newInstance(args);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Finds a constructor given a class and signature, checking accessibility.</p>
      * 
@@ -242,13 +242,13 @@ public class ConstructorUtils {
      */
     public static <T> Constructor<T> getMatchingAccessibleConstructor(final Class<T> cls,
             final Class<?>... parameterTypes) {
-        // see if we can find the constructor directly
-        // most of the time this works and it's much faster
+        
+        
         try {
             final Constructor<T> ctor = cls.getConstructor(parameterTypes);
             MemberUtils.setAccessibleWorkaround(ctor);
             return ctor;
-        } catch (final NoSuchMethodException e) { // NOPMD - Swallow
+        } catch (final NoSuchMethodException e) { 
         }
         Constructor<T> result = null;
         /*
@@ -257,18 +257,18 @@ public class ConstructorUtils {
          */
         final Constructor<?>[] ctors = cls.getConstructors();
 
-        // return best match:
+        
         for (Constructor<?> ctor : ctors) {
-            // compare parameters
+            
             if (ClassUtils.isAssignable(parameterTypes, ctor.getParameterTypes(), true)) {
-                // get accessible version of constructor
+                
                 ctor = getAccessibleConstructor(ctor);
                 if (ctor != null) {
                     MemberUtils.setAccessibleWorkaround(ctor);
                     if (result == null
                             || MemberUtils.compareParameterTypes(ctor.getParameterTypes(), result
                                     .getParameterTypes(), parameterTypes) < 0) {
-                        // temporary variable for annotation, see comment above (1)
+                        
                         @SuppressWarnings("unchecked")
                         final
                         Constructor<T> constructor = (Constructor<T>)ctor;

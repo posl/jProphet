@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -91,7 +91,7 @@ public class CharSet implements Serializable {
     
     private final Set<CharRange> set = Collections.synchronizedSet(new HashSet<CharRange>());
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Factory method to create a new CharSet using a special syntax.</p>
      *
@@ -148,7 +148,7 @@ public class CharSet implements Serializable {
         return new CharSet(setStrs); 
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Constructs a new CharSet using the set syntax.
      * Each string is merged in with the set.</p>
@@ -164,7 +164,7 @@ public class CharSet implements Serializable {
         }
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Add a set definition string to the {@code CharSet}.</p>
      *
@@ -180,39 +180,39 @@ public class CharSet implements Serializable {
         while (pos < len) {
             final int remainder = len - pos;
             if (remainder >= 4 && str.charAt(pos) == '^' && str.charAt(pos + 2) == '-') {
-                // negated range
+                
                 set.add(CharRange.isNotIn(str.charAt(pos + 1), str.charAt(pos + 3)));
                 pos += 4;
             } else if (remainder >= 3 && str.charAt(pos + 1) == '-') {
-                // range
+                
                 set.add(CharRange.isIn(str.charAt(pos), str.charAt(pos + 2)));
                 pos += 3;
             } else if (remainder >= 2 && str.charAt(pos) == '^') {
-                // negated char
+                
                 set.add(CharRange.isNot(str.charAt(pos + 1)));
                 pos += 2;
             } else {
-                // char
+                
                 set.add(CharRange.is(str.charAt(pos)));
                 pos += 1;
             }
         }
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Gets the internal set as an array of CharRange objects.</p>
      *
      * @return an array of immutable CharRange objects
      * @since 2.0
      */
-// NOTE: This is no longer public as CharRange is no longer a public class. 
-//       It may be replaced when CharSet moves to Range.
+
+
      CharRange[] getCharRanges() {
         return set.toArray(new CharRange[set.size()]);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Does the {@code CharSet} contain the specified
      * character {@code ch}.</p>
@@ -229,8 +229,8 @@ public class CharSet implements Serializable {
         return false;
     }
 
-    // Basics
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Compares two {@code CharSet} objects, returning true if they represent
      * exactly the same set of characters defined in the same way.</p>

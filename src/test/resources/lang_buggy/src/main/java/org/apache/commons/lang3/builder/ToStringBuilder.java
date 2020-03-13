@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -93,7 +93,7 @@ public class ToStringBuilder implements Builder<String> {
      */
     private static volatile ToStringStyle defaultStyle = ToStringStyle.DEFAULT_STYLE;
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Gets the default <code>ToStringStyle</code> to use.</p>
@@ -139,7 +139,7 @@ public class ToStringBuilder implements Builder<String> {
         defaultStyle = style;
     }
 
-    //----------------------------------------------------------------------------
+    
     /**
      * <p>Uses <code>ReflectionToStringBuilder</code> to generate a
      * <code>toString</code> for the specified object.</p>
@@ -200,7 +200,7 @@ public class ToStringBuilder implements Builder<String> {
         return ReflectionToStringBuilder.toString(object, style, outputTransients, false, reflectUpToClass);
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * Current toString buffer, not null.
@@ -263,7 +263,7 @@ public class ToStringBuilder implements Builder<String> {
         style.appendStart(buffer, object);
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> a <code>boolean</code>
@@ -277,7 +277,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> a <code>boolean</code>
@@ -291,7 +291,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> a <code>byte</code>
@@ -305,7 +305,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> a <code>byte</code>
@@ -319,7 +319,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> a <code>char</code>
@@ -333,7 +333,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> a <code>char</code>
@@ -347,7 +347,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> a <code>double</code>
@@ -361,7 +361,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> a <code>double</code>
@@ -375,7 +375,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> a <code>float</code>
@@ -389,7 +389,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> a <code>float</code>
@@ -403,7 +403,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> an <code>int</code>
@@ -417,7 +417,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> an <code>int</code>
@@ -431,7 +431,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> a <code>long</code>
@@ -445,7 +445,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> a <code>long</code>
@@ -459,7 +459,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> an <code>Object</code>
@@ -473,7 +473,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> an <code>Object</code>
@@ -487,7 +487,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> a <code>short</code>
@@ -501,7 +501,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append to the <code>toString</code> a <code>short</code>
@@ -957,7 +957,7 @@ public class ToStringBuilder implements Builder<String> {
         return this;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Append the <code>toString</code> from the superclass.</p>
@@ -1031,7 +1031,7 @@ public class ToStringBuilder implements Builder<String> {
         return buffer;
     }
 
-    //----------------------------------------------------------------------------
+    
 
     /**
      * <p>Gets the <code>ToStringStyle</code> being used.</p>

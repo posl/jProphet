@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,7 +40,7 @@ import org.apache.commons.lang3.mutable.MutableInt;
  * @since 1.0
  * @version $Id$
  */
-//@Immutable
+
 public class ObjectUtils {
 
     /**
@@ -72,8 +72,8 @@ public class ObjectUtils {
         super();
     }
 
-    // Defaulting
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Returns a default value if the object passed is {@code null}.</p>
      *
@@ -127,8 +127,8 @@ public class ObjectUtils {
         return null;
     }
 
-    // Null-safe equals/hashCode
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Compares two objects for equality, where either one or both
      * objects may be {@code null}.</p>
@@ -195,7 +195,7 @@ public class ObjectUtils {
      * @since 2.1
      */
     public static int hashCode(final Object obj) {
-        // hashCode(Object) retained for performance, as hash code is often critical
+        
         return obj == null ? 0 : obj.hashCode();
     }
 
@@ -229,8 +229,8 @@ public class ObjectUtils {
         return hash;
     }
 
-    // Identity ToString
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Gets the toString that would be produced by {@code Object}
      * if a class did not override toString itself. {@code null}
@@ -280,8 +280,8 @@ public class ObjectUtils {
               .append(Integer.toHexString(System.identityHashCode(object)));
     }
 
-    // ToString
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Gets the {@code toString} of an {@code Object} returning
      * an empty string ("") if {@code null} input.</p>
@@ -326,8 +326,8 @@ public class ObjectUtils {
         return obj == null ? nullStr : obj.toString();
     }
 
-    // Comparable
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Null safe comparison of Comparables.</p>
      *
@@ -431,7 +431,7 @@ public class ObjectUtils {
         Validate.noNullElements(items);
         final TreeSet<T> sort = new TreeSet<T>();
         Collections.addAll(sort, items);
-        @SuppressWarnings("unchecked") //we know all items added were T instances
+        @SuppressWarnings("unchecked") 
         final
         T result = (T) sort.toArray()[(sort.size() - 1) / 2];
         return result;
@@ -454,14 +454,14 @@ public class ObjectUtils {
         Validate.notNull(comparator, "null comparator");
         final TreeSet<T> sort = new TreeSet<T>(comparator);
         Collections.addAll(sort, items);
-        @SuppressWarnings("unchecked") //we know all items added were T instances
+        @SuppressWarnings("unchecked") 
         final
         T result = (T) sort.toArray()[(sort.size() - 1) / 2];
         return result;
     }
 
-    // Mode
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * Find the most frequently occurring item.
      * 
@@ -497,8 +497,8 @@ public class ObjectUtils {
         return null;
     }
 
-    // cloning
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Clone an object.</p>
      *
@@ -538,7 +538,7 @@ public class ObjectUtils {
                         + obj.getClass().getName(), e.getCause());
                 }
             }
-            @SuppressWarnings("unchecked") // OK because input is of type T
+            @SuppressWarnings("unchecked") 
             final T checked = (T) result;
             return checked;
         }
@@ -567,8 +567,8 @@ public class ObjectUtils {
         return clone == null ? obj : clone;
     }
 
-    // Null
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Class used as a null placeholder where {@code null}
      * has another meaning.</p>
@@ -608,7 +608,7 @@ public class ObjectUtils {
     }
 
 
-    // Constants (LANG-816):
+    
     /*
         These methods ensure constants are not inlined by javac.
         For example, typically a developer might declare a constant like so:

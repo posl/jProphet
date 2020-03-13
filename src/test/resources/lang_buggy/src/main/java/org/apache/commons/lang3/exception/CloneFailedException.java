@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,11 +23,11 @@ package org.apache.commons.lang3.exception;
  * @since 3.0
  */
 public class CloneFailedException extends RuntimeException {
-    // ~ Static fields/initializers ---------------------------------------------
+    
 
     private static final long serialVersionUID = 20091223L;
 
-    // ~ Constructors -----------------------------------------------------------
+    
 
     /**
      * Constructs a CloneFailedException.

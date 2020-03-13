@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,9 +40,9 @@ public class SystemUtils {
      */
     private static final String OS_NAME_WINDOWS_PREFIX = "Windows";
 
-    // System property constants
-    // -----------------------------------------------------------------------
-    // These MUST be declared first. Other constants depend on this.
+    
+    
+    
 
     /**
      * The System property key for the user home directory.
@@ -849,10 +849,10 @@ public class SystemUtils {
      */
     public static final String USER_TIMEZONE = getSystemProperty("user.timezone");
 
-    // Java version checks
-    // -----------------------------------------------------------------------
-    // These MUST be declared after those above as they depend on the
-    // values being set up
+    
+    
+    
+    
 
     /**
      * <p>
@@ -926,13 +926,13 @@ public class SystemUtils {
      */
     public static final boolean IS_JAVA_1_7 = getJavaVersionMatches("1.7");
 
-    // Operating system checks
-    // -----------------------------------------------------------------------
-    // These MUST be declared after those above as they depend on the
-    // values being set up
-    // OS names from http://www.vamphq.com/os.html
-    // Selected ones included - please advise dev@commons.apache.org
-    // if you want another added or a mistake corrected
+    
+    
+    
+    
+    
+    
+    
 
     /**
      * <p>
@@ -1150,7 +1150,7 @@ public class SystemUtils {
      * @since 2.0
      */
     public static final boolean IS_OS_WINDOWS_95 = getOSMatches(OS_NAME_WINDOWS_PREFIX + " 9", "4.0");
-    // Java 1.2 running on Windows98 returns 'Windows 95', hence the above
+    
 
     /**
      * <p>
@@ -1163,7 +1163,7 @@ public class SystemUtils {
      * @since 2.0
      */
     public static final boolean IS_OS_WINDOWS_98 = getOSMatches(OS_NAME_WINDOWS_PREFIX + " 9", "4.1");
-    // Java 1.2 running on Windows98 returns 'Windows 95', hence the above
+    
 
     /**
      * <p>
@@ -1176,7 +1176,7 @@ public class SystemUtils {
      * @since 2.0
      */
     public static final boolean IS_OS_WINDOWS_ME = getOSMatches(OS_NAME_WINDOWS_PREFIX, "4.9");
-    // Java 1.2 running on WindowsME may return 'Windows 95', hence the above
+    
 
     /**
      * <p>
@@ -1189,7 +1189,7 @@ public class SystemUtils {
      * @since 2.0
      */
     public static final boolean IS_OS_WINDOWS_NT = getOSMatchesName(OS_NAME_WINDOWS_PREFIX + " NT");
-    // Windows 2000 returns 'Windows 2000' but may suffer from same Java1.2 problem
+    
 
     /**
      * <p>
@@ -1203,7 +1203,7 @@ public class SystemUtils {
      */
     public static final boolean IS_OS_WINDOWS_XP = getOSMatches(OS_NAME_WINDOWS_PREFIX, "5.1");
 
-    // -----------------------------------------------------------------------
+    
     /**
      * <p>
      * Is {@code true} if this is Windows Vista.
@@ -1303,7 +1303,7 @@ public class SystemUtils {
         return isOSNameMatch(OS_NAME, osNamePrefix);
     }
 
-    // -----------------------------------------------------------------------
+    
     /**
      * <p>
      * Gets a System property, defaulting to {@code null} if the property cannot be read.
@@ -1320,7 +1320,7 @@ public class SystemUtils {
         try {
             return System.getProperty(property);
         } catch (final SecurityException ex) {
-            // we are not allowed to look at this property
+            
             System.err.println("Caught a SecurityException reading the system property '" + property
                     + "'; the SystemUtils property value will default to null.");
             return null;
@@ -1443,7 +1443,7 @@ public class SystemUtils {
         return osName.startsWith(osNamePrefix);
     }
 
-    // -----------------------------------------------------------------------
+    
     /**
      * <p>
      * SystemUtils instances should NOT be constructed in standard programming. Instead, the class should be used as

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,8 +43,8 @@ public class WordUtils {
       super();
     }
 
-    // Wrapping
-    //--------------------------------------------------------------------------
+    
+    
     /**
      * <p>Wraps a single line of text, identifying words by <code>' '</code>.</p>
      * 
@@ -107,20 +107,20 @@ public class WordUtils {
             int spaceToWrapAt = str.lastIndexOf(' ', wrapLength + offset);
 
             if (spaceToWrapAt >= offset) {
-                // normal case
+                
                 wrappedLine.append(str.substring(offset, spaceToWrapAt));
                 wrappedLine.append(newLineStr);
                 offset = spaceToWrapAt + 1;
                 
             } else {
-                // really long word or URL
+                
                 if (wrapLongWords) {
-                    // wrap really long word one line at a time
+                    
                     wrappedLine.append(str.substring(offset, wrapLength + offset));
                     wrappedLine.append(newLineStr);
                     offset += wrapLength;
                 } else {
-                    // do not wrap really long word, just extend beyond limit
+                    
                     spaceToWrapAt = str.indexOf(' ', wrapLength + offset);
                     if (spaceToWrapAt >= 0) {
                         wrappedLine.append(str.substring(offset, spaceToWrapAt));
@@ -134,14 +134,14 @@ public class WordUtils {
             }
         }
 
-        // Whatever is left in line is short enough to just pass through
+        
         wrappedLine.append(str.substring(offset));
 
         return wrappedLine.toString();
     }
 
-    // Capitalizing
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Capitalizes all the whitespace separated words in a String.
      * Only the first letter of each word is changed. To convert the 
@@ -216,7 +216,7 @@ public class WordUtils {
         return new String(buffer);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Converts all the whitespace separated words in a String into capitalized words, 
      * that is each word is made up of a titlecase character and then a series of 
@@ -275,7 +275,7 @@ public class WordUtils {
         return capitalize(str, delimiters);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Uncapitalizes all the whitespace separated words in a String.
      * Only the first letter of each word is changed.</p>
@@ -341,7 +341,7 @@ public class WordUtils {
         return new String(buffer);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Swaps the case of a String using a word based algorithm.</p>
      * 
@@ -394,7 +394,7 @@ public class WordUtils {
         return new String(buffer);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Extracts the initial letters from each word in the String.</p>
      * 
@@ -468,13 +468,13 @@ public class WordUtils {
                 buf[count++] = ch;
                 lastWasGap = false;
             } else {
-                continue; // ignore ch
+                continue; 
             }
         }
         return new String(buf, 0, count);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Is the character a delimiter.
      *

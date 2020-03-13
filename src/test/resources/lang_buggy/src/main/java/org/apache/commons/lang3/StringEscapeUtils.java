@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -160,9 +160,9 @@ public class StringEscapeUtils {
      */
     public static final CharSequenceTranslator ESCAPE_CSV = new CsvEscaper();
 
-    // TODO: Create a parent class - 'SinglePassTranslator' ?
-    //       It would handle the index checking + length returning, 
-    //       and could also have an optimization check method.
+    
+    
+    
     static class CsvEscaper extends CharSequenceTranslator {
 
         private static final char CSV_DELIMITER = ',';
@@ -200,10 +200,10 @@ public class StringEscapeUtils {
      *
      * @since 3.0
      */
-    // TODO: throw "illegal character: \92" as an Exception if a \ on the end of the Java (as per the compiler)?
+    
     public static final CharSequenceTranslator UNESCAPE_JAVA = 
         new AggregateTranslator(
-            new OctalUnescaper(),     // .between('\1', '\377'),
+            new OctalUnescaper(),     
             new UnicodeUnescaper(),
             new LookupTranslator(EntityArrays.JAVA_CTRL_CHARS_UNESCAPE()),
             new LookupTranslator(
@@ -317,11 +317,11 @@ public class StringEscapeUtils {
                 return input.length();
             }
 
-            // strip quotes
+            
             final String quoteless = input.subSequence(1, input.length() - 1).toString();
 
             if ( StringUtils.containsAny(quoteless, CSV_SEARCH_CHARS) ) {
-                // deal with escaped quotes; ie) ""
+                
                 out.write(StringUtils.replace(quoteless, CSV_QUOTE_STR + CSV_QUOTE_STR, CSV_QUOTE_STR));
             } else {
                 out.write(input.toString());
@@ -346,8 +346,8 @@ public class StringEscapeUtils {
       super();
     }
 
-    // Java and JavaScript
-    //--------------------------------------------------------------------------
+    
+    
     /**
      * <p>Escapes the characters in a {@code String} using Java String rules.</p>
      *
@@ -413,7 +413,7 @@ public class StringEscapeUtils {
      * <p>The only difference between Java strings and Json strings
      * is that in Json, forward-slash (/) is escaped.</p>
      *
-     * <p>See http://www.ietf.org/rfc/rfc4627.txt for further details. </p>
+     * <p>See http:
      *
      * <p>Example:
      * <pre>
@@ -478,8 +478,8 @@ public class StringEscapeUtils {
         return UNESCAPE_JSON.translate(input);
     }
 
-    // HTML and XML
-    //--------------------------------------------------------------------------
+    
+    
     /**
      * <p>Escapes the characters in a {@code String} using HTML entities.</p>
      *
@@ -499,11 +499,11 @@ public class StringEscapeUtils {
      * @param input  the {@code String} to escape, may be null
      * @return a new escaped {@code String}, {@code null} if null string input
      * 
-     * @see <a href="http://hotwired.lycos.com/webmonkey/reference/special_characters/">ISO Entities</a>
-     * @see <a href="http://www.w3.org/TR/REC-html32#latin1">HTML 3.2 Character Entities for ISO Latin-1</a>
-     * @see <a href="http://www.w3.org/TR/REC-html40/sgml/entities.html">HTML 4.0 Character entity references</a>
-     * @see <a href="http://www.w3.org/TR/html401/charset.html#h-5.3">HTML 4.01 Character References</a>
-     * @see <a href="http://www.w3.org/TR/html401/charset.html#code-position">HTML 4.01 Code positions</a>
+     * @see <a href="http:
+     * @see <a href="http:
+     * @see <a href="http:
+     * @see <a href="http:
+     * @see <a href="http:
      * 
      * @since 3.0
      */
@@ -524,7 +524,7 @@ public class StringEscapeUtils {
         return ESCAPE_HTML3.translate(input);
     }
                 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Unescapes a string containing entity escapes to a string
      * containing the actual Unicode characters corresponding to the
@@ -560,7 +560,7 @@ public class StringEscapeUtils {
         return UNESCAPE_HTML3.translate(input);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Escapes the characters in a {@code String} using XML entities.</p>
      *
@@ -585,7 +585,7 @@ public class StringEscapeUtils {
     }
                 
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Unescapes a string containing XML entity escapes to a string
      * containing the actual Unicode characters corresponding to the
@@ -606,7 +606,7 @@ public class StringEscapeUtils {
     }
                 
 
-    //-----------------------------------------------------------------------
+    
 
     /**
      * <p>Returns a {@code String} value for a CSV column enclosed in double quotes,
@@ -622,8 +622,8 @@ public class StringEscapeUtils {
      *    String value is returned unchanged.</p>
      * </p>
      *
-     * see <a href="http://en.wikipedia.org/wiki/Comma-separated_values">Wikipedia</a> and
-     * <a href="http://tools.ietf.org/html/rfc4180">RFC 4180</a>.
+     * see <a href="http:
+     * <a href="http:
      *
      * @param input the input CSV column String, may be null
      * @return the input String, enclosed in double quotes if the value contains a comma,
@@ -648,8 +648,8 @@ public class StringEscapeUtils {
      *    comma, newline or double quote, then the String value is returned unchanged.</p>
      * </p>
      *
-     * see <a href="http://en.wikipedia.org/wiki/Comma-separated_values">Wikipedia</a> and
-     * <a href="http://tools.ietf.org/html/rfc4180">RFC 4180</a>.
+     * see <a href="http:
+     * <a href="http:
      *
      * @param input the input CSV column String, may be null
      * @return the input String, with enclosing double quotes removed and embedded double 

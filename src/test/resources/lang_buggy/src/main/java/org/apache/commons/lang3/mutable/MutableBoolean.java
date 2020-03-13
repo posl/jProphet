@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -68,7 +68,7 @@ public class MutableBoolean implements Mutable<Boolean>, Serializable, Comparabl
         this.value = value.booleanValue();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Gets the value as a Boolean instance.
      * 
@@ -99,7 +99,7 @@ public class MutableBoolean implements Mutable<Boolean>, Serializable, Comparabl
         this.value = value.booleanValue();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Checks if the current value is <code>true</code>.
      * 
@@ -120,7 +120,7 @@ public class MutableBoolean implements Mutable<Boolean>, Serializable, Comparabl
         return value == false;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Returns the value of this MutableBoolean as a boolean.
      * 
@@ -130,7 +130,7 @@ public class MutableBoolean implements Mutable<Boolean>, Serializable, Comparabl
         return value;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Gets this mutable as an instance of Boolean.
      *
@@ -141,7 +141,7 @@ public class MutableBoolean implements Mutable<Boolean>, Serializable, Comparabl
         return Boolean.valueOf(booleanValue());
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Compares this object to the specified object. The result is <code>true</code> if and only if the argument is
      * not <code>null</code> and is an <code>MutableBoolean</code> object that contains the same
@@ -168,7 +168,7 @@ public class MutableBoolean implements Mutable<Boolean>, Serializable, Comparabl
         return value ? Boolean.TRUE.hashCode() : Boolean.FALSE.hashCode();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Compares this mutable to another in ascending order.
      * 
@@ -182,7 +182,7 @@ public class MutableBoolean implements Mutable<Boolean>, Serializable, Comparabl
         return value == anotherVal ? 0 : (value ? 1 : -1);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Returns the String value of this mutable.
      * 

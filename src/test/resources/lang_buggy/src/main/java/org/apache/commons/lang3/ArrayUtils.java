@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -139,11 +139,11 @@ public class ArrayUtils {
     }
 
 
-    // NOTE: Cannot use {@code} to enclose text which includes {}, but <code></code> is OK
+    
 
 
-    // Basic methods handling multi-dimensional arrays
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Outputs an array as a String, treating {@code null} as an empty array.</p>
      *
@@ -204,8 +204,8 @@ public class ArrayUtils {
         return new EqualsBuilder().append(array1, array2).isEquals();
     }
 
-    // To map
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts the given array into a {@link java.util.Map}. Each element of the array
      * must be either a {@link java.util.Map.Entry} or an Array, containing at least two
@@ -214,7 +214,7 @@ public class ArrayUtils {
      *
      * <p>This method can be used to initialize:</p>
      * <pre>
-     * // Create a Map mapping colors.
+     * 
      * Map colorMap = MapUtils.toMap(new String[][] {{
      *     {"RED", "#FF0000"},
      *     {"GREEN", "#00FF00"},
@@ -258,8 +258,8 @@ public class ArrayUtils {
         return map;
     }
 
-    // Generic array
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Create a type-safe generic array.</p>
      *
@@ -267,10 +267,10 @@ public class ArrayUtils {
      *
      * <pre>
     public static &lt;T&gt; T[] createAnArray(int size) {
-        return new T[size]; // compiler error here
+        return new T[size]; 
     }
     public static &lt;T&gt; T[] createAnArray(int size) {
-        return (T[])new Object[size]; // ClassCastException at runtime
+        return (T[])new Object[size]; 
     }
      * </pre>
      *
@@ -301,8 +301,8 @@ public class ArrayUtils {
         return items;
     }
 
-    // Clone
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Shallow clones an array returning a typecast result and handling
      * {@code null}.</p>
@@ -451,8 +451,8 @@ public class ArrayUtils {
         return array.clone();
     }
 
-    // nullToEmpty
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Defensive programming technique to change a {@code null}
      * reference to an empty one.</p>
@@ -813,8 +813,8 @@ public class ArrayUtils {
         return array;
     }
 
-    // Subarrays
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Produces a new array containing the elements between
      * the start and end indices.</p>
@@ -856,11 +856,11 @@ public class ArrayUtils {
         final int newSize = endIndexExclusive - startIndexInclusive;
         final Class<?> type = array.getClass().getComponentType();
         if (newSize <= 0) {
-            @SuppressWarnings("unchecked") // OK, because array is of type T
+            @SuppressWarnings("unchecked") 
             final T[] emptyArray = (T[]) Array.newInstance(type, 0);
             return emptyArray;
         }
-        @SuppressWarnings("unchecked") // OK, because array is of type T
+        @SuppressWarnings("unchecked") 
         final
         T[] subarray = (T[]) Array.newInstance(type, newSize);
         System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
@@ -1179,8 +1179,8 @@ public class ArrayUtils {
         return subarray;
     }
 
-    // Is same length
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Checks whether two arrays are the same length, treating
      * {@code null} arrays as length {@code 0}.
@@ -1345,7 +1345,7 @@ public class ArrayUtils {
         return true;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Returns the length of the specified array.
      * This method can deal with {@code Object} arrays and with primitive arrays.</p>
@@ -1389,8 +1389,8 @@ public class ArrayUtils {
         return array1.getClass().getName().equals(array2.getClass().getName());
     }
 
-    // Reverse
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Reverses the order of the given array.</p>
      *
@@ -1600,11 +1600,11 @@ public class ArrayUtils {
         }
     }
 
-    // IndexOf search
-    // ----------------------------------------------------------------------
+    
+    
 
-    // Object IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given object in the array.</p>
      *
@@ -1722,8 +1722,8 @@ public class ArrayUtils {
         return indexOf(array, objectToFind) != INDEX_NOT_FOUND;
     }
 
-    // long IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given value in the array.</p>
      *
@@ -1825,8 +1825,8 @@ public class ArrayUtils {
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-    // int IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given value in the array.</p>
      *
@@ -1928,8 +1928,8 @@ public class ArrayUtils {
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-    // short IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given value in the array.</p>
      *
@@ -2031,8 +2031,8 @@ public class ArrayUtils {
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-    // char IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given value in the array.</p>
      *
@@ -2139,8 +2139,8 @@ public class ArrayUtils {
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-    // byte IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given value in the array.</p>
      *
@@ -2242,8 +2242,8 @@ public class ArrayUtils {
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-    // double IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given value in the array.</p>
      *
@@ -2466,8 +2466,8 @@ public class ArrayUtils {
         return indexOf(array, valueToFind, 0, tolerance) != INDEX_NOT_FOUND;
     }
 
-    // float IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given value in the array.</p>
      *
@@ -2569,8 +2569,8 @@ public class ArrayUtils {
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-    // boolean IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given value in the array.</p>
      *
@@ -2674,11 +2674,11 @@ public class ArrayUtils {
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-    // Primitive/Object array converters
-    // ----------------------------------------------------------------------
+    
+    
 
-    // Character array converters
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an array of object Characters to primitives.</p>
      *
@@ -2745,8 +2745,8 @@ public class ArrayUtils {
         return result;
      }
 
-    // Long array converters
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an array of object Longs to primitives.</p>
      *
@@ -2813,8 +2813,8 @@ public class ArrayUtils {
         return result;
     }
 
-    // Int array converters
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an array of object Integers to primitives.</p>
      *
@@ -2881,8 +2881,8 @@ public class ArrayUtils {
         return result;
     }
 
-    // Short array converters
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an array of object Shorts to primitives.</p>
      *
@@ -2949,8 +2949,8 @@ public class ArrayUtils {
         return result;
     }
 
-    // Byte array converters
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an array of object Bytes to primitives.</p>
      *
@@ -3017,8 +3017,8 @@ public class ArrayUtils {
         return result;
     }
 
-    // Double array converters
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an array of object Doubles to primitives.</p>
      *
@@ -3085,8 +3085,8 @@ public class ArrayUtils {
         return result;
     }
 
-    //   Float array converters
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an array of object Floats to primitives.</p>
      *
@@ -3153,8 +3153,8 @@ public class ArrayUtils {
         return result;
     }
 
-    // Boolean array converters
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an array of object Booleans to primitives.</p>
      *
@@ -3221,7 +3221,7 @@ public class ArrayUtils {
         return result;
     }
 
-    // ----------------------------------------------------------------------
+    
     /**
      * <p>Checks if an array of Objects is empty or {@code null}.</p>
      *
@@ -3321,7 +3321,7 @@ public class ArrayUtils {
         return array == null || array.length == 0;
     }
 
-    // ----------------------------------------------------------------------
+    
     /**
      * <p>Checks if an array of Objects is not empty or not {@code null}.</p>
      *
@@ -3453,14 +3453,14 @@ public class ArrayUtils {
             return clone(array1);
         }
         final Class<?> type1 = array1.getClass().getComponentType();
-        @SuppressWarnings("unchecked") // OK, because array is of type T
+        @SuppressWarnings("unchecked") 
         final
         T[] joinedArray = (T[]) Array.newInstance(type1, array1.length + array2.length);
         System.arraycopy(array1, 0, joinedArray, 0, array1.length);
         try {
             System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
         } catch (final ArrayStoreException ase) {
-            // Check if problem was due to incompatible types
+            
             /*
              * We do this here, rather than before the copy because:
              * - it would be a wasted check most of the time
@@ -3471,7 +3471,7 @@ public class ArrayUtils {
                 throw new IllegalArgumentException("Cannot store "+type2.getName()+" in an array of "
                         +type1.getName(), ase);
             }
-            throw ase; // No, so rethrow original
+            throw ase; 
         }
         return joinedArray;
     }
@@ -3746,7 +3746,7 @@ public class ArrayUtils {
         } else {
             throw new IllegalArgumentException("Arguments cannot both be null");
         }
-        @SuppressWarnings("unchecked") // type must be T
+        @SuppressWarnings("unchecked") 
         final
         T[] newArray = (T[]) copyArrayGrow1(array, type);
         newArray[newArray.length - 1] = element;
@@ -4027,7 +4027,7 @@ public class ArrayUtils {
         } else {
             throw new IllegalArgumentException("Array and element cannot both be null");
         }
-        @SuppressWarnings("unchecked") // the add method creates an array of type clss, which is type T
+        @SuppressWarnings("unchecked") 
         final T[] newArray = (T[]) add(array, index, element, clss);
         return newArray;
     }
@@ -4343,7 +4343,7 @@ public class ArrayUtils {
      * (index < 0 || index >= array.length), or if the array is {@code null}.
      * @since 2.1
      */
-    @SuppressWarnings("unchecked") // remove() always creates an array of the same type as its input
+    @SuppressWarnings("unchecked") 
     public static <T> T[] remove(final T[] array, final int index) {
         return (T[]) remove((Object) array, index);
     }
@@ -4964,7 +4964,7 @@ public class ArrayUtils {
      * (index < 0 || index >= array.length), or if the array is {@code null}.
      * @since 3.0.1
      */
-    @SuppressWarnings("unchecked") // removeAll() always creates an array of the same type as its input
+    @SuppressWarnings("unchecked") 
     public static <T> T[] removeAll(final T[] array, final int... indices) {
         return (T[]) removeAll((Object) array, clone(indices));
     }
@@ -5022,7 +5022,7 @@ public class ArrayUtils {
                 toRemove.set(found++);
             }
         }
-        @SuppressWarnings("unchecked") // removeAll() always creates an array of the same type as its input
+        @SuppressWarnings("unchecked") 
         final
         T[] result = (T[]) removeAll(array, toRemove);
         return result;
@@ -5711,7 +5711,7 @@ public class ArrayUtils {
         if (isEmpty(array) || isEmpty(values)) {
             return clone(array);
         }
-        final HashMap<Boolean, MutableInt> occurrences = new HashMap<Boolean, MutableInt>(2); // only two possible values here
+        final HashMap<Boolean, MutableInt> occurrences = new HashMap<Boolean, MutableInt>(2); 
         for (final boolean v : values) {
             final Boolean boxed = Boolean.valueOf(v);
             final MutableInt count = occurrences.get(boxed);
@@ -5743,10 +5743,10 @@ public class ArrayUtils {
      * @return new array of same type minus elements specified by unique values of {@code indices}
      * @since 3.0.1
      */
-    // package protected for access by unit tests
+    
     static Object removeAll(final Object array, final int... indices) {
         final int length = getLength(array);
-        int diff = 0; // number of distinct indexes, i.e. number of entries that will be removed
+        int diff = 0; 
 
         if (isNotEmpty(indices)) {
             Arrays.sort(indices);
@@ -5767,15 +5767,15 @@ public class ArrayUtils {
         }
         final Object result = Array.newInstance(array.getClass().getComponentType(), length - diff);
         if (diff < length) {
-            int end = length; // index just after last copy
-            int dest = length - diff; // number of entries so far not copied
+            int end = length; 
+            int dest = length - diff; 
             for (int i = indices.length - 1; i >= 0; i--) {
                 final int index = indices[i];
-                if (end - index > 1) { // same as (cp > 0)
+                if (end - index > 1) { 
                     final int cp = end - index - 1;
                     dest -= cp;
                     System.arraycopy(array, index + 1, result, dest, cp);
-                    // Afer this copy, we still have room for dest items.
+                    
                 }
                 end = index;
             }
@@ -5794,16 +5794,16 @@ public class ArrayUtils {
      * @return new array of same type minus elements specified by the set bits in {@code indices}
      * @since 3.2
      */
-    // package protected for access by unit tests
+    
     static Object removeAll(final Object array, final BitSet indices) {
         final int srcLength = ArrayUtils.getLength(array);
-        // No need to check maxIndex here, because method only currently called from removeElements()
-        // which guarantee to generate on;y valid bit entries.
-//        final int maxIndex = indices.length();
-//        if (maxIndex > srcLength) { 
-//            throw new IndexOutOfBoundsException("Index: " + (maxIndex-1) + ", Length: " + srcLength);
-//        }
-        final int removals = indices.cardinality(); // true bits are items to remove
+        
+        
+
+
+
+
+        final int removals = indices.cardinality(); 
         final Object result = Array.newInstance(array.getClass().getComponentType(), srcLength - removals);
         int srcIndex=0;
         int destIndex=0;

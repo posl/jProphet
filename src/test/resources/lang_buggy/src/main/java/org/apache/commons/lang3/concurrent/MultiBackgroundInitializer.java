@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -185,22 +185,22 @@ public class MultiBackgroundInitializer
     protected MultiBackgroundInitializerResults initialize() throws Exception {
         Map<String, BackgroundInitializer<?>> inits;
         synchronized (this) {
-            // create a snapshot to operate on
+            
             inits = new HashMap<String, BackgroundInitializer<?>>(
                     childInitializers);
         }
 
-        // start the child initializers
+        
         final ExecutorService exec = getActiveExecutor();
         for (final BackgroundInitializer<?> bi : inits.values()) {
             if (bi.getExternalExecutor() == null) {
-                // share the executor service if necessary
+                
                 bi.setExternalExecutor(exec);
             }
             bi.start();
         }
 
-        // collect the results
+        
         final Map<String, Object> results = new HashMap<String, Object>();
         final Map<String, ConcurrentException> excepts = new HashMap<String, ConcurrentException>();
         for (final Map.Entry<String, BackgroundInitializer<?>> e : inits.entrySet()) {

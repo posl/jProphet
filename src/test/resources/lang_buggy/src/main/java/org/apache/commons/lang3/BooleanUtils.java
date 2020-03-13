@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,8 +42,8 @@ public class BooleanUtils {
       super();
     }
 
-    // Boolean utilities
-    //--------------------------------------------------------------------------
+    
+    
     /**
      * <p>Negates the specified boolean.</p>
      *
@@ -67,8 +67,8 @@ public class BooleanUtils {
         return bool.booleanValue() ? Boolean.FALSE : Boolean.TRUE;
     }
 
-    // boolean Boolean methods
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Checks if a {@code Boolean} value is {@code true},
      * handling {@code null} by returning {@code false}.</p>
@@ -141,7 +141,7 @@ public class BooleanUtils {
         return !isFalse(bool);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Converts a Boolean to a boolean handling {@code null}
      * by returning {@code false}.</p>
@@ -179,8 +179,8 @@ public class BooleanUtils {
         return bool.booleanValue();
     }
 
-    // Integer to Boolean methods
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an int to a boolean using the convention that {@code zero}
      * is {@code false}.</p>
@@ -265,7 +265,7 @@ public class BooleanUtils {
         if (value == falseValue) {
             return false;
         }
-        // no match
+        
         throw new IllegalArgumentException("The Integer did not match either specified value");
     }
 
@@ -299,7 +299,7 @@ public class BooleanUtils {
         } else if (value.equals(falseValue)) {
             return false;
         }
-        // no match
+        
         throw new IllegalArgumentException("The Integer did not match either specified value");
     }
 
@@ -331,7 +331,7 @@ public class BooleanUtils {
         if (value == nullValue) {
             return null;
         }
-        // no match
+        
         throw new IllegalArgumentException("The Integer did not match any specified value");
     }
 
@@ -371,12 +371,12 @@ public class BooleanUtils {
         } else if (value.equals(nullValue)) {
             return null;
         }
-        // no match
+        
         throw new IllegalArgumentException("The Integer did not match any specified value");
     }
 
-    // Boolean to Integer methods
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts a boolean to an int using the convention that
      * {@code zero} is {@code false}.</p>
@@ -508,8 +508,8 @@ public class BooleanUtils {
         return bool.booleanValue() ? trueValue : falseValue;
     }
 
-    // String to Boolean methods
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts a String to a Boolean.</p>
      *
@@ -536,12 +536,12 @@ public class BooleanUtils {
      * @return the Boolean value of the string, {@code null} if no match or {@code null} input
      */
     public static Boolean toBooleanObject(final String str) {
-        // Previously used equalsIgnoreCase, which was fast for interned 'true'.
-        // Non interned 'true' matched 15 times slower.
-        //
-        // Optimisation provides same performance as before for interned 'true'.
-        // Similar performance for null, 'false', and other strings not length 2/3/4.
-        // 'true'/'TRUE' match 4 times slower, 'tRUE'/'True' 7 times slower.
+        
+        
+        
+        
+        
+        
         if (str == "true") {
             return Boolean.TRUE;
         }
@@ -660,12 +660,12 @@ public class BooleanUtils {
         } else if (str.equals(nullString)) {
             return null;
         }
-        // no match
+        
         throw new IllegalArgumentException("The String did not match any specified value");
     }
 
-    // String to boolean methods
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts a String to a boolean (optimised for performance).</p>
      *
@@ -721,12 +721,12 @@ public class BooleanUtils {
                 return false;
             }
         }
-        // no match
+        
         throw new IllegalArgumentException("The String did not match either specified value");
     }
 
-    // Boolean to String methods
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts a Boolean to a String returning {@code 'true'},
      * {@code 'false'}, or {@code null}.</p>
@@ -800,8 +800,8 @@ public class BooleanUtils {
         return bool.booleanValue() ? trueString : falseString;
     }
 
-    // boolean to String methods
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts a boolean to a String returning {@code 'true'}
      * or {@code 'false'}.</p>
@@ -867,8 +867,8 @@ public class BooleanUtils {
         return bool ? trueString : falseString;
     }
 
-    // logical operations
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Performs an and on a set of booleans.</p>
      *
@@ -887,7 +887,7 @@ public class BooleanUtils {
      * @since 3.0.1
      */
     public static boolean and(final boolean... array) {
-        // Validates input
+        
         if (array == null) {
             throw new IllegalArgumentException("The Array must not be null");
         }
@@ -955,7 +955,7 @@ public class BooleanUtils {
      * @since 3.0.1
      */
     public static boolean or(final boolean... array) {
-        // Validates input
+        
         if (array == null) {
             throw new IllegalArgumentException("The Array must not be null");
         }
@@ -1023,7 +1023,7 @@ public class BooleanUtils {
      * @throws IllegalArgumentException if {@code array} is empty.
      */
     public static boolean xor(final boolean... array) {
-        // Validates input
+        
         if (array == null) {
             throw new IllegalArgumentException("The Array must not be null");
         }
@@ -1031,11 +1031,11 @@ public class BooleanUtils {
             throw new IllegalArgumentException("Array is empty");
         }
 
-        // Loops through array, comparing each item
+        
         int trueCount = 0;
         for (final boolean element : array) {
-            // If item is true, and trueCount is < 1, increments count
-            // Else, xor fails
+            
+            
             if (element) {
                 if (trueCount < 1) {
                     trueCount++;
@@ -1045,7 +1045,7 @@ public class BooleanUtils {
             }
         }
 
-        // Returns true if there was exactly 1 true item
+        
         return trueCount == 1;
     }
 

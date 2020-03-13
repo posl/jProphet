@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,8 +29,8 @@ import java.util.NoSuchElementException;
  * @since 1.0
  * @version $Id$
  */
-// TODO: This is no longer public and will be removed later as CharSet is moved 
-// to depend on Range.
+
+
 final class CharRange implements Iterable<Character>, Serializable {
 
     /**
@@ -127,8 +127,8 @@ final class CharRange implements Iterable<Character>, Serializable {
         return new CharRange(start, end, true);
     }
 
-    // Accessors
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Gets the start character for this character range.</p>
      * 
@@ -159,8 +159,8 @@ final class CharRange implements Iterable<Character>, Serializable {
         return negated;
     }
 
-    // Contains
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Is the character specified contained in this range.</p>
      *
@@ -195,8 +195,8 @@ final class CharRange implements Iterable<Character>, Serializable {
         return start <= range.start && end >= range.end;
     }
 
-    // Basics
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Compares two CharRange objects, returning true if they represent
      * exactly the same range of characters defined in the same way.</p>
@@ -248,8 +248,8 @@ final class CharRange implements Iterable<Character>, Serializable {
         return iToString;
     }
 
-    // Expansions
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Returns an iterator which can be used to walk through the characters described by this range.</p>
      *
@@ -285,7 +285,7 @@ final class CharRange implements Iterable<Character>, Serializable {
             if (range.negated) {
                 if (range.start == 0) {
                     if (range.end == Character.MAX_VALUE) {
-                        // This range is an empty set
+                        
                         hasNext = false;
                     } else {
                         current = (char) (range.end + 1);

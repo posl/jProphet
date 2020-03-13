@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -104,7 +104,7 @@ public class CompareToBuilder implements Builder<Integer> {
         comparison = 0;
     }
 
-    //-----------------------------------------------------------------------
+    
     /** 
      * <p>Compares two <code>Object</code>s via reflection.</p>
      *
@@ -321,15 +321,15 @@ public class CompareToBuilder implements Builder<Integer> {
                 try {
                     builder.append(f.get(lhs), f.get(rhs));
                 } catch (final IllegalAccessException e) {
-                    // This can't happen. Would get a Security exception instead.
-                    // Throw a runtime exception in case the impossible happens.
+                    
+                    
                     throw new InternalError("Unexpected IllegalAccessException");
                 }
             }
         }
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Appends to the <code>builder</code> the <code>compareTo(Object)</code>
      * result of the superclass.</p>
@@ -346,7 +346,7 @@ public class CompareToBuilder implements Builder<Integer> {
         return this;
     }
     
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Appends to the <code>builder</code> the comparison of
      * two <code>Object</code>s.</p>
@@ -411,9 +411,9 @@ public class CompareToBuilder implements Builder<Integer> {
             return this;
         }
         if (lhs.getClass().isArray()) {
-            // switch on type of array, to dispatch to the correct handler
-            // handles multi dimensional arrays
-            // throws a ClassCastException if rhs is not the correct array type
+            
+            
+            
             if (lhs instanceof long[]) {
                 append((long[]) lhs, (long[]) rhs);
             } else if (lhs instanceof int[]) {
@@ -431,18 +431,18 @@ public class CompareToBuilder implements Builder<Integer> {
             } else if (lhs instanceof boolean[]) {
                 append((boolean[]) lhs, (boolean[]) rhs);
             } else {
-                // not an array of primitives
-                // throws a ClassCastException if rhs is not an array
+                
+                
                 append((Object[]) lhs, (Object[]) rhs, comparator);
             }
         } else {
-            // the simple case, not an array, just test the element
+            
             if (comparator == null) {
-                @SuppressWarnings("unchecked") // assume this can be done; if not throw CCE as per Javadoc
+                @SuppressWarnings("unchecked") 
                 final Comparable<Object> comparable = (Comparable<Object>) lhs;
                 comparison = comparable.compareTo(rhs);
             } else {
-                @SuppressWarnings("unchecked") // assume this can be done; if not throw CCE as per Javadoc
+                @SuppressWarnings("unchecked") 
                 final Comparator<Object> comparator2 = (Comparator<Object>) comparator;
                 comparison = comparator2.compare(lhs, rhs);
             }
@@ -450,7 +450,7 @@ public class CompareToBuilder implements Builder<Integer> {
         return this;
     }
 
-    //-------------------------------------------------------------------------
+    
     /**
      * Appends to the <code>builder</code> the comparison of
      * two <code>long</code>s.
@@ -596,7 +596,7 @@ public class CompareToBuilder implements Builder<Integer> {
         return this;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Appends to the <code>builder</code> the deep comparison of
      * two <code>Object</code> arrays.</p>
@@ -989,7 +989,7 @@ public class CompareToBuilder implements Builder<Integer> {
         return this;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Returns a negative integer, a positive integer, or zero as
      * the <code>builder</code> has judged the "left-hand" side

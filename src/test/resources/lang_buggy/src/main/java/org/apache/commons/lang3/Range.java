@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -161,8 +161,8 @@ public final class Range<T> implements Serializable {
         this.comparator = comparator;
     }
 
-    // Accessors
-    //--------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Gets the minimum value in this range.</p>
@@ -206,8 +206,8 @@ public final class Range<T> implements Serializable {
         return comparator == ComparableComparator.INSTANCE;
     }
 
-    // Element tests
-    //--------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Checks whether the specified element occurs within this range.</p>
@@ -286,7 +286,7 @@ public final class Range<T> implements Serializable {
      */
     public int elementCompareTo(final T element) {
         if (element == null) {
-            // Comparable API says throw NPE on null
+            
             throw new NullPointerException("Element is null");
         }
         if (isAfter(element)) {
@@ -298,8 +298,8 @@ public final class Range<T> implements Serializable {
         }
     }
 
-    // Range tests
-    //--------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Checks whether this range contains all the elements of the specified range.</p>
@@ -391,8 +391,8 @@ public final class Range<T> implements Serializable {
         return between(min, max, getComparator());
     }
 
-    // Basics
-    //--------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Compares this range to another object to test if they are equal.</p>.
@@ -410,7 +410,7 @@ public final class Range<T> implements Serializable {
         } else if (obj == null || obj.getClass() != getClass()) {
             return false;
         } else {
-            @SuppressWarnings("unchecked") // OK because we checked the class above
+            @SuppressWarnings("unchecked") 
             final
             Range<T> range = (Range<T>) obj;
             return minimum.equals(range.minimum) &&
@@ -475,7 +475,7 @@ public final class Range<T> implements Serializable {
         return String.format(format, minimum, maximum, comparator);
     }
 
-    //-----------------------------------------------------------------------
+    
     @SuppressWarnings({"rawtypes", "unchecked"})
     private enum ComparableComparator implements Comparator {
         INSTANCE;

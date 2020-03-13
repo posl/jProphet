@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -73,7 +73,7 @@ public class AnnotationUtils {
             Class<? extends Annotation> annotationType = null;
             for (final Class<?> iface : ClassUtils.getAllInterfaces(cls)) {
                 if (Annotation.class.isAssignableFrom(iface)) {
-                    @SuppressWarnings("unchecked") // OK because we just checked the assignability
+                    @SuppressWarnings("unchecked") 
                     final
                     Class<? extends Annotation> found = (Class<? extends Annotation>) iface;
                     annotationType = found;
@@ -107,7 +107,7 @@ public class AnnotationUtils {
     public AnnotationUtils() {
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Checks if two annotations are equal using the criteria for equality
      * presented in the {@link Annotation#equals(Object)} API docs.</p>
@@ -196,7 +196,7 @@ public class AnnotationUtils {
         final ToStringBuilder builder = new ToStringBuilder(a, TO_STRING_STYLE);
         for (final Method m : a.annotationType().getDeclaredMethods()) {
             if (m.getParameterTypes().length > 0) {
-                continue; //wtf?
+                continue; 
             }
             try {
                 builder.append(m.getName(), m.invoke(a));
@@ -231,7 +231,7 @@ public class AnnotationUtils {
                 || String.class.equals(type) || Class.class.equals(type);
     }
 
-    //besides modularity, this has the advantage of autoboxing primitives:
+    
     /**
      * Helper method for generating a hash code for a member of an annotation.
      *

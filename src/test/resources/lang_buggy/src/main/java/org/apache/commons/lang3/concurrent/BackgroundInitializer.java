@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,9 +45,9 @@ import java.util.concurrent.Future;
  * <pre>
  * MyBackgroundInitializer initializer = new MyBackgroundInitializer();
  * initializer.start();
- * // Now do some other things. Initialization runs in a parallel thread
+ * 
  * ...
- * // Wait for the end of initialization and access the result object
+ * 
  * Object result = initializer.get();
  * </pre>
  *
@@ -86,13 +86,13 @@ import java.util.concurrent.Future;
 public abstract class BackgroundInitializer<T> implements
         ConcurrentInitializer<T> {
     
-    private ExecutorService externalExecutor; // @GuardedBy("this")
+    private ExecutorService externalExecutor; 
 
     
-    private ExecutorService executor; // @GuardedBy("this")
+    private ExecutorService executor; 
 
     
-    private Future<T> future;  // @GuardedBy("this")
+    private Future<T> future;  
 
     /**
      * Creates a new instance of {@code BackgroundInitializer}. No external
@@ -171,11 +171,11 @@ public abstract class BackgroundInitializer<T> implements
      * @return a flag whether the initializer could be started successfully
      */
     public synchronized boolean start() {
-        // Not yet started?
+        
         if (!isStarted()) {
 
-            // Determine the executor to use and whether a temporary one has to
-            // be created
+            
+            
             ExecutorService tempExec;
             executor = getExternalExecutor();
             if (executor == null) {
@@ -212,9 +212,9 @@ public abstract class BackgroundInitializer<T> implements
             return getFuture().get();
         } catch (final ExecutionException execex) {
             ConcurrentUtils.handleCause(execex);
-            return null; // should not be reached
+            return null; 
         } catch (final InterruptedException iex) {
-            // reset interrupted state
+            
             Thread.currentThread().interrupt();
             throw new ConcurrentException(iex);
         }

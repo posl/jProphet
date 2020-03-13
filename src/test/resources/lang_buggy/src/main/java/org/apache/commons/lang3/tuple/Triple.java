@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,7 +60,7 @@ public abstract class Triple<L, M, R> implements Comparable<Triple<L, M, R>>, Se
         return new ImmutableTriple<L, M, R>(left, middle, right);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Gets the left element from this triple.</p>
      *
@@ -82,7 +82,7 @@ public abstract class Triple<L, M, R> implements Comparable<Triple<L, M, R>>, Se
      */
     public abstract R getRight();
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Compares the triple based on the left element, followed by the middle element,
      * finally the right element.

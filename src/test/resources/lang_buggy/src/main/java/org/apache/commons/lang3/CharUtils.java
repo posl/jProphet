@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ public class CharUtils {
     /**
      * {@code \u000a} linefeed LF ('\n').
      * 
-     * @see <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6">JLF: Escape Sequences
+     * @see <a href="http:
      *      for Character and String Literals</a>
      * @since 2.2
      */
@@ -43,7 +43,7 @@ public class CharUtils {
     /**
      * {@code \u000d} carriage return CR ('\r').
      * 
-     * @see <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6">JLF: Escape Sequences
+     * @see <a href="http:
      *      for Character and String Literals</a>
      * @since 2.2
      */
@@ -67,7 +67,7 @@ public class CharUtils {
       super();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Converts the character to a Character.</p>
      * 
@@ -112,7 +112,7 @@ public class CharUtils {
         return Character.valueOf(str.charAt(0));
     }
     
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Converts the Character to a char throwing an exception for {@code null}.</p>
      * 
@@ -153,7 +153,7 @@ public class CharUtils {
         return ch.charValue();
     }
     
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Converts the String to a char using the first character, throwing
      * an exception on empty Strings.</p>
@@ -198,7 +198,7 @@ public class CharUtils {
         return str.charAt(0);
     }
     
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Converts the character to the Integer it represents, throwing an
      * exception if the character is not numeric.</p>
@@ -289,7 +289,7 @@ public class CharUtils {
         return toIntValue(ch.charValue(), defaultValue);
     }
     
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Converts the character to a String that contains the one character.</p>
      * 
@@ -335,7 +335,7 @@ public class CharUtils {
         return toString(ch.charValue());
     }
     
-    //--------------------------------------------------------------------------
+    
     /**
      * <p>Converts the string to the Unicode format '\u0020'.</p>
      * 
@@ -383,7 +383,7 @@ public class CharUtils {
         return unicodeEscaped(ch.charValue());
     }
     
-    //--------------------------------------------------------------------------
+    
     /**
      * <p>Checks whether the character is ASCII 7 bit.</p>
      *

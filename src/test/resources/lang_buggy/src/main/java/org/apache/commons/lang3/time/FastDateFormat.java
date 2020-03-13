@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -95,7 +95,7 @@ public class FastDateFormat extends Format implements DateParser, DatePrinter {
     private final FastDatePrinter printer;
     private final FastDateParser parser;
     
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Gets a formatter instance using the default pattern in the
      * default locale.</p>
@@ -165,7 +165,7 @@ public class FastDateFormat extends Format implements DateParser, DatePrinter {
         return cache.getInstance(pattern, timeZone, locale);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Gets a date formatter instance using the specified style in the
      * default time zone and locale.</p>
@@ -227,7 +227,7 @@ public class FastDateFormat extends Format implements DateParser, DatePrinter {
         return cache.getDateInstance(style, timeZone, locale);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Gets a time formatter instance using the specified style in the
      * default time zone and locale.</p>
@@ -289,7 +289,7 @@ public class FastDateFormat extends Format implements DateParser, DatePrinter {
         return cache.getTimeInstance(style, timeZone, locale);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Gets a date/time formatter instance using the specified style
      * in the default time zone and locale.</p>
@@ -355,8 +355,8 @@ public class FastDateFormat extends Format implements DateParser, DatePrinter {
         return cache.getDateTimeInstance(dateStyle, timeStyle, timeZone, locale);
     }
 
-    // Constructor
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Constructs a new FastDateFormat.</p>
      *
@@ -370,8 +370,8 @@ public class FastDateFormat extends Format implements DateParser, DatePrinter {
         parser= new FastDateParser(pattern, timeZone, locale);
     }
 
-    // Format methods
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Formats a {@code Date}, {@code Calendar} or
      * {@code Long} (milliseconds) object.</p>
@@ -460,8 +460,8 @@ public class FastDateFormat extends Format implements DateParser, DatePrinter {
         return printer.format(calendar, buf);
     }
 
-    // Parsing
-    //-----------------------------------------------------------------------
+    
+    
 
     
     /* (non-Javadoc)
@@ -488,8 +488,8 @@ public class FastDateFormat extends Format implements DateParser, DatePrinter {
         return parser.parseObject(source, pos);
     }
 
-    // Accessors
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Gets the pattern used by this formatter.</p>
      *
@@ -535,8 +535,8 @@ public class FastDateFormat extends Format implements DateParser, DatePrinter {
         return printer.getMaxLengthEstimate();
     }
 
-    // Basics
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Compares two objects for equality.</p>
      *
@@ -549,7 +549,7 @@ public class FastDateFormat extends Format implements DateParser, DatePrinter {
             return false;
         }
         final FastDateFormat other = (FastDateFormat) obj;
-        // no need to check parser, as it has same invariants as printer
+        
         return printer.equals(other.printer);
     }
 

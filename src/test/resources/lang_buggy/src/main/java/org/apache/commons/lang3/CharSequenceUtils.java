@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,7 +37,7 @@ public class CharSequenceUtils {
         super();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Returns a new {@code CharSequence} that is a subsequence of this
      * sequence starting with the {@code char} value at the specified index.</p>
@@ -56,7 +56,7 @@ public class CharSequenceUtils {
         return cs == null ? null : cs.subSequence(start, cs.length());
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Finds the first index in the {@code CharSequence} that matches the
      * specified character.</p>
@@ -93,15 +93,15 @@ public class CharSequenceUtils {
      */
     static int indexOf(final CharSequence cs, final CharSequence searchChar, final int start) {
         return cs.toString().indexOf(searchChar.toString(), start);
-//        if (cs instanceof String && searchChar instanceof String) {
-//            // TODO: Do we assume searchChar is usually relatively small;
-//            //       If so then calling toString() on it is better than reverting to
-//            //       the green implementation in the else block
-//            return ((String) cs).indexOf((String) searchChar, start);
-//        } else {
-//            // TODO: Implement rather than convert to String
-//            return cs.toString().indexOf(searchChar.toString(), start);
-//        }
+
+
+
+
+
+
+
+
+
     }
 
     /**
@@ -143,15 +143,15 @@ public class CharSequenceUtils {
      */
     static int lastIndexOf(final CharSequence cs, final CharSequence searchChar, final int start) {
         return cs.toString().lastIndexOf(searchChar.toString(), start);
-//        if (cs instanceof String && searchChar instanceof String) {
-//            // TODO: Do we assume searchChar is usually relatively small;
-//            //       If so then calling toString() on it is better than reverting to
-//            //       the green implementation in the else block
-//            return ((String) cs).lastIndexOf((String) searchChar, start);
-//        } else {
-//            // TODO: Implement rather than convert to String
-//            return cs.toString().lastIndexOf(searchChar.toString(), start);
-//        }
+
+
+
+
+
+
+
+
+
     }
 
     /**
@@ -205,7 +205,7 @@ public class CharSequenceUtils {
                     return false;
                 }
 
-                // The same check as in String.regionMatches():
+                
                 if (Character.toUpperCase(c1) != Character.toUpperCase(c2)
                         && Character.toLowerCase(c1) != Character.toLowerCase(c2)) {
                     return false;

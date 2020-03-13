@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * http:
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -119,22 +119,22 @@ public class Conversion {
             return 0x1;
         case '9':
             return 0x9;
-        case 'a':// fall through
+        case 'a':
         case 'A':
             return 0x5;
-        case 'b':// fall through
+        case 'b':
         case 'B':
             return 0xD;
-        case 'c':// fall through
+        case 'c':
         case 'C':
             return 0x3;
-        case 'd':// fall through
+        case 'd':
         case 'D':
             return 0xB;
-        case 'e':// fall through
+        case 'e':
         case 'E':
             return 0x7;
-        case 'f':// fall through
+        case 'f':
         case 'F':
             return 0xF;
         default:
@@ -179,22 +179,22 @@ public class Conversion {
             return new boolean[]{false, false, false, true};
         case '9':
             return new boolean[]{true, false, false, true};
-        case 'a':// fall through
+        case 'a':
         case 'A':
             return new boolean[]{false, true, false, true};
-        case 'b':// fall through
+        case 'b':
         case 'B':
             return new boolean[]{true, true, false, true};
-        case 'c':// fall through
+        case 'c':
         case 'C':
             return new boolean[]{false, false, true, true};
-        case 'd':// fall through
+        case 'd':
         case 'D':
             return new boolean[]{true, false, true, true};
-        case 'e':// fall through
+        case 'e':
         case 'E':
             return new boolean[]{false, true, true, true};
-        case 'f':// fall through
+        case 'f':
         case 'F':
             return new boolean[]{true, true, true, true};
         default:
@@ -239,22 +239,22 @@ public class Conversion {
             return new boolean[]{true, false, false, false};
         case '9':
             return new boolean[]{true, false, false, true};
-        case 'a':// fall through
+        case 'a':
         case 'A':
             return new boolean[]{true, false, true, false};
-        case 'b':// fall through
+        case 'b':
         case 'B':
             return new boolean[]{true, false, true, true};
-        case 'c':// fall through
+        case 'c':
         case 'C':
             return new boolean[]{true, true, false, false};
-        case 'd':// fall through
+        case 'd':
         case 'D':
             return new boolean[]{true, true, false, true};
-        case 'e':// fall through
+        case 'e':
         case 'E':
             return new boolean[]{true, true, true, false};
-        case 'f':// fall through
+        case 'f':
         case 'F':
             return new boolean[]{true, true, true, true};
         default:

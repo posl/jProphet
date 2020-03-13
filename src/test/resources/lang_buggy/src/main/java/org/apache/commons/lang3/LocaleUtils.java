@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,7 +57,7 @@ public class LocaleUtils {
       super();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Converts a String to a Locale.</p>
      *
@@ -148,7 +148,7 @@ public class LocaleUtils {
         }
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Obtains the list of locales to search through when performing
      * a locale search.</p>
@@ -165,7 +165,7 @@ public class LocaleUtils {
         return localeLookupList(locale, locale);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Obtains the list of locales to search through when performing
      * a locale search.</p>
@@ -200,7 +200,7 @@ public class LocaleUtils {
         return Collections.unmodifiableList(list);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Obtains an unmodifiable list of installed locales.</p>
      * 
@@ -214,7 +214,7 @@ public class LocaleUtils {
         return SyncAvoid.AVAILABLE_LOCALE_LIST;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Obtains an unmodifiable set of installed locales.</p>
      * 
@@ -228,7 +228,7 @@ public class LocaleUtils {
         return SyncAvoid.AVAILABLE_LOCALE_SET;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Checks if the locale specified is in the list of available locales.</p>
      *
@@ -239,7 +239,7 @@ public class LocaleUtils {
         return availableLocaleList().contains(locale);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Obtains the list of languages supported for a given country.</p>
      *
@@ -271,7 +271,7 @@ public class LocaleUtils {
         return langs;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Obtains the list of countries supported for a given language.</p>
      * 
@@ -304,8 +304,8 @@ public class LocaleUtils {
         return countries;
     }
 
-    //-----------------------------------------------------------------------
-    // class to avoid synchronization (Init on demand)
+    
+    
     static class SyncAvoid {
         
         private static final List<Locale> AVAILABLE_LOCALE_LIST;
@@ -313,7 +313,7 @@ public class LocaleUtils {
         private static final Set<Locale> AVAILABLE_LOCALE_SET;
         
         static {
-            final List<Locale> list = new ArrayList<Locale>(Arrays.asList(Locale.getAvailableLocales()));  // extra safe
+            final List<Locale> list = new ArrayList<Locale>(Arrays.asList(Locale.getAvailableLocales()));  
             AVAILABLE_LOCALE_LIST = Collections.unmodifiableList(list);
             AVAILABLE_LOCALE_SET = Collections.unmodifiableSet(new HashSet<Locale>(list));
         }

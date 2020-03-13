@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,7 +59,7 @@ public abstract class CharSequenceTranslator {
             translate(input, writer);
             return writer.toString();
         } catch (final IOException ioe) {
-            // this should never ever happen while writing to a StringWriter
+            
             throw new RuntimeException(ioe);
         }
     }
@@ -89,8 +89,8 @@ public abstract class CharSequenceTranslator {
                 pos+= c.length;
                 continue;
             }
-//          // contract with translators is that they have to understand codepoints 
-//          // and they just took care of a surrogate pair
+
+
             for (int pt = 0; pt < consumed; pt++) {
                 pos += Character.charCount(Character.codePointAt(input, pt));
             }

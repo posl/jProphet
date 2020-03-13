@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -136,7 +136,7 @@ public class StrSubstitutor {
      */
     private boolean enableSubstitutionInVariables;
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Replaces all the occurrences of variables in the given source object with
      * their matching values from the map.
@@ -200,7 +200,7 @@ public class StrSubstitutor {
         return new StrSubstitutor(StrLookup.systemPropertiesLookup()).replace(source);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Creates a new instance with defaults for variable prefix and suffix
      * and the escaping character.
@@ -289,7 +289,7 @@ public class StrSubstitutor {
         this.setEscapeChar(escape);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Replaces all the occurrences of variables with their matching values
      * from the resolver using the given source string as a template.
@@ -331,7 +331,7 @@ public class StrSubstitutor {
         return buf.toString();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Replaces all the occurrences of variables with their matching values
      * from the resolver using the given source array as a template.
@@ -371,7 +371,7 @@ public class StrSubstitutor {
         return buf.toString();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Replaces all the occurrences of variables with their matching values
      * from the resolver using the given source buffer as a template.
@@ -411,7 +411,7 @@ public class StrSubstitutor {
         return buf.toString();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Replaces all the occurrences of variables with their matching values
      * from the resolver using the given source builder as a template.
@@ -451,7 +451,7 @@ public class StrSubstitutor {
         return buf.toString();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Replaces all the occurrences of variables in the given source object with
      * their matching values from the resolver. The input source object is
@@ -469,7 +469,7 @@ public class StrSubstitutor {
         return buf.toString();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Replaces all the occurrences of variables within the given source buffer
      * with their matching values from the resolver.
@@ -510,7 +510,7 @@ public class StrSubstitutor {
         return true;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Replaces all the occurrences of variables within the given source
      * builder with their matching values from the resolver.
@@ -544,7 +544,7 @@ public class StrSubstitutor {
         return substitute(source, offset, length);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Internal method that substitutes the variables.
      * <p>
@@ -592,16 +592,16 @@ public class StrSubstitutor {
             if (startMatchLen == 0) {
                 pos++;
             } else {
-                // found variable start marker
+                
                 if (pos > offset && chars[pos - 1] == escape) {
-                    // escaped
+                    
                     buf.deleteCharAt(pos - 1);
-                    chars = buf.buffer; // in case buffer was altered
+                    chars = buf.buffer; 
                     lengthChange--;
                     altered = true;
                     bufEnd--;
                 } else {
-                    // find suffix
+                    
                     final int startPos = pos;
                     pos += startMatchLen;
                     int endMatchLen = 0;
@@ -610,7 +610,7 @@ public class StrSubstitutor {
                         if (isEnableSubstitutionInVariables()
                                 && (endMatchLen = prefixMatcher.isMatch(chars,
                                         pos, offset, bufEnd)) != 0) {
-                            // found a nested variable start
+                            
                             nestedVarCount++;
                             pos += endMatchLen;
                             continue;
@@ -621,7 +621,7 @@ public class StrSubstitutor {
                         if (endMatchLen == 0) {
                             pos++;
                         } else {
-                            // found variable end marker
+                            
                             if (nestedVarCount == 0) {
                                 String varName = new String(chars, startPos
                                         + startMatchLen, pos - startPos
@@ -634,22 +634,22 @@ public class StrSubstitutor {
                                 pos += endMatchLen;
                                 final int endPos = pos;
 
-                                // on the first call initialize priorVariables
+                                
                                 if (priorVariables == null) {
                                     priorVariables = new ArrayList<String>();
                                     priorVariables.add(new String(chars,
                                             offset, length));
                                 }
 
-                                // handle cyclic substitution
+                                
                                 checkCyclicSubstitution(varName, priorVariables);
                                 priorVariables.add(varName);
 
-                                // resolve the variable
+                                
                                 final String varValue = resolveVariable(varName, buf,
                                         startPos, endPos);
                                 if (varValue != null) {
-                                    // recursive replace
+                                    
                                     final int varLen = varValue.length();
                                     buf.replace(startPos, endPos, varValue);
                                     altered = true;
@@ -660,11 +660,11 @@ public class StrSubstitutor {
                                     pos += change;
                                     bufEnd += change;
                                     lengthChange += change;
-                                    chars = buf.buffer; // in case buffer was
-                                                        // altered
+                                    chars = buf.buffer; 
+                                                        
                                 }
 
-                                // remove variable from the cyclic stack
+                                
                                 priorVariables
                                         .remove(priorVariables.size() - 1);
                                 break;
@@ -726,8 +726,8 @@ public class StrSubstitutor {
         return resolver.lookup(variableName);
     }
 
-    // Escape
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * Returns the escape character.
      *
@@ -748,8 +748,8 @@ public class StrSubstitutor {
         this.escapeChar = escapeCharacter;
     }
 
-    // Prefix
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * Gets the variable prefix matcher currently in use.
      * <p>
@@ -813,8 +813,8 @@ public class StrSubstitutor {
         return setVariablePrefixMatcher(StrMatcher.stringMatcher(prefix));
     }
 
-    // Suffix
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * Gets the variable suffix matcher currently in use.
      * <p>
@@ -878,8 +878,8 @@ public class StrSubstitutor {
         return setVariableSuffixMatcher(StrMatcher.stringMatcher(suffix));
     }
 
-    // Resolver
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * Gets the VariableResolver that is used to lookup variables.
      *
@@ -898,8 +898,8 @@ public class StrSubstitutor {
         this.variableResolver = variableResolver;
     }
 
-    // Substitution support in variable names
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * Returns a flag whether substitution is done in variable names.
      *

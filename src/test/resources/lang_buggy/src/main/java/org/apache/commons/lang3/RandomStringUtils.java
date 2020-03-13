@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,8 +54,8 @@ public class RandomStringUtils {
       super();
     }
 
-    // Random
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Creates a random string whose length is the number of characters
      * specified.</p>
@@ -265,7 +265,7 @@ public class RandomStringUtils {
                     if(count == 0) {
                         count++;
                     } else {
-                        // low surrogate, insert high surrogate after putting it in
+                        
                         buffer[count] = ch;
                         count--;
                         buffer[count] = (char) (55296 + random.nextInt(128));
@@ -274,13 +274,13 @@ public class RandomStringUtils {
                     if(count == 0) {
                         count++;
                     } else {
-                        // high surrogate, insert low surrogate before putting it in
+                        
                         buffer[count] = (char) (56320 + random.nextInt(128));
                         count--;
                         buffer[count] = ch;
                     }
                 } else if(ch >= 56192 && ch <= 56319) {
-                    // private high surrogate, no effing clue, so skip it
+                    
                     count++;
                 } else {
                     buffer[count] = ch;

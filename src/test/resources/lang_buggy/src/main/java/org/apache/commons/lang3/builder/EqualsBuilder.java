@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ import org.apache.commons.lang3.tuple.Pair;
  *
  * <p> This class provides methods to build a good equals method for any
  * class. It follows rules laid out in
- * <a href="http://www.oracle.com/technetwork/java/effectivejava-136174.html">Effective Java</a>
+ * <a href="http:
  * , by Joshua Bloch. In particular the rule for comparing <code>doubles</code>,
  * <code>floats</code>, and arrays can be tricky. Also, making sure that
  * <code>equals()</code> and <code>hashCode()</code> are consistent can be
@@ -198,7 +198,7 @@ public class EqualsBuilder implements Builder<Boolean> {
             final Pair<IDKey, IDKey> pair = getRegisterPair(lhs, rhs);
             registry.remove(pair);
             synchronized (EqualsBuilder.class) {
-                //read again
+                
                 registry = getRegistry();
                 if (registry != null && registry.isEmpty()) {
                     REGISTRY.remove();
@@ -220,10 +220,10 @@ public class EqualsBuilder implements Builder<Boolean> {
      * @see Object#equals(Object)
      */
     public EqualsBuilder() {
-        // do nothing for now.
+        
     }
 
-    //-------------------------------------------------------------------------
+    
 
     /**
      * <p>This method uses reflection to determine if the two <code>Object</code>s
@@ -329,27 +329,27 @@ public class EqualsBuilder implements Builder<Boolean> {
         if (lhs == null || rhs == null) {
             return false;
         }
-        // Find the leaf class since there may be transients in the leaf
-        // class or in classes between the leaf and root.
-        // If we are not testing transients or a subclass has no ivars,
-        // then a subclass can test equals to a superclass.
+        
+        
+        
+        
         final Class<?> lhsClass = lhs.getClass();
         final Class<?> rhsClass = rhs.getClass();
         Class<?> testClass;
         if (lhsClass.isInstance(rhs)) {
             testClass = lhsClass;
             if (!rhsClass.isInstance(lhs)) {
-                // rhsClass is a subclass of lhsClass
+                
                 testClass = rhsClass;
             }
         } else if (rhsClass.isInstance(lhs)) {
             testClass = rhsClass;
             if (!lhsClass.isInstance(rhs)) {
-                // lhsClass is a subclass of rhsClass
+                
                 testClass = lhsClass;
             }
         } else {
-            // The two classes are not related.
+            
             return false;
         }
         final EqualsBuilder equalsBuilder = new EqualsBuilder();
@@ -360,11 +360,11 @@ public class EqualsBuilder implements Builder<Boolean> {
                 reflectionAppend(lhs, rhs, testClass, equalsBuilder, testTransients, excludeFields);
             }
         } catch (final IllegalArgumentException e) {
-            // In this case, we tried to test a subclass vs. a superclass and
-            // the subclass has ivars or the ivars are transient and
-            // we are testing transients.
-            // If a subclass has ivars that we are trying to test them, we get an
-            // exception and we know that the objects are not equal.
+            
+            
+            
+            
+            
             return false;
         }
         return equalsBuilder.isEquals();
@@ -406,8 +406,8 @@ public class EqualsBuilder implements Builder<Boolean> {
                     try {
                         builder.append(f.get(lhs), f.get(rhs));
                     } catch (final IllegalAccessException e) {
-                        //this can't happen. Would get a Security exception instead
-                        //throw a runtime exception in case the impossible happens.
+                        
+                        
                         throw new InternalError("Unexpected IllegalAccessException");
                     }
                 }
@@ -417,7 +417,7 @@ public class EqualsBuilder implements Builder<Boolean> {
         }
     }
 
-    //-------------------------------------------------------------------------
+    
 
     /**
      * <p>Adds the result of <code>super.equals()</code> to this builder.</p>
@@ -434,7 +434,7 @@ public class EqualsBuilder implements Builder<Boolean> {
         return this;
     }
 
-    //-------------------------------------------------------------------------
+    
 
     /**
      * <p>Test if two <code>Object</code>s are equal using their
@@ -457,14 +457,14 @@ public class EqualsBuilder implements Builder<Boolean> {
         }
         final Class<?> lhsClass = lhs.getClass();
         if (!lhsClass.isArray()) {
-            // The simple case, not an array, just test the element
+            
             isEquals = lhs.equals(rhs);
         } else if (lhs.getClass() != rhs.getClass()) {
-            // Here when we compare different dimensions, for example: a boolean[][] to a boolean[]
+            
             this.setEquals(false);
         }
-        // 'Switch' on type of array, to dispatch to the correct handler
-        // This handles multi dimensional arrays of the same depth
+        
+        
         else if (lhs instanceof long[]) {
             append((long[]) lhs, (long[]) rhs);
         } else if (lhs instanceof int[]) {
@@ -482,7 +482,7 @@ public class EqualsBuilder implements Builder<Boolean> {
         } else if (lhs instanceof boolean[]) {
             append((boolean[]) lhs, (boolean[]) rhs);
         } else {
-            // Not an array of primitives
+            
             append((Object[]) lhs, (Object[]) rhs);
         }
         return this;

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -137,7 +137,7 @@ public class DateUtils {
         super();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Checks if two date objects are on the same day ignoring time.</p>
      *
@@ -184,7 +184,7 @@ public class DateUtils {
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Checks if two date objects represent the same instant in time.</p>
      *
@@ -221,7 +221,7 @@ public class DateUtils {
         return cal1.getTime().getTime() == cal2.getTime().getTime();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Checks if two calendar objects represent the same local time.</p>
      *
@@ -248,7 +248,7 @@ public class DateUtils {
                 cal1.getClass() == cal2.getClass());
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Parses a string representing a date by trying a variety of different parsers.</p>
      * 
@@ -267,7 +267,7 @@ public class DateUtils {
         return parseDate(str, null, parsePatterns);
     }
     
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Parses a string representing a date by trying a variety of different parsers,
      * using the default date format symbols for the given locale.</p>
@@ -290,7 +290,7 @@ public class DateUtils {
         return parseDateWithLeniency(str, locale, parsePatterns, true);
     }    
 
-  //-----------------------------------------------------------------------
+  
     /**
      * <p>Parses a string representing a date by trying a variety of different parsers.</p>
      * 
@@ -368,7 +368,7 @@ public class DateUtils {
 
             String pattern = parsePattern;
 
-            // LANG-530 - need to make sure 'ZZ' output doesn't get passed to SimpleDateFormat
+            
             if (parsePattern.endsWith("ZZ")) {
                 pattern = pattern.substring(0, pattern.length() - 1);
             }
@@ -377,7 +377,7 @@ public class DateUtils {
             pos.setIndex(0);
 
             String str2 = str;
-            // LANG-530 - need to make sure 'ZZ' output doesn't hit SimpleDateFormat as it will ParseException
+            
             if (parsePattern.endsWith("ZZ")) {
                 str2 = str.replaceAll("([-+][0-9][0-9]):([0-9][0-9])$", "$1$2"); 
             }
@@ -390,7 +390,7 @@ public class DateUtils {
         throw new ParseException("Unable to parse the date: " + str, -1);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Adds a number of years to a date returning a new object.
      * The original {@code Date} is unchanged.
@@ -404,7 +404,7 @@ public class DateUtils {
         return add(date, Calendar.YEAR, amount);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Adds a number of months to a date returning a new object.
      * The original {@code Date} is unchanged.
@@ -418,7 +418,7 @@ public class DateUtils {
         return add(date, Calendar.MONTH, amount);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Adds a number of weeks to a date returning a new object.
      * The original {@code Date} is unchanged.
@@ -432,7 +432,7 @@ public class DateUtils {
         return add(date, Calendar.WEEK_OF_YEAR, amount);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Adds a number of days to a date returning a new object.
      * The original {@code Date} is unchanged.
@@ -446,7 +446,7 @@ public class DateUtils {
         return add(date, Calendar.DAY_OF_MONTH, amount);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Adds a number of hours to a date returning a new object.
      * The original {@code Date} is unchanged.
@@ -460,7 +460,7 @@ public class DateUtils {
         return add(date, Calendar.HOUR_OF_DAY, amount);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Adds a number of minutes to a date returning a new object.
      * The original {@code Date} is unchanged.
@@ -474,7 +474,7 @@ public class DateUtils {
         return add(date, Calendar.MINUTE, amount);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Adds a number of seconds to a date returning a new object.
      * The original {@code Date} is unchanged.
@@ -488,7 +488,7 @@ public class DateUtils {
         return add(date, Calendar.SECOND, amount);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Adds a number of milliseconds to a date returning a new object.
      * The original {@code Date} is unchanged.
@@ -502,7 +502,7 @@ public class DateUtils {
         return add(date, Calendar.MILLISECOND, amount);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Adds to a date returning a new object.
      * The original {@code Date} is unchanged.
@@ -523,7 +523,7 @@ public class DateUtils {
         return c.getTime();
     }
     
-    //-----------------------------------------------------------------------
+    
     /**
      * Sets the years field to a date returning a new object.
      * The original {@code Date} is unchanged.
@@ -538,7 +538,7 @@ public class DateUtils {
         return set(date, Calendar.YEAR, amount);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Sets the months field to a date returning a new object.
      * The original {@code Date} is unchanged.
@@ -553,7 +553,7 @@ public class DateUtils {
         return set(date, Calendar.MONTH, amount);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Sets the day of month field to a date returning a new object.
      * The original {@code Date} is unchanged.
@@ -568,7 +568,7 @@ public class DateUtils {
         return set(date, Calendar.DAY_OF_MONTH, amount);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Sets the hours field to a date returning a new object.  Hours range 
      * from  0-23.
@@ -584,7 +584,7 @@ public class DateUtils {
         return set(date, Calendar.HOUR_OF_DAY, amount);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Sets the minute field to a date returning a new object.
      * The original {@code Date} is unchanged.
@@ -599,7 +599,7 @@ public class DateUtils {
         return set(date, Calendar.MINUTE, amount);
     }
     
-    //-----------------------------------------------------------------------
+    
     /**
      * Sets the seconds field to a date returning a new object.
      * The original {@code Date} is unchanged.
@@ -614,7 +614,7 @@ public class DateUtils {
         return set(date, Calendar.SECOND, amount);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Sets the miliseconds field to a date returning a new object.
      * The original {@code Date} is unchanged.
@@ -629,7 +629,7 @@ public class DateUtils {
         return set(date, Calendar.MILLISECOND, amount);
     } 
     
-    //-----------------------------------------------------------------------
+    
     /**
      * Sets the specified field to a date returning a new object.  
      * This does not use a lenient calendar.
@@ -646,7 +646,7 @@ public class DateUtils {
         if (date == null) {
             throw new IllegalArgumentException("The date must not be null");
         }
-        // getInstance() returns a new object, so this method is thread safe.
+        
         final Calendar c = Calendar.getInstance();
         c.setLenient(false);
         c.setTime(date);
@@ -654,7 +654,7 @@ public class DateUtils {
         return c.getTime();
     }   
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Converts a {@code Date} into a {@code Calendar}. 
      * 
@@ -669,7 +669,7 @@ public class DateUtils {
         return c;
     }
     
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Rounds a date, leaving the field specified as the most
      * significant field.</p>
@@ -783,7 +783,7 @@ public class DateUtils {
         }
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Truncates a date, leaving the field specified as the most
      * significant field.</p>
@@ -862,7 +862,7 @@ public class DateUtils {
         }
     }
     
-  //-----------------------------------------------------------------------
+  
     /**
      * <p>Gets a date ceiling, leaving the field specified as the most
      * significant field.</p>
@@ -944,7 +944,7 @@ public class DateUtils {
         }
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Internal calculation method.</p>
      * 
@@ -962,17 +962,17 @@ public class DateUtils {
             return;
         }
 
-        // ----------------- Fix for LANG-59 ---------------------- START ---------------
-        // see http://issues.apache.org/jira/browse/LANG-59
-        //
-        // Manually truncate milliseconds, seconds and minutes, rather than using
-        // Calendar methods.
+        
+        
+        
+        
+        
 
         final Date date = val.getTime();
         long time = date.getTime();
         boolean done = false;
 
-        // truncate milliseconds
+        
         final int millisecs = val.get(Calendar.MILLISECOND);
         if (MODIFY_TRUNCATE == modType || millisecs < 500) {
             time = time - millisecs;
@@ -981,7 +981,7 @@ public class DateUtils {
             done = true;
         }
 
-        // truncate seconds
+        
         final int seconds = val.get(Calendar.SECOND);
         if (!done && (MODIFY_TRUNCATE == modType || seconds < 30)) {
             time = time - (seconds * 1000L);
@@ -990,81 +990,81 @@ public class DateUtils {
             done = true;
         }
 
-        // truncate minutes
+        
         final int minutes = val.get(Calendar.MINUTE);
         if (!done && (MODIFY_TRUNCATE == modType || minutes < 30)) {
             time = time - (minutes * 60000L);
         }
 
-        // reset time
+        
         if (date.getTime() != time) {
             date.setTime(time);
             val.setTime(date);
         }
-        // ----------------- Fix for LANG-59 ----------------------- END ----------------
+        
 
         boolean roundUp = false;
         for (final int[] aField : fields) {
             for (final int element : aField) {
                 if (element == field) {
-                    //This is our field... we stop looping
+                    
                     if (modType == MODIFY_CEILING || (modType == MODIFY_ROUND && roundUp)) {
                         if (field == DateUtils.SEMI_MONTH) {
-                            //This is a special case that's hard to generalize
-                            //If the date is 1, we round up to 16, otherwise
-                            //  we subtract 15 days and add 1 month
+                            
+                            
+                            
                             if (val.get(Calendar.DATE) == 1) {
                                 val.add(Calendar.DATE, 15);
                             } else {
                                 val.add(Calendar.DATE, -15);
                                 val.add(Calendar.MONTH, 1);
                             }
-// ----------------- Fix for LANG-440 ---------------------- START ---------------
+
                         } else if (field == Calendar.AM_PM) {
-                            // This is a special case
-                            // If the time is 0, we round up to 12, otherwise
-                            //  we subtract 12 hours and add 1 day
+                            
+                            
+                            
                             if (val.get(Calendar.HOUR_OF_DAY) == 0) {
                                 val.add(Calendar.HOUR_OF_DAY, 12);
                             } else {
                                 val.add(Calendar.HOUR_OF_DAY, -12);
                                 val.add(Calendar.DATE, 1);
                             }
-// ----------------- Fix for LANG-440 ---------------------- END ---------------
+
                         } else {
-                            //We need at add one to this field since the
-                            //  last number causes us to round up
+                            
+                            
                             val.add(aField[0], 1);
                         }
                     }
                     return;
                 }
             }
-            //We have various fields that are not easy roundings
+            
             int offset = 0;
             boolean offsetSet = false;
-            //These are special types of fields that require different rounding rules
+            
             switch (field) {
                 case DateUtils.SEMI_MONTH:
                     if (aField[0] == Calendar.DATE) {
-                        //If we're going to drop the DATE field's value,
-                        //  we want to do this our own way.
-                        //We need to subtrace 1 since the date has a minimum of 1
+                        
+                        
+                        
                         offset = val.get(Calendar.DATE) - 1;
-                        //If we're above 15 days adjustment, that means we're in the
-                        //  bottom half of the month and should stay accordingly.
+                        
+                        
                         if (offset >= 15) {
                             offset -= 15;
                         }
-                        //Record whether we're in the top or bottom half of that range
+                        
                         roundUp = offset > 7;
                         offsetSet = true;
                     }
                     break;
                 case Calendar.AM_PM:
                     if (aField[0] == Calendar.HOUR_OF_DAY) {
-                        //If we're going to drop the HOUR field's value,
-                        //  we want to do this our own way.
+                        
+                        
                         offset = val.get(Calendar.HOUR_OF_DAY);
                         if (offset >= 12) {
                             offset -= 12;
@@ -1077,12 +1077,12 @@ public class DateUtils {
             if (!offsetSet) {
                 final int min = val.getActualMinimum(aField[0]);
                 final int max = val.getActualMaximum(aField[0]);
-                //Calculate the offset from the minimum allowed value
+                
                 offset = val.get(aField[0]) - min;
-                //Set roundUp if this is more than half way between the minimum and maximum
+                
                 roundUp = offset > ((max - min) / 2);
             }
-            //We need to remove this field
+            
             if (offset != 0) {
                 val.set(aField[0], val.get(aField[0]) - offset);
             }
@@ -1091,7 +1091,7 @@ public class DateUtils {
 
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Constructs an <code>Iterator</code> over each day in a date
      * range defined by a focus date and range style.</p>
@@ -1160,13 +1160,13 @@ public class DateUtils {
         switch (rangeStyle) {
             case RANGE_MONTH_SUNDAY:
             case RANGE_MONTH_MONDAY:
-                //Set start to the first of the month
+                
                 start = truncate(focus, Calendar.MONTH);
-                //Set end to the last of the month
+                
                 end = (Calendar) start.clone();
                 end.add(Calendar.MONTH, 1);
                 end.add(Calendar.DATE, -1);
-                //Loop start back to the previous sunday or monday
+                
                 if (rangeStyle == RANGE_MONTH_MONDAY) {
                     startCutoff = Calendar.MONDAY;
                     endCutoff = Calendar.SUNDAY;
@@ -1176,12 +1176,12 @@ public class DateUtils {
             case RANGE_WEEK_MONDAY:
             case RANGE_WEEK_RELATIVE:
             case RANGE_WEEK_CENTER:
-                //Set start and end to the current date
+                
                 start = truncate(focus, Calendar.DATE);
                 end = truncate(focus, Calendar.DATE);
                 switch (rangeStyle) {
                     case RANGE_WEEK_SUNDAY:
-                        //already set by default
+                        
                         break;
                     case RANGE_WEEK_MONDAY:
                         startCutoff = Calendar.MONDAY;
@@ -1686,7 +1686,7 @@ public class DateUtils {
         final long millisPerUnit = getMillisPerUnit(unit);
         long result = 0;
         
-        // Fragments bigger than a day require a breakdown to days
+        
         switch (fragment) {
             case Calendar.YEAR:
                 result += (calendar.get(Calendar.DAY_OF_YEAR) * MILLIS_PER_DAY) / millisPerUnit;
@@ -1697,25 +1697,25 @@ public class DateUtils {
         }
 
         switch (fragment) {
-            // Number of days already calculated for these cases
+            
             case Calendar.YEAR:
             case Calendar.MONTH:
             
-            // The rest of the valid cases
+            
             case Calendar.DAY_OF_YEAR:
             case Calendar.DATE:
                 result += (calendar.get(Calendar.HOUR_OF_DAY) * MILLIS_PER_HOUR) / millisPerUnit;
-                //$FALL-THROUGH$
+                
             case Calendar.HOUR_OF_DAY:
                 result += (calendar.get(Calendar.MINUTE) * MILLIS_PER_MINUTE) / millisPerUnit;
-                //$FALL-THROUGH$
+                
             case Calendar.MINUTE:
                 result += (calendar.get(Calendar.SECOND) * MILLIS_PER_SECOND) / millisPerUnit;
-                //$FALL-THROUGH$
+                
             case Calendar.SECOND:
                 result += (calendar.get(Calendar.MILLISECOND) * 1) / millisPerUnit;
                 break;
-            case Calendar.MILLISECOND: break;//never useful
+            case Calendar.MILLISECOND: break;
                 default: throw new IllegalArgumentException("The fragment " + fragment + " is not supported");
         }
         return result;
@@ -1828,7 +1828,7 @@ public class DateUtils {
         return result;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Date iterator.</p>
      */

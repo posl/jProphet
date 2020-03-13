@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -91,7 +91,7 @@ public enum JavaVersion {
         this.name = name;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Whether this version of Java is at least the version of Java passed in.</p>
      *
@@ -114,7 +114,7 @@ public enum JavaVersion {
      * @return the corresponding enumeration constant or <b>null</b> if the
      * version is unknown
      */
-    // helper for static importing
+    
     static JavaVersion getJavaVersion(final String nom) {
         return get(nom);
     }
@@ -152,7 +152,7 @@ public enum JavaVersion {
         }
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>The string value is overridden to return the standard name.</p>
      *

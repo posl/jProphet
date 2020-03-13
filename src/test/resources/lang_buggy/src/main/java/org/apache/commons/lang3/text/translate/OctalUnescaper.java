@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,7 @@ public class OctalUnescaper extends CharSequenceTranslator {
             while ( end < input.length() && Character.isDigit(input.charAt(end)) ) {
                 end++;
                 if ( Integer.parseInt(input.subSequence(start, end).toString(), 10) > OCTAL_MAX) {
-                    end--; // rollback
+                    end--; 
                     break;
                 }
             }

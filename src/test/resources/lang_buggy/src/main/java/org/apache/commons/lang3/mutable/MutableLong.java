@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -77,7 +77,7 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
         this.value = Long.parseLong(value);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Gets the value as a Long instance.
      * 
@@ -108,7 +108,7 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
         this.value = value.longValue();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Increments the value.
      *
@@ -127,7 +127,7 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
         value--;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Adds a value to the value of this instance.
      * 
@@ -170,8 +170,8 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
         this.value -= operand.longValue();
     }
 
-    //-----------------------------------------------------------------------
-    // shortValue and byteValue rely on Number implementation
+    
+    
     /**
      * Returns the value of this MutableLong as an int.
      *
@@ -212,7 +212,7 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
         return value;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Gets this mutable as an instance of Long.
      *
@@ -222,7 +222,7 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
         return Long.valueOf(longValue());
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Compares this object to the specified object. The result is <code>true</code> if and only if the argument
      * is not <code>null</code> and is a <code>MutableLong</code> object that contains the same <code>long</code>
@@ -249,7 +249,7 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
         return (int) (value ^ (value >>> 32));
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Compares this mutable to another in ascending order.
      * 
@@ -262,7 +262,7 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
         return value < anotherVal ? -1 : (value == anotherVal ? 0 : 1);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Returns the String value of this mutable.
      * 

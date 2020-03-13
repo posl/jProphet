@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -77,7 +77,7 @@ public class MutableDouble extends Number implements Comparable<MutableDouble>, 
         this.value = Double.parseDouble(value);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Gets the value as a Double instance.
      * 
@@ -108,7 +108,7 @@ public class MutableDouble extends Number implements Comparable<MutableDouble>, 
         this.value = value.doubleValue();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Checks whether the double value is the special NaN value.
      * 
@@ -127,7 +127,7 @@ public class MutableDouble extends Number implements Comparable<MutableDouble>, 
         return Double.isInfinite(value);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Increments the value.
      *
@@ -146,7 +146,7 @@ public class MutableDouble extends Number implements Comparable<MutableDouble>, 
         value--;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Adds a value to the value of this instance.
      * 
@@ -189,8 +189,8 @@ public class MutableDouble extends Number implements Comparable<MutableDouble>, 
         this.value -= operand.doubleValue();
     }
 
-    //-----------------------------------------------------------------------
-    // shortValue and byteValue rely on Number implementation
+    
+    
     /**
      * Returns the value of this MutableDouble as an int.
      *
@@ -231,7 +231,7 @@ public class MutableDouble extends Number implements Comparable<MutableDouble>, 
         return value;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Gets this mutable as an instance of Double.
      *
@@ -241,7 +241,7 @@ public class MutableDouble extends Number implements Comparable<MutableDouble>, 
         return Double.valueOf(doubleValue());
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Compares this object against the specified object. The result is <code>true</code> if and only if the argument
      * is not <code>null</code> and is a <code>Double</code> object that represents a double that has the identical
@@ -288,7 +288,7 @@ public class MutableDouble extends Number implements Comparable<MutableDouble>, 
         return (int) (bits ^ bits >>> 32);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Compares this mutable to another in ascending order.
      * 
@@ -301,7 +301,7 @@ public class MutableDouble extends Number implements Comparable<MutableDouble>, 
         return Double.compare(value, anotherVal);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Returns the String value of this mutable.
      * 

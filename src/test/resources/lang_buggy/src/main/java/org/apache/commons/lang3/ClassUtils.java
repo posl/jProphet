@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -138,8 +138,8 @@ public class ClassUtils {
       super();
     }
 
-    // Short class name
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Gets the class name minus the package name for an {@code Object}.</p>
      *
@@ -190,13 +190,13 @@ public class ClassUtils {
 
         final StringBuilder arrayPrefix = new StringBuilder();
 
-        // Handle array encoding
+        
         if (className.startsWith("[")) {
             while (className.charAt(0) == '[') {
                 className = className.substring(1);
                 arrayPrefix.append("[]");
             }
-            // Strip Object type encoding
+            
             if (className.charAt(0) == 'L' && className.charAt(className.length() - 1) == ';') {
                 className = className.substring(1, className.length() - 1);
             }
@@ -247,8 +247,8 @@ public class ClassUtils {
         return getSimpleName(object.getClass());
     }
 
-    // Package name
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Gets the package name of an {@code Object}.</p>
      *
@@ -290,11 +290,11 @@ public class ClassUtils {
             return StringUtils.EMPTY;
         }
 
-        // Strip array encoding
+        
         while (className.charAt(0) == '[') {
             className = className.substring(1);
         }
-        // Strip Object type encoding
+        
         if (className.charAt(0) == 'L' && className.charAt(className.length() - 1) == ';') {
             className = className.substring(1);
         }
@@ -306,8 +306,8 @@ public class ClassUtils {
         return className.substring(0, i);
     }
 
-    // Superclasses/Superinterfaces
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Gets a {@code List} of superclasses for the given class.</p>
      *
@@ -372,8 +372,8 @@ public class ClassUtils {
          }
      }
 
-    // Convert list
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Given a {@code List} of class names, this method converts them into classes.</p>
      *
@@ -428,8 +428,8 @@ public class ClassUtils {
         return classNames;
     }
 
-    // Is assignable
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Checks if an array of Classes can be assigned to another array of Classes.</p>
      *
@@ -454,7 +454,7 @@ public class ClassUtils {
      * specified {@code Class} parameter can be converted to the type
      * represented by this {@code Class} object via an identity conversion
      * widening primitive or widening reference conversion. See
-     * <em><a href="http://docs.oracle.com/javase/specs/">The Java Language Specification</a></em>,
+     * <em><a href="http:
      * sections 5.1.1, 5.1.2 and 5.1.4 for details.</p>
      *
      * <p><strong>Since Lang 3.0,</strong> this method will default behavior for
@@ -494,7 +494,7 @@ public class ClassUtils {
      * specified {@code Class} parameter can be converted to the type
      * represented by this {@code Class} object via an identity conversion
      * widening primitive or widening reference conversion. See
-     * <em><a href="http://docs.oracle.com/javase/specs/">The Java Language Specification</a></em>,
+     * <em><a href="http:
      * sections 5.1.1, 5.1.2 and 5.1.4 for details.</p>
      *
      * @param classArray  the array of Classes to check, may be {@code null}
@@ -570,7 +570,7 @@ public class ClassUtils {
      * specified {@code Class} parameter can be converted to the type
      * represented by this {@code Class} object via an identity conversion
      * widening primitive or widening reference conversion. See
-     * <em><a href="http://docs.oracle.com/javase/specs/">The Java Language Specification</a></em>,
+     * <em><a href="http:
      * sections 5.1.1, 5.1.2 and 5.1.4 for details.</p>
      *
      * <p><strong>Since Lang 3.0,</strong> this method will default behavior for
@@ -605,7 +605,7 @@ public class ClassUtils {
      * specified {@code Class} parameter can be converted to the type
      * represented by this {@code Class} object via an identity conversion
      * widening primitive or widening reference conversion. See
-     * <em><a href="http://docs.oracle.com/javase/specs/">The Java Language Specification</a></em>,
+     * <em><a href="http:
      * sections 5.1.1, 5.1.2 and 5.1.4 for details.</p>
      *
      * @param cls  the Class to check, may be null
@@ -617,11 +617,11 @@ public class ClassUtils {
         if (toClass == null) {
             return false;
         }
-        // have to check for null, as isAssignableFrom doesn't
+        
         if (cls == null) {
             return !toClass.isPrimitive();
         }
-        //autoboxing:
+        
         if (autoboxing) {
             if (cls.isPrimitive() && !toClass.isPrimitive()) {
                 cls = primitiveToWrapper(cls);
@@ -680,7 +680,7 @@ public class ClassUtils {
                     || Float.TYPE.equals(toClass)
                     || Double.TYPE.equals(toClass);
             }
-            // should never get here
+            
             return false;
         }
         return toClass.isAssignableFrom(cls);
@@ -782,8 +782,8 @@ public class ClassUtils {
         return convertedClasses;
     }
 
-    // Inner class
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Is the specified class an inner class or static nested class.</p>
      *
@@ -795,8 +795,8 @@ public class ClassUtils {
         return cls != null && cls.getEnclosingClass() != null;
     }
 
-    // Class loading
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * Returns the class represented by {@code className} using the
      * {@code classLoader}.  This implementation supports the syntaxes
@@ -821,7 +821,7 @@ public class ClassUtils {
             }
             return clazz;
         } catch (final ClassNotFoundException ex) {
-            // allow path separators (.) as inner class name separators
+            
             final int lastDotIndex = className.lastIndexOf(PACKAGE_SEPARATOR_CHAR);
 
             if (lastDotIndex != -1) {
@@ -829,8 +829,8 @@ public class ClassUtils {
                     return getClass(classLoader, className.substring(0, lastDotIndex) +
                             INNER_CLASS_SEPARATOR_CHAR + className.substring(lastDotIndex + 1),
                             initialize);
-                } catch (final ClassNotFoundException ex2) { // NOPMD
-                    // ignore exception
+                } catch (final ClassNotFoundException ex2) { 
+                    
                 }
             }
 
@@ -886,14 +886,14 @@ public class ClassUtils {
         return getClass(loader, className, initialize);
     }
 
-    // Public method
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Returns the desired Method much like {@code Class.getMethod}, however
      * it ensures that the returned Method is from a public class or interface and not
      * from an anonymous inner class. This means that the Method is invokable and
      * doesn't fall foul of Java bug
-     * <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4071957">4071957</a>).
+     * <a href="http:
      *
      *  <code><pre>Set set = Collections.unmodifiableSet(...);
      *  Method method = ClassUtils.getPublicMethod(set.getClass(), "isEmpty",  new Class[0]);
@@ -940,7 +940,7 @@ public class ClassUtils {
                 methodName + " " + ArrayUtils.toString(parameterTypes));
     }
 
-    // ----------------------------------------------------------------------
+    
     /**
      * Converts a class name to a JLS style class name.
      *
@@ -991,8 +991,8 @@ public class ClassUtils {
         return classes;
     }
 
-    // Short canonical name
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Gets the canonical name minus the package name for an {@code Object}.</p>
      *
@@ -1035,8 +1035,8 @@ public class ClassUtils {
         return ClassUtils.getShortClassName(getCanonicalName(canonicalName));
     }
 
-    // Package name
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Gets the package name from the canonical name of an {@code Object}.</p>
      *

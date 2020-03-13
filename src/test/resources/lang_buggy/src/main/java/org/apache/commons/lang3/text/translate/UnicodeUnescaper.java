@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ public class UnicodeUnescaper extends CharSequenceTranslator {
     @Override
     public int translate(final CharSequence input, final int index, final Writer out) throws IOException {
         if (input.charAt(index) == '\\' && index + 1 < input.length() && input.charAt(index + 1) == 'u') {
-            // consume optional additional 'u' chars
+            
             int i = 2;
             while (index + i < input.length() && input.charAt(index + i) == 'u') {
                 i++;
@@ -46,7 +46,7 @@ public class UnicodeUnescaper extends CharSequenceTranslator {
             }
 
             if (index + i + 4 <= input.length()) {
-                // Get 4 hex digits
+                
                 final CharSequence unicode = input.subSequence(index + i, index + i + 4);
 
                 try {

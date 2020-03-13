@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -370,7 +370,7 @@ public class MethodUtils {
         if (!MemberUtils.isAccessible(method)) {
             return null;
         }
-        // If the declaring class is public, we are done
+        
         final Class<?> cls = method.getDeclaringClass();
         if (Modifier.isPublic(cls.getModifiers())) {
             return method;
@@ -378,11 +378,11 @@ public class MethodUtils {
         final String methodName = method.getName();
         final Class<?>[] parameterTypes = method.getParameterTypes();
 
-        // Check the implemented interfaces and subinterfaces
+        
         method = getAccessibleMethodFromInterfaceNest(cls, methodName,
                 parameterTypes);
 
-        // Check the superclass chain
+        
         if (method == null) {
             method = getAccessibleMethodFromSuperclass(cls, methodName,
                     parameterTypes);
@@ -435,21 +435,21 @@ public class MethodUtils {
             final String methodName, final Class<?>... parameterTypes) {
         Method method = null;
 
-        // Search up the superclass chain
+        
         for (; cls != null; cls = cls.getSuperclass()) {
 
-            // Check the implemented interfaces of the parent class
+            
             final Class<?>[] interfaces = cls.getInterfaces();
             for (int i = 0; i < interfaces.length; i++) {
-                // Is this interface public?
+                
                 if (!Modifier.isPublic(interfaces[i].getModifiers())) {
                     continue;
                 }
-                // Does the method exist on this interface?
+                
                 try {
                     method = interfaces[i].getDeclaredMethod(methodName,
                             parameterTypes);
-                } catch (final NoSuchMethodException e) { // NOPMD
+                } catch (final NoSuchMethodException e) { 
                     /*
                      * Swallow, if no method is found after the loop then this
                      * method returns null.
@@ -458,7 +458,7 @@ public class MethodUtils {
                 if (method != null) {
                     break;
                 }
-                // Recursively check our parent interfaces
+                
                 method = getAccessibleMethodFromInterfaceNest(interfaces[i],
                         methodName, parameterTypes);
                 if (method != null) {
@@ -495,15 +495,15 @@ public class MethodUtils {
             final Method method = cls.getMethod(methodName, parameterTypes);
             MemberUtils.setAccessibleWorkaround(method);
             return method;
-        } catch (final NoSuchMethodException e) { // NOPMD - Swallow the exception
+        } catch (final NoSuchMethodException e) { 
         }
-        // search through all methods
+        
         Method bestMatch = null;
         final Method[] methods = cls.getMethods();
         for (final Method method : methods) {
-            // compare name and parameters
+            
             if (method.getName().equals(methodName) && ClassUtils.isAssignable(parameterTypes, method.getParameterTypes(), true)) {
-                // get accessible version of method
+                
                 final Method accessibleMethod = getAccessibleMethod(method);
                 if (accessibleMethod != null && (bestMatch == null || MemberUtils.compareParameterTypes(
                             accessibleMethod.getParameterTypes(),

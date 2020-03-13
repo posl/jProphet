@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -62,7 +62,7 @@ public class DurationFormatUtils {
      */
     public static final String ISO_EXTENDED_FORMAT_PATTERN = "'P'yyyy'Y'M'M'd'DT'H'H'm'M's.S'S'";
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Formats the time gap as a string.</p>
      * 
@@ -168,12 +168,12 @@ public class DurationFormatUtils {
         final boolean suppressLeadingZeroElements,
         final boolean suppressTrailingZeroElements) {
 
-        // This method is generally replacable by the format method, but 
-        // there are a series of tweaks and special cases that require 
-        // trickery to replicate.
+        
+        
+        
         String duration = formatDuration(durationMillis, "d' days 'H' hours 'm' minutes 's' seconds'");
         if (suppressLeadingZeroElements) {
-            // this is a temporary marker on the front. Like ^ in regexp.
+            
             duration = " " + duration;
             String tmp = StringUtils.replaceOnce(duration, " 0 days", "");
             if (tmp.length() != duration.length()) {
@@ -189,7 +189,7 @@ public class DurationFormatUtils {
                 }
             }
             if (duration.length() != 0) {
-                // strip the space off again
+                
                 duration = duration.substring(1);
             }
         }
@@ -207,7 +207,7 @@ public class DurationFormatUtils {
                 }
             }
         }
-        // handle plurals
+        
         duration = " " + duration;
         duration = StringUtils.replaceOnce(duration, " 1 seconds", " 1 second");
         duration = StringUtils.replaceOnce(duration, " 1 minutes", " 1 minute");
@@ -216,7 +216,7 @@ public class DurationFormatUtils {
         return duration.trim();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Formats the time gap as a string.</p>
      * 
@@ -256,7 +256,7 @@ public class DurationFormatUtils {
      * choosing March -> February = 1 month and then calculating days 
      * backwards. </p>
      *
-     * <p>For more control, the <a href="http://joda-time.sf.net/">Joda-Time</a>
+     * <p>For more control, the <a href="http:
      * library is recommended.</p>
      * 
      * @param startMillis  the start of the duration
@@ -269,22 +269,22 @@ public class DurationFormatUtils {
     public static String formatPeriod(final long startMillis, final long endMillis, final String format, final boolean padWithZeros, 
             final TimeZone timezone) {
 
-        // Used to optimise for differences under 28 days and 
-        // called formatDuration(millis, format); however this did not work 
-        // over leap years. 
-        // TODO: Compare performance to see if anything was lost by 
-        // losing this optimisation. 
+        
+        
+        
+        
+        
         
         final Token[] tokens = lexx(format);
 
-        // timezones get funky around 0, so normalizing everything to GMT 
-        // stops the hours being off
+        
+        
         final Calendar start = Calendar.getInstance(timezone);
         start.setTime(new Date(startMillis));
         final Calendar end = Calendar.getInstance(timezone);
         end.setTime(new Date(endMillis));
 
-        // initial estimates
+        
         int milliseconds = end.get(Calendar.MILLISECOND) - start.get(Calendar.MILLISECOND);
         int seconds = end.get(Calendar.SECOND) - start.get(Calendar.SECOND);
         int minutes = end.get(Calendar.MINUTE) - start.get(Calendar.MINUTE);
@@ -293,7 +293,7 @@ public class DurationFormatUtils {
         int months = end.get(Calendar.MONTH) - start.get(Calendar.MONTH);
         int years = end.get(Calendar.YEAR) - start.get(Calendar.YEAR);
 
-        // each initial estimate is adjusted in case it is under 0
+        
         while (milliseconds < 0) {
             milliseconds += 1000;
             seconds -= 1;
@@ -330,19 +330,19 @@ public class DurationFormatUtils {
                 }
             }
         } else {
-            // there are no M's in the format string
+            
 
             if( !Token.containsTokenWithValue(tokens, y) ) {
                 int target = end.get(Calendar.YEAR);
                 if (months < 0) {
-                    // target is end-year -1
+                    
                     target -= 1;
                 }
                 
                 while (start.get(Calendar.YEAR) != target) {
                     days += start.getActualMaximum(Calendar.DAY_OF_YEAR) - start.get(Calendar.DAY_OF_YEAR);
                     
-                    // Not sure I grok why this is needed, but the brutal tests show it is
+                    
                     if (start instanceof GregorianCalendar &&
                             start.get(Calendar.MONTH) == Calendar.FEBRUARY &&
                             start.get(Calendar.DAY_OF_MONTH) == 29) {
@@ -372,9 +372,9 @@ public class DurationFormatUtils {
             
         }
 
-        // The rest of this code adds in values that 
-        // aren't requested. This allows the user to ask for the 
-        // number of months and get the real count and not just 0->11.
+        
+        
+        
 
         if (!Token.containsTokenWithValue(tokens, d)) {
             hours += 24 * days;
@@ -396,7 +396,7 @@ public class DurationFormatUtils {
         return format(tokens, years, months, days, hours, minutes, seconds, milliseconds, padWithZeros);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>The internal method to do the formatting.</p>
      * 
@@ -485,20 +485,20 @@ public class DurationFormatUtils {
         final ArrayList<Token> list = new ArrayList<Token>(array.length);
 
         boolean inLiteral = false;
-        // Although the buffer is stored in a Token, the Tokens are only
-        // used internally, so cannot be accessed by other threads
+        
+        
         StringBuilder buffer = null;
         Token previous = null;
         final int sz = array.length;
         for (int i = 0; i < sz; i++) {
             final char ch = array[i];
             if (inLiteral && ch != '\'') {
-                buffer.append(ch); // buffer can't be null if inLiteral is true
+                buffer.append(ch); 
                 continue;
             }
             Object value = null;
             switch (ch) {
-            // TODO: Need to handle escaping of '
+            
             case '\'':
                 if (inLiteral) {
                     buffer = null;
@@ -552,7 +552,7 @@ public class DurationFormatUtils {
         return list.toArray(new Token[list.size()]);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Element that is parsed from the format pattern.
      */

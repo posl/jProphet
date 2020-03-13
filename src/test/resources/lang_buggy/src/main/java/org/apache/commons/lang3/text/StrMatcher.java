@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -70,7 +70,7 @@ public abstract class StrMatcher {
      */
     private static final StrMatcher NONE_MATCHER = new NoMatcher();
 
-    // -----------------------------------------------------------------------
+    
 
     /**
      * Returns a matcher which matches the comma character.
@@ -209,7 +209,7 @@ public abstract class StrMatcher {
         return new StringMatcher(str);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Constructor.
      */
@@ -268,7 +268,7 @@ public abstract class StrMatcher {
         return isMatch(buffer, pos, 0, buffer.length);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Class used to define a set of characters for matching purposes.
      */
@@ -302,7 +302,7 @@ public abstract class StrMatcher {
         }
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Class used to define a character for matching purposes.
      */
@@ -335,7 +335,7 @@ public abstract class StrMatcher {
         }
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Class used to define a set of characters for matching purposes.
      */
@@ -377,7 +377,7 @@ public abstract class StrMatcher {
         }
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Class used to match no characters.
      */
@@ -405,7 +405,7 @@ public abstract class StrMatcher {
         }
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Class used to match whitespace as per trim().
      */

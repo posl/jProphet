@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,15 +47,15 @@ import java.util.concurrent.ExecutorService;
  * typical usage example:
  *
  * <pre>
- * // a Callable that performs a complex computation
+ * 
  * Callable&lt;Integer&gt; computationCallable = new MyComputationCallable();
- * // setup the background initializer
+ * 
  * CallableBackgroundInitializer&lt;Integer&gt; initializer =
  *     new CallableBackgroundInitializer(computationCallable);
  * initializer.start();
- * // Now do some other things. Initialization runs in a parallel thread
+ * 
  * ...
- * // Wait for the end of initialization and access the result
+ * 
  * Integer result = initializer.get();
  * </pre>
  *

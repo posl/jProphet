@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,21 +53,21 @@ import java.util.concurrent.TimeUnit;
  *
  * <pre>
  * public class StatisticsThread extends Thread {
- *     // The semaphore for limiting database load.
+ *     
  *     private final TimedSemaphore semaphore;
- *     // Create an instance and set the semaphore
+ *     
  *     public StatisticsThread(TimedSemaphore timedSemaphore) {
  *         semaphore = timedSemaphore;
  *     }
- *     // Gather statistics
+ *     
  *     public void run() {
  *         try {
  *             while(true) {
- *                 semaphore.acquire();   // limit database load
- *                 performQuery();        // issue a query
+ *                 semaphore.acquire();   
+ *                 performQuery();        
  *             }
  *         } catch(InterruptedException) {
- *             // fall through
+ *             
  *         }
  *     }
  *     ...
@@ -149,28 +149,28 @@ public class TimedSemaphore {
     private final boolean ownExecutor;
 
     
-    private ScheduledFuture<?> task; // @GuardedBy("this")
+    private ScheduledFuture<?> task; 
 
     
-    private long totalAcquireCount; // @GuardedBy("this")
+    private long totalAcquireCount; 
 
     /**
      * The counter for the periods. This counter is increased every time a
      * period ends.
      */
-    private long periodCount; // @GuardedBy("this")
+    private long periodCount; 
 
     
-    private int limit; // @GuardedBy("this")
+    private int limit; 
 
     
-    private int acquireCount;  // @GuardedBy("this")
+    private int acquireCount;  
 
     
-    private int lastCallsPerPeriod; // @GuardedBy("this")
+    private int lastCallsPerPeriod; 
 
     
-    private boolean shutdown;  // @GuardedBy("this")
+    private boolean shutdown;  
 
     /**
      * Creates a new instance of {@link TimedSemaphore} and initializes it with
@@ -255,8 +255,8 @@ public class TimedSemaphore {
         if (!shutdown) {
 
             if (ownExecutor) {
-                // if the executor was created by this instance, it has
-                // to be shutdown
+                
+                
                 getExecutorService().shutdownNow();
             }
             if (task != null) {

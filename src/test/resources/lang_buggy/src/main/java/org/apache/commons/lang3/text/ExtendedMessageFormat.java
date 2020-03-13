@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -185,7 +185,7 @@ public class ExtendedMessageFormat extends MessageFormat {
                     throw new IllegalArgumentException(
                             "Unreadable format element at position " + start);
                 }
-                //$FALL-THROUGH$
+                
             default:
                 stripCustom.append(c[pos.getIndex()]);
                 next(pos);
@@ -195,8 +195,8 @@ public class ExtendedMessageFormat extends MessageFormat {
         toPattern = insertFormats(super.toPattern(), foundDescriptions);
         if (containsElements(foundFormats)) {
             final Format[] origFormats = getFormats();
-            // only loop over what we know we have, as MessageFormat on Java 1.3
-            // seems to provide an extra format element:
+            
+            
             int i = 0;
             for (final Iterator<Format> it = foundFormats.iterator(); it.hasNext(); i++) {
                 final Format f = it.next();
@@ -345,9 +345,9 @@ public class ExtendedMessageFormat extends MessageFormat {
             if ((c == START_FMT || c == END_FE) && result.length() > 0) {
                 try {
                     return Integer.parseInt(result.toString());
-                } catch (final NumberFormatException e) { // NOPMD
-                    // we've already ensured only digits, so unless something
-                    // outlandishly large was specified we should be okay.
+                } catch (final NumberFormatException e) { 
+                    
+                    
                 }
             }
             error = !Character.isDigit(c);
@@ -429,7 +429,7 @@ public class ExtendedMessageFormat extends MessageFormat {
                 break;
             case END_FE:
                 depth--;
-                //$FALL-THROUGH$
+                
             default:
                 sb.append(c);
                 next(pos);

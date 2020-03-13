@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -77,7 +77,7 @@ public class MutableShort extends Number implements Comparable<MutableShort>, Mu
         this.value = Short.parseShort(value);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Gets the value as a Short instance.
      * 
@@ -108,7 +108,7 @@ public class MutableShort extends Number implements Comparable<MutableShort>, Mu
         this.value = value.shortValue();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Increments the value.
      *
@@ -127,7 +127,7 @@ public class MutableShort extends Number implements Comparable<MutableShort>, Mu
         value--;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Adds a value to the value of this instance.
      * 
@@ -170,8 +170,8 @@ public class MutableShort extends Number implements Comparable<MutableShort>, Mu
         this.value -= operand.shortValue();
     }
 
-    //-----------------------------------------------------------------------
-    // byteValue relies on Number implementation
+    
+    
     /**
      * Returns the value of this MutableShort as a short.
      *
@@ -222,7 +222,7 @@ public class MutableShort extends Number implements Comparable<MutableShort>, Mu
         return value;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Gets this mutable as an instance of Short.
      *
@@ -232,7 +232,7 @@ public class MutableShort extends Number implements Comparable<MutableShort>, Mu
         return Short.valueOf(shortValue());
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Compares this object to the specified object. The result is <code>true</code> if and only if the argument
      * is not <code>null</code> and is a <code>MutableShort</code> object that contains the same <code>short</code>
@@ -259,7 +259,7 @@ public class MutableShort extends Number implements Comparable<MutableShort>, Mu
         return value;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Compares this mutable to another in ascending order.
      * 
@@ -272,7 +272,7 @@ public class MutableShort extends Number implements Comparable<MutableShort>, Mu
         return value < anotherVal ? -1 : (value == anotherVal ? 0 : 1);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Returns the String value of this mutable.
      * 

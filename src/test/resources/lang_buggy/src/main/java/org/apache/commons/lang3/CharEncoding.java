@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,14 +23,14 @@ import java.nio.charset.IllegalCharsetNameException;
 /**
  * <p>Character encoding names required of every implementation of the Java platform.</p>
  *
- * <p>According to <a href="http://docs.oracle.com/javase/1.3/docs/api/java/lang/package-summary.html#charenc">JRE character
+ * <p>According to <a href="http:
  * encoding names</a>:</p>
  *
  * <p><cite>Every implementation of the Java platform is required to support the following character encodings.
  * Consult the release documentation for your implementation to see if any other encodings are supported.
  * </cite></p>
  *
- * @see <a href="http://download.oracle.com/javase/1.3/docs/guide/intl/encoding.doc.html">JRE character encoding names</a>
+ * @see <a href="http:
  * @since 2.1
  * @version $Id$
  */
@@ -80,12 +80,12 @@ public class CharEncoding {
      */
     public static final String UTF_8 = "UTF-8";
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Returns whether the named charset is supported.</p>
      *
      * <p>This is similar to <a
-     * href="http://download.oracle.com/javase/1.4.2/docs/api/java/nio/charset/Charset.html#isSupported%28java.lang.String%29">
+     * href="http:
      * java.nio.charset.Charset.isSupported(String)</a> but handles more formats</p>
      *
      * @param name  the name of the requested charset; may be either a canonical name or an alias, null returns false

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,7 +60,7 @@ public abstract class Pair<L, R> implements Map.Entry<L, R>, Comparable<Pair<L, 
         return new ImmutablePair<L, R>(left, right);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Gets the left element from this pair.</p>
      * 
@@ -105,7 +105,7 @@ public abstract class Pair<L, R> implements Map.Entry<L, R>, Comparable<Pair<L, 
         return getRight();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Compares the pair based on the left element followed by the right element.
      * The types must be {@code Comparable}.</p>
@@ -146,7 +146,7 @@ public abstract class Pair<L, R> implements Map.Entry<L, R>, Comparable<Pair<L, 
      */
     @Override
     public int hashCode() {
-        // see Map.Entry API specification
+        
         return (getKey() == null ? 0 : getKey().hashCode()) ^
                 (getValue() == null ? 0 : getValue().hashCode());
     }

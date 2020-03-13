@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  * </ul>
  *
  * <p>All exceptions messages are
- * <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/Formatter.html#syntax">format strings</a>
+ * <a href="http:
  * as defined by the Java platform. For example:</p>
  *
  * <pre>
@@ -79,8 +79,8 @@ public class Validate {
       super();
     }
 
-    // isTrue
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Validate that the argument condition is {@code true}; otherwise
@@ -181,8 +181,8 @@ public class Validate {
         }
     }
 
-    // notNull
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Validate that the specified argument is not {@code null};
@@ -224,8 +224,8 @@ public class Validate {
         return object;
     }
 
-    // notEmpty array
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Validate that the specified argument array is neither {@code null}
@@ -273,8 +273,8 @@ public class Validate {
         return notEmpty(array, DEFAULT_NOT_EMPTY_ARRAY_EX_MESSAGE);
     }
 
-    // notEmpty collection
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Validate that the specified argument collection is neither {@code null}
@@ -322,8 +322,8 @@ public class Validate {
         return notEmpty(collection, DEFAULT_NOT_EMPTY_COLLECTION_EX_MESSAGE);
     }
 
-    // notEmpty map
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Validate that the specified argument map is neither {@code null}
@@ -371,8 +371,8 @@ public class Validate {
         return notEmpty(map, DEFAULT_NOT_EMPTY_MAP_EX_MESSAGE);
     }
 
-    // notEmpty string
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Validate that the specified argument character sequence is
@@ -421,8 +421,8 @@ public class Validate {
         return notEmpty(chars, DEFAULT_NOT_EMPTY_CHAR_SEQUENCE_EX_MESSAGE);
     }
 
-    // notBlank string
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Validate that the specified argument character sequence is
@@ -476,8 +476,8 @@ public class Validate {
         return notBlank(chars, DEFAULT_NOT_BLANK_EX_MESSAGE);
     }
 
-    // noNullElements array
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Validate that the specified argument array is neither
@@ -538,8 +538,8 @@ public class Validate {
         return noNullElements(array, DEFAULT_NO_NULL_ELEMENTS_ARRAY_EX_MESSAGE);
     }
 
-    // noNullElements iterable
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Validate that the specified argument iterable is neither
@@ -601,8 +601,8 @@ public class Validate {
         return noNullElements(iterable, DEFAULT_NO_NULL_ELEMENTS_COLLECTION_EX_MESSAGE);
     }
 
-    // validIndex array
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Validates that the index is within the bounds of the argument
@@ -660,8 +660,8 @@ public class Validate {
         return validIndex(array, index, DEFAULT_VALID_INDEX_ARRAY_EX_MESSAGE, Integer.valueOf(index));
     }
 
-    // validIndex collection
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Validates that the index is within the bounds of the argument
@@ -716,8 +716,8 @@ public class Validate {
         return validIndex(collection, index, DEFAULT_VALID_INDEX_COLLECTION_EX_MESSAGE, Integer.valueOf(index));
     }
 
-    // validIndex string
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Validates that the index is within the bounds of the argument
@@ -777,8 +777,8 @@ public class Validate {
         return validIndex(chars, index, DEFAULT_VALID_INDEX_CHAR_SEQUENCE_EX_MESSAGE, Integer.valueOf(index));
     }
 
-    // validState
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Validate that the stateful condition is {@code true}; otherwise
@@ -827,8 +827,8 @@ public class Validate {
         }
     }
 
-    // matchesPattern
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Validate that the specified argument character sequence matches the specified regular
@@ -846,7 +846,7 @@ public class Validate {
      * @since 3.0
      */
     public static void matchesPattern(final CharSequence input, final String pattern) {
-        // TODO when breaking BC, consider returning input
+        
         if (Pattern.matches(pattern, input) == false) {
             throw new IllegalArgumentException(String.format(DEFAULT_MATCHES_PATTERN_EX, input, pattern));
         }
@@ -870,14 +870,14 @@ public class Validate {
      * @since 3.0
      */
     public static void matchesPattern(final CharSequence input, final String pattern, final String message, final Object... values) {
-        // TODO when breaking BC, consider returning input
+        
         if (Pattern.matches(pattern, input) == false) {
             throw new IllegalArgumentException(String.format(message, values));
         }
     }
 
-    // inclusiveBetween
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Validate that the specified argument object fall between the two
@@ -895,7 +895,7 @@ public class Validate {
      * @since 3.0
      */
     public static <T> void inclusiveBetween(final T start, final T end, final Comparable<T> value) {
-        // TODO when breaking BC, consider returning value
+        
         if (value.compareTo(start) < 0 || value.compareTo(end) > 0) {
             throw new IllegalArgumentException(String.format(DEFAULT_INCLUSIVE_BETWEEN_EX_MESSAGE, value, start, end));
         }
@@ -920,14 +920,14 @@ public class Validate {
      * @since 3.0
      */
     public static <T> void inclusiveBetween(final T start, final T end, final Comparable<T> value, final String message, final Object... values) {
-        // TODO when breaking BC, consider returning value
+        
         if (value.compareTo(start) < 0 || value.compareTo(end) > 0) {
             throw new IllegalArgumentException(String.format(message, values));
         }
     }
 
-    // exclusiveBetween
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * <p>Validate that the specified argument object fall between the two
@@ -945,7 +945,7 @@ public class Validate {
      * @since 3.0
      */
     public static <T> void exclusiveBetween(final T start, final T end, final Comparable<T> value) {
-        // TODO when breaking BC, consider returning value
+        
         if (value.compareTo(start) <= 0 || value.compareTo(end) >= 0) {
             throw new IllegalArgumentException(String.format(DEFAULT_EXCLUSIVE_BETWEEN_EX_MESSAGE, value, start, end));
         }
@@ -970,14 +970,14 @@ public class Validate {
      * @since 3.0
      */
     public static <T> void exclusiveBetween(final T start, final T end, final Comparable<T> value, final String message, final Object... values) {
-        // TODO when breaking BC, consider returning value
+        
         if (value.compareTo(start) <= 0 || value.compareTo(end) >= 0) {
             throw new IllegalArgumentException(String.format(message, values));
         }
     }
 
-    // isInstanceOf
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * Validates that the argument is an instance of the specified class, if not throws an exception.
@@ -996,7 +996,7 @@ public class Validate {
      * @since 3.0
      */
     public static void isInstanceOf(final Class<?> type, final Object obj) {
-        // TODO when breaking BC, consider returning obj
+        
         if (type.isInstance(obj) == false) {
             throw new IllegalArgumentException(String.format(DEFAULT_IS_INSTANCE_OF_EX_MESSAGE, type.getName(),
                     obj == null ? "null" : obj.getClass().getName()));
@@ -1021,14 +1021,14 @@ public class Validate {
      * @since 3.0
      */
     public static void isInstanceOf(final Class<?> type, final Object obj, final String message, final Object... values) {
-        // TODO when breaking BC, consider returning obj
+        
         if (type.isInstance(obj) == false) {
             throw new IllegalArgumentException(String.format(message, values));
         }
     }
 
-    // isAssignableFrom
-    //---------------------------------------------------------------------------------
+    
+    
 
     /**
      * Validates that the argument can be converted to the specified class, if not, throws an exception.
@@ -1047,7 +1047,7 @@ public class Validate {
      * @since 3.0
      */
     public static void isAssignableFrom(final Class<?> superType, final Class<?> type) {
-        // TODO when breaking BC, consider returning type
+        
         if (superType.isAssignableFrom(type) == false) {
             throw new IllegalArgumentException(String.format(DEFAULT_IS_ASSIGNABLE_EX_MESSAGE, type == null ? "null" : type.getName(),
                     superType.getName()));
@@ -1072,7 +1072,7 @@ public class Validate {
      * @see #isAssignableFrom(Class, Class)
      */
     public static void isAssignableFrom(final Class<?> superType, final Class<?> type, final String message, final Object... values) {
-        // TODO when breaking BC, consider returning type
+        
         if (superType.isAssignableFrom(type) == false) {
             throw new IllegalArgumentException(String.format(message, values));
         }

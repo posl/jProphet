@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
  * This class is especially useful in multi-threaded server environments.
  * <code>SimpleDateFormat</code> is not thread-safe in any JDK version,
  * nor will it be as Sun have closed the
- * <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4228335">bug</a>/RFE.
+ * <a href="http:
  * </p>
  *
  * <p>Only parsing is supported, but all patterns are compatible with
@@ -72,17 +72,17 @@ public class FastDateParser implements DateParser, Serializable {
 
     static final Locale JAPANESE_IMPERIAL = new Locale("ja","JP","JP");
 
-    // defining fields
+    
     private final String pattern;
     private final TimeZone timeZone;
     private final Locale locale;
 
-    // derived fields
+    
     private transient Pattern parsePattern;
     private transient Strategy[] strategies;
     private transient int thisYear;
 
-    // dynamic fields to communicate with Strategy
+    
     private transient String currentFormatField;
     private transient Strategy nextStrategy;
 
@@ -145,8 +145,8 @@ public class FastDateParser implements DateParser, Serializable {
         parsePattern= Pattern.compile(regex.toString());
     }
 
-    // Accessors
-    //-----------------------------------------------------------------------
+    
+    
     /* (non-Javadoc)
      * @see org.apache.commons.lang3.time.DateParser#getPattern()
      */
@@ -171,13 +171,13 @@ public class FastDateParser implements DateParser, Serializable {
         return locale;
     }
 
-    // Give access to generated pattern for test code
+    
     Pattern getParsePattern() {
         return parsePattern;
     }
 
-    // Basics
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Compare another object for equality with this object.</p>
      *
@@ -215,8 +215,8 @@ public class FastDateParser implements DateParser, Serializable {
         return "FastDateParser[" + pattern + "," + locale + "," + timeZone.getID() + "]";
     }
 
-    // Serializing
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * Create the object after serialization. This implementation reinitializes the
      * transient properties.
@@ -245,7 +245,7 @@ public class FastDateParser implements DateParser, Serializable {
     public Date parse(final String source) throws ParseException {
         final Date date= parse(source, new ParsePosition(0));
         if(date==null) {
-            // Add a note re supported date range
+            
             if (locale.equals(JAPANESE_IMPERIAL)) {
                 throw new ParseException(
                         "(The " +locale + " locale does not support dates before 1868 AD)\n" +
@@ -274,7 +274,7 @@ public class FastDateParser implements DateParser, Serializable {
         if(!matcher.lookingAt()) {
             return null;
         }
-        // timing tests indicate getting new instance is 19% faster than cloning
+        
         final Calendar cal= Calendar.getInstance(timeZone, locale);
         cal.clear();
 
@@ -286,8 +286,8 @@ public class FastDateParser implements DateParser, Serializable {
         return cal.getTime();
     }
 
-    // Support for strategies
-    //-----------------------------------------------------------------------
+    
+    
 
     /**
      * Escape constant fields into regular expression
@@ -320,11 +320,11 @@ public class FastDateParser implements DateParser, Serializable {
                  * Otherwise we just output the two characters.
                  * In each case the initial \ needs to be output and the final char is done at the end
                  */
-                regex.append(c); // we always want the original \
-                c = value.charAt(i); // Is it followed by E ?
-                if (c == 'E') { // \E detected
-                  regex.append("E\\\\E\\"); // see comment above
-                  c = 'Q'; // appended below
+                regex.append(c); 
+                c = value.charAt(i); 
+                if (c == 'E') { 
+                  regex.append("E\\\\E\\"); 
+                  c = 'Q'; 
                 }
                 break;
             }
@@ -429,7 +429,7 @@ public class FastDateParser implements DateParser, Serializable {
             if(formatField.length()>2) {
                 formatField= formatField.substring(1, formatField.length()-1);
             }
-            //$FALL-THROUGH$
+            
         default:
             return new CopyQuotedStrategy(formatField);
         case 'D':
@@ -472,7 +472,7 @@ public class FastDateParser implements DateParser, Serializable {
         }
     }
 
-    @SuppressWarnings("unchecked") // OK because we are creating an array with no entries
+    @SuppressWarnings("unchecked") 
     private static ConcurrentMap<Locale, Strategy>[] caches = new ConcurrentMap[Calendar.FIELD_COUNT];
 
     /**

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,8 +41,8 @@ public class CharSetUtils {
       super();
     }
 
-    // Squeeze
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Squeezes any repetitions of a character that is mentioned in the
      * supplied set.</p>
@@ -73,7 +73,7 @@ public class CharSetUtils {
         char ch = ' ';
         for (int i = 0; i < sz; i++) {
             ch = chrs[i];
-            // Compare with contains() last for performance.
+            
             if (ch == lastChar && i != 0 && chars.contains(ch)) {
                 continue;
             }
@@ -83,8 +83,8 @@ public class CharSetUtils {
         return buffer.toString();
     }
 
-    // ContainsAny
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Takes an argument in set-syntax, see evaluateSet,
      * and identifies whether any of the characters are present in the specified string.</p>
@@ -116,8 +116,8 @@ public class CharSetUtils {
         return false;
     }
 
-    // Count
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Takes an argument in set-syntax, see evaluateSet,
      * and returns the number of characters present in the specified string.</p>
@@ -150,8 +150,8 @@ public class CharSetUtils {
         return count;
     }
 
-    // Keep
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Takes an argument in set-syntax, see evaluateSet,
      * and keeps any of characters present in the specified string.</p>
@@ -181,8 +181,8 @@ public class CharSetUtils {
         return modify(str, set, true);
     }
 
-    // Delete
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Takes an argument in set-syntax, see evaluateSet,
      * and deletes any of characters present in the specified string.</p>
@@ -208,7 +208,7 @@ public class CharSetUtils {
         return modify(str, set, false);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Implementation of delete and keep
      *

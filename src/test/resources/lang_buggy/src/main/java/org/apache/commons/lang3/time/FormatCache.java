@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentMap;
  * @since 3.0
  * @version $Id: FormatCache 892161 2009-12-18 07:21:10Z  $
  */
-// TODO: Before making public move from getDateTimeInstance(Integer,...) to int; or some other approach.
+
 abstract class FormatCache<F extends Format> {
     /**
      * No date or no time.  Used in same parameters as DateFormat.SHORT or DateFormat.LONG
@@ -82,8 +82,8 @@ abstract class FormatCache<F extends Format> {
             format = createInstance(pattern, timeZone, locale);
             final F previousValue= cInstanceCache.putIfAbsent(key, format);
             if (previousValue != null) {
-                // another thread snuck in and did the same work
-                // we should return the instance that is in ConcurrentMap
+                
+                
                 format= previousValue;              
             }
         }
@@ -116,7 +116,7 @@ abstract class FormatCache<F extends Format> {
      * @throws IllegalArgumentException if the Locale has no date/time
      *  pattern defined
      */
-    // This must remain private, see LANG-884 
+    
     private F getDateTimeInstance(final Integer dateStyle, final Integer timeStyle, final TimeZone timeZone, Locale locale) {
         if (locale == null) {
             locale = Locale.getDefault();
@@ -138,7 +138,7 @@ abstract class FormatCache<F extends Format> {
      * @throws IllegalArgumentException if the Locale has no date/time
      *  pattern defined
      */
-    // package protected, for access from FastDateFormat; do not make public or protected
+    
     F getDateTimeInstance(final int dateStyle, final int timeStyle, final TimeZone timeZone, Locale locale) {
         return getDateTimeInstance(Integer.valueOf(dateStyle), Integer.valueOf(timeStyle), timeZone, locale);
     }
@@ -155,7 +155,7 @@ abstract class FormatCache<F extends Format> {
      * @throws IllegalArgumentException if the Locale has no date/time
      *  pattern defined
      */
-    // package protected, for access from FastDateFormat; do not make public or protected
+    
     F getDateInstance(final int dateStyle, final TimeZone timeZone, Locale locale) {
         return getDateTimeInstance(Integer.valueOf(dateStyle), null, timeZone, locale);
     }
@@ -173,7 +173,7 @@ abstract class FormatCache<F extends Format> {
      * @throws IllegalArgumentException if the Locale has no date/time
      *  pattern defined
      */
-    // package protected, for access from FastDateFormat; do not make public or protected
+    
     F getTimeInstance(final int timeStyle, final TimeZone timeZone, Locale locale) {
         return getDateTimeInstance(null, Integer.valueOf(timeStyle), timeZone, locale);
     }
@@ -187,7 +187,7 @@ abstract class FormatCache<F extends Format> {
      * @return a localized standard date/time format
      * @throws IllegalArgumentException if the Locale has no date/time pattern defined
      */
-    // package protected, for access from test code; do not make public or protected
+    
     static String getPatternForStyle(final Integer dateStyle, final Integer timeStyle, final Locale locale) {
         final MultipartKey key = new MultipartKey(dateStyle, timeStyle, locale);
 
@@ -207,9 +207,9 @@ abstract class FormatCache<F extends Format> {
                 pattern = ((SimpleDateFormat)formatter).toPattern();
                 final String previous = cDateTimeInstanceCache.putIfAbsent(key, pattern);
                 if (previous != null) {
-                    // even though it doesn't matter if another thread put the pattern
-                    // it's still good practice to return the String instance that is
-                    // actually in the ConcurrentMap
+                    
+                    
+                    
                     pattern= previous;
                 }
             } catch (final ClassCastException ex) {
@@ -219,7 +219,7 @@ abstract class FormatCache<F extends Format> {
         return pattern;
     }
 
-    // ----------------------------------------------------------------------
+    
     /**
      * <p>Helper class to hold multi-part Map keys</p>
      */
@@ -240,9 +240,9 @@ abstract class FormatCache<F extends Format> {
          */
         @Override
         public boolean equals(final Object obj) {
-            // Eliminate the usual boilerplate because
-            // this inner static class is only used in a generic ConcurrentHashMap
-            // which will not compare against other Object types
+            
+            
+            
             return Arrays.equals(keys, ((MultipartKey)obj).keys);
         }
 

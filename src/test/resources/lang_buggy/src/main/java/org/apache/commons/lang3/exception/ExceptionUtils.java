@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,7 +50,7 @@ public class ExceptionUtils {
     /**
      * <p>The names of methods commonly used to access a wrapped exception.</p>
      */
-    // TODO: Remove in Lang 4.0
+    
     private static final String[] CAUSE_METHOD_NAMES = {
         "getCause",
         "getNextException",
@@ -76,7 +76,7 @@ public class ExceptionUtils {
         super();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Returns the default names used when searching for the cause of an exception.</p>
      *
@@ -91,7 +91,7 @@ public class ExceptionUtils {
         return ArrayUtils.clone(CAUSE_METHOD_NAMES);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Introspects the <code>Throwable</code> to obtain the cause.</p>
      *
@@ -188,32 +188,32 @@ public class ExceptionUtils {
      * @param methodName  the name of the method to find and invoke
      * @return the wrapped exception, or <code>null</code> if not found
      */
-    // TODO: Remove in Lang 4.0
+    
     private static Throwable getCauseUsingMethodName(final Throwable throwable, final String methodName) {
         Method method = null;
         try {
             method = throwable.getClass().getMethod(methodName);
-        } catch (final NoSuchMethodException ignored) { // NOPMD
-            // exception ignored
-        } catch (final SecurityException ignored) { // NOPMD
-            // exception ignored
+        } catch (final NoSuchMethodException ignored) { 
+            
+        } catch (final SecurityException ignored) { 
+            
         }
 
         if (method != null && Throwable.class.isAssignableFrom(method.getReturnType())) {
             try {
                 return (Throwable) method.invoke(throwable);
-            } catch (final IllegalAccessException ignored) { // NOPMD
-                // exception ignored
-            } catch (final IllegalArgumentException ignored) { // NOPMD
-                // exception ignored
-            } catch (final InvocationTargetException ignored) { // NOPMD
-                // exception ignored
+            } catch (final IllegalAccessException ignored) { 
+                
+            } catch (final IllegalArgumentException ignored) { 
+                
+            } catch (final InvocationTargetException ignored) { 
+                
             }
         }
         return null;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Counts the number of <code>Throwable</code> objects in the
      * exception chain.</p>
@@ -286,7 +286,7 @@ public class ExceptionUtils {
         return list;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Returns the (zero based) index of the first <code>Throwable</code>
      * that matches the specified class (exactly) in the exception chain.
@@ -328,7 +328,7 @@ public class ExceptionUtils {
         return indexOf(throwable, clazz, fromIndex, false);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Returns the (zero based) index of the first <code>Throwable</code>
      * that matches the specified class or subclass in the exception chain.
@@ -410,7 +410,7 @@ public class ExceptionUtils {
         return -1;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Prints a compact stack trace for the root cause of a throwable
      * to <code>System.err</code>.</p>
@@ -499,7 +499,7 @@ public class ExceptionUtils {
         writer.flush();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Creates a compact stack trace for the root cause of the supplied
      * <code>Throwable</code>.</p>
@@ -554,8 +554,8 @@ public class ExceptionUtils {
         int causeFrameIndex = causeFrames.size() - 1;
         int wrapperFrameIndex = wrapperFrames.size() - 1;
         while (causeFrameIndex >= 0 && wrapperFrameIndex >= 0) {
-            // Remove the frame from the cause trace if it is the same
-            // as in the wrapper trace
+            
+            
             final String causeFrame = causeFrames.get(causeFrameIndex);
             final String wrapperFrame = wrapperFrames.get(wrapperFrameIndex);
             if (causeFrame.equals(wrapperFrame)) {
@@ -566,7 +566,7 @@ public class ExceptionUtils {
         }
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Gets the stack trace from a Throwable as a String.</p>
      *
@@ -606,7 +606,7 @@ public class ExceptionUtils {
         return getStackFrames(getStackTrace(throwable));
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Returns an array where each element is a line from the argument.</p>
      *
@@ -645,7 +645,7 @@ public class ExceptionUtils {
         boolean traceStarted = false;
         while (frames.hasMoreTokens()) {
             final String token = frames.nextToken();
-            // Determine if the line starts with <whitespace>at
+            
             final int at = token.indexOf("at");
             if (at != -1 && token.substring(0, at).trim().isEmpty()) {
                 traceStarted = true;
@@ -657,7 +657,7 @@ public class ExceptionUtils {
         return list;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Gets a short message summarising the exception.
      * <p>
@@ -677,7 +677,7 @@ public class ExceptionUtils {
         return clsName + ": " + StringUtils.defaultString(msg);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Gets a short message summarising the root cause exception.
      * <p>

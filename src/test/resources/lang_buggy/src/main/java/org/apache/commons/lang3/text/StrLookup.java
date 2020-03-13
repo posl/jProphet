@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,7 +49,7 @@ public abstract class StrLookup<V> {
         StrLookup<String> lookup = null;
         try {
             final Map<?, ?> propMap = System.getProperties();
-            @SuppressWarnings("unchecked") // System property keys and values are always Strings
+            @SuppressWarnings("unchecked") 
             final Map<String, String> properties = (Map<String, String>) propMap;
             lookup = new MapStrLookup<String>(properties);
         } catch (final SecurityException ex) {
@@ -58,7 +58,7 @@ public abstract class StrLookup<V> {
         SYSTEM_PROPERTIES_LOOKUP = lookup;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Returns a lookup which always returns null.
      *
@@ -97,7 +97,7 @@ public abstract class StrLookup<V> {
         return new MapStrLookup<V>(map);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Constructor.
      */
@@ -130,7 +130,7 @@ public abstract class StrLookup<V> {
      */
     public abstract String lookup(String key);
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Lookup implementation that uses a Map.
      */

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ import org.apache.commons.lang3.ClassUtils;
  * @version $Id$
  */
 abstract class MemberUtils {
-    // TODO extract an interface to implement compareParameterSets(...)?
+    
 
     private static final int ACCESS_TEST = Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE;
 
@@ -60,8 +60,8 @@ abstract class MemberUtils {
                 && isPackageAccess(m.getDeclaringClass().getModifiers())) {
             try {
                 o.setAccessible(true);
-            } catch (final SecurityException e) { // NOPMD
-                // ignore in favor of subsequent IllegalAccessException
+            } catch (final SecurityException e) { 
+                
             }
         }
     }
@@ -135,11 +135,11 @@ abstract class MemberUtils {
         float cost = 0.0f;
         while (srcClass != null && !destClass.equals(srcClass)) {
             if (destClass.isInterface() && ClassUtils.isAssignable(srcClass, destClass)) {
-                // slight penalty for interface match.
-                // we still want an exact match to override an interface match,
-                // but
-                // an interface match should override anything where we have to
-                // get a superclass.
+                
+                
+                
+                
+                
                 cost += 0.25f;
                 break;
             }
@@ -167,7 +167,7 @@ abstract class MemberUtils {
         float cost = 0.0f;
         Class<?> cls = srcClass;
         if (!cls.isPrimitive()) {
-            // slight unwrapping penalty
+            
             cost += 0.1f;
             cls = ClassUtils.wrapperToPrimitive(cls);
         }

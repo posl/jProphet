@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,10 +55,10 @@ package org.apache.commons.lang3.concurrent;
  * look like this:
  *
  * <pre>
- * // Create an instance of the lazy initializer
+ * 
  * ComplexObjectInitializer initializer = new ComplexObjectInitializer();
  * ...
- * // When the object is actually needed:
+ * 
  * ComplexObject cobj = initializer.get();
  * </pre>
  *
@@ -90,8 +90,8 @@ public abstract class LazyInitializer<T> implements ConcurrentInitializer<T> {
      */
     @Override
     public T get() throws ConcurrentException {
-        // use a temporary variable to reduce the number of reads of the
-        // volatile field
+        
+        
         T result = object;
 
         if (result == null) {

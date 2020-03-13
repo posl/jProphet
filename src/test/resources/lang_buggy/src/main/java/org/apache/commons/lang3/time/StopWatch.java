@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,7 +59,7 @@ public class StopWatch {
 
     private static final long NANO_2_MILLIS = 1000000L;
 
-    // running states
+    
     private static final int STATE_UNSTARTED = 0;
 
     private static final int STATE_RUNNING = 1;
@@ -68,7 +68,7 @@ public class StopWatch {
 
     private static final int STATE_SUSPENDED = 3;
 
-    // split state
+    
     private static final int STATE_UNSPLIT = 10;
 
     private static final int STATE_SPLIT = 11;
@@ -343,7 +343,7 @@ public class StopWatch {
         if (this.runningState == STATE_UNSTARTED) {
             throw new IllegalStateException("Stopwatch has not been started");
         }
-        // System.nanoTime is for elapsed time
+        
         return this.startTimeMillis;
     }
 

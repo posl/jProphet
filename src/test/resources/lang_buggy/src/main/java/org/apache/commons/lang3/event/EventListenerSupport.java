@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -163,9 +163,9 @@ public class EventListenerSupport<L> implements Serializable {
         return proxy;
     }
 
-//**********************************************************************************************************************
-// Other Methods
-//**********************************************************************************************************************
+
+
+
 
     /**
      * Registers an event listener.
@@ -220,14 +220,14 @@ public class EventListenerSupport<L> implements Serializable {
     private void writeObject(final ObjectOutputStream objectOutputStream) throws IOException {
         final ArrayList<L> serializableListeners = new ArrayList<L>();
 
-        // don't just rely on instanceof Serializable:
+        
         ObjectOutputStream testObjectOutputStream = new ObjectOutputStream(new ByteArrayOutputStream());
         for (final L listener : listeners) {
             try {
                 testObjectOutputStream.writeObject(listener);
                 serializableListeners.add(listener);
             } catch (final IOException exception) {
-                //recreate test stream in case of indeterminate state
+                
                 testObjectOutputStream = new ObjectOutputStream(new ByteArrayOutputStream());
             }
         }
@@ -245,13 +245,13 @@ public class EventListenerSupport<L> implements Serializable {
      * @throws ClassNotFoundException if the class cannot be resolved
      */
     private void readObject(final ObjectInputStream objectInputStream) throws IOException, ClassNotFoundException {
-        @SuppressWarnings("unchecked") // Will throw CCE here if not correct
+        @SuppressWarnings("unchecked") 
         final
         L[] listeners = (L[]) objectInputStream.readObject();
 
         this.listeners = new CopyOnWriteArrayList<L>(listeners);
 
-        @SuppressWarnings("unchecked") // Will throw CCE here if not correct
+        @SuppressWarnings("unchecked") 
         final
         Class<L> listenerInterface = (Class<L>) listeners.getClass().getComponentType();
 
@@ -264,7 +264,7 @@ public class EventListenerSupport<L> implements Serializable {
      * @param classLoader the class loader to be used
      */
     private void initializeTransientFields(final Class<L> listenerInterface, final ClassLoader classLoader) {
-        @SuppressWarnings("unchecked") // Will throw CCE here if not correct
+        @SuppressWarnings("unchecked") 
         final
         L[] array = (L[]) Array.newInstance(listenerInterface, 0);
         this.prototypeArray = array;

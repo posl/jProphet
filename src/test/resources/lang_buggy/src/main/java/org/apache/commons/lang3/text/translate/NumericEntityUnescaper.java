@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ public class NumericEntityUnescaper extends CharSequenceTranslator {
 
     public static enum OPTION { semiColonRequired, semiColonOptional, errorIfNoSemiColon }
 
-    // TODO?: Create an OptionsSet class to hide some of the conditional logic below
+    
     private final EnumSet<OPTION> options;
 
     /**
@@ -77,7 +77,7 @@ public class NumericEntityUnescaper extends CharSequenceTranslator {
     @Override
     public int translate(final CharSequence input, final int index, final Writer out) throws IOException {
         final int seqEnd = input.length();
-        // Uses -2 to ensure there is something after the &#
+        
         if(input.charAt(index) == '&' && index < seqEnd - 2 && input.charAt(index + 1) == '#') {
             int start = index + 2;
             boolean isHex = false;
@@ -87,14 +87,14 @@ public class NumericEntityUnescaper extends CharSequenceTranslator {
                 start++;
                 isHex = true;
 
-                // Check there's more than just an x after the &#
+                
                 if(start == seqEnd) {
                     return 0;
                 }
             }
 
             int end = start;
-            // Note that this supports character codes without a ; on the end
+            
             while(end < seqEnd && ( input.charAt(end) >= '0' && input.charAt(end) <= '9' ||
                                     input.charAt(end) >= 'a' && input.charAt(end) <= 'f' ||
                                     input.charAt(end) >= 'A' && input.charAt(end) <= 'F' ) )

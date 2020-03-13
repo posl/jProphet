@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,8 +59,8 @@ public class SerializationUtils {
         super();
     }
 
-    // Clone
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Deep clone an {@code Object} using serialization.</p>
      *
@@ -84,14 +84,14 @@ public class SerializationUtils {
 
         ClassLoaderAwareObjectInputStream in = null;
         try {
-            // stream closed in the finally
+            
             in = new ClassLoaderAwareObjectInputStream(bais, object.getClass().getClassLoader());
             /*
              * when we serialize and deserialize an object,
              * it is reasonable to assume the deserialized object
              * is of the same type as the original serialized object
              */
-            @SuppressWarnings("unchecked") // see above
+            @SuppressWarnings("unchecked") 
             final
             T readObject = (T) in.readObject();
             return readObject;
@@ -111,8 +111,8 @@ public class SerializationUtils {
         }
     }
 
-    // Serialize
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Serializes an {@code Object} to the specified stream.</p>
      *
@@ -134,7 +134,7 @@ public class SerializationUtils {
         }
         ObjectOutputStream out = null;
         try {
-            // stream closed in the finally
+            
             out = new ObjectOutputStream(outputStream);
             out.writeObject(obj);
 
@@ -145,8 +145,8 @@ public class SerializationUtils {
                 if (out != null) {
                     out.close();
                 }
-            } catch (final IOException ex) { // NOPMD
-                // ignore close exception
+            } catch (final IOException ex) { 
+                
             }
         }
     }
@@ -165,8 +165,8 @@ public class SerializationUtils {
         return baos.toByteArray();
     }
 
-    // Deserialize
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>
      * Deserializes an {@code Object} from the specified stream.
@@ -203,9 +203,9 @@ public class SerializationUtils {
         }
         ObjectInputStream in = null;
         try {
-            // stream closed in the finally
+            
             in = new ObjectInputStream(inputStream);
-            @SuppressWarnings("unchecked") // may fail with CCE if serialised form is incorrect
+            @SuppressWarnings("unchecked") 
             final T obj = (T) in.readObject();
             return obj;
 
@@ -220,8 +220,8 @@ public class SerializationUtils {
                 if (in != null) {
                     in.close();
                 }
-            } catch (final IOException ex) { // NOPMD
-                // ignore close exception
+            } catch (final IOException ex) { 
+                
             }
         }
     }
