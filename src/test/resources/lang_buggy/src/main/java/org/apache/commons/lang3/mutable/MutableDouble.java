@@ -34,7 +34,7 @@ public class MutableDouble extends Number implements Comparable<MutableDouble>, 
      */
     private static final long serialVersionUID = 1587163916L;
 
-    /** The mutable value. */
+    
     private double value;
 
     /**

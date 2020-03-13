@@ -35,7 +35,7 @@ public class MutableObject<T> implements Mutable<T>, Serializable {
      */
     private static final long serialVersionUID = 86241875189L;
 
-    /** The mutable value. */
+    
     private T value;
 
     /**

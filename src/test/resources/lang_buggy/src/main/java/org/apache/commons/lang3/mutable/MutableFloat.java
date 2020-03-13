@@ -34,7 +34,7 @@ public class MutableFloat extends Number implements Comparable<MutableFloat>, Mu
      */
     private static final long serialVersionUID = 5787169186L;
 
-    /** The mutable value. */
+    
     private float value;
 
     /**

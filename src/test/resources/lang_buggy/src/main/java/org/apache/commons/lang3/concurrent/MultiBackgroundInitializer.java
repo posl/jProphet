@@ -97,7 +97,7 @@ import java.util.concurrent.ExecutorService;
 public class MultiBackgroundInitializer
         extends
         BackgroundInitializer<MultiBackgroundInitializer.MultiBackgroundInitializerResults> {
-    /** A map with the child initializers. */
+    
     private final Map<String, BackgroundInitializer<?>> childInitializers =
         new HashMap<String, BackgroundInitializer<?>>();
 
@@ -225,13 +225,13 @@ public class MultiBackgroundInitializer
      * caused an exception.
      */
     public static class MultiBackgroundInitializerResults {
-        /** A map with the child initializers. */
+        
         private final Map<String, BackgroundInitializer<?>> initializers;
 
-        /** A map with the result objects. */
+        
         private final Map<String, Object> resultObjects;
 
-        /** A map with the exceptions. */
+        
         private final Map<String, ConcurrentException> exceptions;
 
         /**

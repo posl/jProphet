@@ -37,7 +37,7 @@ public class MutableBoolean implements Mutable<Boolean>, Serializable, Comparabl
      */
     private static final long serialVersionUID = -4830728138360036487L;
 
-    /** The mutable value. */
+    
     private boolean value;
 
     /**

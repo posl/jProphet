@@ -65,7 +65,7 @@ import org.apache.commons.lang3.Validate;
  */
 public class EventListenerSupport<L> implements Serializable {
 
-    /** Serialization version */
+    
     private static final long serialVersionUID = 3593265990380473632L;
 
     /**

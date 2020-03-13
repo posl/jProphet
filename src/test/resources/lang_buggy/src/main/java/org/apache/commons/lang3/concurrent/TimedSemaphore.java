@@ -133,25 +133,25 @@ public class TimedSemaphore {
      */
     public static final int NO_LIMIT = 0;
 
-    /** Constant for the thread pool size for the executor. */
+    
     private static final int THREAD_POOL_SIZE = 1;
 
-    /** The executor service for managing the timer thread. */
+    
     private final ScheduledExecutorService executorService;
 
-    /** Stores the period for this timed semaphore. */
+    
     private final long period;
 
-    /** The time unit for the period. */
+    
     private final TimeUnit unit;
 
-    /** A flag whether the executor service was created by this object. */
+    
     private final boolean ownExecutor;
 
-    /** A future object representing the timer task. */
+    
     private ScheduledFuture<?> task; // @GuardedBy("this")
 
-    /** Stores the total number of invocations of the acquire() method. */
+    
     private long totalAcquireCount; // @GuardedBy("this")
 
     /**
@@ -160,16 +160,16 @@ public class TimedSemaphore {
      */
     private long periodCount; // @GuardedBy("this")
 
-    /** The limit. */
+    
     private int limit; // @GuardedBy("this")
 
-    /** The current counter. */
+    
     private int acquireCount;  // @GuardedBy("this")
 
-    /** The number of invocations of acquire() in the last period. */
+    
     private int lastCallsPerPeriod; // @GuardedBy("this")
 
-    /** A flag whether shutdown() was called. */
+    
     private boolean shutdown;  // @GuardedBy("this")
 
     /**

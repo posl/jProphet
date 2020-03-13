@@ -83,9 +83,9 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class ContextedException extends Exception implements ExceptionContext {
 
-    /** The serialization version. */
+    
     private static final long serialVersionUID = 20110706L;
-    /** The context where the data is stored. */
+    
     private final ExceptionContext exceptionContext;
 
     /**

@@ -35,7 +35,7 @@ abstract class MemberUtils {
 
     private static final int ACCESS_TEST = Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE;
 
-    /** Array of primitive number types ordered by "promotability" */
+    
     private static final Class<?>[] ORDERED_PRIMITIVE_TYPES = { Byte.TYPE, Short.TYPE,
             Character.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE };
 

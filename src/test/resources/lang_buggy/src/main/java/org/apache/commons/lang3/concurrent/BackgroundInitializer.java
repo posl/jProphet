@@ -85,13 +85,13 @@ import java.util.concurrent.Future;
  */
 public abstract class BackgroundInitializer<T> implements
         ConcurrentInitializer<T> {
-    /** The external executor service for executing tasks. */
+    
     private ExecutorService externalExecutor; // @GuardedBy("this")
 
-    /** A reference to the executor service that is actually used. */
+    
     private ExecutorService executor; // @GuardedBy("this")
 
-    /** Stores the handle to the background task. */
+    
     private Future<T> future;  // @GuardedBy("this")
 
     /**
@@ -302,7 +302,7 @@ public abstract class BackgroundInitializer<T> implements
     }
 
     private class InitializationTask implements Callable<T> {
-        /** Stores the executor service to be destroyed at the end. */
+        
         private final ExecutorService execFinally;
 
         /**

@@ -37,9 +37,9 @@ public class CompositeFormat extends Format {
      */
     private static final long serialVersionUID = -4329119827877627683L;
 
-    /** The parser to use. */
+    
     private final Format parser;
-    /** The formatter to use. */
+    
     private final Format formatter;
 
     /**

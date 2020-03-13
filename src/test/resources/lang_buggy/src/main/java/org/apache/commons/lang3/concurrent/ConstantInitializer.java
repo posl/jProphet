@@ -39,10 +39,10 @@ import org.apache.commons.lang3.ObjectUtils;
  * @param <T> the type of the object managed by this initializer
  */
 public class ConstantInitializer<T> implements ConcurrentInitializer<T> {
-    /** Constant for the format of the string representation. */
+    
     private static final String FMT_TO_STRING = "ConstantInitializer@%d [ object = %s ]";
 
-    /** Stores the managed object. */
+    
     private final T object;
 
     /**

@@ -41,7 +41,7 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
  */
 public abstract class Pair<L, R> implements Map.Entry<L, R>, Comparable<Pair<L, R>>, Serializable {
 
-    /** Serialization version */
+    
     private static final long serialVersionUID = 4954918890077093841L;
 
     /**

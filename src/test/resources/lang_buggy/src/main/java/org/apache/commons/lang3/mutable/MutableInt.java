@@ -34,7 +34,7 @@ public class MutableInt extends Number implements Comparable<MutableInt>, Mutabl
      */
     private static final long serialVersionUID = 512176391864L;
 
-    /** The mutable value. */
+    
     private int value;
 
     /**

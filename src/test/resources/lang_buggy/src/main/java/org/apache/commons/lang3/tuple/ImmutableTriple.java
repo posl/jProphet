@@ -34,14 +34,14 @@ package org.apache.commons.lang3.tuple;
  */
 public final class ImmutableTriple<L, M, R> extends Triple<L, M, R> {
 
-    /** Serialization version */
+    
     private static final long serialVersionUID = 1L;
 
-    /** Left object */
+    
     public final L left;
-    /** Middle object */
+    
     public final M middle;
-    /** Right object */
+    
     public final R right;
 
     /**

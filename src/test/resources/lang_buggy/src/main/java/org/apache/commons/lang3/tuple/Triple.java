@@ -39,7 +39,7 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
  */
 public abstract class Triple<L, M, R> implements Comparable<Triple<L, M, R>>, Serializable {
 
-    /** Serialization version */
+    
     private static final long serialVersionUID = 1L;
 
     /**

@@ -601,11 +601,11 @@ public final class Fraction extends Number implements Comparable<Fraction> {
         }
         // B2. Initialize: u and v have been divided by 2^k and at least
         //     one is odd.
-        int t = (u&1)==1 ? v : -(u/2)/*B3*/;
+        int t = (u&1)==1 ? v : -(u/2);
         // t negative: u was odd, v may be even (t replaces v)
         // t positive: u was even, v is odd (t replaces u)
         do {
-            /* assert u<0 && v<0; */
+            
             // B4/B3: cast out twos from t.
             while ((t&1)==0) { // while t is even..
                 t/=2; // cast out twos
@@ -655,7 +655,7 @@ public final class Fraction extends Number implements Comparable<Fraction> {
      * an int
      */
     private static int mulPosAndCheck(final int x, final int y) {
-        /* assert x>=0 && y>=0; */
+        
         final long m = (long)x*(long)y;
         if (m > Integer.MAX_VALUE) {
             throw new ArithmeticException("overflow: mulPos");
@@ -710,7 +710,7 @@ public final class Fraction extends Number implements Comparable<Fraction> {
      *  <code>Integer.MAX_VALUE</code>
      */
     public Fraction add(final Fraction fraction) {
-        return addSub(fraction, true /* add */);
+        return addSub(fraction, true );
     }
 
     /**
@@ -724,7 +724,7 @@ public final class Fraction extends Number implements Comparable<Fraction> {
      *   cannot be represented in an <code>int</code>.
      */
     public Fraction subtract(final Fraction fraction) {
-        return addSub(fraction, false /* subtract */);
+        return addSub(fraction, false );
     }
 
     /** 

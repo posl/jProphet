@@ -38,7 +38,7 @@ import org.apache.commons.lang3.text.translate.UnicodeUnescaper;
  */
 public class StringEscapeUtils {
 
-    /* ESCAPE TRANSLATORS */
+    
 
     /**
      * Translator object for escaping Java. 
@@ -189,7 +189,7 @@ public class StringEscapeUtils {
         }
     }
 
-    /* UNESCAPE TRANSLATORS */
+    
 
     /**
      * Translator object for unescaping escaped Java. 
@@ -330,7 +330,7 @@ public class StringEscapeUtils {
         }
     }
 
-    /* Helper functions */
+    
 
     /**
      * <p>{@code StringEscapeUtils} instances should NOT be constructed in

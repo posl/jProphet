@@ -86,13 +86,13 @@ public class StrBuilder implements CharSequence, Appendable, Serializable, Build
      */
     private static final long serialVersionUID = 7628716375283629643L;
 
-    /** Internal data storage. */
+    
     protected char[] buffer; // TODO make private?
-    /** Current size of the buffer. */
+    
     protected int size; // TODO make private?
-    /** The new line. */
+    
     private String newLine;
-    /** The null text. */
+    
     private String nullText;
 
     //-----------------------------------------------------------------------
@@ -2812,7 +2812,7 @@ public class StrBuilder implements CharSequence, Appendable, Serializable, Build
             super();
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         protected List<String> tokenize(final char[] chars, final int offset, final int count) {
             if (chars == null) {
@@ -2822,7 +2822,7 @@ public class StrBuilder implements CharSequence, Appendable, Serializable, Build
             }
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         public String getContent() {
             final String str = super.getContent();
@@ -2839,9 +2839,9 @@ public class StrBuilder implements CharSequence, Appendable, Serializable, Build
      * Inner class to allow StrBuilder to operate as a writer.
      */
     class StrBuilderReader extends Reader {
-        /** The current stream position. */
+        
         private int pos;
-        /** The last mark position. */
+        
         private int mark;
 
         /**
@@ -2851,13 +2851,13 @@ public class StrBuilder implements CharSequence, Appendable, Serializable, Build
             super();
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         public void close() {
             // do nothing
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         public int read() {
             if (ready() == false) {
@@ -2866,7 +2866,7 @@ public class StrBuilder implements CharSequence, Appendable, Serializable, Build
             return StrBuilder.this.charAt(pos++);
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         public int read(final char b[], final int off, int len) {
             if (off < 0 || len < 0 || off > b.length ||
@@ -2887,7 +2887,7 @@ public class StrBuilder implements CharSequence, Appendable, Serializable, Build
             return len;
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         public long skip(long n) {
             if (pos + n > StrBuilder.this.size()) {
@@ -2900,25 +2900,25 @@ public class StrBuilder implements CharSequence, Appendable, Serializable, Build
             return n;
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         public boolean ready() {
             return pos < StrBuilder.this.size();
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         public boolean markSupported() {
             return true;
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         public void mark(final int readAheadLimit) {
             mark = pos;
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         public void reset() {
             pos = mark;
@@ -2938,43 +2938,43 @@ public class StrBuilder implements CharSequence, Appendable, Serializable, Build
             super();
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         public void close() {
             // do nothing
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         public void flush() {
             // do nothing
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         public void write(final int c) {
             StrBuilder.this.append((char) c);
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         public void write(final char[] cbuf) {
             StrBuilder.this.append(cbuf);
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         public void write(final char[] cbuf, final int off, final int len) {
             StrBuilder.this.append(cbuf, off, len);
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         public void write(final String str) {
             StrBuilder.this.append(str);
         }
 
-        /** {@inheritDoc} */
+        
         @Override
         public void write(final String str, final int off, final int len) {
             StrBuilder.this.append(str, off, len);

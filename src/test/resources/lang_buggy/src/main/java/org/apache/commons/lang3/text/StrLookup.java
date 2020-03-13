@@ -136,7 +136,7 @@ public abstract class StrLookup<V> {
      */
     static class MapStrLookup<V> extends StrLookup<V> {
 
-        /** Map keys are variable names and value. */
+        
         private final Map<String, V> map;
 
         /**

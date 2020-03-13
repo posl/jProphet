@@ -107,25 +107,25 @@ public class StrTokenizer implements ListIterator<String>, Cloneable {
         TSV_TOKENIZER_PROTOTYPE.setIgnoreEmptyTokens(false);
     }
 
-    /** The text to work on. */
+    
     private char chars[];
-    /** The parsed tokens */
+    
     private String tokens[];
-    /** The current iteration position */
+    
     private int tokenPos;
 
-    /** The delimiter matcher */
+    
     private StrMatcher delimMatcher = StrMatcher.splitMatcher();
-    /** The quote matcher */
+    
     private StrMatcher quoteMatcher = StrMatcher.noneMatcher();
-    /** The ignored matcher */
+    
     private StrMatcher ignoredMatcher = StrMatcher.noneMatcher();
-    /** The trimmer matcher */
+    
     private StrMatcher trimmerMatcher = StrMatcher.noneMatcher();
 
-    /** Whether to return empty tokens as null */
+    
     private boolean emptyAsNull = false;
-    /** Whether to ignore empty tokens */
+    
     private boolean ignoreEmptyTokens = true;
 
     //-----------------------------------------------------------------------

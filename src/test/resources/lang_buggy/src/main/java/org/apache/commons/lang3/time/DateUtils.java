@@ -78,7 +78,7 @@ public class DateUtils {
             {Calendar.MINUTE},
             {Calendar.HOUR_OF_DAY, Calendar.HOUR},
             {Calendar.DATE, Calendar.DAY_OF_MONTH, Calendar.AM_PM 
-                /* Calendar.DAY_OF_YEAR, Calendar.DAY_OF_WEEK, Calendar.DAY_OF_WEEK_IN_MONTH */
+                
             },
             {Calendar.MONTH, DateUtils.SEMI_MONTH},
             {Calendar.YEAR},

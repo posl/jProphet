@@ -65,7 +65,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @param <T> the type of the object managed by this initializer class
  */
 public abstract class AtomicInitializer<T> implements ConcurrentInitializer<T> {
-    /** Holds the reference to the managed object. */
+    
     private final AtomicReference<T> reference = new AtomicReference<T>();
 
     /**

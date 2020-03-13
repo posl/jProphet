@@ -29,14 +29,14 @@ package org.apache.commons.lang3.tuple;
  */
 public class MutableTriple<L, M, R> extends Triple<L, M, R> {
 
-    /** Serialization version */
+    
     private static final long serialVersionUID = 1L;
 
-    /** Left object */
+    
     public L left;
-    /** Middle object */
+    
     public M middle;
-    /** Right object */
+    
     public R right;
 
     /**

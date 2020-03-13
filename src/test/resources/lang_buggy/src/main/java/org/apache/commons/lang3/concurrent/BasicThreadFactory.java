@@ -88,22 +88,22 @@ import java.util.concurrent.atomic.AtomicLong;
  * @version $Id$
  */
 public class BasicThreadFactory implements ThreadFactory {
-    /** A counter for the threads created by this factory. */
+    
     private final AtomicLong threadCounter;
 
-    /** Stores the wrapped factory. */
+    
     private final ThreadFactory wrappedFactory;
 
-    /** Stores the uncaught exception handler. */
+    
     private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
-    /** Stores the naming pattern for newly created threads. */
+    
     private final String namingPattern;
 
-    /** Stores the priority. */
+    
     private final Integer priority;
 
-    /** Stores the daemon status flag. */
+    
     private final Boolean daemonFlag;
 
     /**
@@ -254,19 +254,19 @@ public class BasicThreadFactory implements ThreadFactory {
     public static class Builder 
         implements org.apache.commons.lang3.builder.Builder<BasicThreadFactory> {
         
-        /** The wrapped factory. */
+        
         private ThreadFactory wrappedFactory;
 
-        /** The uncaught exception handler. */
+        
         private Thread.UncaughtExceptionHandler exceptionHandler;
 
-        /** The naming pattern. */
+        
         private String namingPattern;
 
-        /** The priority. */
+        
         private Integer priority;
 
-        /** The daemon flag. */
+        
         private Boolean daemonFlag;
 
         /**

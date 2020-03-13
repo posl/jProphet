@@ -40,10 +40,10 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class DefaultExceptionContext implements ExceptionContext, Serializable {
 
-    /** The serialization version. */
+    
     private static final long serialVersionUID = 20110706L;
 
-    /** The list storing the label-data pairs. */
+    
     private final List<Pair<String, Object>> contextValues = new ArrayList<Pair<String,Object>>();
 
     /**

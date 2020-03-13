@@ -55,11 +55,11 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public abstract class AtomicSafeInitializer<T> implements
         ConcurrentInitializer<T> {
-    /** A guard which ensures that initialize() is called only once. */
+    
     private final AtomicReference<AtomicSafeInitializer<T>> factory =
             new AtomicReference<AtomicSafeInitializer<T>>();
 
-    /** Holds the reference to the managed object. */
+    
     private final AtomicReference<T> reference = new AtomicReference<T>();
 
     /**

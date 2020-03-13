@@ -88,7 +88,7 @@ public class CharSet implements Serializable {
         COMMON.put("0-9", ASCII_NUMERIC);
     }
 
-    /** The set of CharRange objects. */
+    
     private final Set<CharRange> set = Collections.synchronizedSet(new HashSet<CharRange>());
 
     //-----------------------------------------------------------------------
@@ -208,7 +208,7 @@ public class CharSet implements Serializable {
      */
 // NOTE: This is no longer public as CharRange is no longer a public class. 
 //       It may be replaced when CharSet moves to Range.
-    /*public*/ CharRange[] getCharRanges() {
+     CharRange[] getCharRanges() {
         return set.toArray(new CharRange[set.size()]);
     }
 

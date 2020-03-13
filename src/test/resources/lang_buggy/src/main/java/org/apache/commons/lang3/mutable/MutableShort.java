@@ -34,7 +34,7 @@ public class MutableShort extends Number implements Comparable<MutableShort>, Mu
      */
     private static final long serialVersionUID = -2135791679L;
 
-    /** The mutable value. */
+    
     private short value;
 
     /**

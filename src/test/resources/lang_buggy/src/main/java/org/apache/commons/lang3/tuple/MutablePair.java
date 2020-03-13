@@ -29,12 +29,12 @@ package org.apache.commons.lang3.tuple;
  */
 public class MutablePair<L, R> extends Pair<L, R> {
 
-    /** Serialization version */
+    
     private static final long serialVersionUID = 4954918890077093841L;
 
-    /** Left object */
+    
     public L left;
-    /** Right object */
+    
     public R right;
 
     /**

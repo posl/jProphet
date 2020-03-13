@@ -38,11 +38,11 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class LocaleUtils {
 
-    /** Concurrent map of language locales by country. */
+    
     private static final ConcurrentMap<String, List<Locale>> cLanguagesByCountry = 
         new ConcurrentHashMap<String, List<Locale>>();
 
-    /** Concurrent map of country locales by language. */
+    
     private static final ConcurrentMap<String, List<Locale>> cCountriesByLanguage = 
         new ConcurrentHashMap<String, List<Locale>>();
 
@@ -307,9 +307,9 @@ public class LocaleUtils {
     //-----------------------------------------------------------------------
     // class to avoid synchronization (Init on demand)
     static class SyncAvoid {
-        /** Unmodifiable list of available locales. */
+        
         private static final List<Locale> AVAILABLE_LOCALE_LIST;
-        /** Unmodifiable set of available locales. */
+        
         private static final Set<Locale> AVAILABLE_LOCALE_SET;
         
         static {

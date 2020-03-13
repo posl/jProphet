@@ -40,14 +40,14 @@ final class CharRange implements Iterable<Character>, Serializable {
      */
     private static final long serialVersionUID = 8270183163158333422L;
     
-    /** The first character, inclusive, in the range. */
+    
     private final char start;
-    /** The last character, inclusive, in the range. */
+    
     private final char end;
-    /** True if the range is everything except the characters specified. */
+    
     private final boolean negated;
     
-    /** Cached toString. */
+    
     private transient String iToString;
 
     /**
@@ -267,7 +267,7 @@ final class CharRange implements Iterable<Character>, Serializable {
      * <p>#NotThreadSafe#</p>
      */
     private static class CharacterIterator implements Iterator<Character> {
-        /** The current character */
+        
         private char current;
 
         private final CharRange range;
