@@ -21,6 +21,8 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
+import jp.posl.jprophet.test.executor.TestThread;
+
 /**
  * junit+jacocoでテスト対象プロジェクトのカバレッジを回収する
  */
@@ -263,19 +265,4 @@ public class CoverageCollector {
         }
     }
 
-}
-
-class TestThread extends Thread {
-    private JUnitCore junitCore;
-    private Class<?> junitClass;
-
-    public TestThread(JUnitCore junitCore, Class<?> junitClass){
-        this.junitCore = junitCore;
-        this.junitClass = junitClass;
-    }
-
-    @Override
-    public void run(){
-        junitCore.run(junitClass);
-    }
 }

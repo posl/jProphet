@@ -117,24 +117,3 @@ public class UnitTestExecutor implements TestExecutor {
     }
 
 }
-
-class TestThread extends Thread {
-    private JUnitCore junitCore;
-    private Class<?> testClass;
-    public boolean isSuccess;
-
-    public TestThread(JUnitCore junitCore, Class<?> testClass){
-        this.junitCore = junitCore;
-        this.testClass = testClass;
-        this.isSuccess = false;
-    }
-
-    @Override
-    public void run(){
-        this.isSuccess = junitCore.run(testClass).wasSuccessful();
-    }
-
-    public boolean getIsSuccess(){
-        return this.isSuccess;
-    }
-}
