@@ -100,13 +100,15 @@ public class UnitTestExecutor implements TestExecutor {
         for (Class<?> testClass : testClasses){
 
             //タイムアウト処理
-            Thread testThread = new TestThread(junitCore, testClass);
+            TestThread testThread = new TestThread(junitCore, testClass);
             testThread.start();
             try {
                 //waitTime ms 経過でスキップ
                 testThread.join(waitTime);
             } catch (InterruptedException e) {
-                //TODO: handle exception
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+                System.exit(-1);
             }
             final boolean isSuccess = ((TestThread) testThread).getIsSuccess();
             if(!isSuccess) return false;

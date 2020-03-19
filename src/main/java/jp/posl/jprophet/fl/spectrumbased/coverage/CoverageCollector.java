@@ -70,13 +70,15 @@ public class CoverageCollector {
             junitCore.addListener(listener);
             
             //タイムアウト処理
-            Thread testThread = new TestThread(junitCore, junitClass);
+            TestThread testThread = new TestThread(junitCore, junitClass);
             testThread.start();
             try {
                 //waitTime ms 経過でスキップ
                 testThread.join(waitTime);
             } catch (InterruptedException e) {
-                //TODO: handle exception
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+                System.exit(-1);
             }
         }
 
