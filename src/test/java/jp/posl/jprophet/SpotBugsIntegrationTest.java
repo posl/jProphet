@@ -11,6 +11,7 @@ import jp.posl.jprophet.test.exporter.CSVTestResultExporter;
 import jp.posl.jprophet.test.exporter.PatchDiffExporter;
 import jp.posl.jprophet.test.exporter.TestResultExporter;
 import jp.posl.jprophet.test.result.TestResultStore;
+import jp.posl.jprophet.evaluator.PatchEvaluator;
 import jp.posl.jprophet.fl.FaultLocalization;
 import jp.posl.jprophet.fl.spotbugsbased.SpotBugsBasedFaultLocalization;
 import jp.posl.jprophet.operation.*;

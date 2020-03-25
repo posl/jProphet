@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 
+import jp.posl.jprophet.evaluator.PatchEvaluator;
 import jp.posl.jprophet.fl.FaultLocalization;
 import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;

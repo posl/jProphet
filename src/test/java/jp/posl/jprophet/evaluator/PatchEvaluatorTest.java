@@ -1,4 +1,4 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.evaluator;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
