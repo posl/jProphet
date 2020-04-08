@@ -12,6 +12,14 @@ import difflib.DiffUtils;
 import difflib.Patch;
 
 public class AstDiff {
+    /**
+     * オリジナルのASTを構成するノードと変更後のASTを構成するノードのリストの間の
+     * 差分を計算する
+     * difflibを用いて実装
+     * @param original オリジナルのAST
+     * @param revised 変更後のAST
+     * @return 変更差分
+     */
     public List<AstDelta> diff(Node original, Node revised) {
         List<Node> originalNodes = NodeUtility.getAllDescendantNodes(original);
         List<Node> revisedNodes = NodeUtility.getAllDescendantNodes(revised);
@@ -28,6 +36,9 @@ public class AstDiff {
         return astDeltas;
     }
 
+    /**
+     * ASTの差分内容を示すクラス 
+     */
     public static class AstDelta {
         final private List<Node> deleteNodes;
         final private List<Node> addNodes;
@@ -37,10 +48,16 @@ public class AstDiff {
             this.addNodes = addNodes;
         }
 
+        /**
+         *  @return 削除されたノード 
+         */
         public List<Node> getDeleteNodes() {
             return this.deleteNodes;
         }
 
+        /**
+         * @return 追加されたノード
+         */
         public List<Node> getAddNodes() {
             return this.addNodes;
         }
