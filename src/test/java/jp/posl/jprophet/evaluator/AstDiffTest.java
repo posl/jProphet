@@ -9,10 +9,12 @@ import org.junit.Test;
 import java.util.List;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.evaluator.AstDiff.AstDelta;
 
 public class AstDiffTest {
-    @Test public void testhoge() {
+    /**
+     * クラス名のみ異なるノードリスト間の差分を算出できているかテスト
+     */
+    @Test public void testAstDiff() {
         final String originalSource = new StringBuilder().append("")
             .append("public class A {\n\n")
             .append("    public void a() {\n")
@@ -32,12 +34,12 @@ public class AstDiffTest {
 
         final AstDiff astDiff = new AstDiff();
         final List<AstDelta> actualAstDelta = astDiff.diff(originalNodes.get(0), revisedNodes.get(0));
+
         assertThat(actualAstDelta.size()).isEqualTo(1);
         assertThat(actualAstDelta.get(0).getAddNodes().size()).isEqualTo(1);
         assertThat(actualAstDelta.get(0).getDeleteNodes().size()).isEqualTo(1);
         assertThat(actualAstDelta.get(0).getAddNodes().get(0)).isInstanceOf(SimpleName.class);
         assertThat(actualAstDelta.get(0).getDeleteNodes().get(0)).isInstanceOf(SimpleName.class);
-        return;
     }
         
 }
