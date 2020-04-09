@@ -21,45 +21,18 @@ public class AstDiff {
      * @return 変更差分
      */
     public List<AstDelta> diff(Node original, Node revised) {
-        List<Node> originalNodes = NodeUtility.getAllDescendantNodes(original);
-        List<Node> revisedNodes = NodeUtility.getAllDescendantNodes(revised);
+        final List<Node> originalNodes = NodeUtility.getAllDescendantNodes(original);
+        final List<Node> revisedNodes = NodeUtility.getAllDescendantNodes(revised);
 
-	    Patch<Node> diff = DiffUtils.diff(originalNodes, revisedNodes);
-        List<Delta<Node>> deltas = diff.getDeltas();
+	    final Patch<Node> diff = DiffUtils.diff(originalNodes, revisedNodes);
+        final List<Delta<Node>> deltas = diff.getDeltas();
 
-        List<AstDelta> astDeltas = deltas.stream().map((delta) -> {
-            Chunk<Node> originalNode = delta.getOriginal();
-            Chunk<Node> fixedNode = delta.getRevised();
+        final List<AstDelta> astDeltas = deltas.stream().map((delta) -> {
+            final Chunk<Node> originalNode = delta.getOriginal();
+            final Chunk<Node> fixedNode = delta.getRevised();
             return new AstDelta(originalNode.getLines(), fixedNode.getLines());
         }).collect(Collectors.toList());
 
         return astDeltas;
-    }
-
-    /**
-     * ASTの差分内容を示すクラス 
-     */
-    public static class AstDelta {
-        final private List<Node> deleteNodes;
-        final private List<Node> addNodes;
-
-        public AstDelta(List<Node> deleteNodes, List<Node> addNodes) {
-            this.deleteNodes = deleteNodes;
-            this.addNodes = addNodes;
-        }
-
-        /**
-         *  @return 削除されたノード 
-         */
-        public List<Node> getDeleteNodes() {
-            return this.deleteNodes;
-        }
-
-        /**
-         * @return 追加されたノード
-         */
-        public List<Node> getAddNodes() {
-            return this.addNodes;
-        }
     }
 }
