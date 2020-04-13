@@ -21,6 +21,8 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
+import jp.posl.jprophet.test.executor.TestThread;
+
 /**
  * junit+jacocoでテスト対象プロジェクトのカバレッジを回収する
  */
@@ -29,6 +31,8 @@ public class CoverageCollector {
     private final IRuntime jacocoRuntime;
     private final Instrumenter jacocoInstrumenter;
     private final RuntimeData jacocoRuntimeData;
+
+    private final long waitTime = 5000; //タイムアウトさせる時間[ms]
 
     public CoverageCollector(String buildpath) {
         this.memoryClassLoader = null;
@@ -66,8 +70,18 @@ public class CoverageCollector {
             final JUnitCore junitCore = new JUnitCore();
             final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
             junitCore.addListener(listener);
-            //TODO junitCore.runはどうやって動いているのか調べる
-            junitCore.run(junitClass);
+            
+            //タイムアウト処理
+            TestThread testThread = new TestThread(junitCore, junitClass);
+            testThread.start();
+            try {
+                //waitTime ms 経過でスキップ
+                testThread.join(waitTime);
+            } catch (InterruptedException e) {
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+                System.exit(-1);
+            }
         }
 
         return testResults;
@@ -240,11 +254,11 @@ public class CoverageCollector {
          * @param description テストの実行情報
          */
         private void addJacocoCoverageToTestResults(final CoverageBuilder coverageBuilder,
-                final Description description) {
+            final Description description) {
             final String testMethodFQN = getTestMethodName(description);
             final boolean isFailed = isFailed(description);
             List<Coverage> coverages = coverageBuilder.getClasses().stream().map(c -> new Coverage(c))
-                    .collect(Collectors.toList());
+                .collect(Collectors.toList());
 
             final TestResult testResult = new TestResult(testMethodFQN, isFailed, coverages);
             testResults.add(testResult);
