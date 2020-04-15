@@ -6,6 +6,8 @@ import com.github.javaparser.ast.expr.SimpleName;
 
 import org.junit.Test;
 
+import difflib.Delta;
+
 import java.util.List;
 
 import jp.posl.jprophet.NodeUtility;
@@ -33,13 +35,13 @@ public class AstDiffTest {
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
         final AstDiff astDiff = new AstDiff();
-        final List<AstDelta> actualAstDelta = astDiff.diff(originalNodes.get(0), revisedNodes.get(0));
+        final List<Delta<Node>> actualAstDelta = astDiff.diff(originalNodes.get(0), revisedNodes.get(0));
 
         assertThat(actualAstDelta.size()).isEqualTo(1);
-        assertThat(actualAstDelta.get(0).getAddNodes().size()).isEqualTo(1);
-        assertThat(actualAstDelta.get(0).getDeleteNodes().size()).isEqualTo(1);
-        assertThat(actualAstDelta.get(0).getAddNodes().get(0)).isInstanceOf(SimpleName.class);
-        assertThat(actualAstDelta.get(0).getDeleteNodes().get(0)).isInstanceOf(SimpleName.class);
+        assertThat(actualAstDelta.get(0).getRevised().getLines().size()).isEqualTo(1);
+        assertThat(actualAstDelta.get(0).getOriginal().getLines().size()).isEqualTo(1);
+        assertThat(actualAstDelta.get(0).getRevised().getLines().get(0)).isInstanceOf(SimpleName.class);
+        assertThat(actualAstDelta.get(0).getOriginal().getLines().get(0)).isInstanceOf(SimpleName.class);
     }
         
 }
