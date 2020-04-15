@@ -10,9 +10,11 @@ public class PatchFeature {
         final AstDiff astDiff = new AstDiff();
         final List<AstDelta> astDeltas = astDiff.diff(original, revised);
         final List<Integer> featureVec = new ArrayList<Integer>(List.of(0, 0, 0, 0, 0, 0));
-        featureVec.set(0, 1);
-        astDeltas.stream().forEach((astDelta) -> j{
-            // まだなにもしてない
+        astDeltas.stream().forEach((astDelta) -> {
+            final int deleteNodesSize = astDelta.getDeleteNodes().size();
+            final int addNodesSize = astDelta.getAddNodes().size();
+            final boolean inserted = addNodesSize != 0 && deleteNodesSize == 0;
+            final boolean changed  = addNodesSize != 0 && deleteNodesSize != 0;
         });
     }
 }
