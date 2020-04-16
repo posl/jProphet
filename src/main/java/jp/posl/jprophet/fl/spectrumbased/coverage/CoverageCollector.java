@@ -26,6 +26,8 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
+import jp.posl.jprophet.test.executor.TestThread;
+
 /**
  * junit+jacocoでテスト対象プロジェクトのカバレッジを回収する
  */
@@ -77,15 +79,17 @@ public class CoverageCollector {
             junitCore.addListener(listener);
             
             //タイムアウト処理
-            Thread testThread = new TestThread(junitCore, junitClass);
+            TestThread testThread = new TestThread(junitCore, junitClass);
             testThread.start();
             try {
                 System.out.println("junitCore START");
                 //waitTime ms 経過でスキップ
                 testThread.join(waitTime);
             } catch (InterruptedException e) {
-                //TODO: handle exception
                 System.out.println("junitCore TIMEOUT");
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+                System.exit(-1);
             }
             System.out.println("junitCore END");
         }
@@ -299,19 +303,4 @@ public class CoverageCollector {
         }
     }
 
-}
-
-class TestThread extends Thread {
-    private JUnitCore junitCore;
-    private Class<?> junitClass;
-
-    public TestThread(JUnitCore junitCore, Class<?> junitClass){
-        this.junitCore = junitCore;
-        this.junitClass = junitClass;
-    }
-
-    @Override
-    public void run(){
-        junitCore.run(junitClass);
-    }
 }
