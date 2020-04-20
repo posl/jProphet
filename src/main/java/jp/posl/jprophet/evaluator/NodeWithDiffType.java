@@ -39,7 +39,7 @@ public class NodeWithDiffType {
     }
 
     public void addChildNodes(List<NodeWithDiffType> childNodes) {
-        childNodes.addAll(childNodes);
+        this.childNodes.addAll(childNodes);
     }
 
     public TYPE getDiffType() {

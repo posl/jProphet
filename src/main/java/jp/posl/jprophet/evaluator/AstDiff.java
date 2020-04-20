@@ -1,5 +1,6 @@
 package jp.posl.jprophet.evaluator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,12 +13,12 @@ import difflib.DiffUtils;
 import difflib.Patch;
 
 public class AstDiff {
+
     /**
-     * オリジナルのASTを構成するノードと変更後のASTを構成するノードのリストの間の
-     * 差分を計算する
-     * difflibを用いて実装
+     * オリジナルのASTを構成するノードと変更後のASTを構成するノードのリストの間の 差分を計算する difflibを用いて実装
+     * 
      * @param original オリジナルのAST
-     * @param revised 変更後のAST
+     * @param revised  変更後のAST
      * @return 変更差分
      */
     public List<Delta<Node>> diff(Node original, Node revised) {
@@ -37,8 +38,8 @@ public class AstDiff {
 
     private NodeWithDiffType createAstWithDiffType(Node targetNode, List<Delta<Node>> astDeltas) {
         for(Delta<Node> astDelta: astDeltas) {
-            List<Node> diffNodes = astDelta.getOriginal().getLines();
-            diffNodes.addAll(astDelta.getRevised().getLines());
+            List<Node> diffNodes = new ArrayList<Node>(astDelta.getOriginal().getLines());
+            diffNodes.addAll(new ArrayList<Node>(astDelta.getRevised().getLines()));
             for(Node diffNode: diffNodes) {
                 if(diffNode.equals(targetNode) && diffNode.getRange().equals(targetNode.getRange())) {
                     final List<NodeWithDiffType> childNodesWithDiffTypes = targetNode.getChildNodes().stream()
@@ -50,6 +51,11 @@ public class AstDiff {
                 }
             }
         }
-        return new NodeWithDiffType(targetNode, TYPE.SAME);
+        final List<NodeWithDiffType> childNodesWithDiffTypes = targetNode.getChildNodes().stream()
+            .map(childNode -> createAstWithDiffType(childNode, astDeltas))
+            .collect(Collectors.toList());
+        final NodeWithDiffType nodeWithDiffType = new NodeWithDiffType(targetNode, TYPE.SAME);
+        nodeWithDiffType.addChildNodes(childNodesWithDiffTypes);
+        return nodeWithDiffType;
     }
 }
