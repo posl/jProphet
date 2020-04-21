@@ -30,7 +30,7 @@ public class NodeWithDiffType {
         this.diffType = diffType;
     }
 
-    public Node asNode() {
+    public Node getNode() {
         return this.node;
     }
 

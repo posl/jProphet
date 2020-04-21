@@ -2,7 +2,11 @@ package jp.posl.jprophet.evaluator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.type.VoidType;
 
 import org.junit.Test;
 
@@ -65,7 +69,18 @@ public class AstDiffTest {
         final AstDiff astDiff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = astDiff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
 
-        assertThat(nodeWithDiffType).isNotNull();
+        assertThat(nodeWithDiffType.getChildNodes().size()).isEqualTo(2);
+        assertThat(nodeWithDiffType.getNode()).isInstanceOf(ClassOrInterfaceDeclaration.class);
+
+        assertThat(nodeWithDiffType.getChildNodes().get(0).getChildNodes().size()).isEqualTo(0);
+        assertThat(nodeWithDiffType.getChildNodes().get(0).getNode()).isInstanceOf(SimpleName.class);
+
+        assertThat(nodeWithDiffType.getChildNodes().get(1).getChildNodes().size()).isEqualTo(3);
+        assertThat(nodeWithDiffType.getChildNodes().get(1).getNode()).isInstanceOf(MethodDeclaration.class);
+
+        assertThat(nodeWithDiffType.getChildNodes().get(1).getChildNodes().get(0).getNode()).isInstanceOf(SimpleName.class);
+        assertThat(nodeWithDiffType.getChildNodes().get(1).getChildNodes().get(1).getNode()).isInstanceOf(VoidType.class);
+        assertThat(nodeWithDiffType.getChildNodes().get(1).getChildNodes().get(2).getNode()).isInstanceOf(BlockStmt.class);
     }
         
 }
