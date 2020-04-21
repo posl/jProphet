@@ -37,24 +37,20 @@ public class AstDiff {
     }
 
     private NodeWithDiffType createAstWithDiffType(Node targetNode, List<Delta<Node>> astDeltas) {
+        TYPE type = TYPE.SAME;
         for(Delta<Node> astDelta: astDeltas) {
             List<Node> diffNodes = new ArrayList<Node>(astDelta.getOriginal().getLines());
             diffNodes.addAll(new ArrayList<Node>(astDelta.getRevised().getLines()));
             for(Node diffNode: diffNodes) {
                 if(diffNode.equals(targetNode) && diffNode.getRange().equals(targetNode.getRange())) {
-                    final List<NodeWithDiffType> childNodesWithDiffTypes = targetNode.getChildNodes().stream()
-                        .map(childNode -> createAstWithDiffType(childNode, astDeltas))
-                        .collect(Collectors.toList());
-                    final NodeWithDiffType nodeWithDiffType = new NodeWithDiffType(targetNode, TYPE.values()[astDelta.getType().ordinal()]);
-                    nodeWithDiffType.addChildNodes(childNodesWithDiffTypes);
-                    return nodeWithDiffType;
+                    type = TYPE.values()[astDelta.getType().ordinal()];
                 }
             }
         }
         final List<NodeWithDiffType> childNodesWithDiffTypes = targetNode.getChildNodes().stream()
             .map(childNode -> createAstWithDiffType(childNode, astDeltas))
             .collect(Collectors.toList());
-        final NodeWithDiffType nodeWithDiffType = new NodeWithDiffType(targetNode, TYPE.SAME);
+        final NodeWithDiffType nodeWithDiffType = new NodeWithDiffType(targetNode, type);
         nodeWithDiffType.addChildNodes(childNodesWithDiffTypes);
         return nodeWithDiffType;
     }
