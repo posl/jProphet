@@ -15,9 +15,8 @@ import difflib.Patch;
 public class AstDiff {
 
     /**
-     * オリジナルのASTを構成するノードと変更後のASTを構成するノードのリストの間の 差分を計算する difflibを用いて実装
-     * 
-     * @param original オリジナルのAST
+     * 変更前のASTを構成するノードと変更後のASTを構成するノードのリストの間の 差分を計算する difflibを用いて実装
+     * @param original 変更前のAST
      * @param revised  変更後のAST
      * @return 変更差分
      */
@@ -31,11 +30,27 @@ public class AstDiff {
         return deltas;
     }
 
+    /**
+     * <p>
+     * 変更前のASTと変更後のASTの差分を算出し，差分情報付きの変更後のASTを生成 
+     * 変更後のASTに含まれるノードの情報しか保持しないため，削除されたノードの情報などは持たない <br>
+     * </p>
+     * 将来的にメソッドを追加する
+     * @param originala 変更前のAST
+     * @param revised 変更後のAST
+     * @return 差分情報付きの変更後のAST
+     */
     public NodeWithDiffType createRevisedAstWithDiffType(Node original, Node revised) {
         List<Delta<Node>> deltas = diff(original, revised);
         return createAstWithDiffType(revised, deltas);
     }
 
+    /**
+     * 差分情報のリストを元に差分情報付きのASTの木構造を構成する
+     * @param targetNode 差分情報を付与したいAST
+     * @param astDeltas 差分情報のリスト
+     * @return 差分情報付きリスト
+     */
     private NodeWithDiffType createAstWithDiffType(Node targetNode, List<Delta<Node>> astDeltas) {
         TYPE type = TYPE.SAME;
         for(Delta<Node> astDelta: astDeltas) {

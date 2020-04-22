@@ -47,6 +47,9 @@ public class AstDiffTest {
         assertThat(actualAstDelta.get(0).getType()).isEqualTo(difflib.Delta.TYPE.CHANGE);
     }
 
+    /**
+     * Diffの種類付きのASTの木構造が構成されているかテスト
+     */
     @Test public void testCreateRevisedAstWithDiffType() {
         final String originalSource = new StringBuilder().append("")
             .append("public class A {\n\n")
