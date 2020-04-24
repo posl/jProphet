@@ -65,4 +65,12 @@ public class NodeWithDiffType {
     public TYPE getDiffType() {
         return this.diffType;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return this.node.toString();
+    }
 }
