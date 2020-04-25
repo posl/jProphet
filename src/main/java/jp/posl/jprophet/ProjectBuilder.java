@@ -2,8 +2,10 @@ package jp.posl.jprophet;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,6 +16,8 @@ import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
 
 import jp.posl.jprophet.project.Project;
+import jp.posl.jprophet.fl.spectrumbased.coverage.BinaryStore;
+import jp.posl.jprophet.fl.spectrumbased.coverage.BuildResults;
 
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
@@ -37,6 +41,8 @@ public class ProjectBuilder {
         final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         final StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 
+        final StringWriter progress = new StringWriter();
+        
         final Iterable<? extends JavaFileObject> javaFileObjects;
 
         javaFileObjects = fileManager.getJavaFileObjectsFromStrings(
@@ -56,7 +62,7 @@ public class ProjectBuilder {
             compilationOptions.add(String.join(CLASSPATH_SEPARATOR,project.getClassPaths()));
 
         final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-        final CompilationTask task = compiler.getTask(null, fileManager, diagnostics, compilationOptions, null,
+        final CompilationTask task = compiler.getTask(progress, fileManager, diagnostics, compilationOptions, null,
                 javaFileObjects);
 
         final boolean isSuccess = task.call();
@@ -78,8 +84,31 @@ public class ProjectBuilder {
             e.printStackTrace();
         }
 
+        //final BinaryStore compiledBinaries = extractSubBinaryStore(allAsts);
+
+        //return new BuildResults(compiledBinaries, diagnostics, progress.toString(), !isSuccess);
         return isSuccess;
     }
+
+    /**
+    * binaryStoreから指定astに対応するJavaBinaryObjectの部分集合を取り出す．
+    *
+    * @param asts
+    * @return
+    */
+    /*
+    private BinaryStore extractSubBinaryStore(final List<GeneratedAST<?>> asts) {
+        // TODO
+        // この処理コスト高い．
+        // BinaryStoreからサブBinaryStoreの抜き出し方法は改善したほうが良い．
+        final BinaryStore binStore = new BinaryStore();
+        asts.stream()
+            .map(ast -> binaryStore.get(ast.getPrimaryClassName(), ast.getMessageDigest()))
+            .flatMap(Collection::stream)
+            .forEach(binStore::add);
+        return binStore;
+    }
+    */
 
 }
 

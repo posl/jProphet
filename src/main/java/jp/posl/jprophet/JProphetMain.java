@@ -36,6 +36,7 @@ public class JProphetMain {
             projectPath = args[0];
         }
         final Project                  project                  = new MavenProject(projectPath);
+        //final Project                  project                  = new GradleProject(projectPath);
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
         final Coefficient              coefficient              = new Jaccard();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);

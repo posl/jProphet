@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -15,6 +16,7 @@ import java.nio.file.Paths;
 import org.apache.bcel.classfile.ClassFormatException;
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
+import org.jacoco.core.data.ExecutionData;
 import org.jacoco.core.data.ExecutionDataStore;
 import org.jacoco.core.data.SessionInfoStore;
 import org.jacoco.core.instr.Instrumenter;
@@ -23,6 +25,7 @@ import org.jacoco.core.runtime.LoggerRuntime;
 import org.jacoco.core.runtime.RuntimeData;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
@@ -37,13 +40,23 @@ public class CoverageCollector {
     private final Instrumenter jacocoInstrumenter;
     private final RuntimeData jacocoRuntimeData;
 
+    //private final BuildResults buildResults;
+
     private final long waitTime = 5000; //タイムアウトさせる時間[ms]
 
     public CoverageCollector(String buildpath) {
-        this.memoryClassLoader = null;
+        //this.memoryClassLoader = null;
         this.jacocoRuntime = new LoggerRuntime();
         this.jacocoInstrumenter = new Instrumenter(jacocoRuntime);
         this.jacocoRuntimeData = new RuntimeData();
+
+        try {
+            jacocoRuntime.startup(jacocoRuntimeData);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+
+        //this.buildResults = buildResults;
 
         // ここであらかじめビルド済みのクラスファイルをクラスローダーが読み込んでおく
         try {
@@ -68,11 +81,17 @@ public class CoverageCollector {
     public TestResults exec(final List<String> sourceFQNs, final List<String> testFQNs) throws Exception {
         final TestResults testResults = new TestResults();
 
-        loadInstrumentedClasses(sourceFQNs);
-        final List<Class<?>> junitClasses = loadInstrumentedClasses(testFQNs);
+        //this.jacocoRuntime.startup(this.jacocoRuntimeData);
+
+        //loadInstrumentedClasses(sourceFQNs);
+        //final List<Class<?>> junitClasses = loadInstrumentedClasses(testFQNs);
+        //loadInstrumentedClasses(testFQNs);
+
+        loadInstrumentedClasses(Stream.concat(sourceFQNs.stream(), testFQNs.stream()).collect(Collectors.toList()));
+        final List<Class<?>> junitClasses = this.loadAllClasses(testFQNs);
 
     
-        
+        /*
         for (Class<?> junitClass : junitClasses) {
             final JUnitCore junitCore = new JUnitCore();
             final RunListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
@@ -93,6 +112,16 @@ public class CoverageCollector {
             }
             System.out.println("junitCore END");
         }
+        */
+        
+        
+        for (Class<?> junitClass : junitClasses) {
+            final JUnitCore junitCore = new JUnitCore();
+            final RunListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
+            junitCore.addListener(listener);
+            Result result = junitCore.run(junitClass);
+            System.out.println("junitCore END");
+        }
         
         
         /*
@@ -105,6 +134,39 @@ public class CoverageCollector {
         */
 
         return testResults;
+    }
+
+    /**
+    * MemoryClassLoaderに対して全てのバイトコード定義を追加する（ロードはせず）．<br>
+    * プロダクト系ソースコードのみJaCoCoインストルメントを適用する．
+    *
+    * @param memoryClassLoader
+    * @param fqns
+    * @param isInstrument
+    * @throws IOException
+    */
+    /*
+    private void addAllDefinitions(final MemoryClassLoader memoryClassLoader,
+        final List<String> fqns) throws IOException {
+        for (final JavaBinaryObject jmo : buildResults.binaryStore.getAll()) {
+            final String fqn = jmo.getFqn();
+            final byte[] rawBytecode = jmo.getByteCode();
+            final byte[] bytecode = jmo.isTest() ? rawBytecode : instrumentBytecode(rawBytecode);
+            memoryClassLoader.addDefinition(fqn, bytecode);
+        }
+    }
+    */
+
+    private byte[] instrumentBytecode(final byte[] bytecode) throws IOException {
+        return jacocoInstrumenter.instrument(bytecode, "");
+    }
+
+    private List<Class<?>> loadAllClasses(final List<String> fqns) throws ClassNotFoundException {
+        final List<Class<?>> classes = new ArrayList<>();
+        for (final String fqn : fqns) {
+            classes.add(this.memoryClassLoader.loadClass(fqn));
+        }
+        return classes;
     }
 
     /**
@@ -177,7 +239,7 @@ public class CoverageCollector {
         }
         // TODO
         return null;
-      }
+    }
     /**
      * JUnit実行のイベントリスナー．内部クラス． 
      * JUnit実行前のJaCoCoの初期化，およびJUnit実行後のJaCoCoの結果回収を行う．
@@ -192,6 +254,7 @@ public class CoverageCollector {
 
         final private List<String> measuredClasses;
         final public TestResults testResults;
+        private boolean wasFailed;
 
         /**
          * constructor
@@ -202,7 +265,7 @@ public class CoverageCollector {
          */
         public CoverageMeasurementListener(List<String> measuredFQNs, TestResults storedTestResults)
                 throws Exception {
-            jacocoRuntime.startup(jacocoRuntimeData);
+            //jacocoRuntime.startup(jacocoRuntimeData);
             this.testResults = storedTestResults;
             this.measuredClasses = measuredFQNs;
         }
@@ -210,11 +273,13 @@ public class CoverageCollector {
         @Override
         public void testStarted(Description description) {
             resetJacocoRuntimeData();
+            wasFailed = false;
         }
 
         @Override
         public void testFailure(Failure failure) {
-            noteTestExecutionFail(failure);
+            //noteTestExecutionFail(failure);
+            wasFailed = true;
         }
 
         @Override
@@ -277,12 +342,29 @@ public class CoverageCollector {
             final ExecutionDataStore executionData = new ExecutionDataStore();
             final SessionInfoStore sessionInfo = new SessionInfoStore();
             jacocoRuntimeData.collect(executionData, sessionInfo, false);
-            jacocoRuntime.shutdown();
+            //jacocoRuntime.shutdown();
 
             final Analyzer analyzer = new Analyzer(executionData, coverageBuilder);
+            
             for (final String measuredClass : measuredClasses) {
                 analyzer.analyzeClass(getTargetClassInputStream(measuredClass), measuredClass);
             }
+            /*
+            for (final ExecutionData data : executionData.getContents()) {
+                if (!data.hasHits()) {
+                    continue;
+                }
+
+                final String strFqn = data.getName().replace("/", ".");
+                try {
+                    final byte[] bytecode = instrument(strFqn);
+                    analyzer.analyzeClass(bytecode, "");
+                } catch (Exception e){
+
+                }
+                
+            }
+            */
         }
 
         /**

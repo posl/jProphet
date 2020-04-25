@@ -76,11 +76,16 @@ public class MemoryClassLoader extends URLClassLoader {
         Class<?> c = null;
 
         // try to load from classpath
-        try {
-            c = super.findClass(name);
-        } catch (final ClassNotFoundException | NoClassDefFoundError e1) {
-            // ignore
+        
+        if (definitions.get(name) == null){
+            try {
+                c = super.findClass(name);
+            } catch (final ClassNotFoundException | NoClassDefFoundError e1) {
+                // ignore
+            }
         }
+        
+        
 
         // if fails, try to load from memory
         if (null == c) {
@@ -116,6 +121,7 @@ public class MemoryClassLoader extends URLClassLoader {
                 try {
                     // Second, try to load using extension class loader
                     c = delegationClassLoader.loadClass(name);
+                    //c = super.loadClass(name, resolve);
                 } catch (final ClassNotFoundException e) {
                     // ignore
                 }
