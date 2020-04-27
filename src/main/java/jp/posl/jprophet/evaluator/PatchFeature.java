@@ -1,15 +1,12 @@
 package jp.posl.jprophet.evaluator;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
-import difflib.Delta;
 import jp.posl.jprophet.evaluator.NodeWithDiffType.TYPE;
 
 public class PatchFeature {
@@ -25,15 +22,21 @@ public class PatchFeature {
     }
 
     void check(NodeWithDiffType nodeWithDiffType, Map<String, Integer> featureVec) {
+        Node node = nodeWithDiffType.getNode();
         if(nodeWithDiffType.getDiffType() == TYPE.INSERT) {
-            if(nodeWithDiffType.getNode() instanceof Statement) {
+            if(node instanceof Statement) {
                 featureVec.replace("InsertStmt", featureVec.get("InsertStmt") + 1); 
             }
-            // if(nodeWithDiffType.getNode() instanceof IfStmt) {
-            // }
+            if(node instanceof IfStmt) {
+                nodeWithDiffType.getChildNodes().forEach(child -> {
+                    if(child.getDiffType() != TYPE.SAME) {
+                        featureVec.replace("InsertControl", featureVec.get("InsertControl") + 1);
+                    }
+                });       
+            }
         }
         if(nodeWithDiffType.getDiffType() == TYPE.CHANGE) {
-            if(nodeWithDiffType.getNode() instanceof Statement) {
+            if(node instanceof Statement) {
                 featureVec.replace("ReplaceStmt", featureVec.get("ReplaceStmt") + 1); 
             }
         }
