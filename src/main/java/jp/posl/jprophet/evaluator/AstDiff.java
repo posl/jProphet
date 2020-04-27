@@ -1,7 +1,7 @@
 package jp.posl.jprophet.evaluator;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.Node;
@@ -13,19 +13,40 @@ import difflib.DiffUtils;
 import difflib.Patch;
 
 public class AstDiff {
+    private int countAstPreOrderIndex = 0;
 
     /**
-     * 変更前のASTを構成するノードと変更後のASTを構成するノードのリストの間の 差分を計算する difflibを用いて実装
+     * <p>
+     * 変更前のASTを構成するノードと変更後のASTを構成するノードのリストの間の差分を計算する．
+     * difflibを用いて実装．
+     * </p>
+     * 差分はノードの{@code toString()}の1行目を元に算出（ソースコード上の1行にあたる）．
      * @param original 変更前のAST
      * @param revised  変更後のAST
      * @return 変更差分
      */
-    public List<Delta<Node>> diff(Node original, Node revised) {
-        final List<Node> originalNodes = NodeUtility.getAllDescendantNodes(original);
-        final List<Node> revisedNodes = NodeUtility.getAllDescendantNodes(revised);
+    public List<Delta<String>> diff(Node original, Node revised) {
+        final List<Node> originalNodes = NodeUtility.getAllNodesInDepthFirstOrder(original);
+        final List<Node> revisedNodes = NodeUtility.getAllNodesInDepthFirstOrder(revised);
 
-	    final Patch<Node> diff = DiffUtils.diff(originalNodes, revisedNodes);
-        final List<Delta<Node>> deltas = diff.getDeltas();
+        Function<Node, String> takeFirstLine = n -> {
+            final String[] lines = n.toString().split("\n");
+            if (lines.length > 0) {
+                return lines[0];
+            }
+            else {
+                return "";
+            }
+        };
+        final List<String> originalLines = originalNodes.stream()
+            .map(takeFirstLine)
+            .collect(Collectors.toList());
+        final List<String> revisedLines = revisedNodes.stream()
+            .map(takeFirstLine)
+            .collect(Collectors.toList());
+
+        final Patch<String> diffString = DiffUtils.diff(originalLines, revisedLines);
+        final List<Delta<String>> deltas = diffString.getDeltas();
 
         return deltas;
     }
@@ -41,8 +62,11 @@ public class AstDiff {
      * @return 差分情報付きの変更後のAST
      */
     public NodeWithDiffType createRevisedAstWithDiffType(Node original, Node revised) {
-        List<Delta<Node>> deltas = diff(original, revised);
-        return createAstWithDiffType(revised, deltas);
+        final List<Delta<String>> deltas = diff(original, revised);
+        this.countAstPreOrderIndex = 0;
+        final NodeWithDiffType revisedAstWithDiffType = createRevisedAstWithDiffType(revised, deltas);
+        this.countAstPreOrderIndex = 0;
+        return revisedAstWithDiffType;
     }
 
     /**
@@ -51,21 +75,21 @@ public class AstDiff {
      * @param astDeltas 差分情報のリスト
      * @return 差分情報付きリスト
      */
-    private NodeWithDiffType createAstWithDiffType(Node targetNode, List<Delta<Node>> astDeltas) {
+    private NodeWithDiffType createRevisedAstWithDiffType(Node targetNode, List<Delta<String>> astDeltas) {
         TYPE type = TYPE.SAME;
-        for(Delta<Node> astDelta: astDeltas) {
-            List<Node> diffNodes = new ArrayList<Node>(astDelta.getOriginal().getLines());
-            diffNodes.addAll(new ArrayList<Node>(astDelta.getRevised().getLines()));
-            for(Node diffNode: diffNodes) {
-                if(diffNode.equals(targetNode) && diffNode.getRange().equals(targetNode.getRange())) {
-                    type = TYPE.values()[astDelta.getType().ordinal()];
-                }
+        for(Delta<String> astDelta: astDeltas) {
+            final int pos = astDelta.getRevised().getPosition();
+            if(pos <= this.countAstPreOrderIndex &&
+               this.countAstPreOrderIndex <= pos + astDelta.getRevised().size() - 1) {
+                // Delta.TYPEからNodeWithDiffTypeへ変換
+                type = TYPE.values()[astDelta.getType().ordinal()];
             }
         }
-        final List<NodeWithDiffType> childNodesWithDiffTypes = targetNode.getChildNodes().stream()
-            .map(childNode -> createAstWithDiffType(childNode, astDeltas))
-            .collect(Collectors.toList());
+        this.countAstPreOrderIndex++;
         final NodeWithDiffType nodeWithDiffType = new NodeWithDiffType(targetNode, type);
+        final List<NodeWithDiffType> childNodesWithDiffTypes = targetNode.getChildNodes().stream()
+            .map(childNode -> createRevisedAstWithDiffType(childNode, astDeltas))
+            .collect(Collectors.toList());
         nodeWithDiffType.addChildNodes(childNodesWithDiffTypes);
         return nodeWithDiffType;
     }
