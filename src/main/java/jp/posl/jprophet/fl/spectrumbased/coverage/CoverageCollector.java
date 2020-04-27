@@ -254,7 +254,7 @@ public class CoverageCollector {
 
         final private List<String> measuredClasses;
         final public TestResults testResults;
-        private boolean wasFailed;
+        //private boolean wasFailed;
 
         /**
          * constructor
@@ -273,13 +273,13 @@ public class CoverageCollector {
         @Override
         public void testStarted(Description description) {
             resetJacocoRuntimeData();
-            wasFailed = false;
+            //wasFailed = false;
         }
 
         @Override
         public void testFailure(Failure failure) {
-            //noteTestExecutionFail(failure);
-            wasFailed = true;
+            noteTestExecutionFail(failure);
+            //wasFailed = true;
         }
 
         @Override

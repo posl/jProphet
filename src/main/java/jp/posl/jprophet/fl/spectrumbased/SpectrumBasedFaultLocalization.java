@@ -49,6 +49,10 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
         try {
             testResults = coverageCollector.exec(sourceClassFileFqns, testClassFileFqns);
             System.out.println("cc END");
+
+            System.out.println(testResults.getFailedTestNames());
+
+
             SuspiciousnessCollector suspiciousnessCollector = new SuspiciousnessCollector(testResults, coefficient);
             suspiciousnessCollector.exec();
             System.out.println("sc END");

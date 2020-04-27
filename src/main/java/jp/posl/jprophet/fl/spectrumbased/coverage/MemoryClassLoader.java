@@ -85,7 +85,6 @@ public class MemoryClassLoader extends URLClassLoader {
             }
         }
         
-        
 
         // if fails, try to load from memory
         if (null == c) {
@@ -116,7 +115,7 @@ public class MemoryClassLoader extends URLClassLoader {
         synchronized (getClassLoadingLock(name)) {
             // First, check if the class has already been loaded
             Class<?> c = findLoadedClass(name);
-
+            
             if (null == c) {
                 try {
                     // Second, try to load using extension class loader
@@ -126,6 +125,7 @@ public class MemoryClassLoader extends URLClassLoader {
                     // ignore
                 }
             }
+            
             if (null == c) {
                 try {
                     // Finally, try to load from memory
@@ -134,6 +134,7 @@ public class MemoryClassLoader extends URLClassLoader {
                     // ignore
                 }
             }
+
             if (null == c) {
                 throw new ClassNotFoundException(name);
             }
