@@ -56,11 +56,8 @@ public class CoverageCollector {
             e.printStackTrace();
         }
 
-        //this.buildResults = buildResults;
-
         // ここであらかじめビルド済みのクラスファイルをクラスローダーが読み込んでおく
         try {
-            //this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./" + buildpath + "/") });
             this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./" + buildpath + "/") });
         } catch (MalformedURLException e){
             System.err.println(e.getMessage());
@@ -81,17 +78,9 @@ public class CoverageCollector {
     public TestResults exec(final List<String> sourceFQNs, final List<String> testFQNs) throws Exception {
         final TestResults testResults = new TestResults();
 
-        //this.jacocoRuntime.startup(this.jacocoRuntimeData);
-
-        //loadInstrumentedClasses(sourceFQNs);
-        //final List<Class<?>> junitClasses = loadInstrumentedClasses(testFQNs);
-        //loadInstrumentedClasses(testFQNs);
-
         loadInstrumentedClasses(Stream.concat(sourceFQNs.stream(), testFQNs.stream()).collect(Collectors.toList()));
         final List<Class<?>> junitClasses = this.loadAllClasses(testFQNs);
 
-    
-        /*
         for (Class<?> junitClass : junitClasses) {
             final JUnitCore junitCore = new JUnitCore();
             final RunListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
@@ -112,50 +101,9 @@ public class CoverageCollector {
             }
             System.out.println("junitCore END");
         }
-        */
-        
-        
-        for (Class<?> junitClass : junitClasses) {
-            final JUnitCore junitCore = new JUnitCore();
-            final RunListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
-            junitCore.addListener(listener);
-            Result result = junitCore.run(junitClass);
-            System.out.println("junitCore END");
-        }
-        
-        
-        /*
-        try {
-            final JUnitCore junitCore = new JUnitCore();
-            final RunListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
-            junitCore.addListener(listener);
-            junitCore.run(junitClasses.toArray(new Class<?>[junitClasses.size()]));
-        } catch (Exception e) {}
-        */
 
         return testResults;
     }
-
-    /**
-    * MemoryClassLoaderに対して全てのバイトコード定義を追加する（ロードはせず）．<br>
-    * プロダクト系ソースコードのみJaCoCoインストルメントを適用する．
-    *
-    * @param memoryClassLoader
-    * @param fqns
-    * @param isInstrument
-    * @throws IOException
-    */
-    /*
-    private void addAllDefinitions(final MemoryClassLoader memoryClassLoader,
-        final List<String> fqns) throws IOException {
-        for (final JavaBinaryObject jmo : buildResults.binaryStore.getAll()) {
-            final String fqn = jmo.getFqn();
-            final byte[] rawBytecode = jmo.getByteCode();
-            final byte[] bytecode = jmo.isTest() ? rawBytecode : instrumentBytecode(rawBytecode);
-            memoryClassLoader.addDefinition(fqn, bytecode);
-        }
-    }
-    */
 
     private byte[] instrumentBytecode(final byte[] bytecode) throws IOException {
         return jacocoInstrumenter.instrument(bytecode, "");
@@ -349,22 +297,6 @@ public class CoverageCollector {
             for (final String measuredClass : measuredClasses) {
                 analyzer.analyzeClass(getTargetClassInputStream(measuredClass), measuredClass);
             }
-            /*
-            for (final ExecutionData data : executionData.getContents()) {
-                if (!data.hasHits()) {
-                    continue;
-                }
-
-                final String strFqn = data.getName().replace("/", ".");
-                try {
-                    final byte[] bytecode = instrument(strFqn);
-                    analyzer.analyzeClass(bytecode, "");
-                } catch (Exception e){
-
-                }
-                
-            }
-            */
         }
 
         /**

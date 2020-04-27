@@ -16,8 +16,6 @@ import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
 
 import jp.posl.jprophet.project.Project;
-import jp.posl.jprophet.fl.spectrumbased.coverage.BinaryStore;
-import jp.posl.jprophet.fl.spectrumbased.coverage.BuildResults;
 
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
@@ -84,31 +82,8 @@ public class ProjectBuilder {
             e.printStackTrace();
         }
 
-        //final BinaryStore compiledBinaries = extractSubBinaryStore(allAsts);
-
-        //return new BuildResults(compiledBinaries, diagnostics, progress.toString(), !isSuccess);
         return isSuccess;
     }
-
-    /**
-    * binaryStoreから指定astに対応するJavaBinaryObjectの部分集合を取り出す．
-    *
-    * @param asts
-    * @return
-    */
-    /*
-    private BinaryStore extractSubBinaryStore(final List<GeneratedAST<?>> asts) {
-        // TODO
-        // この処理コスト高い．
-        // BinaryStoreからサブBinaryStoreの抜き出し方法は改善したほうが良い．
-        final BinaryStore binStore = new BinaryStore();
-        asts.stream()
-            .map(ast -> binaryStore.get(ast.getPrimaryClassName(), ast.getMessageDigest()))
-            .flatMap(Collection::stream)
-            .forEach(binStore::add);
-        return binStore;
-    }
-    */
 
 }
 
