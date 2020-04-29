@@ -82,6 +82,7 @@ public class NodeUtilityTest {
             .append("}\n")
             .toString();
         List<Node> nodes = NodeUtility.getAllNodesInDepthFirstOrder(JavaParser.parse(targetSource));
+
         assertThat(nodes.size()).isEqualTo(13);
         assertThat(nodes.get(0)).isInstanceOf(CompilationUnit.class);
         assertThat(nodes.get(1)).isInstanceOf(ClassOrInterfaceDeclaration.class);
