@@ -37,13 +37,11 @@ public class AstDiffTest {
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
         final AstDiff astDiff = new AstDiff();
-        final List<Delta<Node>> actualAstDelta = astDiff.diff(originalNodes.get(0), revisedNodes.get(0));
+        final List<Delta<String>> actualAstDelta = astDiff.diff(originalNodes.get(0), revisedNodes.get(0));
 
         assertThat(actualAstDelta.size()).isEqualTo(1);
-        assertThat(actualAstDelta.get(0).getRevised().getLines().size()).isEqualTo(1);
-        assertThat(actualAstDelta.get(0).getOriginal().getLines().size()).isEqualTo(1);
-        assertThat(actualAstDelta.get(0).getRevised().getLines().get(0)).isInstanceOf(SimpleName.class);
-        assertThat(actualAstDelta.get(0).getOriginal().getLines().get(0)).isInstanceOf(SimpleName.class);
+        assertThat(actualAstDelta.get(0).getRevised().getLines().size()).isEqualTo(2);
+        assertThat(actualAstDelta.get(0).getOriginal().getLines().size()).isEqualTo(2);
         assertThat(actualAstDelta.get(0).getType()).isEqualTo(difflib.Delta.TYPE.CHANGE);
     }
 
@@ -69,7 +67,7 @@ public class AstDiffTest {
 
         assertThat(nodeWithDiffType.getChildNodes().size()).isEqualTo(1);
         assertThat(nodeWithDiffType.getNode()).isInstanceOf(ClassOrInterfaceDeclaration.class);
-        assertThat(nodeWithDiffType.getDiffType()).isEqualTo(TYPE.SAME);
+        assertThat(nodeWithDiffType.getDiffType()).isEqualTo(TYPE.CHANGE);
 
         assertThat(nodeWithDiffType.getChildNodes().get(0).getChildNodes().size()).isEqualTo(0);
         assertThat(nodeWithDiffType.getChildNodes().get(0).getNode()).isInstanceOf(SimpleName.class);
