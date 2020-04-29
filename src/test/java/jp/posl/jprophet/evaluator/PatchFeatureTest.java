@@ -1,6 +1,7 @@
 package jp.posl.jprophet.evaluator;
 
 import java.util.List;
+import java.util.Map;
 
 import com.github.javaparser.ast.Node;
 
@@ -17,7 +18,9 @@ public class PatchFeatureTest {
         final String originalSource = new StringBuilder().append("")
             .append("public class A {\n\n")
             .append("   public void a() {\n\n")
-            .append("       hoge();\n\n")
+            .append("       fuga();\n\n")
+            .append("       if(foo)\n\n")
+            .append("           hoge();\n\n")
             .append("   }\n\n")
             .append("}\n")
             .toString();
@@ -25,7 +28,8 @@ public class PatchFeatureTest {
         final String revisedSource = new StringBuilder().append("")
             .append("public class A {\n\n")
             .append("   public void a() {\n\n")
-            .append("       if(foo)\n\n")
+            .append("       fuga2();\n\n")
+            .append("       if(bar)\n\n")
             .append("           hoge();\n\n")
             .append("   }\n\n")
             .append("}\n")
@@ -34,8 +38,8 @@ public class PatchFeatureTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final AstDiff astDiff = new AstDiff();
-        final NodeWithDiffType nodeWithDiffType = astDiff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
+        final PatchFeature patchFeature = new PatchFeature();
+        final Map<String, Integer> featureVec = patchFeature.exec(originalNodes.get(0), revisedNodes.get(0));
         return;
     }
 
