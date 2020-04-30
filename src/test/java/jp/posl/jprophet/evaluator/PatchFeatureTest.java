@@ -39,7 +39,7 @@ public class PatchFeatureTest {
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
         final PatchFeature patchFeature = new PatchFeature();
-        final Map<String, Integer> featureVec = patchFeature.exec(originalNodes.get(0), revisedNodes.get(0));
+        final ModFeatureVec featureVec = patchFeature.exec(originalNodes.get(0), revisedNodes.get(0));
         return;
     }
 
