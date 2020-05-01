@@ -9,13 +9,7 @@ import com.github.javaparser.ast.stmt.Statement;
 import jp.posl.jprophet.evaluator.NodeWithDiffType.TYPE;
 
 public class PatchFeature {
-    ModFeatureVec exec(Node original, Node revised) {
-        final AstDiff astDiff = new AstDiff();
-        final NodeWithDiffType nodeWithDiffType = astDiff.createRevisedAstWithDiffType(original, revised);
-        return this.check(nodeWithDiffType);
-    }
-
-    ModFeatureVec check(NodeWithDiffType nodeWithDiffType) {
+    ModFeatureVec extractModFeature(NodeWithDiffType nodeWithDiffType) {
         Node node = nodeWithDiffType.getNode();
         TYPE type = nodeWithDiffType.getDiffType();
 
@@ -43,12 +37,12 @@ public class PatchFeature {
                 vec.replaceStmt += 1;
             }
         }
+
         if(nodeWithDiffType.getChildNodes().size() == 0) {
             return vec;
         }
-
         return nodeWithDiffType.getChildNodes().stream()
-            .map(childNode -> this.check(childNode))
+            .map(childNode -> this.extractModFeature(childNode))
             .reduce(vec, (accum, newVec) -> {
                 accum.add(newVec);
                 return accum;
