@@ -81,6 +81,7 @@ public class CoverageCollector {
         loadInstrumentedClasses(Stream.concat(sourceFQNs.stream(), testFQNs.stream()).collect(Collectors.toList()));
         final List<Class<?>> junitClasses = this.loadAllClasses(testFQNs);
 
+        
         for (Class<?> junitClass : junitClasses) {
             final JUnitCore junitCore = new JUnitCore();
             final RunListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
@@ -90,7 +91,7 @@ public class CoverageCollector {
             TestThread testThread = new TestThread(junitCore, junitClass);
             testThread.start();
             try {
-                System.out.println("junitCore START");
+                //System.out.println("junitCore START");
                 //waitTime ms 経過でスキップ
                 testThread.join(waitTime);
             } catch (InterruptedException e) {
@@ -99,8 +100,9 @@ public class CoverageCollector {
                 e.printStackTrace();
                 System.exit(-1);
             }
-            System.out.println("junitCore END");
+            //System.out.println("junitCore END");
         }
+        
 
         return testResults;
     }
@@ -202,7 +204,7 @@ public class CoverageCollector {
 
         final private List<String> measuredClasses;
         final public TestResults testResults;
-        //private boolean wasFailed;
+        private boolean wasFailed;
 
         /**
          * constructor
@@ -221,13 +223,13 @@ public class CoverageCollector {
         @Override
         public void testStarted(Description description) {
             resetJacocoRuntimeData();
-            //wasFailed = false;
+            wasFailed = false;
         }
 
         @Override
         public void testFailure(Failure failure) {
             noteTestExecutionFail(failure);
-            //wasFailed = true;
+            wasFailed = true;
         }
 
         @Override
@@ -312,7 +314,7 @@ public class CoverageCollector {
             List<Coverage> coverages = coverageBuilder.getClasses().stream().map(c -> new Coverage(c))
                 .collect(Collectors.toList());
 
-            final TestResult testResult = new TestResult(testMethodFQN, isFailed, coverages);
+            final TestResult testResult = new TestResult(testMethodFQN, wasFailed, coverages);
             testResults.add(testResult);
         }
     }

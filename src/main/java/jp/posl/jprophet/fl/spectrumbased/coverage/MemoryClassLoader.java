@@ -107,7 +107,7 @@ public class MemoryClassLoader extends URLClassLoader {
 
     public Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
         // JUnit関係のクラスのみロードを通常の委譲関係に任す．これがないとJUnitが期待通りに動かない．
-        if (name.startsWith("org.junit.") || name.startsWith("junit.")) {
+        if (name.startsWith("org.junit.") || name.startsWith("junit.") || name.startsWith("org.hamcrest.")) {
             return getParent().loadClass(name);
         }
 
