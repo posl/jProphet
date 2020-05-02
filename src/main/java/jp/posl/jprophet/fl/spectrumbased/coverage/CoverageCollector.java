@@ -50,11 +50,13 @@ public class CoverageCollector {
         this.jacocoInstrumenter = new Instrumenter(jacocoRuntime);
         this.jacocoRuntimeData = new RuntimeData();
 
+        
         try {
             jacocoRuntime.startup(jacocoRuntimeData);
         } catch (final Exception e) {
             e.printStackTrace();
         }
+        
 
         // ここであらかじめビルド済みのクラスファイルをクラスローダーが読み込んでおく
         try {
@@ -80,7 +82,7 @@ public class CoverageCollector {
 
         //loadInstrumentedClasses(Stream.concat(sourceFQNs.stream(), testFQNs.stream()).collect(Collectors.toList()));
         loadInstrumentedClasses(sourceFQNs);
-        final List<Class<?>> junitClasses = this.loadAllClasses(testFQNs);
+        final List<Class<?>> junitClasses = this.loadInstrumentedClasses(testFQNs);
 
         
         for (Class<?> junitClass : junitClasses) {
@@ -104,6 +106,12 @@ public class CoverageCollector {
             //System.out.println("junitCore END");
         }
         
+        /*
+        final JUnitCore junitCore = new JUnitCore();
+        final RunListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
+        junitCore.addListener(listener);
+        junitCore.run(junitClasses.toArray(new Class<?>[junitClasses.size()]));
+        */
 
         return testResults;
     }
