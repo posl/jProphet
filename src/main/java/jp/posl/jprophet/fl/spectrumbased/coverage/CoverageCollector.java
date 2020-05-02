@@ -78,7 +78,8 @@ public class CoverageCollector {
     public TestResults exec(final List<String> sourceFQNs, final List<String> testFQNs) throws Exception {
         final TestResults testResults = new TestResults();
 
-        loadInstrumentedClasses(Stream.concat(sourceFQNs.stream(), testFQNs.stream()).collect(Collectors.toList()));
+        //loadInstrumentedClasses(Stream.concat(sourceFQNs.stream(), testFQNs.stream()).collect(Collectors.toList()));
+        loadInstrumentedClasses(sourceFQNs);
         final List<Class<?>> junitClasses = this.loadAllClasses(testFQNs);
 
         
