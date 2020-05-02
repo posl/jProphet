@@ -154,6 +154,7 @@ public class CoverageCollector {
 
         final private List<String> measuredClasses;
         final public TestResults testResults;
+        private boolean wasFailed;
 
         /**
          * constructor
@@ -172,11 +173,13 @@ public class CoverageCollector {
         @Override
         public void testStarted(Description description) {
             resetJacocoRuntimeData();
+            wasFailed = false;
         }
 
         @Override
         public void testFailure(Failure failure) {
             noteTestExecutionFail(failure);
+            wasFailed = true;
         }
 
         @Override
@@ -260,7 +263,7 @@ public class CoverageCollector {
             List<Coverage> coverages = coverageBuilder.getClasses().stream().map(c -> new Coverage(c))
                 .collect(Collectors.toList());
 
-            final TestResult testResult = new TestResult(testMethodFQN, isFailed, coverages);
+            final TestResult testResult = new TestResult(testMethodFQN, wasFailed, coverages);
             testResults.add(testResult);
         }
     }

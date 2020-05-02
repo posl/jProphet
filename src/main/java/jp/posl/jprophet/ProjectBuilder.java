@@ -46,6 +46,10 @@ public class ProjectBuilder {
         final List<String> compilationOptions = new ArrayList<>();
         compilationOptions.add("-d");
         compilationOptions.add(config.getBuildPath());
+        compilationOptions.add("-source");
+        compilationOptions.add("1.8");
+        compilationOptions.add("-target");
+        compilationOptions.add("1.8");
         compilationOptions.add("-encoding");
         compilationOptions.add("UTF-8");
         compilationOptions.add("-classpath");
