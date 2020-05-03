@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import jp.posl.jprophet.project.GradleProject;
+import jp.posl.jprophet.project.MavenProject;
 import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.fl.FaultLocalization;
@@ -30,10 +31,12 @@ public class JProphetMain {
         final String buildDir = "./tmp/"; 
         final String resultDir = "./result/"; 
         String projectPath = "src/test/resources/FizzBuzz01";
+        //String projectPath = "/Users/yamate/Documents/additional_data/Math_75_buggy";
         if(args.length > 0){
             projectPath = args[0];
         }
         final Project                  project                  = new GradleProject(projectPath);
+        //final Project                  project                  = new MavenProject(projectPath);
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
         final Coefficient              coefficient              = new Jaccard();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);

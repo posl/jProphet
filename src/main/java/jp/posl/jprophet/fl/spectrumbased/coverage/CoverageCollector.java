@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.commons.io.IOUtils;
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.data.ExecutionDataStore;
@@ -18,6 +19,7 @@ import org.jacoco.core.runtime.LoggerRuntime;
 import org.jacoco.core.runtime.RuntimeData;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
@@ -40,9 +42,18 @@ public class CoverageCollector {
         this.jacocoInstrumenter = new Instrumenter(jacocoRuntime);
         this.jacocoRuntimeData = new RuntimeData();
 
+        
+        try {
+            jacocoRuntime.startup(jacocoRuntimeData);
+        } catch (final Exception e) {
+            // TODO should be described to log
+            e.printStackTrace();
+        }
+        
+
         // ここであらかじめビルド済みのクラスファイルをクラスローダーが読み込んでおく
         try {
-            this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./" + buildpath + "/") });
+            this.memoryClassLoader = new SkippingMemoryClassLoader(new URL[] { new URL("file:./" + buildpath + "/") });
         } catch (MalformedURLException e){
             System.err.println(e.getMessage());
             e.printStackTrace();
@@ -62,9 +73,26 @@ public class CoverageCollector {
     public TestResults exec(final List<String> sourceFQNs, final List<String> testFQNs) throws Exception {
         final TestResults testResults = new TestResults();
 
-        loadInstrumentedClasses(sourceFQNs);
-        final List<Class<?>> junitClasses = loadInstrumentedClasses(testFQNs);
+        //loadInstrumentedClasses(sourceFQNs);
+        for (String sourceFQN : sourceFQNs) {
+            InputStream is = this.getTargetClassInputStream(sourceFQN);
+            byte[] bytes = IOUtils.toByteArray(is);
+            //byte[] instrumentedBytes = jacocoInstrumenter.instrument(bytes, "");
+            //this.memoryClassLoader.addDefinition(sourceFQN, instrumentedBytes);
+            this.memoryClassLoader.addDefinition(sourceFQN, bytes);
+        }
 
+        //final List<Class<?>> junitClasses = loadInstrumentedClasses(testFQNs);
+
+        for (String testFQN : testFQNs) {
+            InputStream is = this.getTargetClassInputStream(testFQN);
+            byte[] bytes = IOUtils.toByteArray(is);
+            this.memoryClassLoader.addDefinition(testFQN, bytes);
+        }
+
+        final List<Class<?>> junitClasses = loadAllClasses(testFQNs);
+        
+        /*
         //final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
         for (Class<?> junitClass : junitClasses) {
             final JUnitCore junitCore = new JUnitCore();
@@ -83,8 +111,32 @@ public class CoverageCollector {
                 System.exit(-1);
             }
         }
+        */
+        
 
+        
+        final JUnitCore junitCore = new JUnitCore();
+        final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
+        junitCore.addListener(listener);
+        Result result = junitCore.run(junitClasses.toArray(new Class<?>[junitClasses.size()]));
+        
         return testResults;
+    }
+
+    /**
+    * 全クラスを定義内からロードしてクラスオブジェクトの集合を返す．
+    *
+    * @param memoryClassLoader
+    * @param fqns
+    * @return
+    * @throws ClassNotFoundException
+    */
+    private List<Class<?>> loadAllClasses(final List<String> fqns) throws ClassNotFoundException {
+        final List<Class<?>> classes = new ArrayList<>();
+        for (final String fqn : fqns) {
+            classes.add(memoryClassLoader.loadClass(fqn)); // 例外が出るので非stream処理
+        }
+        return classes;
     }
 
     /**
@@ -165,7 +217,7 @@ public class CoverageCollector {
          */
         public CoverageMeasurementListener(List<String> measuredFQNs, TestResults storedTestResults)
                 throws Exception {
-            jacocoRuntime.startup(jacocoRuntimeData);
+            //jacocoRuntime.startup(jacocoRuntimeData);
             this.testResults = storedTestResults;
             this.measuredClasses = measuredFQNs;
         }
@@ -242,7 +294,7 @@ public class CoverageCollector {
             final ExecutionDataStore executionData = new ExecutionDataStore();
             final SessionInfoStore sessionInfo = new SessionInfoStore();
             jacocoRuntimeData.collect(executionData, sessionInfo, false);
-            jacocoRuntime.shutdown();
+            //jacocoRuntime.shutdown();
 
             final Analyzer analyzer = new Analyzer(executionData, coverageBuilder);
             for (final String measuredClass : measuredClasses) {

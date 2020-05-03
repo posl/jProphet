@@ -1,6 +1,8 @@
 package jp.posl.jprophet.fl.spectrumbased.coverage;
 
 import java.util.Map;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
@@ -8,66 +10,66 @@ import java.util.HashMap;
  * A class loader that loads classes from in-memory data.
  */
 public class MemoryClassLoader extends URLClassLoader {
-    final private ClassLoader delegationClassLoader;
-
-    public MemoryClassLoader(URL[] urls) {
-        super(urls);
-        delegationClassLoader = findDelegationClassLoader(getClass().getClassLoader());
-    }
-    private final Map<String, byte[]> definitions = new HashMap<String, byte[]>();
-
+    
     /**
-    * クラスローダの親子関係を探索して，委譲先となるExtension/PlatformClassLoaderを探す．
-    * 
-    * @param cl
-    * @return
+    * constructor
     */
-    private ClassLoader findDelegationClassLoader(final ClassLoader cl) {
-        if (null == cl) {
-        throw new RuntimeException("Cannot find extension class loader.");
-        }
-        // (#600) patch for greater than jdk9
-        // 対象の名前が ExtensionClassLoader (jdk8) or PlatformClassLoader(>jdk9) ならOK．
-        final String name = cl.toString();
-        if (name.contains("$ExtClassLoader@") || //
-            name.contains("$PlatformClassLoader@")) {
-        return cl;
-        }
-        // さもなくば再帰的に親を探す
-        return findDelegationClassLoader(cl.getParent());
+    public MemoryClassLoader() {
+        this(new URL[] {});
     }
 
     /**
-     * Add a in-memory representation of a class.
-     * 
-     * @param name
-     *            name of the class
-     * @param bytes
-     *            class definition
+     * constructor
+     *
+     * @param urls クラスパス
      */
-    public void addDefinition(final String name, final byte[] bytes) {
-        definitions.put(name, bytes);
+    public MemoryClassLoader(final URL[] urls) {
+        super(urls);
     }
 
     /**
-     * メモリ上からクラスを探す． <br>
-     * まずURLClassLoaderによるファイルシステム上のクラスのロードを試み，それがなければメモリ上のクラスロードを試す．
-     * 
-     */
+    * クラス定義を表すMap． クラス名とバイト配列のペアを持つ．
+    */
+    private final Map<String, byte[]> definitions = new HashMap<>();
+
+    /**
+    * メモリ上のバイト配列をクラス定義に追加する．
+    *
+    * @param name 定義するクラス名
+    * @param bytes 追加するクラス定義
+    */
+    public void addDefinition(final String fqn, final byte[] bytes) {
+        definitions.put(fqn, bytes);
+    }
+
+    /**
+    * クラスをロードする．<br>
+    * {@link java.lang.ClassLoader#loadClass}のFQNエイリアス
+    *
+    * @param fqn ロード対象のクラスのFQN
+    * @return ロードされたクラスオブジェクト
+    * @throws ClassNotFoundException
+    */
+    public Class<?> loadClass(final String fqn) throws ClassNotFoundException {
+        return super.loadClass(fqn);
+    }
+
+    /**
+    * メモリ上からクラスを探す． <br>
+    * まずURLClassLoaderによるファイルシステム上のクラスのロードを試み，それがなければメモリ上のクラスロードを試す．
+    */
     @Override
     protected Class<?> findClass(final String name) throws ClassNotFoundException {
         Class<?> c = null;
 
         // try to load from classpath
-        
         if (definitions.get(name) == null){
             try {
                 c = super.findClass(name);
-            } catch (final ClassNotFoundException | NoClassDefFoundError e1) {
+            } catch (final ClassNotFoundException e1) {
                 // ignore
             }
         }
-        
 
         // if fails, try to load from memory
         if (null == c) {
@@ -88,44 +90,19 @@ public class MemoryClassLoader extends URLClassLoader {
         return c;
     }
 
-    public Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
-        // JUnit関係のクラスのみロードを通常の委譲関係に任す．これがないとJUnitが期待通りに動かない．
-        if (name.startsWith("org.junit.") || name.startsWith("junit.") || name.startsWith("org.hamcrest.")) {
-            return getParent().loadClass(name);
+    @Override
+    public InputStream getResourceAsStream(final String name) {
+        final String fqn = convertStringNameToFqn(name);
+        final byte[] bytes = definitions.get(fqn);
+        if (null == bytes) {
+            return super.getResourceAsStream(name);
         }
+        return new ByteArrayInputStream(bytes);
+    }
 
-        // 委譲処理．java.lang.ClassLoader#loadClassを参考に作成．
-        synchronized (getClassLoadingLock(name)) {
-            // First, check if the class has already been loaded
-            Class<?> c = findLoadedClass(name);
-            
-            if (null == c) {
-                try {
-                    // Second, try to load using extension class loader
-                    c = delegationClassLoader.loadClass(name);
-                    //c = super.loadClass(name, resolve);
-                } catch (final ClassNotFoundException e) {
-                    // ignore
-                }
-            }
-            
-            if (null == c) {
-                try {
-                    // Finally, try to load from memory
-                    c = this.findClass(name);
-                } catch (final ClassNotFoundException e) {
-                    // ignore
-                }
-            }
-
-            if (null == c) {
-                throw new ClassNotFoundException(name);
-            }
-            if (resolve) {
-                resolveClass(c);
-            }
-            return c;
-        }
+    private String convertStringNameToFqn(final String name) {
+        return name.replaceAll("\\.class$", "")
+            .replaceAll("\\/", ".");
     }
 
 }
