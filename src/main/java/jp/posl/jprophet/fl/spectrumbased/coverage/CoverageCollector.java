@@ -53,7 +53,7 @@ public class CoverageCollector {
 
         // ここであらかじめビルド済みのクラスファイルをクラスローダーが読み込んでおく
         try {
-            this.memoryClassLoader = new SkippingMemoryClassLoader(new URL[] { new URL("file:./" + buildpath + "/") });
+            this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./" + buildpath + "/") });
         } catch (MalformedURLException e){
             System.err.println(e.getMessage());
             e.printStackTrace();
@@ -77,9 +77,9 @@ public class CoverageCollector {
         for (String sourceFQN : sourceFQNs) {
             InputStream is = this.getTargetClassInputStream(sourceFQN);
             byte[] bytes = IOUtils.toByteArray(is);
-            //byte[] instrumentedBytes = jacocoInstrumenter.instrument(bytes, "");
-            //this.memoryClassLoader.addDefinition(sourceFQN, instrumentedBytes);
-            this.memoryClassLoader.addDefinition(sourceFQN, bytes);
+            byte[] instrumentedBytes = jacocoInstrumenter.instrument(bytes, "");
+            this.memoryClassLoader.addDefinition(sourceFQN, instrumentedBytes);
+            //this.memoryClassLoader.addDefinition(sourceFQN, bytes);
         }
 
         //final List<Class<?>> junitClasses = loadInstrumentedClasses(testFQNs);
