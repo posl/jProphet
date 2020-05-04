@@ -1,6 +1,7 @@
 package jp.posl.jprophet.test.executor;
 
 import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
 
 /**
  * junitによるテスト実行をスレッドで実行する
@@ -24,6 +25,8 @@ public class TestThread extends Thread {
     @Override
     public void run(){
         this.isSuccess = junitCore.run(testClass).wasSuccessful();
+        //Result result = junitCore.run(testClass);
+        //this.isSuccess = result.wasSuccessful();
     }
 
     public boolean getIsSuccess(){
