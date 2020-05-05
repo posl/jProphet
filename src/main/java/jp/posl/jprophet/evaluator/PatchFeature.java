@@ -15,18 +15,26 @@ public class PatchFeature {
 
         final ModFeatureVec vec = new ModFeatureVec();
         if(type == TYPE.INSERT) {
-            if(node instanceof Statement) {
-                vec.insertStmt += 1;
-            }
             if(node instanceof IfStmt) {
-                nodeWithDiffType.getChildNodes().forEach(child -> {
-                    if(child.getDiffType() != TYPE.SAME) {
-                        vec.insertGuard += 1;
+                Boolean insertGuard   = false;
+                Boolean insertControl = false;
+                for(NodeWithDiffType child: nodeWithDiffType.getChildNodes()) {
+                    if(child.getDiffType() == TYPE.SAME) {
+                        insertGuard = true;
                     }
-                    if(child.getNode() instanceof BreakStmt || child.getNode() instanceof ReturnStmt) {
-                        vec.insertControl += 1;
+                    if(node.findFirst(BreakStmt.class).isPresent() || node.findFirst(ReturnStmt.class).isPresent()) {
+                        insertControl = true;
                     }
-                });       
+                }       
+                if(insertGuard) {
+                    vec.insertGuard += 1;
+                }
+                if(insertControl) {
+                    vec.insertControl += 1;
+                }
+            }
+            else if(node instanceof Statement) {
+                vec.insertStmt += 1;
             }
         }
         if(type == TYPE.CHANGE) {
