@@ -31,7 +31,6 @@ public class JProphetMain {
         final String buildDir = "./tmp/"; 
         final String resultDir = "./result/"; 
         String projectPath = "src/test/resources/FizzBuzz01";
-        //String projectPath = "/Users/yamate/Documents/additional_data/Math_75_buggy";
         if(args.length > 0){
             projectPath = args[0];
         }

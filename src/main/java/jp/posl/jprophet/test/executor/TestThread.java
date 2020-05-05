@@ -25,8 +25,6 @@ public class TestThread extends Thread {
     @Override
     public void run(){
         this.isSuccess = junitCore.run(testClass).wasSuccessful();
-        //Result result = junitCore.run(testClass);
-        //this.isSuccess = result.wasSuccessful();
     }
 
     public boolean getIsSuccess(){

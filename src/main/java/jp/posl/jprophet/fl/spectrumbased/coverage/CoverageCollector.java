@@ -43,16 +43,6 @@ public class CoverageCollector {
         this.jacocoInstrumenter = new Instrumenter(jacocoRuntime);
         this.jacocoRuntimeData = new RuntimeData();
 
-        /*
-        try {
-            jacocoRuntime.startup(jacocoRuntimeData);
-        } catch (final Exception e) {
-            // TODO should be described to log
-            e.printStackTrace();
-        }
-        */
-        
-
         // ここであらかじめビルド済みのクラスファイルをクラスローダーが読み込んでおく
         try {
             this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./" + buildpath + "/") });
@@ -78,7 +68,7 @@ public class CoverageCollector {
 
         //loadInstrumentedClasses(sourceFQNs);
 
-        //対象ソースコードの定義をmemoryClassLoaderに追加
+        //対象ソースコードの定義をmemoryClassLoaderに追加(ロードはしない)
         for (String sourceFQN : sourceFQNs) {
             InputStream is = this.getTargetClassInputStream(sourceFQN);
             byte[] bytes = IOUtils.toByteArray(is);
@@ -88,7 +78,7 @@ public class CoverageCollector {
 
         //final List<Class<?>> junitClasses = loadInstrumentedClasses(testFQNs);
 
-        //対象テストコードをinstrumentしたものの定義をmemoryClassLoaderに追加
+        //対象テストコードをinstrumentしたものの定義をmemoryClassLoaderに追加(ロードはしない)
         for (String testFQN : testFQNs) {
             InputStream is = this.getTargetClassInputStream(testFQN);
             byte[] bytes = IOUtils.toByteArray(is);
