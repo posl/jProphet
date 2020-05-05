@@ -59,6 +59,11 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
             List<TestResult> ft = testResults.getTestResults().stream()
                 .filter(s -> s.wasFailed() == true)
                 .collect(Collectors.toList());
+
+            List<TestResult> coft = testResults.getTestResults().stream()
+                .filter(s -> s.wasFailed() == true)
+                .filter(s -> s.getCoverages().size() != 0)
+                .collect(Collectors.toList());
                 
             SuspiciousnessCollector suspiciousnessCollector = new SuspiciousnessCollector(testResults, coefficient);
             suspiciousnessCollector.exec();

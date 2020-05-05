@@ -1,6 +1,8 @@
 package jp.posl.jprophet.fl.spectrumbased.coverage;
 
 import java.util.Map;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
@@ -110,7 +112,7 @@ public class MemoryClassLoader extends URLClassLoader {
         if (name.startsWith("org.junit.") || name.startsWith("junit.") || name.startsWith("org.hamcrest.")) {
             return getParent().loadClass(name);
         }
-
+        
         // 委譲処理．java.lang.ClassLoader#loadClassを参考に作成．
         synchronized (getClassLoadingLock(name)) {
             // First, check if the class has already been loaded
@@ -143,6 +145,22 @@ public class MemoryClassLoader extends URLClassLoader {
             }
             return c;
         }
+    }
+
+    /*
+    @Override
+    public InputStream getResourceAsStream(final String name) {
+        final String fqn = convertStringNameToNameToFqn(name);
+        final byte[] bytes = definitions.get(fqn);
+        if (null == bytes) {
+            return super.getResourceAsStream(name);
+        }
+        return new ByteArrayInputStream(bytes);
+    }
+    */
+    
+    private String convertStringNameToNameToFqn(final String name) { 
+        return name.replaceAll("\\.class$", "").replaceAll("\\/", ".");
     }
 
 }

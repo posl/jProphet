@@ -11,6 +11,7 @@ import java.net.URL;
 import org.apache.commons.io.IOUtils;
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
+import org.jacoco.core.data.ExecutionData;
 import org.jacoco.core.data.ExecutionDataStore;
 import org.jacoco.core.data.SessionInfoStore;
 import org.jacoco.core.instr.Instrumenter;
@@ -76,16 +77,18 @@ public class CoverageCollector {
         final TestResults testResults = new TestResults();
 
         //loadInstrumentedClasses(sourceFQNs);
+
+        //対象ソースコードの定義をmemoryClassLoaderに追加
         for (String sourceFQN : sourceFQNs) {
             InputStream is = this.getTargetClassInputStream(sourceFQN);
             byte[] bytes = IOUtils.toByteArray(is);
             byte[] instrumentedBytes = jacocoInstrumenter.instrument(bytes, "");
             this.memoryClassLoader.addDefinition(sourceFQN, instrumentedBytes);
-            //this.memoryClassLoader.addDefinition(sourceFQN, bytes);
         }
 
         //final List<Class<?>> junitClasses = loadInstrumentedClasses(testFQNs);
 
+        //対象テストコードをinstrumentしたものの定義をmemoryClassLoaderに追加
         for (String testFQN : testFQNs) {
             InputStream is = this.getTargetClassInputStream(testFQN);
             byte[] bytes = IOUtils.toByteArray(is);
@@ -96,8 +99,6 @@ public class CoverageCollector {
 
         jacocoRuntime.startup(jacocoRuntimeData);
         
-        
-        //final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
         for (Class<?> junitClass : junitClasses) {
             final JUnitCore junitCore = new JUnitCore();
             final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
@@ -116,9 +117,6 @@ public class CoverageCollector {
             }
         }
         
-        
-        
-
         /*
         final JUnitCore junitCore = new JUnitCore();
         final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
@@ -303,8 +301,19 @@ public class CoverageCollector {
             //jacocoRuntime.shutdown();
 
             final Analyzer analyzer = new Analyzer(executionData, coverageBuilder);
+            /*
             for (final String measuredClass : measuredClasses) {
                 analyzer.analyzeClass(getTargetClassInputStream(measuredClass), measuredClass);
+            }
+            */
+            for (final ExecutionData data : executionData.getContents()){
+                if (!data.hasHits()){
+                    continue;
+                }
+
+                final String strFqn = data.getName().replace("/", ".");
+                final byte[] bytecode = IOUtils.toByteArray(getTargetClassInputStream(strFqn));
+                analyzer.analyzeClass(bytecode, strFqn);
             }
         }
 
