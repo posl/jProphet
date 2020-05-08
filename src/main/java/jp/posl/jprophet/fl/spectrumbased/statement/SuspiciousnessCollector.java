@@ -1,8 +1,12 @@
 package jp.posl.jprophet.fl.spectrumbased.statement;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
+import jp.posl.jprophet.fl.spectrumbased.coverage.Coverage;
 import jp.posl.jprophet.fl.spectrumbased.coverage.TestResults;
 import jp.posl.jprophet.fl.Suspiciousness;
 
@@ -12,6 +16,7 @@ import jp.posl.jprophet.fl.Suspiciousness;
 public class SuspiciousnessCollector {
 
     private List<Suspiciousness> suspiciousnesses;
+    final private List<String> sourceFqns;
     final private int fileNum;
     final private int numberOfSuccessedTests;
     final private int numberOfFailedTests;
@@ -22,8 +27,9 @@ public class SuspiciousnessCollector {
      * テスト結果(カバレッジ情報を含む)から,全てのテスト対象ファイルの各行ごとの疑惑値を計算
      * @param testResults テスト結果
      */
-    public SuspiciousnessCollector(TestResults testResults, Coefficient coefficient){
+    public SuspiciousnessCollector(TestResults testResults, List<String> sourceFqns, Coefficient coefficient){
         this.fileNum = testResults.getTestResult(0).getCoverages().size();
+        this.sourceFqns = sourceFqns;
         this.suspiciousnesses = new ArrayList<Suspiciousness>();
         this.numberOfSuccessedTests = testResults.getSuccessedTestResults().size();
         this.numberOfFailedTests = testResults.getFailedTestResults().size();
@@ -37,22 +43,73 @@ public class SuspiciousnessCollector {
      */
     public void exec(){
 
-        for (int i = 0; i < fileNum; i++){
+        for (String sourceFqn : sourceFqns){
+            List<Coverage> failedCoverages = new ArrayList<Coverage>();
+            testResults.getFailedTestResults().stream()
+                .map(t -> t.getCoverages()
+                    .stream()
+                    .filter(c -> c.getName().equals(sourceFqn))
+                    .collect(Collectors.toList()))
+                .forEach(c -> failedCoverages.addAll(c));
             
-            //TODO 1つめのメソッドのカバレッジ結果からソースファイルの行数とファイル名を取得している. 他にいい取得方法はないか
-            final int lineLength = testResults.getTestResult(0).getCoverages().get(i).getLength();
-            final String testName = testResults.getTestResult(0).getCoverages().get(i).getName();
+            List<Coverage> successedCoverages = new ArrayList<Coverage>();
+            testResults.getSuccessedTestResults().stream()
+                .map(t -> t.getCoverages()
+                    .stream()
+                    .filter(c -> c.getName().equals(sourceFqn))
+                    .collect(Collectors.toList()))
+                .forEach(c -> successedCoverages.addAll(c));
 
-            for (int k = 1; k <= lineLength; k++){
-                StatementStatus statementStatus = new StatementStatus(testResults, k, i);
-                Suspiciousness suspiciousness = new Suspiciousness(testName, k, coefficient.calculate(statementStatus, numberOfSuccessedTests, numberOfFailedTests));
-                this.suspiciousnesses.add(suspiciousness);
-            }
+            calculateSuspiciousnessOfSource(sourceFqn, failedCoverages, successedCoverages);
         }
     }
 
     public List<Suspiciousness> getSuspiciousnesses(){
         return this.suspiciousnesses;
+    }
+
+    private void calculateSuspiciousnessOfSource(String sourceFqn, List<Coverage> failedCoverages, List<Coverage> successedCoverages) {
+        int lineLength = 0;
+        if (!failedCoverages.isEmpty()){
+            lineLength = failedCoverages.get(0).getLength();
+        } else if (!successedCoverages.isEmpty()){
+            lineLength = successedCoverages.get(0).getLength();
+        } else {
+            //0で初期化
+        }
+
+        for (int i = 1; i <= lineLength; i++) {
+            final int line = i;
+            Map<Integer, Integer> failedCoverageStatus = failedCoverages.stream()
+                .map(c -> c.getStatusOfLine().get(line))
+                .collect(
+                    Collectors.groupingBy(
+                            //MapのキーにはListの要素をそのままセットする
+                    Function.identity(),
+                            //Mapの値にはListの要素を1に置き換えて、それをカウントするようにする
+                    Collectors.summingInt(s->1)) 
+                );
+            
+            Map<Integer, Integer> successedCoverageStatus = successedCoverages.stream()
+                .map(c -> c.getStatusOfLine().get(line))
+                .collect(
+                    Collectors.groupingBy(
+                            //MapのキーにはListの要素をそのままセットする
+                    Function.identity(),
+                            //Mapの値にはListの要素を1に置き換えて、それをカウントするようにする
+                    Collectors.summingInt(s->1)) 
+                );
+
+            int numberOfFailedTestsCoveringStatement = failedCoverageStatus.get(2) == null ? 0 : failedCoverageStatus.get(2);
+            int numberOfFailedTestsNotCoveringStatement = failedCoverageStatus.get(1) == null ? 0 : failedCoverageStatus.get(1);
+            int numberOfSuccessedTestsCoveringStatement = successedCoverageStatus.get(2) == null ? 0 : successedCoverageStatus.get(2);
+            int numberOfSuccessedTestsNotCoveringStatement = successedCoverageStatus.get(1) == null ? 0 : successedCoverageStatus.get(1);
+            StatementStatus statementStatus = new StatementStatus(numberOfFailedTestsCoveringStatement, numberOfFailedTestsNotCoveringStatement, numberOfSuccessedTestsCoveringStatement, numberOfSuccessedTestsNotCoveringStatement);
+            Suspiciousness suspiciousness = new Suspiciousness(sourceFqn, line, coefficient.calculate(statementStatus, numberOfSuccessedTests, numberOfFailedTests));
+            this.suspiciousnesses.add(suspiciousness);
+        }
+
+
     }
 
 }

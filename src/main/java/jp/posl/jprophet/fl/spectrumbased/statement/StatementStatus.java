@@ -29,6 +29,15 @@ public class StatementStatus{
         this.numberOfTestsNotCoveringStatement = this.numberOfFailedTestsNotCoveringStatement + this.numberOfSuccessedTestsNotCoveringStatement;
     }
 
+    public StatementStatus(int numberOfFailedTestsCoveringStatement, int numberOfFailedTestsNotCoveringStatement, int numberOfSuccessedTestsCoveringStatement, int numberOfSuccessedTestsNotCoveringStatement){
+        this.numberOfFailedTestsCoveringStatement = numberOfFailedTestsCoveringStatement;
+        this.numberOfFailedTestsNotCoveringStatement = numberOfFailedTestsNotCoveringStatement;
+        this.numberOfSuccessedTestsCoveringStatement = numberOfSuccessedTestsCoveringStatement;
+        this.numberOfSuccessedTestsNotCoveringStatement = numberOfSuccessedTestsNotCoveringStatement;
+        this.numberOfTestsCoveringStatement = this.numberOfFailedTestsCoveringStatement + this.numberOfSuccessedTestsCoveringStatement;
+        this.numberOfTestsNotCoveringStatement = this.numberOfFailedTestsNotCoveringStatement + this.numberOfSuccessedTestsNotCoveringStatement;
+    }
+
     //TODO 以下4つの関数でカバレッジ結果が2(COVERD)の時のみその行を通ったことにしているが,3(PARTLY_COVERED)のときどうするか要検討
     
     /**
