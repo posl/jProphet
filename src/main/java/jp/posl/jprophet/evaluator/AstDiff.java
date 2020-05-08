@@ -13,7 +13,7 @@ import difflib.DiffUtils;
 import difflib.Patch;
 
 public class AstDiff {
-    private int countAstPreOrderIndex = 0;
+    private int nodePreOrderIndex = 0;
 
     /**
      * <p>
@@ -29,8 +29,8 @@ public class AstDiff {
         final List<Node> originalNodes = NodeUtility.getAllNodesInDepthFirstOrder(original);
         final List<Node> revisedNodes = NodeUtility.getAllNodesInDepthFirstOrder(revised);
 
-        Function<Node, String> takeFirstLine = n -> {
-            final String[] lines = n.toString().split("\n");
+        Function<Node, String> takeFirstLine = node -> {
+            final String[] lines = node.toString().split("\n");
             if (lines.length > 0) {
                 return lines[0];
             }
@@ -57,40 +57,43 @@ public class AstDiff {
      * 変更後のASTに含まれるノードの情報しか保持しないため，削除されたノードの情報などは持たない <br>
      * </p>
      * 将来的にメソッドを追加する
-     * @param originala 変更前のAST
+     * @param original 変更前のAST
      * @param revised 変更後のAST
      * @return 差分情報付きの変更後のAST
      */
     public NodeWithDiffType createRevisedAstWithDiffType(Node original, Node revised) {
         final List<Delta<String>> deltas = diff(original, revised);
-        this.countAstPreOrderIndex = 0;
+        this.nodePreOrderIndex = 0;
         final NodeWithDiffType revisedAstWithDiffType = createRevisedAstWithDiffType(revised, deltas);
-        this.countAstPreOrderIndex = 0;
+        this.nodePreOrderIndex = 0;
         return revisedAstWithDiffType;
     }
 
     /**
      * 差分情報のリストを元に差分情報付きのASTの木構造を構成する
-     * @param targetNode 差分情報を付与したいAST
+     * 葉のNode情報を再帰呼び出しにより構成
+     * @param node 差分情報を付与したいAST
      * @param astDeltas 差分情報のリスト
      * @return 差分情報付きリスト
      */
-    private NodeWithDiffType createRevisedAstWithDiffType(Node targetNode, List<Delta<String>> astDeltas) {
+    private NodeWithDiffType createRevisedAstWithDiffType(Node node, List<Delta<String>> astDeltas) {
         TYPE type = TYPE.SAME;
         for(Delta<String> astDelta: astDeltas) {
-            final int pos = astDelta.getRevised().getPosition();
-            if(pos <= this.countAstPreOrderIndex &&
-               this.countAstPreOrderIndex <= pos + astDelta.getRevised().size() - 1) {
+            final int deltaPos = astDelta.getRevised().getPosition();
+            final Boolean nodeInDelta = deltaPos <= this.nodePreOrderIndex && this.nodePreOrderIndex <= deltaPos + astDelta.getRevised().size() - 1;
+            if(nodeInDelta) {
                 // Delta.TYPEからNodeWithDiffTypeへ変換
                 type = TYPE.values()[astDelta.getType().ordinal()];
             }
         }
-        this.countAstPreOrderIndex++;
-        final NodeWithDiffType nodeWithDiffType = new NodeWithDiffType(targetNode, type);
-        final List<NodeWithDiffType> childNodesWithDiffTypes = targetNode.getChildNodes().stream()
+        this.nodePreOrderIndex++;
+
+        final NodeWithDiffType nodeWithDiffType = new NodeWithDiffType(node, type);
+        final List<NodeWithDiffType> childNodesWithDiffTypes = node.getChildNodes().stream()
             .map(childNode -> createRevisedAstWithDiffType(childNode, astDeltas))
             .collect(Collectors.toList());
         nodeWithDiffType.addChildNodes(childNodesWithDiffTypes);
+
         return nodeWithDiffType;
     }
 }
