@@ -55,6 +55,20 @@ public final class NodeUtility {
     }
 
     /**
+     * Nodeの木構造に含まれるの全てのノードを深さ優先順に取得する
+     * @param root ノードを取得したい木構造の根ノード
+     * @return 子孫ノードのリスト
+     */
+    public static List<Node> getAllNodesInDepthFirstOrder(Node root) {
+        List<Node> descendantNodes = new ArrayList<Node>();
+        descendantNodes.add(root);
+        root.getChildNodes().stream()
+            .map(childNode -> getAllNodesInDepthFirstOrder(childNode))
+            .forEach(descendantNodes::addAll);
+        return descendantNodes;
+    }
+
+    /**
      * Nodeの全ての子孫ノード（ASTツリー上の全ての子要素）のディープコピーを取得する 
      * @param parentNode 子孫ノードを取得したいノード
      * @return ディープコピーされた子孫ノードのリスト

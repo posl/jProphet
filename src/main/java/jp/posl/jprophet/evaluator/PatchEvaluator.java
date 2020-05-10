@@ -1,4 +1,4 @@
-package jp.posl.jprophet;
+package jp.posl.jprophet.evaluator;
 
 import java.util.Collections;
 import java.util.Comparator;

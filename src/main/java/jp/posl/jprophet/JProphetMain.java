@@ -12,6 +12,7 @@ import org.apache.commons.io.FilenameUtils;
 import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
+import jp.posl.jprophet.evaluator.PatchEvaluator;
 import jp.posl.jprophet.fl.FaultLocalization;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.spectrumbased.strategy.*;

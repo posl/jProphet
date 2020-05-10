@@ -11,11 +11,15 @@ import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 
 public class NodeUtilityTest {
@@ -54,8 +58,8 @@ public class NodeUtilityTest {
     /**
      * getAllNodesFromCodeメソッドによってソースコードの全てのNodeが取得できているかテスト
      */
-    @Test public void testForStringByGetAllChileNodes(){
-        List<Node> nodes = NodeUtility.getAllNodesFromCode((sourceCode));
+    @Test public void testForStringByGetAllNodesFromCode(){
+        List<Node> nodes = NodeUtility.getAllNodesFromCode(sourceCode);
         assertThat(nodes.size()).isEqualTo(6);
         assertThat(nodes.get(0).toString()).isEqualTo("public class A {\n\n    public void a() {\n    }\n}");
         assertThat(nodes.get(1).toString()).isEqualTo("A");
@@ -63,6 +67,36 @@ public class NodeUtilityTest {
         assertThat(nodes.get(3).toString()).isEqualTo("a");
         assertThat(nodes.get(4).toString()).isEqualTo("void");
         assertThat(nodes.get(5).toString()).isEqualTo("{\n}");
+    }
+
+    /**
+     * {@code getAllNodesInDepthFirstOrder}メソッドによってソースコードの全てのNodeが取得できているかテスト
+     */
+    @Test public void testForGetAllNodesInDepthFirstOrder(){
+        String targetSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("   private void m() {\n")
+            .append("       hoge();\n")
+            .append("       fuga();\n")
+            .append("   }\n")
+            .append("}\n")
+            .toString();
+        List<Node> nodes = NodeUtility.getAllNodesInDepthFirstOrder(JavaParser.parse(targetSource));
+
+        assertThat(nodes.size()).isEqualTo(13);
+        assertThat(nodes.get(0)).isInstanceOf(CompilationUnit.class);
+        assertThat(nodes.get(1)).isInstanceOf(ClassOrInterfaceDeclaration.class);
+        assertThat(nodes.get(2)).isInstanceOf(SimpleName.class);
+        assertThat(nodes.get(3)).isInstanceOf(MethodDeclaration.class);
+        assertThat(nodes.get(4)).isInstanceOf(SimpleName.class);
+        assertThat(nodes.get(5)).isInstanceOf(VoidType.class);
+        assertThat(nodes.get(6)).isInstanceOf(BlockStmt.class);
+        assertThat(nodes.get(7)).isInstanceOf(ExpressionStmt.class);
+        assertThat(nodes.get(8)).isInstanceOf(MethodCallExpr.class);
+        assertThat(nodes.get(9)).isInstanceOf(SimpleName.class);
+        assertThat(nodes.get(10)).isInstanceOf(ExpressionStmt.class);
+        assertThat(nodes.get(11)).isInstanceOf(MethodCallExpr.class);
+        assertThat(nodes.get(12)).isInstanceOf(SimpleName.class);
     }
 
 
