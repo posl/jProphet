@@ -50,8 +50,6 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
 
         try {
             testResults = coverageCollector.exec(sourceClassFileFqns, testClassFileFqns);
-            System.out.println(testResults.getFailedTestNames());
-            System.out.println(testResults.getFailedTestNames().size());
             List<TestResult> tr = testResults.getTestResults().stream()
                 .filter(s -> s.getMethodName().equals("org.apache.commons.math.stat.FrequencyTest.testPcts"))
                 .collect(Collectors.toList());

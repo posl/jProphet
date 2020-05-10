@@ -1,7 +1,5 @@
 package jp.posl.jprophet.fl.spectrumbased.strategy;
 
-import jp.posl.jprophet.fl.spectrumbased.statement.StatementStatus;
-
 public class Tarantula implements Coefficient {
 
     /**
@@ -10,12 +8,12 @@ public class Tarantula implements Coefficient {
      * @param numberOfSuccessedTests
      * @param numberOfFailedTests
      */
-    public double calculate(StatementStatus statementStatus, int numberOfSuccessedTests, int numberOfFailedTests) {
+    public double calculate(int numberOfFailedTestsCoveringStatement, int numberOfFailedTestsNotCoveringStatement, int numberOfSuccessedTestsCoveringStatement, int numberOfSuccessedTestsNotCoveringStatement) {
         final double suspiciousenesses;
-        final double ncf = (double)statementStatus.getNumberOfFailedTestsCoveringStatement();
-        final double ncs = (double)statementStatus.getNumberOfSuccessedTestsCoveringStatement();
-        final double nf = (double)numberOfFailedTests;
-        final double ns = (double)numberOfSuccessedTests;
+        final double ncf = (double)numberOfFailedTestsCoveringStatement;
+        final double ncs = (double)numberOfSuccessedTestsCoveringStatement;
+        final double nf = (double)(numberOfFailedTestsCoveringStatement + numberOfFailedTestsNotCoveringStatement);
+        final double ns = (double)( numberOfSuccessedTestsCoveringStatement + numberOfSuccessedTestsNotCoveringStatement);
 
         if (nf == 0 || ns == 0 || ncf / nf + ncs / ns == 0){
             suspiciousenesses = 0;

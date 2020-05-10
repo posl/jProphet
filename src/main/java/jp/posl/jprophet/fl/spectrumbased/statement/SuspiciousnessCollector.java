@@ -17,7 +17,6 @@ public class SuspiciousnessCollector {
 
     private List<Suspiciousness> suspiciousnesses;
     final private List<String> sourceFqns;
-    final private int fileNum;
     final private int numberOfSuccessedTests;
     final private int numberOfFailedTests;
     final private TestResults testResults;
@@ -28,7 +27,6 @@ public class SuspiciousnessCollector {
      * @param testResults テスト結果
      */
     public SuspiciousnessCollector(TestResults testResults, List<String> sourceFqns, Coefficient coefficient){
-        this.fileNum = testResults.getTestResult(0).getCoverages().size();
         this.sourceFqns = sourceFqns;
         this.suspiciousnesses = new ArrayList<Suspiciousness>();
         this.numberOfSuccessedTests = testResults.getSuccessedTestResults().size();
@@ -44,6 +42,7 @@ public class SuspiciousnessCollector {
     public void exec(){
 
         for (String sourceFqn : sourceFqns){
+            System.out.println(sourceFqn);
             List<Coverage> failedCoverages = new ArrayList<Coverage>();
             testResults.getFailedTestResults().stream()
                 .map(t -> t.getCoverages()
@@ -74,8 +73,6 @@ public class SuspiciousnessCollector {
             lineLength = failedCoverages.get(0).getLength();
         } else if (!successedCoverages.isEmpty()){
             lineLength = successedCoverages.get(0).getLength();
-        } else {
-            //0で初期化
         }
 
         for (int i = 1; i <= lineLength; i++) {
@@ -104,8 +101,7 @@ public class SuspiciousnessCollector {
             int numberOfFailedTestsNotCoveringStatement = failedCoverageStatus.get(1) == null ? 0 : failedCoverageStatus.get(1);
             int numberOfSuccessedTestsCoveringStatement = successedCoverageStatus.get(2) == null ? 0 : successedCoverageStatus.get(2);
             int numberOfSuccessedTestsNotCoveringStatement = successedCoverageStatus.get(1) == null ? 0 : successedCoverageStatus.get(1);
-            StatementStatus statementStatus = new StatementStatus(numberOfFailedTestsCoveringStatement, numberOfFailedTestsNotCoveringStatement, numberOfSuccessedTestsCoveringStatement, numberOfSuccessedTestsNotCoveringStatement);
-            Suspiciousness suspiciousness = new Suspiciousness(sourceFqn, line, coefficient.calculate(statementStatus, numberOfSuccessedTests, numberOfFailedTests));
+            Suspiciousness suspiciousness = new Suspiciousness(sourceFqn, line, coefficient.calculate(numberOfFailedTestsCoveringStatement, numberOfFailedTestsNotCoveringStatement, numberOfSuccessedTestsCoveringStatement, numberOfSuccessedTestsNotCoveringStatement));
             this.suspiciousnesses.add(suspiciousness);
         }
 

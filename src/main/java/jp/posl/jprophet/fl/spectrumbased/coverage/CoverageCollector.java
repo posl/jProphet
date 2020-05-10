@@ -66,8 +66,6 @@ public class CoverageCollector {
     public TestResults exec(final List<String> sourceFQNs, final List<String> testFQNs) throws Exception {
         final TestResults testResults = new TestResults();
 
-        //loadInstrumentedClasses(sourceFQNs);
-
         //対象ソースコードの定義をmemoryClassLoaderに追加(ロードはしない)
         for (String sourceFQN : sourceFQNs) {
             InputStream is = this.getTargetClassInputStream(sourceFQN);
@@ -75,8 +73,6 @@ public class CoverageCollector {
             byte[] instrumentedBytes = jacocoInstrumenter.instrument(bytes, "");
             this.memoryClassLoader.addDefinition(sourceFQN, instrumentedBytes);
         }
-
-        //final List<Class<?>> junitClasses = loadInstrumentedClasses(testFQNs);
 
         //対象テストコードをinstrumentしたものの定義をmemoryClassLoaderに追加(ロードはしない)
         for (String testFQN : testFQNs) {
@@ -91,7 +87,7 @@ public class CoverageCollector {
         
         for (Class<?> junitClass : junitClasses) {
             final JUnitCore junitCore = new JUnitCore();
-            final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
+            final CoverageMeasurementListener listener = new CoverageMeasurementListener(testResults);
             junitCore.addListener(listener);
             
             //タイムアウト処理
@@ -198,7 +194,6 @@ public class CoverageCollector {
     class CoverageMeasurementListener extends RunListener {
         private final Description FAILED = Description.createTestDescription("failed", "failed");
 
-        final private List<String> measuredClasses;
         final public TestResults testResults;
         private boolean wasFailed;
 
@@ -209,11 +204,10 @@ public class CoverageCollector {
          * @param storedTestResults テスト実行結果の保存先
          * @throws Exception
          */
-        public CoverageMeasurementListener(List<String> measuredFQNs, TestResults storedTestResults)
+        public CoverageMeasurementListener(TestResults storedTestResults)
                 throws Exception {
             //jacocoRuntime.startup(jacocoRuntimeData);
             this.testResults = storedTestResults;
-            this.measuredClasses = measuredFQNs;
         }
 
         @Override
@@ -224,7 +218,6 @@ public class CoverageCollector {
 
         @Override
         public void testFailure(Failure failure) {
-            noteTestExecutionFail(failure);
             wasFailed = true;
         }
 
@@ -238,23 +231,6 @@ public class CoverageCollector {
          */
         private void resetJacocoRuntimeData() {
             jacocoRuntimeData.reset();
-        }
-
-        /**
-         * Failureオブジェクトの持つDescriptionに，当該テストがfailしたことをメモする．
-         * @param failure
-         */
-        private void noteTestExecutionFail(Failure failure) {
-            failure.getDescription().addChild(FAILED);
-        }
-
-        /**
-         * Descriptionから当該テストがfailしたかどうかを返す．
-         * @param description
-         * @return テストがfailしたかどうか
-         */
-        private boolean isFailed(Description description) {
-            return description.getChildren().contains(FAILED);
         }
 
         /**
@@ -291,11 +267,7 @@ public class CoverageCollector {
             //jacocoRuntime.shutdown();
 
             final Analyzer analyzer = new Analyzer(executionData, coverageBuilder);
-            /*
-            for (final String measuredClass : measuredClasses) {
-                analyzer.analyzeClass(getTargetClassInputStream(measuredClass), measuredClass);
-            }
-            */
+
             for (final ExecutionData data : executionData.getContents()){
                 if (!data.hasHits()){
                     continue;
@@ -316,7 +288,6 @@ public class CoverageCollector {
         private void addJacocoCoverageToTestResults(final CoverageBuilder coverageBuilder,
             final Description description) {
             final String testMethodFQN = getTestMethodName(description);
-            final boolean isFailed = isFailed(description);
             List<Coverage> coverages = coverageBuilder.getClasses().stream().map(c -> new Coverage(c))
                 .collect(Collectors.toList());
 
