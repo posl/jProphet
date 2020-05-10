@@ -3,10 +3,7 @@ package jp.posl.jprophet.fl.spectrumbased.strategy;
 public class Jaccard implements Coefficient {
 
     /**
-     * Jaccardで疑惑値算出
-     * @param statementStatus
-     * @param numberOfSuccessedTests
-     * @param numberOfFailedTests
+     * Jaccardで疑惑値を計算
      */
     public double calculate(int numberOfFailedTestsCoveringStatement, int numberOfFailedTestsNotCoveringStatement, int numberOfSuccessedTestsCoveringStatement, int numberOfSuccessedTestsNotCoveringStatement) {
         final double suspiciousenesses;

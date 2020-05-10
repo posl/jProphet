@@ -1,8 +1,6 @@
 package jp.posl.jprophet.fl.spectrumbased.coverage;
 
 import java.util.Map;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;

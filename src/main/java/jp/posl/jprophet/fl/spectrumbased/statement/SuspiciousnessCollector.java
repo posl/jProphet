@@ -17,8 +17,6 @@ public class SuspiciousnessCollector {
 
     private List<Suspiciousness> suspiciousnesses;
     final private List<String> sourceFqns;
-    final private int numberOfSuccessedTests;
-    final private int numberOfFailedTests;
     final private TestResults testResults;
     final private Coefficient coefficient;
 
@@ -29,8 +27,6 @@ public class SuspiciousnessCollector {
     public SuspiciousnessCollector(TestResults testResults, List<String> sourceFqns, Coefficient coefficient){
         this.sourceFqns = sourceFqns;
         this.suspiciousnesses = new ArrayList<Suspiciousness>();
-        this.numberOfSuccessedTests = testResults.getSuccessedTestResults().size();
-        this.numberOfFailedTests = testResults.getFailedTestResults().size();
         this.testResults = testResults;
         this.coefficient = coefficient;
     }
@@ -42,7 +38,6 @@ public class SuspiciousnessCollector {
     public void exec(){
 
         for (String sourceFqn : sourceFqns){
-            System.out.println(sourceFqn);
             List<Coverage> failedCoverages = new ArrayList<Coverage>();
             testResults.getFailedTestResults().stream()
                 .map(t -> t.getCoverages()
@@ -63,10 +58,20 @@ public class SuspiciousnessCollector {
         }
     }
 
+    /**
+     * 
+     * @return 全対象ファイルの疑惑値のリスト
+     */
     public List<Suspiciousness> getSuspiciousnesses(){
         return this.suspiciousnesses;
     }
 
+    /**
+     * sourceFqnが示すファイルの各行の疑惑値を算出する
+     * @param sourceFqn
+     * @param failedCoverages
+     * @param successedCoverages
+     */
     private void calculateSuspiciousnessOfSource(String sourceFqn, List<Coverage> failedCoverages, List<Coverage> successedCoverages) {
         int lineLength = 0;
         if (!failedCoverages.isEmpty()){

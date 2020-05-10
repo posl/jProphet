@@ -4,9 +4,6 @@ public class Ochiai implements Coefficient {
 
     /**
      * Ochiaiで疑惑値算出
-     * @param statementStatus
-     * @param numberOfSuccessedTests
-     * @param numberOfFailedTests
      */
     public double calculate(int numberOfFailedTestsCoveringStatement, int numberOfFailedTestsNotCoveringStatement, int numberOfSuccessedTestsCoveringStatement, int numberOfSuccessedTestsNotCoveringStatement) {
         final double suspiciousenesses;

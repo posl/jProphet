@@ -52,7 +52,7 @@ public class SuspiciousnessCollectorTest{
      * SuspiciousnessCalculatorが動作しているかどうかのテスト
      */
     
-     @Test public void testForSuspiciousnessCalculator(){
+    @Test public void testForSuspiciousnessCalculator(){
 
         CoverageCollector coverageCollector = new CoverageCollector("SCtmp");
 

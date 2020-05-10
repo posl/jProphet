@@ -2,7 +2,6 @@ package jp.posl.jprophet.fl.spectrumbased;
 
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.fl.spectrumbased.coverage.CoverageCollector;
-import jp.posl.jprophet.fl.spectrumbased.coverage.TestResult;
 import jp.posl.jprophet.fl.spectrumbased.coverage.TestResults;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
 import jp.posl.jprophet.fl.FaultLocalization;
@@ -10,7 +9,6 @@ import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.spectrumbased.statement.SuspiciousnessCollector;
 import jp.posl.jprophet.ProjectBuilder;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.nio.file.Path;
 
@@ -50,19 +48,6 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
 
         try {
             testResults = coverageCollector.exec(sourceClassFileFqns, testClassFileFqns);
-            List<TestResult> tr = testResults.getTestResults().stream()
-                .filter(s -> s.getMethodName().equals("org.apache.commons.math.stat.FrequencyTest.testPcts"))
-                .collect(Collectors.toList());
-
-            List<TestResult> ft = testResults.getTestResults().stream()
-                .filter(s -> s.wasFailed() == true)
-                .collect(Collectors.toList());
-
-            List<TestResult> coft = testResults.getTestResults().stream()
-                .filter(s -> s.wasFailed() == true)
-                .filter(s -> s.getCoverages().size() != 0)
-                .collect(Collectors.toList());
-                
             SuspiciousnessCollector suspiciousnessCollector = new SuspiciousnessCollector(testResults, this.sourceClassFileFqns, coefficient);
             suspiciousnessCollector.exec();
             suspiciousnesses = suspiciousnessCollector.getSuspiciousnesses();

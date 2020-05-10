@@ -192,7 +192,6 @@ public class CoverageCollector {
      *
      */
     class CoverageMeasurementListener extends RunListener {
-        private final Description FAILED = Description.createTestDescription("failed", "failed");
 
         final public TestResults testResults;
         private boolean wasFailed;
