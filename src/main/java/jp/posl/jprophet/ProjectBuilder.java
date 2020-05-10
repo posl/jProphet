@@ -2,8 +2,10 @@ package jp.posl.jprophet;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,6 +39,8 @@ public class ProjectBuilder {
         final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         final StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 
+        final StringWriter progress = new StringWriter();
+        
         final Iterable<? extends JavaFileObject> javaFileObjects;
 
         javaFileObjects = fileManager.getJavaFileObjectsFromStrings(
@@ -44,16 +48,19 @@ public class ProjectBuilder {
 
 
         final List<String> compilationOptions = new ArrayList<>();
-        compilationOptions.add("-d");
-        compilationOptions.add(config.getBuildPath());
-        compilationOptions.add("-encoding");
-        compilationOptions.add("UTF-8");
-        compilationOptions.add("-classpath");
-        compilationOptions.add(String.join(CLASSPATH_SEPARATOR,
-                project.getClassPaths()));
+            compilationOptions.add("-d");
+            compilationOptions.add(config.getBuildPath());
+            compilationOptions.add("-source");
+            compilationOptions.add("1.8");
+            compilationOptions.add("-target");
+            compilationOptions.add("1.8");
+            compilationOptions.add("-encoding");
+            compilationOptions.add("UTF-8");
+            compilationOptions.add("-classpath");
+            compilationOptions.add(String.join(CLASSPATH_SEPARATOR,project.getClassPaths()));
 
         final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-        final CompilationTask task = compiler.getTask(null, fileManager, diagnostics, compilationOptions, null,
+        final CompilationTask task = compiler.getTask(progress, fileManager, diagnostics, compilationOptions, null,
                 javaFileObjects);
 
         final boolean isSuccess = task.call();

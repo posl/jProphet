@@ -36,6 +36,7 @@ public class SuspiciousnessCollector {
      * 計算式はSuspiciousnessStrategyの中
      */
     public void exec(){
+        System.out.println("fileNum: " + fileNum);
 
         for (int i = 0; i < fileNum; i++){
             
@@ -43,10 +44,13 @@ public class SuspiciousnessCollector {
             final int lineLength = testResults.getTestResult(0).getCoverages().get(i).getLength();
             final String testName = testResults.getTestResult(0).getCoverages().get(i).getName();
 
+            System.out.println("testName: " + testName);
+            System.out.println("lineLength: " + lineLength);
             for (int k = 1; k <= lineLength; k++){
                 StatementStatus statementStatus = new StatementStatus(testResults, k, i);
                 Suspiciousness suspiciousness = new Suspiciousness(testName, k, coefficient.calculate(statementStatus, numberOfSuccessedTests, numberOfFailedTests));
                 this.suspiciousnesses.add(suspiciousness);
+                System.out.println("add suspiciousness");
             }
         }
     }

@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import jp.posl.jprophet.project.GradleProject;
+import jp.posl.jprophet.project.MavenProject;
 import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.evaluator.PatchEvaluator;
@@ -30,11 +31,15 @@ public class JProphetMain {
     public static void main(String[] args) {
         final String buildDir = "./tmp/"; 
         final String resultDir = "./result/"; 
-        String projectPath = "src/test/resources/FizzBuzz01";
+        //String projectPath = "src/test/resources/FizzBuzz01";
+        String projectPath = "src/test/resources/lang_buggy";
+        //String projectPath = "/Users/yamate/Desktop/TestDependentFiles";
+        //String projectPath = "/Users/yamate/Documents/additional_data/Math_75_buggy";
         if(args.length > 0){
             projectPath = args[0];
         }
-        final Project                  project                  = new GradleProject(projectPath);
+        final Project                  project                  = new MavenProject(projectPath);
+        //final Project                  project                  = new GradleProject(projectPath);
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
         final Coefficient              coefficient              = new Jaccard();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
@@ -50,12 +55,12 @@ public class JProphetMain {
         ));
 
         final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(
-            new CondRefinementOperation(),
-            new CondIntroductionOperation(), 
-            new CtrlFlowIntroductionOperation(), 
-            new InsertInitOperation(), 
-            new VariableReplacementOperation(),
-            new CopyReplaceOperation()
+            new CondRefinementOperation()
+            // new CondIntroductionOperation(), 
+            // new CtrlFlowIntroductionOperation(), 
+            // new InsertInitOperation(), 
+            // new VariableReplacementOperation(),
+            // new CopyReplaceOperation()
         ));
 
 
@@ -76,11 +81,14 @@ public class JProphetMain {
             List<AstOperation> operations, PatchEvaluator patchEvaluator, TestExecutor testExecutor,
             PatchedProjectGenerator patchedProjectGenerator, TestResultStore testResultStore, List<TestResultExporter> testResultExporters
             ) {
+        System.out.println("FL START");
         // フォルトローカライゼーション
         final List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
+        System.out.println("FL END");
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
         final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations);
+        System.out.println("PATCH GEN END");
         
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
         patchEvaluator.descendingSortBySuspiciousness(patchCandidates, suspiciousenesses);
