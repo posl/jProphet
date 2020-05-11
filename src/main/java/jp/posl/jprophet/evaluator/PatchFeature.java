@@ -8,7 +8,15 @@ import com.github.javaparser.ast.stmt.Statement;
 
 import jp.posl.jprophet.evaluator.NodeWithDiffType.TYPE;
 
+/**
+ * 修正パッチの特徴抽出を行うクラス
+ */
 public class PatchFeature {
+    /**
+     * 修正パッチの変更の特徴を抽出する
+     * @param nodeWithDiffType 差分情報付きの抽出対象の修正後AST
+     * @return 特徴ベクトル
+     */
     ModFeatureVec extractModFeature(NodeWithDiffType nodeWithDiffType) {
         Node node = nodeWithDiffType.getNode();
         TYPE type = nodeWithDiffType.getDiffType();
