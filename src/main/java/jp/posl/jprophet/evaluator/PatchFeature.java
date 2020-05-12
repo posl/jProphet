@@ -1,5 +1,8 @@
 package jp.posl.jprophet.evaluator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
@@ -63,5 +66,28 @@ public class PatchFeature {
                 accum.add(newVec);
                 return accum;
             });
+    }
+
+    List<ProgramChank> identifyModifiedProgramChank(NodeWithDiffType nodeWithDiffType) {
+        if(nodeWithDiffType.getDiffType() != TYPE.SAME) {
+            final int begin = nodeWithDiffType.getNode().getRange().get().begin.line;
+        }
+        else {
+        }
+        return new ArrayList<>();
+    }
+
+    static public class ProgramChank {
+        final private int beginLine;
+        final private int endLine;
+
+        public ProgramChank(int beginLine, int endLine) {
+            this.beginLine = beginLine;
+            this.endLine = endLine;
+        }
+    }
+
+    void identifyStatementKind(Node node) {
+            
     }
 }
