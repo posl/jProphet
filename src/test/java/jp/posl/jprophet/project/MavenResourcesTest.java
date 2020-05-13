@@ -31,7 +31,7 @@ import java.util.ArrayList;
 
 public class MavenResourcesTest {
 
-    /*
+    
     @Test public void testForResources(){
         final String buildDir = "./tmp/"; 
         final String resultDir = "./result/"; 
@@ -75,6 +75,7 @@ public class MavenResourcesTest {
             e.printStackTrace();
         }
     }
-    */
+    
+    
     
 }

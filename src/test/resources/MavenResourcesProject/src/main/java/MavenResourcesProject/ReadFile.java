@@ -10,10 +10,9 @@ import java.util.Properties;
  
 public class ReadFile {
 
-    public ReadFile() {
-        
+    public ReadFile(String str) {
         try {
-            InputStream is = this.getClass().getResourceAsStream("/test.txt");
+            InputStream is = this.getClass().getResourceAsStream(str);
             Properties props = new Properties();
             props.load(is);
             is.close();

@@ -15,7 +15,8 @@ public class AppTest
     @Test
     public void shouldAnswerWithTrue()
     {
-        ReadFile rf = new ReadFile();
-        assertTrue( true );
+        ReadFile rf = new ReadFile("/test.txt");
+        ReadFile rfd = new ReadFile("/dir/dir.txt");
+        ReadFile rfd2 = new ReadFile("/dir/dir2/dir2.txt");
     }
 }
