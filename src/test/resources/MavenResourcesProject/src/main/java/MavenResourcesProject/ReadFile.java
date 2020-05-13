@@ -11,6 +11,7 @@ import java.util.Properties;
 public class ReadFile {
 
     public ReadFile() {
+        
         try {
             InputStream is = this.getClass().getResourceAsStream("/test.txt");
             Properties props = new Properties();
@@ -19,10 +20,11 @@ public class ReadFile {
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
+        
     }
  
     public static void main() {
-
+        System.out.println("");
     }
  
 }

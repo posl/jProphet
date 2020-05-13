@@ -46,7 +46,6 @@ public class CoverageCollector {
         // ここであらかじめビルド済みのクラスファイルをクラスローダーが読み込んでおく
         try {
             this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./" + buildpath + "/") });
-            //this.memoryClassLoader = new MemoryClassLoader(new URL[] { new URL("file:./" + buildpath + "/tmpclass/") });
         } catch (MalformedURLException e){
             System.err.println(e.getMessage());
             e.printStackTrace();

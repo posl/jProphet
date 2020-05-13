@@ -37,6 +37,7 @@ public class MavenResourcesTest {
         final String resultDir = "./result/"; 
         String projectPath = "src/test/resources/MavenResourcesProject";
 
+
         final Project                  project                  = new MavenProject(projectPath);
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
         final Coefficient              coefficient              = new Jaccard();
@@ -75,4 +76,5 @@ public class MavenResourcesTest {
         }
     }
     */
+    
 }
