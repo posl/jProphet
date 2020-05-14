@@ -49,23 +49,6 @@ public class MemoryClassLoader extends URLClassLoader {
         definitions.put(name, bytes);
     }
 
-    // @Override
-    // public Class<?> loadClass(final String name, final boolean resolve)
-    //         throws ClassNotFoundException {
-    //     Class<?> c = findLoadedClass(name);
-    //     if (c == null) {
-    //         final byte[] bytes = definitions.get(name);
-    //         if (bytes != null) {
-    //             c = defineClass(name, bytes, 0, bytes.length);
-    //         }
-    //         c = super.loadClass(name, resolve);
-    //     }
-    //     if (c == null) {
-    //         throw new ClassNotFoundException(name);
-    //     }
-    //     return c;
-    // }
-
     /**
      * メモリ上からクラスを探す． <br>
      * まずURLClassLoaderによるファイルシステム上のクラスのロードを試み，それがなければメモリ上のクラスロードを試す．
@@ -143,22 +126,6 @@ public class MemoryClassLoader extends URLClassLoader {
             }
             return c;
         }
-    }
-
-    /*
-    @Override
-    public InputStream getResourceAsStream(final String name) {
-        final String fqn = convertStringNameToNameToFqn(name);
-        final byte[] bytes = definitions.get(fqn);
-        if (null == bytes) {
-            return super.getResourceAsStream(name);
-        }
-        return new ByteArrayInputStream(bytes);
-    }
-    */
-    
-    private String convertStringNameToNameToFqn(final String name) { 
-        return name.replaceAll("\\.class$", "").replaceAll("\\/", ".");
     }
 
 }

@@ -1,7 +1,6 @@
 package jp.posl.jprophet.test.executor;
 
 import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
 
 /**
  * junitによるテスト実行をスレッドで実行する
