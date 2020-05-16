@@ -20,7 +20,7 @@ public class PatchFeature {
      * @param nodeWithDiffType 差分情報付きの抽出対象の修正後AST
      * @return 特徴ベクトル
      */
-    ModFeatureVec extractModFeature(NodeWithDiffType nodeWithDiffType) {
+    public ModFeatureVec extractModFeature(NodeWithDiffType nodeWithDiffType) {
         Node node = nodeWithDiffType.getNode();
         TYPE type = nodeWithDiffType.getDiffType();
 
@@ -68,22 +68,54 @@ public class PatchFeature {
             });
     }
 
-    List<ProgramChank> identifyModifiedProgramChank(NodeWithDiffType nodeWithDiffType) {
-        if(nodeWithDiffType.getDiffType() != TYPE.SAME) {
-            final int begin = nodeWithDiffType.getNode().getRange().get().begin.line;
+    public List<ProgramChank> identifyModifiedProgramChank(NodeWithDiffType nodeWithDiffType) {
+        List<NodeWithDiffType> nodesWithDiffType = this.convertTreeToList(nodeWithDiffType);
+
+        List<ProgramChank> chanks = new ArrayList<ProgramChank>();
+        int begin = 0;
+        boolean counting = false;
+        for(NodeWithDiffType node: nodesWithDiffType) {
+            if(node.getDiffType() != TYPE.SAME && !counting) {
+                begin = node.getNode().getRange().get().begin.line;
+            }
+            if(node.getDiffType() == TYPE.SAME && counting) {
+                final int end = node.getNode().getRange().get().begin.line - 1;
+                chanks.add(new ProgramChank(begin, end));
+                counting = false;
+            }
         }
-        else {
+        if(counting) {
+            chanks.add(new ProgramChank(begin, begin));
         }
-        return new ArrayList<>();
+        return chanks;
     }
 
-    static public class ProgramChank {
-        final private int beginLine;
-        final private int endLine;
+    private List<NodeWithDiffType> convertTreeToList(NodeWithDiffType root) {
+        List<NodeWithDiffType> descendantNodes = new ArrayList<NodeWithDiffType>();
+        descendantNodes.add(root);
+        root.getChildNodes().stream()
+            .map(childNode -> convertTreeToList(childNode))
+            .forEach(descendantNodes::addAll);
+        return descendantNodes;
+    }
 
-        public ProgramChank(int beginLine, int endLine) {
-            this.beginLine = beginLine;
-            this.endLine = endLine;
+
+
+    static public class ProgramChank {
+        final private int begin;
+        final private int end;
+
+        public ProgramChank(int begin, int end) {
+            this.begin= begin;
+            this.end= end;
+        }
+
+        public int getBegin() {
+            return this.begin;
+        }
+
+        public int getEnd() {
+            return this.end;
         }
     }
 

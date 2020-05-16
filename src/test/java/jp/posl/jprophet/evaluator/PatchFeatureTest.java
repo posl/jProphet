@@ -8,6 +8,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.evaluator.PatchFeature.ProgramChank;
 
 public class PatchFeatureTest {
 
@@ -188,20 +189,24 @@ public class PatchFeatureTest {
 
     @Test public void hoge() {
         final String originalSource = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("   public void a() {\n\n")
-            .append("       if(foo)\n\n")
-            .append("           hoge();\n\n")
-            .append("   }\n\n")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       if(foo)\n")
+            .append("           hogehoge();\n")
+            .append("           hoge();\n")
+            .append("       fuga();\n")
+            .append("   }\n")
             .append("}\n")
             .toString();
 
         final String revisedSource = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("   public void a() {\n\n")
-            .append("       if(bar)\n\n")
-            .append("           hoge();\n\n")
-            .append("   }\n\n")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       if(bar)\n")
+            .append("           hogefuga();\n")
+            .append("           hoge();\n")
+            .append("       fuga2();\n")
+            .append("   }\n")
             .append("}\n")
             .toString();
         final String src = new StringBuilder().append("")
@@ -219,7 +224,7 @@ public class PatchFeatureTest {
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
         final PatchFeature patchFeature = new PatchFeature();
-        patchFeature.identifyModifiedProgramPoint(nodeWithDiffType);
+        List<ProgramChank> chank = patchFeature.identifyModifiedProgramChank(nodeWithDiffType);
         patchFeature.identifyStatementKind(nodes.get(0));
     }
 }
