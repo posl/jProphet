@@ -10,8 +10,10 @@ public class ModFeatureVec {
     public int insertGuard;
     /* 条件式の置き換え */
     public int replaceCond;
-    /* ステートメントの置き換え */
-    public int replaceStmt;
+    /* 変数の置き換え */
+    public int replaceVar;
+    /* メソッドの置き換え */
+    public int replaceMethod;
     /* ステートメントの挿入 */
     public int insertStmt;
 
@@ -22,23 +24,26 @@ public class ModFeatureVec {
         insertControl = 0;
         insertGuard = 0;
         replaceCond = 0;
-        replaceStmt = 0;
+        replaceVar = 0;
+        replaceMethod = 0;
         insertStmt = 0;
     };
 
     /**
      * 各要素を与えられた数値で初期化してベクトルを生成
      * @param insertControl InsertControlの値
-     * @param insertGuard InsertGuardの値
-     * @param replaceCond ReplaceCondの値
-     * @param replaceStmt ReplaceStmtの値
-     * @param insertStmt InsertStmtの値
+     * @param insertGuard   InsertGuardの値
+     * @param replaceCond   ReplaceCondの値
+     * @param replaceVar    ReplaceVarの値
+     * @param replaceMethod ReplaceMethodの値
+     * @param insertStmt    InsertStmtの値
      */
-    public ModFeatureVec(int insertControl, int insertGuard, int replaceCond, int replaceStmt, int insertStmt) {
+    public ModFeatureVec(int insertControl, int insertGuard, int replaceCond, int replaceVar, int replaceMethod, int insertStmt) {
         this.insertControl = insertControl;
         this.insertGuard = insertGuard;
         this.replaceCond = replaceCond;
-        this.replaceStmt = replaceStmt;
+        this.replaceVar = replaceVar;
+        this.replaceMethod = replaceMethod;
         this.insertStmt = insertStmt;
     };
 
@@ -50,7 +55,8 @@ public class ModFeatureVec {
         this.insertControl += addendVec.insertControl;
         this.insertGuard += addendVec.insertGuard;
         this.replaceCond += addendVec.replaceCond;
-        this.replaceStmt += addendVec.replaceStmt;
+        this.replaceVar += addendVec.replaceVar;
+        this.replaceMethod += addendVec.replaceMethod;
         this.insertStmt += addendVec.insertStmt;
     }
 

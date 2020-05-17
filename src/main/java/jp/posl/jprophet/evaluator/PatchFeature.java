@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
@@ -58,8 +60,11 @@ public class PatchFeature {
             if(node instanceof IfStmt) {
                 vec.replaceCond += 1;
             }
-            else if(node instanceof Statement) {
-                vec.replaceStmt += 1;
+            else if(node instanceof MethodCallExpr) {
+                vec.replaceMethod += 1;
+            }
+            else if (node instanceof NameExpr) {
+                vec.replaceVar += 1;
             }
         }
 

@@ -43,7 +43,7 @@ public class PatchFeatureTest {
         final ModFeatureVec actualFeatureVec = patchFeature.extractModFeature(nodeWithDiffType);
 
         // BreakStmtがInsertStmtとして加算されている
-        final ModFeatureVec expectModFeature = new ModFeatureVec(2, 0, 0, 0, 2);
+        final ModFeatureVec expectModFeature = new ModFeatureVec(2, 0, 0, 0, 0, 2);
 
         assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
         return;
@@ -79,7 +79,7 @@ public class PatchFeatureTest {
 
         final ModFeatureVec actualFeatureVec = patchFeature.extractModFeature(nodeWithDiffType);
 
-        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 1, 0, 0, 0);
+        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 1, 0, 0, 0, 0);
 
         assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
         return;
@@ -114,7 +114,7 @@ public class PatchFeatureTest {
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
 
         final ModFeatureVec actualFeatureVec = patchFeature.extractModFeature(nodeWithDiffType);
-        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 1, 0, 0, 0);
+        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 1, 0, 0, 0, 0);
 
         assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
         return;
@@ -150,16 +150,51 @@ public class PatchFeatureTest {
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
 
         final ModFeatureVec actualFeatureVec = patchFeature.extractModFeature(nodeWithDiffType);
-        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 0, 1, 0, 0);
+        // 条件式内部が変数のためReplaceVarも判定される
+        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 0, 1, 1, 0, 0);
 
         assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
         return;
     }
 
     /**
-     * ReplaceStmtパターンの修正を判定できるかテスト
+     * ReplaceVarパターンの修正を判定できるかテスト
      */
-    @Test public void testModFeatureForReplaceStmt() {
+    @Test public void testModFeatureForReplaceVar() {
+        final String originalSource = new StringBuilder().append("")
+            .append("public class A {\n\n")
+            .append("   public void a() {\n\n")
+            .append("       hoge = foo;\n\n")
+            .append("   }\n\n")
+            .append("}\n")
+            .toString();
+
+        final String revisedSource = new StringBuilder().append("")
+            .append("public class A {\n\n")
+            .append("   public void a() {\n\n")
+            .append("       hoge = bar;\n\n")
+            .append("   }\n\n")
+            .append("}\n")
+            .toString();
+
+        final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
+        final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
+
+        final PatchFeature patchFeature = new PatchFeature();
+        final AstDiff diff = new AstDiff();
+        final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
+
+        final ModFeatureVec actualFeatureVec = patchFeature.extractModFeature(nodeWithDiffType);
+        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 0, 0, 1, 0, 0);
+
+        assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
+        return;
+    }
+
+    /**
+     * ReplaceMethodパターンの修正を判定できるかテスト
+     */
+    @Test public void testModFeatureForReplaceMethod() {
         final String originalSource = new StringBuilder().append("")
             .append("public class A {\n\n")
             .append("   public void a() {\n\n")
@@ -184,7 +219,7 @@ public class PatchFeatureTest {
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
 
         final ModFeatureVec actualFeatureVec = patchFeature.extractModFeature(nodeWithDiffType);
-        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 0, 0, 1, 0);
+        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 0, 0, 0, 1, 0);
 
         assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
         return;
@@ -217,10 +252,9 @@ public class PatchFeatureTest {
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
 
         final ModFeatureVec actualFeatureVec = patchFeature.extractModFeature(nodeWithDiffType);
-        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 0, 0, 0, 1);
+        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 0, 0, 0, 0, 1);
 
         assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
         return;
     }
-
 }
