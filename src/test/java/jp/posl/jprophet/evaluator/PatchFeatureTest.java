@@ -186,45 +186,4 @@ public class PatchFeatureTest {
         assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
         return;
     }
-
-    @Test public void hoge() {
-        final String originalSource = new StringBuilder().append("")
-            .append("public class A {\n")
-            .append("   public void a() {\n")
-            .append("       if(foo)\n")
-            .append("           hogehoge();\n")
-            .append("           hoge();\n")
-            .append("       fuga();\n")
-            .append("   }\n")
-            .append("}\n")
-            .toString();
-
-        final String revisedSource = new StringBuilder().append("")
-            .append("public class A {\n")
-            .append("   public void a() {\n")
-            .append("       if(bar)\n")
-            .append("           hogefuga();\n")
-            .append("           hoge();\n")
-            .append("       fuga2();\n")
-            .append("   }\n")
-            .append("}\n")
-            .toString();
-        final String src = new StringBuilder().append("")
-            .append("public class A {\n")
-            .append("   public void a() {\n")
-            .append("       hoge();\n")
-            .append("   }\n")
-            .append("}\n")
-            .toString();
-        
-        final List<Node> nodes = NodeUtility.getAllNodesFromCode(src);
-        final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
-        final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
-
-        final AstDiff diff = new AstDiff();
-        final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
-        final PatchFeature patchFeature = new PatchFeature();
-        List<ProgramChank> chank = patchFeature.identifyModifiedProgramChank(nodeWithDiffType);
-        patchFeature.identifyStatementKind(nodes.get(0));
-    }
 }

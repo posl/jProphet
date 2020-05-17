@@ -99,8 +99,6 @@ public class PatchFeature {
         return descendantNodes;
     }
 
-
-
     static public class ProgramChank {
         final private int begin;
         final private int end;
@@ -117,9 +115,5 @@ public class PatchFeature {
         public int getEnd() {
             return this.end;
         }
-    }
-
-    void identifyStatementKind(Node node) {
-            
     }
 }
