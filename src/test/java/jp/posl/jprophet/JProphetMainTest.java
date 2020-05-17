@@ -2,14 +2,21 @@ package jp.posl.jprophet;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.github.javaparser.ast.Node;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 
+import jp.posl.jprophet.PatchCandidateGenerator.AppliedOperationResult;
 import jp.posl.jprophet.evaluator.PatchEvaluator;
 import jp.posl.jprophet.fl.FaultLocalization;
 import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
@@ -85,5 +92,48 @@ public class JProphetMainTest {
     }
 
 
+    /**
+     * パッチの適用のみを多数繰り返すテスト 途中でOOMEが発生する
+     */
+    
+    @Test public void generatingPatchTest() {
+        final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(
+            new CondRefinementOperation(),
+            new CondIntroductionOperation(), 
+            new CtrlFlowIntroductionOperation(), 
+            new InsertInitOperation(), 
+            new VariableReplacementOperation(),
+            new CopyReplaceOperation()
+        ));
+        int patchCandidateID = 0;
+        String fileName = "src/test/resources/FizzBuzz01/src/main/java/FizzBuzz01/FizzBuzz.java";
+        try {
+            for(int i = 0; i < 1000; i++) {
+                List<String> lines = Files.readAllLines(Paths.get(fileName), StandardCharsets.UTF_8);
+                String sourceCode = String.join("\n", lines);
+                List<Node> targetNodes = NodeUtility.getAllNodesFromCode(sourceCode);
+                for(Node targetNode : targetNodes){
+                    for (AstOperation op : operations) {
+                        op.exec(targetNode);    //戻り値を受け取らない
+                        patchCandidateID += 1;
+                        System.out.println(patchCandidateID);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * TestFizzBuzzを多数繰り返すテスト これも途中でOOMEが発生する
+     */
+
+    @Test public void repeatingTestFizzBuzz() {
+        for(int i = 0; i < 1000; i++) {
+            testFizzBuzz();
+            System.gc();
+        }
+    }
     
 }
