@@ -33,7 +33,13 @@ public class PatchFeature {
                     if(child.getDiffType() == TYPE.SAME) {
                         insertGuard = true;
                     }
-                    if(node.findFirst(BreakStmt.class).isPresent() || node.findFirst(ReturnStmt.class).isPresent()) {
+                    final boolean insertedBreak = child.findAll(BreakStmt.class).stream()
+                        .filter(n -> n.getDiffType() == TYPE.INSERT)
+                        .findAny().isPresent();
+                    final boolean insertedReturn = child.findAll(ReturnStmt.class).stream()
+                        .filter(n -> n.getDiffType() == TYPE.INSERT)
+                        .findAny().isPresent();
+                    if(insertedBreak || insertedReturn) {
                         insertControl = true;
                     }
                 }       

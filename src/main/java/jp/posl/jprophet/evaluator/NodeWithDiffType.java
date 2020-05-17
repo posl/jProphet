@@ -67,6 +67,24 @@ public class NodeWithDiffType {
     }
 
     /**
+     * ASTを走査し全ての{@code nodeType}のnodeを返す
+     * @param nodeType 探したいnodeのクラス
+     * @return nodeTypeが一致するノードのリスト
+     */
+    public <T extends Node> List<NodeWithDiffType> findAll(Class<T> nodeType) {
+        List<NodeWithDiffType> nodes = new ArrayList<NodeWithDiffType>();
+        for(NodeWithDiffType child: this.childNodes) {
+            if(child.getNode().getClass() == nodeType) {
+                nodes.add(child);
+                child.getNode().findAll(nodeType)
+            }
+            nodes.addAll(child.findAll(nodeType));
+        }
+        return nodes;
+    }
+
+
+    /**
      * {@inheritDoc}
      */
     @Override
