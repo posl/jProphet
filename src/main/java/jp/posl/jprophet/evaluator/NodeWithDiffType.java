@@ -67,17 +67,32 @@ public class NodeWithDiffType {
     }
 
     /**
+     * ASTを走査し全ての{@code diffType}のnodeを返す
+     * @param diffType 探したいdiffの種類
+     * @return diffTypeが一致するノードのリスト
+     */
+    public List<NodeWithDiffType> findAll(TYPE diffType) {
+        List<NodeWithDiffType> nodes = new ArrayList<NodeWithDiffType>();
+        if(this.diffType == diffType) {
+            nodes.add(this);
+        }
+        for(NodeWithDiffType child: this.childNodes) {
+            nodes.addAll(child.findAll(diffType));
+        }
+        return nodes;
+    }
+
+    /**
      * ASTを走査し全ての{@code nodeType}のnodeを返す
      * @param nodeType 探したいnodeのクラス
      * @return nodeTypeが一致するノードのリスト
      */
     public <T extends Node> List<NodeWithDiffType> findAll(Class<T> nodeType) {
         List<NodeWithDiffType> nodes = new ArrayList<NodeWithDiffType>();
+        if(this.node.getClass() == nodeType) {
+            nodes.add(this);
+        }
         for(NodeWithDiffType child: this.childNodes) {
-            if(child.getNode().getClass() == nodeType) {
-                nodes.add(child);
-                child.getNode().findAll(nodeType)
-            }
             nodes.addAll(child.findAll(nodeType));
         }
         return nodes;

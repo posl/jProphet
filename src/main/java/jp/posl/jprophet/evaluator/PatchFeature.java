@@ -29,20 +29,20 @@ public class PatchFeature {
             if(node instanceof IfStmt) {
                 Boolean insertGuard   = false;
                 Boolean insertControl = false;
-                for(NodeWithDiffType child: nodeWithDiffType.getChildNodes()) {
-                    if(child.getDiffType() == TYPE.SAME) {
-                        insertGuard = true;
-                    }
-                    final boolean insertedBreak = child.findAll(BreakStmt.class).stream()
-                        .filter(n -> n.getDiffType() == TYPE.INSERT)
-                        .findAny().isPresent();
-                    final boolean insertedReturn = child.findAll(ReturnStmt.class).stream()
-                        .filter(n -> n.getDiffType() == TYPE.INSERT)
-                        .findAny().isPresent();
-                    if(insertedBreak || insertedReturn) {
-                        insertControl = true;
-                    }
-                }       
+                if(nodeWithDiffType.findAll(TYPE.SAME).size() > 0) {
+                    insertGuard = true;
+                }
+
+                final boolean insertedBreak = nodeWithDiffType.findAll(BreakStmt.class).stream()
+                    .filter(n -> n.getDiffType() == TYPE.INSERT)
+                    .findAny().isPresent();
+                final boolean insertedReturn = nodeWithDiffType.findAll(ReturnStmt.class).stream()
+                    .filter(n -> n.getDiffType() == TYPE.INSERT)
+                    .findAny().isPresent();
+                if(insertedBreak || insertedReturn) {
+                    insertControl = true;
+                }
+
                 if(insertGuard) {
                     vec.insertGuard += 1;
                 }
