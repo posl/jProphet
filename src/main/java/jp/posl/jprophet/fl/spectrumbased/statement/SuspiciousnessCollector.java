@@ -84,11 +84,11 @@ public class SuspiciousnessCollector {
      */
     private Suspiciousness calculateSuspiciousnessOfLine(String sourceFqn, List<Coverage> failedCoverages, List<Coverage> successedCoverages, final int line) {
             
-        List<Status>failedCoverageStatuses = failedCoverages.stream()
+        List<Status> failedCoverageStatuses = failedCoverages.stream()
             .map(c -> c.getStatus(line))
             .collect(Collectors.toList());
         
-        List<Status>successedCoverageStatuses = successedCoverages.stream()
+        List<Status> successedCoverageStatuses = successedCoverages.stream()
             .map(c -> c.getStatus(line))
             .collect(Collectors.toList());
         
@@ -101,6 +101,12 @@ public class SuspiciousnessCollector {
 
     }
 
+    /**
+     * listの中のstatusの数をカウントする
+     * @param list
+     * @param status
+     * @return
+     */
     private int countStatus(List<Status> list, Status status){
         return list.stream()
             .filter(l -> l.equals(status))

@@ -213,7 +213,6 @@ public class CoverageCollector {
             final ExecutionDataStore executionData = new ExecutionDataStore();
             final SessionInfoStore sessionInfo = new SessionInfoStore();
             jacocoRuntimeData.collect(executionData, sessionInfo, false);
-            //jacocoRuntime.shutdown();
 
             final Analyzer analyzer = new Analyzer(executionData, coverageBuilder);
 

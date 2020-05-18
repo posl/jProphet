@@ -103,8 +103,8 @@ public class Coverage {
 
     /**
      * line行目のStatusを返す
-     * @param line
-     * @return
+     * @param line Statusを取得する行
+     * @return line行目のStatus
      */
     public Status getStatus(final int line) {
         return statuses.get(line - 1);
