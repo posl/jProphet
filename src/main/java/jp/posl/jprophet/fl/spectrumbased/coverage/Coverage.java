@@ -93,12 +93,21 @@ public class Coverage {
      * 各行のカバレッジ(0,1,2,3)をHashMapで取得
      * @return 各行のカバレッジ
      */
-    public HashMap<Integer, Integer> getStatusOfLine(){
-        HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+    public HashMap<Integer, Status> getStatusesOfLine(){
+        HashMap<Integer, Status> map = new HashMap<Integer, Status>();
         for (int k = 1; k <= statuses.size(); k++){
-            map.put(k, statuses.get(k-1).ordinal());
+            map.put(k, statuses.get(k-1));
         }
         return map;                
+    }
+
+    /**
+     * line行目のStatusを返す
+     * @param line
+     * @return
+     */
+    public Status getStatus(final int line) {
+        return statuses.get(line - 1);
     }
 
     /**

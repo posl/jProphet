@@ -65,7 +65,7 @@ public class CoverageCollector {
     public TestResults exec(final List<String> sourceFQNs, final List<String> testFQNs) throws Exception {
         final TestResults testResults = new TestResults();
 
-        //対象ソースコードの定義をmemoryClassLoaderに追加(ロードはしない)
+        //対象ソースコードをinstrumentしたものの定義をmemoryClassLoaderに追加(ロードはしない)
         for (String sourceFQN : sourceFQNs) {
             InputStream is = this.getTargetClassInputStream(sourceFQN);
             byte[] bytes = IOUtils.toByteArray(is);
@@ -73,7 +73,7 @@ public class CoverageCollector {
             this.memoryClassLoader.addDefinition(sourceFQN, instrumentedBytes);
         }
 
-        //対象テストコードをinstrumentしたものの定義をmemoryClassLoaderに追加(ロードはしない)
+        //対象テストコードの定義をmemoryClassLoaderに追加(ロードはしない)
         for (String testFQN : testFQNs) {
             InputStream is = this.getTargetClassInputStream(testFQN);
             byte[] bytes = IOUtils.toByteArray(is);
@@ -102,19 +102,11 @@ public class CoverageCollector {
             }
         }
         
-        /*
-        final JUnitCore junitCore = new JUnitCore();
-        final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
-        junitCore.addListener(listener);
-        Result result = junitCore.run(junitClasses.toArray(new Class<?>[junitClasses.size()]));
-        */
-        
         return testResults;
     }
 
     /**
     * 全クラスを定義内からロードしてクラスオブジェクトの集合を返す．
-    *
     * @param memoryClassLoader
     * @param fqns
     * @return
@@ -129,46 +121,6 @@ public class CoverageCollector {
     }
 
     /**
-     * jacoco計測のためのクラス書き換えを行い，その書き換え結果をクラスロードする．
-     * 
-     * @param fqns 書き換え対象（計測対象）クラスのFQNs
-     * @return 書き換えたクラスオブジェクトs
-     * @throws Exception
-     */
-    private List<Class<?>> loadInstrumentedClasses(List<String> fqns) throws Exception {
-        List<Class<?>> loadedClasses = new ArrayList<>();
-        for (final String fqn : fqns) {
-            final byte[] instrumentedData = instrument(fqn);
-            loadedClasses.add(loadClass(fqn, instrumentedData));
-        }
-        return loadedClasses;
-    }
-
-    /**
-     * jacoco計測のためのクラス書き換えを行う．
-     * 
-     * @param fqn 書き換え対象（計測対象）クラスのFQNs
-     * @return 書き換えた
-     * @throws Exception
-     */
-    private byte[] instrument(final String fqn) throws Exception {
-        return this.jacocoInstrumenter.instrument(getTargetClassInputStream(fqn), fqn);
-    }
-
-    /**
-     * MemoryClassLoaderを使ったクラスのロード．
-     * 
-     * @param fqn
-     * @param bytes
-     * @return
-     * @throws ClassNotFoundException
-     */
-    private Class<?> loadClass(final String fqn, final byte[] bytes) throws ClassNotFoundException {
-        this.memoryClassLoader.addDefinition(fqn, bytes);
-        return this.memoryClassLoader.loadClass(fqn); // force load instrumented class.
-    }
-
-    /**
      * classファイルのInputStreamを取り出す．
      * 
      * @param fqn 読み込み対象のFQN
@@ -176,7 +128,6 @@ public class CoverageCollector {
      */
     private InputStream getTargetClassInputStream(final String fqn) {
         final String resource = fqn.replace('.', '/') + ".class";
-        //return getClass().getResourceAsStream(resource);
         InputStream is = this.memoryClassLoader.getResourceAsStream(resource);
         return is;
     }

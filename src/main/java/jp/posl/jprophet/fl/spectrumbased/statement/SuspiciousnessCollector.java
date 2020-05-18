@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
 import jp.posl.jprophet.fl.spectrumbased.coverage.Coverage;
 import jp.posl.jprophet.fl.spectrumbased.coverage.TestResults;
+import jp.posl.jprophet.fl.spectrumbased.coverage.Coverage.Status;
 import jp.posl.jprophet.fl.Suspiciousness;
 
 /**
@@ -82,35 +83,30 @@ public class SuspiciousnessCollector {
 
         for (int i = 1; i <= lineLength; i++) {
             final int line = i;
-            Map<Integer, Integer> failedCoverageStatus = failedCoverages.stream()
-                .map(c -> c.getStatusOfLine().get(line))
-                .collect(
-                    Collectors.groupingBy(
-                            //MapのキーにはListの要素をそのままセットする
-                    Function.identity(),
-                            //Mapの値にはListの要素を1に置き換えて、それをカウントするようにする
-                    Collectors.summingInt(s->1)) 
-                );
             
-            Map<Integer, Integer> successedCoverageStatus = successedCoverages.stream()
-                .map(c -> c.getStatusOfLine().get(line))
-                .collect(
-                    Collectors.groupingBy(
-                            //MapのキーにはListの要素をそのままセットする
-                    Function.identity(),
-                            //Mapの値にはListの要素を1に置き換えて、それをカウントするようにする
-                    Collectors.summingInt(s->1)) 
-                );
-
-            int numberOfFailedTestsCoveringStatement = failedCoverageStatus.get(2) == null ? 0 : failedCoverageStatus.get(2);
-            int numberOfFailedTestsNotCoveringStatement = failedCoverageStatus.get(1) == null ? 0 : failedCoverageStatus.get(1);
-            int numberOfSuccessedTestsCoveringStatement = successedCoverageStatus.get(2) == null ? 0 : successedCoverageStatus.get(2);
-            int numberOfSuccessedTestsNotCoveringStatement = successedCoverageStatus.get(1) == null ? 0 : successedCoverageStatus.get(1);
+            List<Status>failedCoverageStatuses = failedCoverages.stream()
+                .map(c -> c.getStatus(line))
+                .collect(Collectors.toList());
+            
+            List<Status>successedCoverageStatuses = successedCoverages.stream()
+                .map(c -> c.getStatus(line))
+                .collect(Collectors.toList());
+            
+            final int numberOfFailedTestsCoveringStatement = countStatus(failedCoverageStatuses, Status.COVERED);
+            final int numberOfFailedTestsNotCoveringStatement = countStatus(failedCoverageStatuses, Status.NOT_COVERED);
+            final int numberOfSuccessedTestsCoveringStatement = countStatus(successedCoverageStatuses, Status.COVERED);
+            final int numberOfSuccessedTestsNotCoveringStatement = countStatus(successedCoverageStatuses, Status.NOT_COVERED);
+            
             Suspiciousness suspiciousness = new Suspiciousness(sourceFqn, line, coefficient.calculate(numberOfFailedTestsCoveringStatement, numberOfFailedTestsNotCoveringStatement, numberOfSuccessedTestsCoveringStatement, numberOfSuccessedTestsNotCoveringStatement));
             this.suspiciousnesses.add(suspiciousness);
         }
+    }
 
-
+    private int countStatus(List<Status> list, Status status){
+        return list.stream()
+            .filter(l -> l.equals(status))
+            .collect(Collectors.toList())
+            .size();
     }
 
 }
