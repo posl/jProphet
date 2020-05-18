@@ -1,8 +1,6 @@
 package jp.posl.jprophet.fl.spectrumbased.statement;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
@@ -55,7 +53,16 @@ public class SuspiciousnessCollector {
                     .collect(Collectors.toList()))
                 .forEach(c -> successedCoverages.addAll(c));
 
-            calculateSuspiciousnessOfSource(sourceFqn, failedCoverages, successedCoverages);
+            int lineLength = 0;
+            if (!failedCoverages.isEmpty()){
+                lineLength = failedCoverages.get(0).getLength();
+            } else if (!successedCoverages.isEmpty()){
+                lineLength = successedCoverages.get(0).getLength();
+            }
+
+            for (int i = 1; i <= lineLength; i++) {
+                this.suspiciousnesses.add(calculateSuspiciousnessOfLine(sourceFqn, failedCoverages, successedCoverages, i));
+            }
         }
     }
 
@@ -68,38 +75,30 @@ public class SuspiciousnessCollector {
     }
 
     /**
-     * sourceFqnが示すファイルの各行の疑惑値を算出する
+     * sourceFqnのline行目の疑惑値を計算する
      * @param sourceFqn
      * @param failedCoverages
      * @param successedCoverages
+     * @param line
+     * @return
      */
-    private void calculateSuspiciousnessOfSource(String sourceFqn, List<Coverage> failedCoverages, List<Coverage> successedCoverages) {
-        int lineLength = 0;
-        if (!failedCoverages.isEmpty()){
-            lineLength = failedCoverages.get(0).getLength();
-        } else if (!successedCoverages.isEmpty()){
-            lineLength = successedCoverages.get(0).getLength();
-        }
+    private Suspiciousness calculateSuspiciousnessOfLine(String sourceFqn, List<Coverage> failedCoverages, List<Coverage> successedCoverages, final int line) {
+            
+        List<Status>failedCoverageStatuses = failedCoverages.stream()
+            .map(c -> c.getStatus(line))
+            .collect(Collectors.toList());
+        
+        List<Status>successedCoverageStatuses = successedCoverages.stream()
+            .map(c -> c.getStatus(line))
+            .collect(Collectors.toList());
+        
+        final int numberOfFailedTestsCoveringStatement = countStatus(failedCoverageStatuses, Status.COVERED);
+        final int numberOfFailedTestsNotCoveringStatement = countStatus(failedCoverageStatuses, Status.NOT_COVERED);
+        final int numberOfSuccessedTestsCoveringStatement = countStatus(successedCoverageStatuses, Status.COVERED);
+        final int numberOfSuccessedTestsNotCoveringStatement = countStatus(successedCoverageStatuses, Status.NOT_COVERED);
+        
+        return new Suspiciousness(sourceFqn, line, coefficient.calculate(numberOfFailedTestsCoveringStatement, numberOfFailedTestsNotCoveringStatement, numberOfSuccessedTestsCoveringStatement, numberOfSuccessedTestsNotCoveringStatement));
 
-        for (int i = 1; i <= lineLength; i++) {
-            final int line = i;
-            
-            List<Status>failedCoverageStatuses = failedCoverages.stream()
-                .map(c -> c.getStatus(line))
-                .collect(Collectors.toList());
-            
-            List<Status>successedCoverageStatuses = successedCoverages.stream()
-                .map(c -> c.getStatus(line))
-                .collect(Collectors.toList());
-            
-            final int numberOfFailedTestsCoveringStatement = countStatus(failedCoverageStatuses, Status.COVERED);
-            final int numberOfFailedTestsNotCoveringStatement = countStatus(failedCoverageStatuses, Status.NOT_COVERED);
-            final int numberOfSuccessedTestsCoveringStatement = countStatus(successedCoverageStatuses, Status.COVERED);
-            final int numberOfSuccessedTestsNotCoveringStatement = countStatus(successedCoverageStatuses, Status.NOT_COVERED);
-            
-            Suspiciousness suspiciousness = new Suspiciousness(sourceFqn, line, coefficient.calculate(numberOfFailedTestsCoveringStatement, numberOfFailedTestsNotCoveringStatement, numberOfSuccessedTestsCoveringStatement, numberOfSuccessedTestsNotCoveringStatement));
-            this.suspiciousnesses.add(suspiciousness);
-        }
     }
 
     private int countStatus(List<Status> list, Status status){

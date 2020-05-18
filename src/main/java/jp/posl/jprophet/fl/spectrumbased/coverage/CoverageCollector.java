@@ -20,7 +20,6 @@ import org.jacoco.core.runtime.LoggerRuntime;
 import org.jacoco.core.runtime.RuntimeData;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
@@ -107,9 +106,10 @@ public class CoverageCollector {
 
     /**
     * 全クラスを定義内からロードしてクラスオブジェクトの集合を返す．
-    * @param memoryClassLoader
-    * @param fqns
-    * @return
+    *
+    * @param memoryClassLoader クラスローダー
+    * @param fqns 取り出すクラスのfqn
+    * @return クラスオブジェクトの集合
     * @throws ClassNotFoundException
     */
     private List<Class<?>> loadAllClasses(final List<String> fqns) throws ClassNotFoundException {
