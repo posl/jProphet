@@ -81,22 +81,24 @@ public class PatchFeature {
 
     public List<ProgramChank> identifyModifiedProgramChank(NodeWithDiffType nodeWithDiffType) {
         List<NodeWithDiffType> nodesWithDiffType = this.convertTreeToList(nodeWithDiffType);
-
         List<ProgramChank> chanks = new ArrayList<ProgramChank>();
-        int begin = 0;
+        int beginLine = 0;
+        int previousLine = 0;
         boolean counting = false;
         for(NodeWithDiffType node: nodesWithDiffType) {
-            if(node.getDiffType() != TYPE.SAME && !counting) {
-                begin = node.getNode().getRange().get().begin.line;
+            final int line = node.getNode().getRange().get().begin.line;
+            if(!counting && node.getDiffType() != TYPE.SAME) {
+                beginLine = line;
+                counting = true;
             }
-            if(node.getDiffType() == TYPE.SAME && counting) {
-                final int end = node.getNode().getRange().get().begin.line - 1;
-                chanks.add(new ProgramChank(begin, end));
+            if(counting && node.getDiffType() == TYPE.SAME && line != previousLine) {;
+                chanks.add(new ProgramChank(beginLine, previousLine));
                 counting = false;
             }
+            previousLine = node.getNode().getRange().get().begin.line;
         }
         if(counting) {
-            chanks.add(new ProgramChank(begin, begin));
+            chanks.add(new ProgramChank(beginLine, previousLine));
         }
         return chanks;
     }
