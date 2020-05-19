@@ -153,9 +153,7 @@ public class CoverageCollector {
          * @param storedTestResults テスト実行結果の保存先
          * @throws Exception
          */
-        public CoverageMeasurementListener(TestResults storedTestResults)
-                throws Exception {
-            //jacocoRuntime.startup(jacocoRuntimeData);
+        public CoverageMeasurementListener(TestResults storedTestResults) {
             this.testResults = storedTestResults;
         }
 
