@@ -72,7 +72,7 @@ public class NodeWithDiffType {
      * @return diffTypeが一致するノードのリスト
      */
     public List<NodeWithDiffType> findAll(TYPE diffType) {
-        List<NodeWithDiffType> nodes = new ArrayList<NodeWithDiffType>();
+        final List<NodeWithDiffType> nodes = new ArrayList<NodeWithDiffType>();
         if(this.diffType == diffType) {
             nodes.add(this);
         }
@@ -88,7 +88,7 @@ public class NodeWithDiffType {
      * @return nodeTypeが一致するノードのリスト
      */
     public <T extends Node> List<NodeWithDiffType> findAll(Class<T> nodeType) {
-        List<NodeWithDiffType> nodes = new ArrayList<NodeWithDiffType>();
+        final List<NodeWithDiffType> nodes = new ArrayList<NodeWithDiffType>();
         if(this.node.getClass() == nodeType) {
             nodes.add(this);
         }
@@ -103,8 +103,8 @@ public class NodeWithDiffType {
      * @return プログラムチャンクのリスト
      */
     public List<ProgramChank> identifyModifiedProgramChanks() {
-        List<NodeWithDiffType> nodesWithDiffType = this.getAllNodeInSourceCodeOrder();
-        List<ProgramChank> chanks = new ArrayList<ProgramChank>();
+        final List<NodeWithDiffType> nodesWithDiffType = this.getAllNodeInSourceCodeOrder();
+        final List<ProgramChank> chanks = new ArrayList<ProgramChank>();
         int beginLine = 0;
         int previousLine = 0;
         boolean counting = false;
@@ -131,7 +131,7 @@ public class NodeWithDiffType {
      * @return NodeWithDiffTypeのリスト
      */
     private List<NodeWithDiffType> getAllNodeInSourceCodeOrder() {
-        List<NodeWithDiffType> descendantNodes = new ArrayList<NodeWithDiffType>();
+        final List<NodeWithDiffType> descendantNodes = new ArrayList<NodeWithDiffType>();
         descendantNodes.add(this);
         this.getChildNodes().stream()
             .map(childNode -> childNode.getAllNodeInSourceCodeOrder())

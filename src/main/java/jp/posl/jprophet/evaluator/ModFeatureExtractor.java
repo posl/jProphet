@@ -27,8 +27,8 @@ public class ModFeatureExtractor {
      * @return 特徴ベクトル
      */
     public Map<ProgramChank, ModFeatureVec> extract(NodeWithDiffType nodeWithDiffType, List<ProgramChank> chanks) {
-        Node node = nodeWithDiffType.getNode();
-        TYPE type = nodeWithDiffType.getDiffType();
+        final Node node = nodeWithDiffType.getNode();
+        final TYPE type = nodeWithDiffType.getDiffType();
 
         final ModFeatureVec vec = new ModFeatureVec();
         if(type == TYPE.INSERT) {
