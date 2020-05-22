@@ -19,7 +19,10 @@ import jp.posl.jprophet.evaluator.NodeWithDiffType.TYPE;
  */
 public class ModFeatureExtractor {
     /**
-     * 修正パッチの変更の特徴を抽出する
+     * 修正パッチの変更の特徴をソースコード中の連続する複数の変更行であるプログラムチャンクごとに抽出する
+     * <p>
+     * なお，InsertControlは飛び飛びの複数の行から判定されることがあるが，属するプログラムチャンクは
+     * ifの存在するチャンクである
      * @param nodeWithDiffType 差分情報付きの抽出対象の修正後AST
      * @return 特徴ベクトル
      */

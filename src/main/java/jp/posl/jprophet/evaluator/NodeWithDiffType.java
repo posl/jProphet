@@ -98,8 +98,12 @@ public class NodeWithDiffType {
         return nodes;
     }
 
+    /**
+     * 差分情報を元に連続する変更されたコードの位置を特定する 
+     * @return プログラムチャンクのリスト
+     */
     public List<ProgramChank> identifyModifiedProgramChanks() {
-        List<NodeWithDiffType> nodesWithDiffType = this.getAllNodeInTree();
+        List<NodeWithDiffType> nodesWithDiffType = this.getAllNodeInSourceCodeOrder();
         List<ProgramChank> chanks = new ArrayList<ProgramChank>();
         int beginLine = 0;
         int previousLine = 0;
@@ -122,11 +126,15 @@ public class NodeWithDiffType {
         return chanks;
     }
 
-    private List<NodeWithDiffType> getAllNodeInTree() {
+    /**
+     * 木構造に含まれる全てのNodeWithDiffTypeを，元のソースコードに登場する順番で取得する
+     * @return NodeWithDiffTypeのリスト
+     */
+    private List<NodeWithDiffType> getAllNodeInSourceCodeOrder() {
         List<NodeWithDiffType> descendantNodes = new ArrayList<NodeWithDiffType>();
         descendantNodes.add(this);
         this.getChildNodes().stream()
-            .map(childNode -> childNode.getAllNodeInTree())
+            .map(childNode -> childNode.getAllNodeInSourceCodeOrder())
             .forEach(descendantNodes::addAll);
         return descendantNodes;
     }
