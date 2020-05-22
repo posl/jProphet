@@ -23,65 +23,7 @@ public class ModFeatureExtractor {
      * @param nodeWithDiffType 差分情報付きの抽出対象の修正後AST
      * @return 特徴ベクトル
      */
-    public ModFeatureVec extract(NodeWithDiffType nodeWithDiffType) {
-        Node node = nodeWithDiffType.getNode();
-        TYPE type = nodeWithDiffType.getDiffType();
-
-        final ModFeatureVec vec = new ModFeatureVec();
-        if(type == TYPE.INSERT) {
-            if(node instanceof IfStmt) {
-                Boolean insertGuard   = false;
-                Boolean insertControl = false;
-                if(nodeWithDiffType.findAll(TYPE.SAME).size() > 0) {
-                    insertGuard = true;
-                }
-
-                final boolean insertedBreak = nodeWithDiffType.findAll(BreakStmt.class).stream()
-                    .filter(n -> n.getDiffType() == TYPE.INSERT)
-                    .findAny().isPresent();
-                final boolean insertedReturn = nodeWithDiffType.findAll(ReturnStmt.class).stream()
-                    .filter(n -> n.getDiffType() == TYPE.INSERT)
-                    .findAny().isPresent();
-                if(insertedBreak || insertedReturn) {
-                    insertControl = true;
-                }
-
-                if(insertGuard) {
-                    vec.insertGuard += 1;
-                }
-                if(insertControl) {
-                    vec.insertControl += 1;
-                }
-            }
-            else if(node instanceof Statement) {
-                vec.insertStmt += 1;
-            }
-        }
-        if(type == TYPE.CHANGE) {
-            if(node instanceof IfStmt) {
-                vec.replaceCond += 1;
-            }
-            else if(node instanceof MethodCallExpr) {
-                vec.replaceMethod += 1;
-            }
-            else if (node instanceof NameExpr) {
-                vec.replaceVar += 1;
-            }
-        }
-
-        if(nodeWithDiffType.getChildNodes().size() == 0) {
-            return vec;
-        }
-        return nodeWithDiffType.getChildNodes().stream()
-            .map(childNode -> this.extract(childNode))
-            .reduce(vec, (accum, newVec) -> {
-                accum.add(newVec);
-                return accum;
-            });
-    }
-
-
-    public Map<ProgramChank, ModFeatureVec> extract2(NodeWithDiffType nodeWithDiffType, List<ProgramChank> chanks) {
+    public Map<ProgramChank, ModFeatureVec> extract(NodeWithDiffType nodeWithDiffType, List<ProgramChank> chanks) {
         Node node = nodeWithDiffType.getNode();
         TYPE type = nodeWithDiffType.getDiffType();
 
@@ -137,7 +79,7 @@ public class ModFeatureExtractor {
             return map;
         }
         return nodeWithDiffType.getChildNodes().stream()
-            .map(childNode -> this.extract2(childNode, chanks))
+            .map(childNode -> this.extract(childNode, chanks))
             .reduce(map, (accum, newMap) -> {
                 newMap.forEach((key, value) -> {
                     accum.merge(key, value, (v1, v2) -> {

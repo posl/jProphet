@@ -40,13 +40,13 @@ public class ModFeatureExtractorTest {
         final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
-        final List<ProgramChank> chanks = patchFeature.identifyModifiedProgramChank(nodeWithDiffType);
+        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
+
+        final Map<ProgramChank, ModFeatureVec> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
 
         // BreakStmtがInsertStmtとして加算されている
         final ModFeatureVec expectedModFeature = new ModFeatureVec(2, 0, 0, 0, 0, 2);
         final ProgramChank expectedChank = new ProgramChank(3, 6);
-
-        final Map<ProgramChank, ModFeatureVec> actualMap = patchFeature.extract2(nodeWithDiffType, chanks);
 
         assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
     }
@@ -56,19 +56,19 @@ public class ModFeatureExtractorTest {
      */
     @Test public void testModFeatureForInsertGuardWithPreExistingControl() {
         final String originalSource = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("   public void a() {\n\n")
-            .append("       return;\n\n")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       return;\n")
             .append("   }\n\n")
             .append("}\n")
             .toString();
 
         final String revisedSource = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("   public void a() {\n\n")
-            .append("       if(fuga)\n\n")
-            .append("           return;\n\n")
-            .append("   }\n\n")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       if(fuga)\n")
+            .append("           return;\n")
+            .append("   }\n")
             .append("}\n")
             .toString();
 
@@ -78,12 +78,14 @@ public class ModFeatureExtractorTest {
         final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
+        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
 
-        final ModFeatureVec actualFeatureVec = patchFeature.extract(nodeWithDiffType);
+        final Map<ProgramChank, ModFeatureVec> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
 
-        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 1, 0, 0, 0, 0);
+        final ModFeatureVec expectedModFeature = new ModFeatureVec(0, 1, 0, 0, 0, 0);
+        final ProgramChank expectedChank = new ProgramChank(3, 3);
 
-        assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
+        assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
         return;
     }
 
@@ -92,19 +94,19 @@ public class ModFeatureExtractorTest {
      */
     @Test public void testModFeatureForInsertGuard() {
         final String originalSource = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("   public void a() {\n\n")
-            .append("       hoge();\n\n")
-            .append("   }\n\n")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       hoge();\n")
+            .append("   }\n")
             .append("}\n")
             .toString();
 
         final String revisedSource = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("   public void a() {\n\n")
-            .append("       if(fuga)\n\n")
-            .append("           hoge();\n\n")
-            .append("   }\n\n")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       if(fuga)\n")
+            .append("           hoge();\n")
+            .append("   }\n")
             .append("}\n")
             .toString();
 
@@ -114,11 +116,14 @@ public class ModFeatureExtractorTest {
         final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
+        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
 
-        final ModFeatureVec actualFeatureVec = patchFeature.extract(nodeWithDiffType);
-        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 1, 0, 0, 0, 0);
+        final Map<ProgramChank, ModFeatureVec> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
 
-        assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
+        final ModFeatureVec expectedModFeature = new ModFeatureVec(0, 1, 0, 0, 0, 0);
+        final ProgramChank expectedChank = new ProgramChank(3, 3);
+
+        assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
         return;
     }
 
@@ -127,20 +132,20 @@ public class ModFeatureExtractorTest {
      */
     @Test public void testModFeatureForReplaceCond() {
         final String originalSource = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("   public void a() {\n\n")
-            .append("       if(foo)\n\n")
-            .append("           hoge();\n\n")
-            .append("   }\n\n")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       if(foo)\n")
+            .append("           hoge();\n")
+            .append("   }\n")
             .append("}\n")
             .toString();
 
         final String revisedSource = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("   public void a() {\n\n")
-            .append("       if(bar)\n\n")
-            .append("           hoge();\n\n")
-            .append("   }\n\n")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       if(bar)\n")
+            .append("           hoge();\n")
+            .append("   }\n")
             .append("}\n")
             .toString();
 
@@ -150,12 +155,15 @@ public class ModFeatureExtractorTest {
         final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
+        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
 
-        final ModFeatureVec actualFeatureVec = patchFeature.extract(nodeWithDiffType);
+        final Map<ProgramChank, ModFeatureVec> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
+
         // 条件式内部が変数のためReplaceVarも判定される
-        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 0, 1, 1, 0, 0);
+        final ModFeatureVec expectedModFeature = new ModFeatureVec(0, 0, 1, 1, 0, 0);
+        final ProgramChank expectedChank = new ProgramChank(3, 3);
 
-        assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
+        assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
         return;
     }
 
@@ -164,18 +172,18 @@ public class ModFeatureExtractorTest {
      */
     @Test public void testModFeatureForReplaceVar() {
         final String originalSource = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("   public void a() {\n\n")
-            .append("       hoge = foo;\n\n")
-            .append("   }\n\n")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       hoge = foo;\n")
+            .append("   }\n")
             .append("}\n")
             .toString();
 
         final String revisedSource = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("   public void a() {\n\n")
-            .append("       hoge = bar;\n\n")
-            .append("   }\n\n")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       hoge = bar;\n")
+            .append("   }\n")
             .append("}\n")
             .toString();
 
@@ -185,11 +193,14 @@ public class ModFeatureExtractorTest {
         final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
+        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
 
-        final ModFeatureVec actualFeatureVec = patchFeature.extract(nodeWithDiffType);
-        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 0, 0, 1, 0, 0);
+        final Map<ProgramChank, ModFeatureVec> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
 
-        assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
+        final ModFeatureVec expectedModFeature = new ModFeatureVec(0, 0, 0, 1, 0, 0);
+        final ProgramChank expectedChank = new ProgramChank(3, 3);
+
+        assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
         return;
     }
 
@@ -198,18 +209,18 @@ public class ModFeatureExtractorTest {
      */
     @Test public void testModFeatureForReplaceMethod() {
         final String originalSource = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("   public void a() {\n\n")
-            .append("       hoge();\n\n")
-            .append("   }\n\n")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       hoge();\n")
+            .append("   }\n")
             .append("}\n")
             .toString();
 
         final String revisedSource = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("   public void a() {\n\n")
-            .append("       fuga();\n\n")
-            .append("   }\n\n")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       fuga();\n")
+            .append("   }\n")
             .append("}\n")
             .toString();
 
@@ -219,11 +230,14 @@ public class ModFeatureExtractorTest {
         final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
+        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
 
-        final ModFeatureVec actualFeatureVec = patchFeature.extract(nodeWithDiffType);
-        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 0, 0, 0, 1, 0);
+        final Map<ProgramChank, ModFeatureVec> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
 
-        assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
+        final ModFeatureVec expectedModFeature = new ModFeatureVec(0, 0, 0, 0, 1, 0);
+        final ProgramChank expectedChank = new ProgramChank(3, 3);
+
+        assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
         return;
     }
 
@@ -232,17 +246,17 @@ public class ModFeatureExtractorTest {
      */
     @Test public void testModFeatureForInsertStmt() {
         final String originalSource = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("   public void a() {\n\n")
-            .append("   }\n\n")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("   }\n")
             .append("}\n")
             .toString();
 
         final String revisedSource = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("   public void a() {\n\n")
-            .append("       hoge();\n\n")
-            .append("   }\n\n")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       hoge();\n")
+            .append("   }\n")
             .append("}\n")
             .toString();
 
@@ -252,11 +266,14 @@ public class ModFeatureExtractorTest {
         final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
+        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
 
-        final ModFeatureVec actualFeatureVec = patchFeature.extract(nodeWithDiffType);
-        final ModFeatureVec expectModFeature = new ModFeatureVec(0, 0, 0, 0, 0, 1);
+        final Map<ProgramChank, ModFeatureVec> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
 
-        assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
+        final ModFeatureVec expectedModFeature = new ModFeatureVec(0, 0, 0, 0, 0, 1);
+        final ProgramChank expectedChank = new ProgramChank(3, 3);
+
+        assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
         return;
     }
 
