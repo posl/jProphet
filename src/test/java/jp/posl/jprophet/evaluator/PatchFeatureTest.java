@@ -1,6 +1,7 @@
 package jp.posl.jprophet.evaluator;
 
 import java.util.List;
+import java.util.Map;
 
 import com.github.javaparser.ast.Node;
 
@@ -16,20 +17,20 @@ public class PatchFeatureTest {
      */
     @Test public void testModFeatureForInsertControl() {
         final String originalSource = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("   public void a() {\n\n")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
             .append("   }\n\n")
             .append("}\n")
             .toString();
 
         final String revisedSource = new StringBuilder().append("")
-            .append("public class A {\n\n")
-            .append("   public void a() {\n\n")
-            .append("       if(fuga)\n\n")
-            .append("           break;\n\n")
-            .append("       if(fuga)\n\n")
-            .append("           return;\n\n")
-            .append("   }\n\n")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       if(fuga)\n")
+            .append("           break;\n")
+            .append("       if(fuga)\n")
+            .append("           return;\n")
+            .append("   }\n")
             .append("}\n")
             .toString();
 
@@ -39,14 +40,15 @@ public class PatchFeatureTest {
         final PatchFeature patchFeature = new PatchFeature();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
-
-        final ModFeatureVec actualFeatureVec = patchFeature.extractModFeature(nodeWithDiffType);
+        final List<ProgramChank> chanks = patchFeature.identifyModifiedProgramChank(nodeWithDiffType);
 
         // BreakStmtがInsertStmtとして加算されている
-        final ModFeatureVec expectModFeature = new ModFeatureVec(2, 0, 0, 0, 0, 2);
+        final ModFeatureVec expectedModFeature = new ModFeatureVec(2, 0, 0, 0, 0, 2);
+        final ProgramChank expectedChank = new ProgramChank(3, 6);
 
-        assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
-        return;
+        final Map<ProgramChank, ModFeatureVec> actualMap = patchFeature.extractModFeature2(nodeWithDiffType, chanks);
+
+        assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
     }
 
     /**
@@ -257,4 +259,5 @@ public class PatchFeatureTest {
         assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
         return;
     }
+
 }

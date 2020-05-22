@@ -81,6 +81,7 @@ public class PatchFeature {
             });
     }
 
+
     public Map<ProgramChank, ModFeatureVec> extractModFeature2(NodeWithDiffType nodeWithDiffType, List<ProgramChank> chanks) {
         Node node = nodeWithDiffType.getNode();
         TYPE type = nodeWithDiffType.getDiffType();
@@ -129,10 +130,10 @@ public class PatchFeature {
 
         Map<ProgramChank, ModFeatureVec> map = new HashMap<ProgramChank, ModFeatureVec>();
         final int line = node.getRange().get().begin.line;
-        final ProgramChank chank = chanks.stream()
-            .filter(c -> c.begin <= line && line <= c.end)
-            .findFirst().orElseThrow();
-        map.put(chank, vec);
+        chanks.stream()
+            .filter(c -> c.getBegin() <= line && line <= c.getEnd())
+            .findFirst()
+            .ifPresent((c) -> map.put(c, vec));
         if(nodeWithDiffType.getChildNodes().size() == 0) {
             return map;
         }
@@ -182,21 +183,5 @@ public class PatchFeature {
         return descendantNodes;
     }
 
-    static public class ProgramChank {
-        final private int begin;
-        final private int end;
 
-        public ProgramChank(int begin, int end) {
-            this.begin= begin;
-            this.end= end;
-        }
-
-        public int getBegin() {
-            return this.begin;
-        }
-
-        public int getEnd() {
-            return this.end;
-        }
-    }
 }
