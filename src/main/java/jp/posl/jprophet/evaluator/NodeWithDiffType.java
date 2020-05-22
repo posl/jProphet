@@ -98,6 +98,38 @@ public class NodeWithDiffType {
         return nodes;
     }
 
+    public List<ProgramChank> identifyModifiedProgramChanks() {
+        List<NodeWithDiffType> nodesWithDiffType = this.getAllNodeInTree();
+        List<ProgramChank> chanks = new ArrayList<ProgramChank>();
+        int beginLine = 0;
+        int previousLine = 0;
+        boolean counting = false;
+        for(NodeWithDiffType node: nodesWithDiffType) {
+            final int line = node.getNode().getRange().get().begin.line;
+            if(!counting && node.getDiffType() != TYPE.SAME) {
+                beginLine = line;
+                counting = true;
+            }
+            if(counting && node.getDiffType() == TYPE.SAME && line != previousLine) {;
+                chanks.add(new ProgramChank(beginLine, previousLine));
+                counting = false;
+            }
+            previousLine = line;
+        }
+        if(counting) {
+            chanks.add(new ProgramChank(beginLine, previousLine));
+        }
+        return chanks;
+    }
+
+    private List<NodeWithDiffType> getAllNodeInTree() {
+        List<NodeWithDiffType> descendantNodes = new ArrayList<NodeWithDiffType>();
+        descendantNodes.add(this);
+        this.getChildNodes().stream()
+            .map(childNode -> childNode.getAllNodeInTree())
+            .forEach(descendantNodes::addAll);
+        return descendantNodes;
+    }
 
     /**
      * {@inheritDoc}

@@ -1,6 +1,5 @@
 package jp.posl.jprophet.evaluator;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,39 +148,4 @@ public class ModFeatureExtractor {
                 return accum;
             });
     }
-
-    public List<ProgramChank> identifyModifiedProgramChank(NodeWithDiffType nodeWithDiffType) {
-        List<NodeWithDiffType> nodesWithDiffType = this.convertTreeToList(nodeWithDiffType);
-        List<ProgramChank> chanks = new ArrayList<ProgramChank>();
-        int beginLine = 0;
-        int previousLine = 0;
-        boolean counting = false;
-        for(NodeWithDiffType node: nodesWithDiffType) {
-            final int line = node.getNode().getRange().get().begin.line;
-            if(!counting && node.getDiffType() != TYPE.SAME) {
-                beginLine = line;
-                counting = true;
-            }
-            if(counting && node.getDiffType() == TYPE.SAME && line != previousLine) {;
-                chanks.add(new ProgramChank(beginLine, previousLine));
-                counting = false;
-            }
-            previousLine = line;
-        }
-        if(counting) {
-            chanks.add(new ProgramChank(beginLine, previousLine));
-        }
-        return chanks;
-    }
-
-    private List<NodeWithDiffType> convertTreeToList(NodeWithDiffType root) {
-        List<NodeWithDiffType> descendantNodes = new ArrayList<NodeWithDiffType>();
-        descendantNodes.add(root);
-        root.getChildNodes().stream()
-            .map(childNode -> convertTreeToList(childNode))
-            .forEach(descendantNodes::addAll);
-        return descendantNodes;
-    }
-
-
 }
