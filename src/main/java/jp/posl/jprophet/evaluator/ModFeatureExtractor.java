@@ -18,13 +18,13 @@ import jp.posl.jprophet.evaluator.NodeWithDiffType.TYPE;
 /**
  * 修正パッチの特徴抽出を行うクラス
  */
-public class PatchFeature {
+public class ModFeatureExtractor {
     /**
      * 修正パッチの変更の特徴を抽出する
      * @param nodeWithDiffType 差分情報付きの抽出対象の修正後AST
      * @return 特徴ベクトル
      */
-    public ModFeatureVec extractModFeature(NodeWithDiffType nodeWithDiffType) {
+    public ModFeatureVec extract(NodeWithDiffType nodeWithDiffType) {
         Node node = nodeWithDiffType.getNode();
         TYPE type = nodeWithDiffType.getDiffType();
 
@@ -74,7 +74,7 @@ public class PatchFeature {
             return vec;
         }
         return nodeWithDiffType.getChildNodes().stream()
-            .map(childNode -> this.extractModFeature(childNode))
+            .map(childNode -> this.extract(childNode))
             .reduce(vec, (accum, newVec) -> {
                 accum.add(newVec);
                 return accum;
@@ -82,7 +82,7 @@ public class PatchFeature {
     }
 
 
-    public Map<ProgramChank, ModFeatureVec> extractModFeature2(NodeWithDiffType nodeWithDiffType, List<ProgramChank> chanks) {
+    public Map<ProgramChank, ModFeatureVec> extract2(NodeWithDiffType nodeWithDiffType, List<ProgramChank> chanks) {
         Node node = nodeWithDiffType.getNode();
         TYPE type = nodeWithDiffType.getDiffType();
 
@@ -138,7 +138,7 @@ public class PatchFeature {
             return map;
         }
         return nodeWithDiffType.getChildNodes().stream()
-            .map(childNode -> this.extractModFeature2(childNode, chanks))
+            .map(childNode -> this.extract2(childNode, chanks))
             .reduce(map, (accum, newMap) -> {
                 newMap.forEach((key, value) -> {
                     accum.merge(key, value, (v1, v2) -> {

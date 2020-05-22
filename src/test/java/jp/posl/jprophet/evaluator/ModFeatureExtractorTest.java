@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import jp.posl.jprophet.NodeUtility;
 
-public class PatchFeatureTest {
+public class ModFeatureExtractorTest {
 
     /**
      * InsertControlパターンの修正を判定できるかテスト
@@ -37,7 +37,7 @@ public class PatchFeatureTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final PatchFeature patchFeature = new PatchFeature();
+        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
         final List<ProgramChank> chanks = patchFeature.identifyModifiedProgramChank(nodeWithDiffType);
@@ -46,7 +46,7 @@ public class PatchFeatureTest {
         final ModFeatureVec expectedModFeature = new ModFeatureVec(2, 0, 0, 0, 0, 2);
         final ProgramChank expectedChank = new ProgramChank(3, 6);
 
-        final Map<ProgramChank, ModFeatureVec> actualMap = patchFeature.extractModFeature2(nodeWithDiffType, chanks);
+        final Map<ProgramChank, ModFeatureVec> actualMap = patchFeature.extract2(nodeWithDiffType, chanks);
 
         assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
     }
@@ -75,11 +75,11 @@ public class PatchFeatureTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final PatchFeature patchFeature = new PatchFeature();
+        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
 
-        final ModFeatureVec actualFeatureVec = patchFeature.extractModFeature(nodeWithDiffType);
+        final ModFeatureVec actualFeatureVec = patchFeature.extract(nodeWithDiffType);
 
         final ModFeatureVec expectModFeature = new ModFeatureVec(0, 1, 0, 0, 0, 0);
 
@@ -111,11 +111,11 @@ public class PatchFeatureTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final PatchFeature patchFeature = new PatchFeature();
+        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
 
-        final ModFeatureVec actualFeatureVec = patchFeature.extractModFeature(nodeWithDiffType);
+        final ModFeatureVec actualFeatureVec = patchFeature.extract(nodeWithDiffType);
         final ModFeatureVec expectModFeature = new ModFeatureVec(0, 1, 0, 0, 0, 0);
 
         assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
@@ -147,11 +147,11 @@ public class PatchFeatureTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final PatchFeature patchFeature = new PatchFeature();
+        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
 
-        final ModFeatureVec actualFeatureVec = patchFeature.extractModFeature(nodeWithDiffType);
+        final ModFeatureVec actualFeatureVec = patchFeature.extract(nodeWithDiffType);
         // 条件式内部が変数のためReplaceVarも判定される
         final ModFeatureVec expectModFeature = new ModFeatureVec(0, 0, 1, 1, 0, 0);
 
@@ -182,11 +182,11 @@ public class PatchFeatureTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final PatchFeature patchFeature = new PatchFeature();
+        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
 
-        final ModFeatureVec actualFeatureVec = patchFeature.extractModFeature(nodeWithDiffType);
+        final ModFeatureVec actualFeatureVec = patchFeature.extract(nodeWithDiffType);
         final ModFeatureVec expectModFeature = new ModFeatureVec(0, 0, 0, 1, 0, 0);
 
         assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
@@ -216,11 +216,11 @@ public class PatchFeatureTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final PatchFeature patchFeature = new PatchFeature();
+        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
 
-        final ModFeatureVec actualFeatureVec = patchFeature.extractModFeature(nodeWithDiffType);
+        final ModFeatureVec actualFeatureVec = patchFeature.extract(nodeWithDiffType);
         final ModFeatureVec expectModFeature = new ModFeatureVec(0, 0, 0, 0, 1, 0);
 
         assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
@@ -249,11 +249,11 @@ public class PatchFeatureTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final PatchFeature patchFeature = new PatchFeature();
+        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
 
-        final ModFeatureVec actualFeatureVec = patchFeature.extractModFeature(nodeWithDiffType);
+        final ModFeatureVec actualFeatureVec = patchFeature.extract(nodeWithDiffType);
         final ModFeatureVec expectModFeature = new ModFeatureVec(0, 0, 0, 0, 0, 1);
 
         assertThat(actualFeatureVec).isEqualToComparingFieldByField(expectModFeature);
