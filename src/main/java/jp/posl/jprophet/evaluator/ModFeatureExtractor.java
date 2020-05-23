@@ -39,7 +39,6 @@ public class ModFeatureExtractor {
                 if(nodeWithDiffType.findAll(TYPE.SAME).size() > 0) {
                     vec.insertGuard += 1;
                 }
-
                 final List<Class<? extends Statement>> controlStmtClasses = List.of(ReturnStmt.class, BreakStmt.class, ContinueStmt.class);
                 final Boolean controlInserted = controlStmtClasses.stream()    
                     .anyMatch(clazz -> {
@@ -74,7 +73,6 @@ public class ModFeatureExtractor {
             .filter(lineIsInChankRange)
             .findFirst()
             .ifPresent((c) -> map.put(c, vec));
-
         
         final BinaryOperator<Map<ProgramChank, ModFeatureVec>> mapAccumlator = (accum, newMap) -> {
             newMap.forEach((key, value) -> {
