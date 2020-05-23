@@ -52,6 +52,50 @@ public class ModFeatureExtractorTest {
     }
 
     /**
+     * InsertControlとして判定されたIfStmtとReturn文の間にSAMEノードがあり，チャンクが分かれている場合，
+     * InsertControlはIfStmtがあるチャンクでのみ判定される
+     */
+    @Test public void testForInsertControlWithSameNodeAsOriginal() {
+        final String originalSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       hoge();\n")
+            .append("   }\n")
+            .append("}\n")
+            .toString();
+
+        final String revisedSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       if(fuga) {\n")
+            .append("           hoge();\n")
+            .append("           return;\n")
+            .append("       }\n")
+            .append("   }\n")
+            .append("}\n")
+            .toString();
+
+        final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
+        final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
+
+        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
+        final AstDiff diff = new AstDiff();
+        final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
+        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
+
+        final Map<ProgramChank, ModFeatureVec> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
+
+        final ModFeatureVec expectedModFeatureOfIf = new ModFeatureVec(1, 1, 0, 0, 0, 1);
+        final ProgramChank expectedChankOfIf = new ProgramChank(3, 3);
+        final ModFeatureVec expectedModFeatureOfReturn = new ModFeatureVec(0, 0, 0, 0, 0, 1);
+        final ProgramChank expectedChankOfReturn = new ProgramChank(5, 5);
+
+        assertThat(actualMap.get(expectedChankOfIf)).isEqualToComparingFieldByField(expectedModFeatureOfIf);
+        assertThat(actualMap.get(expectedChankOfReturn)).isEqualToComparingFieldByField(expectedModFeatureOfReturn);
+        return;
+    }
+
+    /**
      * 制御文(return, break)に対してifガードを挿入したパッチがInsertControlと判定されない
      */
     @Test public void testModFeatureForInsertGuardWithPreExistingControl() {
@@ -276,5 +320,4 @@ public class ModFeatureExtractorTest {
         assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
         return;
     }
-
 }

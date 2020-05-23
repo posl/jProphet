@@ -38,7 +38,6 @@ public class ModFeatureExtractor {
                 if(nodeWithDiffType.findAll(TYPE.SAME).size() > 0) {
                     insertGuard = true;
                 }
-
                 final boolean insertedBreak = nodeWithDiffType.findAll(BreakStmt.class).stream()
                     .filter(n -> n.getDiffType() == TYPE.INSERT)
                     .findAny().isPresent();
