@@ -36,10 +36,10 @@ public class ModFeatureExtractor {
         final ModFeatureVec vec = new ModFeatureVec();
         if(type == TYPE.INSERT) {
             if(node instanceof IfStmt) {
-                Boolean guardInserted = false;
                 if(nodeWithDiffType.findAll(TYPE.SAME).size() > 0) {
-                    guardInserted = true;
+                    vec.insertGuard += 1;
                 }
+
                 final List<Class<? extends Statement>> controlStmtClasses = List.of(ReturnStmt.class, BreakStmt.class, ContinueStmt.class);
                 final Boolean controlInserted = controlStmtClasses.stream()    
                     .anyMatch(clazz -> {
@@ -47,10 +47,6 @@ public class ModFeatureExtractor {
                             .filter(n -> n.getDiffType() == TYPE.INSERT)
                             .findAny().isPresent();
                     });
-
-                if(guardInserted) {
-                    vec.insertGuard += 1;
-                }
                 if(controlInserted) {
                     vec.insertControl += 1;
                 }
