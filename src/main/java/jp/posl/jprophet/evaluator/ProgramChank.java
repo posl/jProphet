@@ -16,7 +16,7 @@ public class ProgramChank {
      * @throws IllegalArgumentException 行数が負の数の場合
      */
     public ProgramChank(int begin, int end) {
-        if(begin < 0 || end < 0) {
+        if(begin < 1 || end < 1) {
             throw new IllegalArgumentException("Must be greater than zero.");
         }
         this.begin = begin;
