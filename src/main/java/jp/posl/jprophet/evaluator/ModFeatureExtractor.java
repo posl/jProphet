@@ -3,6 +3,8 @@ package jp.posl.jprophet.evaluator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BinaryOperator;
+import java.util.function.Predicate;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -73,23 +75,24 @@ public class ModFeatureExtractor {
 
         Map<ProgramChank, ModFeatureVec> map = new HashMap<ProgramChank, ModFeatureVec>();
         final int line = node.getRange().get().begin.line;
+        final Predicate<ProgramChank> lineIsInChankRange = chank -> chank.getBegin() <= line && line <= chank.getEnd();
         chanks.stream()
-            .filter(c -> c.getBegin() <= line && line <= c.getEnd())
+            .filter(lineIsInChankRange)
             .findFirst()
             .ifPresent((c) -> map.put(c, vec));
-        if(nodeWithDiffType.getChildNodes().size() == 0) {
-            return map;
-        }
+
+        
+        final BinaryOperator<Map<ProgramChank, ModFeatureVec>> mapAccumlator = (accum, newMap) -> {
+            newMap.forEach((key, value) -> {
+                accum.merge(key, value, (v1, v2) -> {
+                    v1.add(v2);
+                    return v1;
+                });
+            });
+            return accum;
+        };
         return nodeWithDiffType.getChildNodes().stream()
             .map(childNode -> this.extract(childNode, chanks))
-            .reduce(map, (accum, newMap) -> {
-                newMap.forEach((key, value) -> {
-                    accum.merge(key, value, (v1, v2) -> {
-                        v1.add(v2);
-                        return v1;
-                    });
-                });
-                return accum;
-            });
+            .reduce(map, mapAccumlator);
     }
 }
