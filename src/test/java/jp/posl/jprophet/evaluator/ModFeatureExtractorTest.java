@@ -30,6 +30,8 @@ public class ModFeatureExtractorTest {
             .append("           break;\n")
             .append("       if(fuga)\n")
             .append("           return;\n")
+            .append("       if(fuga)\n")
+            .append("           continue;\n")
             .append("   }\n")
             .append("}\n")
             .toString();
@@ -45,8 +47,8 @@ public class ModFeatureExtractorTest {
         final Map<ProgramChank, ModFeatureVec> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
 
         // BreakStmtがInsertStmtとして加算されている
-        final ModFeatureVec expectedModFeature = new ModFeatureVec(2, 0, 0, 0, 0, 2);
-        final ProgramChank expectedChank = new ProgramChank(3, 6);
+        final ModFeatureVec expectedModFeature = new ModFeatureVec(3, 0, 0, 0, 0, 3);
+        final ProgramChank expectedChank = new ProgramChank(3, 8);
 
         assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
     }

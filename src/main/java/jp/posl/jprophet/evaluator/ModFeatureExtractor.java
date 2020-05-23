@@ -10,6 +10,7 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BreakStmt;
+import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
@@ -35,25 +36,17 @@ public class ModFeatureExtractor {
         final ModFeatureVec vec = new ModFeatureVec();
         if(type == TYPE.INSERT) {
             if(node instanceof IfStmt) {
-                Boolean insertGuard   = false;
-                Boolean insertControl = false;
                 if(nodeWithDiffType.findAll(TYPE.SAME).size() > 0) {
-                    insertGuard = true;
-                }
-                final boolean insertedBreak = nodeWithDiffType.findAll(BreakStmt.class).stream()
-                    .filter(n -> n.getDiffType() == TYPE.INSERT)
-                    .findAny().isPresent();
-                final boolean insertedReturn = nodeWithDiffType.findAll(ReturnStmt.class).stream()
-                    .filter(n -> n.getDiffType() == TYPE.INSERT)
-                    .findAny().isPresent();
-                if(insertedBreak || insertedReturn) {
-                    insertControl = true;
-                }
-
-                if(insertGuard) {
                     vec.insertGuard += 1;
                 }
-                if(insertControl) {
+                final List<Class<? extends Statement>> controlStmtClasses = List.of(ReturnStmt.class, BreakStmt.class, ContinueStmt.class);
+                final Boolean controlInserted = controlStmtClasses.stream()    
+                    .anyMatch(clazz -> {
+                        return nodeWithDiffType.findAll(clazz).stream()
+                            .filter(n -> n.getDiffType() == TYPE.INSERT)
+                            .findAny().isPresent();
+                    });
+                if(controlInserted) {
                     vec.insertControl += 1;
                 }
             }
@@ -80,7 +73,6 @@ public class ModFeatureExtractor {
             .filter(lineIsInChankRange)
             .findFirst()
             .ifPresent((c) -> map.put(c, vec));
-
         
         final BinaryOperator<Map<ProgramChank, ModFeatureVec>> mapAccumlator = (accum, newMap) -> {
             newMap.forEach((key, value) -> {
