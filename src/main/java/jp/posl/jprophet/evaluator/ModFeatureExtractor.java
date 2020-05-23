@@ -10,6 +10,7 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BreakStmt;
+import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
@@ -35,25 +36,22 @@ public class ModFeatureExtractor {
         final ModFeatureVec vec = new ModFeatureVec();
         if(type == TYPE.INSERT) {
             if(node instanceof IfStmt) {
-                Boolean insertGuard   = false;
-                Boolean insertControl = false;
+                Boolean guardInserted = false;
                 if(nodeWithDiffType.findAll(TYPE.SAME).size() > 0) {
-                    insertGuard = true;
+                    guardInserted = true;
                 }
-                final boolean insertedBreak = nodeWithDiffType.findAll(BreakStmt.class).stream()
-                    .filter(n -> n.getDiffType() == TYPE.INSERT)
-                    .findAny().isPresent();
-                final boolean insertedReturn = nodeWithDiffType.findAll(ReturnStmt.class).stream()
-                    .filter(n -> n.getDiffType() == TYPE.INSERT)
-                    .findAny().isPresent();
-                if(insertedBreak || insertedReturn) {
-                    insertControl = true;
-                }
+                final List<Class<? extends Statement>> controlStmtClasses = List.of(ReturnStmt.class, BreakStmt.class, ContinueStmt.class);
+                final Boolean controlInserted = controlStmtClasses.stream()    
+                    .anyMatch(clazz -> {
+                        return nodeWithDiffType.findAll(clazz).stream()
+                            .filter(n -> n.getDiffType() == TYPE.INSERT)
+                            .findAny().isPresent();
+                    });
 
-                if(insertGuard) {
+                if(guardInserted) {
                     vec.insertGuard += 1;
                 }
-                if(insertControl) {
+                if(controlInserted) {
                     vec.insertControl += 1;
                 }
             }
