@@ -19,7 +19,7 @@ public class ModFeatureVecTest {
     }
 
     /**
-     * 引数なしコンストラクタをテスト
+     * 引数ありコンストラクタをテスト
      */
     @Test public void testConstructorWithParameter() {
         ModFeatureVec vec = new ModFeatureVec(1, 2, 3, 4, 5, 6);
