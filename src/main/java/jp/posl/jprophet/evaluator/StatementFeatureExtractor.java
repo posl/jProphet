@@ -1,6 +1,5 @@
 package jp.posl.jprophet.evaluator;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,19 +17,25 @@ import com.github.javaparser.ast.stmt.WhileStmt;
 import jp.posl.jprophet.NodeUtility;
 
 public class StatementFeatureExtractor {
-    public StatementTypeVec extract(int line, Node node) {
+    public StatementFeatureVec extract(int line, Node node) {
         List<Node> nodes = NodeUtility.getAllNodesInDepthFirstOrder(node);
         List<Node> nodesInTheLine = nodes.stream()
             .filter(n -> n.getBegin().get().line == line)
             .collect(Collectors.toList());
 
-        StatementTypeVec vec = new StatementTypeVec();
+        StatementFeatureVec vec = new StatementFeatureVec();
         for(Node nodeInTheLine: nodesInTheLine) {
-            if(nodeInTheLine instanceof IfStmt) {
-                vec.ifStmt += 1;
-            }
             if(nodeInTheLine instanceof AssignExpr) {
                 vec.assignStmt += 1;
+            }
+            if(nodeInTheLine instanceof MethodCallExpr) {
+                vec.methodCallStmt += 1;
+            }
+            if(nodeInTheLine instanceof ForStmt || nodeInTheLine instanceof WhileStmt || nodeInTheLine instanceof ForeachStmt) {
+                vec.loopStmt += 1;
+            }
+            if(nodeInTheLine instanceof IfStmt) {
+                vec.ifStmt += 1;
             }
             if(nodeInTheLine instanceof ReturnStmt) {
                 vec.returnStmt += 1;
@@ -40,12 +45,6 @@ public class StatementFeatureExtractor {
             }
             if(nodeInTheLine instanceof ContinueStmt) {
                 vec.continueStmt += 1;
-            }
-            if(nodeInTheLine instanceof MethodCallExpr) {
-                vec.methodCallStmt += 1;
-            }
-            if(nodeInTheLine instanceof ForStmt || nodeInTheLine instanceof WhileStmt || nodeInTheLine instanceof ForeachStmt) {
-                vec.loopStmt += 1;
             }
         }
         return vec;
