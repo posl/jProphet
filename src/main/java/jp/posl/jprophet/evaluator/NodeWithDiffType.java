@@ -131,12 +131,12 @@ public class NodeWithDiffType {
      * @return NodeWithDiffTypeのリスト
      */
     private List<NodeWithDiffType> getAllNodeInSourceCodeOrder() {
-        final List<NodeWithDiffType> descendantNodes = new ArrayList<NodeWithDiffType>();
-        descendantNodes.add(this);
+        final List<NodeWithDiffType> nodes = new ArrayList<NodeWithDiffType>();
+        nodes.add(this);
         this.getChildNodes().stream()
             .map(childNode -> childNode.getAllNodeInSourceCodeOrder())
-            .forEach(descendantNodes::addAll);
-        return descendantNodes;
+            .forEach(nodes::addAll);
+        return nodes;
     }
 
     /**
