@@ -5,12 +5,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-
-import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
 import org.junit.Test;
@@ -49,16 +46,19 @@ public class MemoryErrorTest {
             List<String> lines = Files.readAllLines(Paths.get(fileName), StandardCharsets.UTF_8);
             String sourceCode = String.join("\n", lines);
             List<Node> targetNodes = NodeUtility.getAllNodesFromCode(sourceCode);
-            final String abstractConditionName = "ABST_HOLE";
+            //final String abstractConditionName = "ABST_HOLE";
             for(int i = 0; i < 1000; i++) {
                 for(Node targetNode : targetNodes){
                     if(!(targetNode instanceof Statement)) continue;
                     if(targetNode instanceof BlockStmt) continue;
-                    final Statement thenStmt = (Statement)NodeUtility.deepCopyByReparse(targetNode); 
-                    final IfStmt newIfStmt =  (IfStmt)JavaParser.parseStatement((new IfStmt(new MethodCallExpr(abstractConditionName), thenStmt, null)).toString());
                     
-                    NodeUtility.replaceNode(newIfStmt, targetNode);
-                    //この行をコメントアウトするとエラーは起きない
+                    Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
+                    //deepCopyされたノードのCompilationUnitをreparseするとエラーが発生する
+                    NodeUtility.reparseCompilationUnit(copiedTargetNode.findCompilationUnit().orElseThrow());
+                    
+                    //targetNodeのCompilationUnitでは発生しない
+                    //NodeUtility.reparseCompilationUnit(targetNode.findCompilationUnit().orElseThrow());
+                    
                 }
             }
         } catch (IOException e) {
