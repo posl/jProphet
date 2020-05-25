@@ -5,10 +5,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
+
 
 import org.junit.Test;
 
@@ -58,7 +59,6 @@ public class MemoryErrorTest {
                     
                     //targetNodeのCompilationUnitでは発生しない
                     //NodeUtility.reparseCompilationUnit(targetNode.findCompilationUnit().orElseThrow());
-                    
                 }
             }
         } catch (IOException e) {
@@ -68,6 +68,28 @@ public class MemoryErrorTest {
 
     }
     
+
+    @Test public void repeatingLexicalPreservingPrinterTest() {
+        String fileName = "src/test/resources/FizzBuzz01/src/main/java/FizzBuzz01/FizzBuzz.java";
+        try {
+            List<String> lines = Files.readAllLines(Paths.get(fileName), StandardCharsets.UTF_8);
+            String sourceCode = String.join("\n", lines);
+            List<Node> targetNodes = NodeUtility.getAllNodesFromCode(sourceCode);
+            for(int i = 0; i < 1000; i++) {
+                for(Node targetNode : targetNodes){
+                    if(!(targetNode instanceof Statement)) continue;
+                    if(targetNode instanceof BlockStmt) continue;
+                    Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
+                    LexicalPreservingPrinter.setup(copiedTargetNode);
+                    LexicalPreservingPrinter.print(copiedTargetNode);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+
+    }
 
 
 }
