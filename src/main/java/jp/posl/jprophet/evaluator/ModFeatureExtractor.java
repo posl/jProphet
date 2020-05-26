@@ -3,9 +3,11 @@ package jp.posl.jprophet.evaluator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
 
+import com.github.javaparser.Position;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -67,7 +69,14 @@ public class ModFeatureExtractor {
         }
 
         Map<ProgramChank, ModFeatureVec> map = new HashMap<ProgramChank, ModFeatureVec>();
-        final int line = node.getRange().get().begin.line;
+        int line;
+        try {
+            line = node.getBegin().orElseThrow().line;
+        } catch (NoSuchElementException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            return map;
+        }
         final Predicate<ProgramChank> lineIsInChankRange = chank -> chank.getBegin() <= line && line <= chank.getEnd();
         chanks.stream()
             .filter(lineIsInChankRange)

@@ -2,6 +2,7 @@ package jp.posl.jprophet.evaluator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.github.javaparser.ast.Node;
 
@@ -109,7 +110,14 @@ public class NodeWithDiffType {
         int previousLine = 0;
         boolean counting = false;
         for(NodeWithDiffType node: nodesWithDiffType) {
-            final int line = node.getNode().getRange().get().begin.line;
+            int line;
+            try {
+                line = node.getNode().getBegin().orElseThrow().line;
+            } catch (NoSuchElementException e) {
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+                continue;
+            }
             if(!counting && node.getDiffType() != TYPE.SAME) {
                 beginLine = line;
                 counting = true;
