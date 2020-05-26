@@ -5,28 +5,23 @@ package jp.posl.jprophet.evaluator;
  */
 public class ModFeatureVec {
     /*  ifガードを伴う制御文の挿入 */
-    public int insertControl;
+    public int insertControl = 0;
     /* ifガードの挿入 */
-    public int insertGuard;
+    public int insertGuard = 0;
     /* 条件式の置き換え */
-    public int replaceCond;
+    public int replaceCond = 0;
     /* 変数の置き換え */
-    public int replaceVar;
+    public int replaceVar = 0;
     /* メソッドの置き換え */
-    public int replaceMethod;
+    public int replaceMethod = 0;
     /* ステートメントの挿入 */
-    public int insertStmt;
+    public int insertStmt = 0;
 
     /**
-     * 全要素を全て0で初期化してベクトルを生成
+     * 全要素を全て0で初期化されたベクトルを生成
      */
     public ModFeatureVec() {
-        insertControl = 0;
-        insertGuard = 0;
-        replaceCond = 0;
-        replaceVar = 0;
-        replaceMethod = 0;
-        insertStmt = 0;
+        /* 何もしない */
     };
 
     /**

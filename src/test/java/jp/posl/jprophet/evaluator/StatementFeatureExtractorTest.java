@@ -8,6 +8,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import jp.posl.jprophet.NodeUtility;
 
 public class StatementFeatureExtractorTest {
+    /**
+     * 各ステートメントタイプを判別できるかテスト
+     */
     @Test public void testEachStmtVec() {
         final String src = new StringBuilder().append("")
             .append("public class A {\n")
@@ -46,6 +49,9 @@ public class StatementFeatureExtractorTest {
         assertThat(extractor.extract(11, node)).isEqualToComparingFieldByField(expectedContinueStmtVec);
     }
 
+    /**
+     * 一行あたり複数のステートメントタイプが混在する場合をテスト
+     */
     @Test public void testMultipleStmtInOneLine() {
         final String src = new StringBuilder().append("")
             .append("public class A {\n")
@@ -61,6 +67,4 @@ public class StatementFeatureExtractorTest {
 
         assertThat(extractor.extract(3, node)).isEqualToComparingFieldByField(expectedVec);
     }
-
-    
 }

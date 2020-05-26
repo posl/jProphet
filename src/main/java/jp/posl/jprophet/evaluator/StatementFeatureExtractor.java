@@ -16,11 +16,23 @@ import com.github.javaparser.ast.stmt.WhileStmt;
 
 import jp.posl.jprophet.NodeUtility;
 
+/**
+ * AST情報を基にプログラムの各行のステートメントの特徴を抽出するクラス
+ */
 public class StatementFeatureExtractor {
+    /**
+     * 特徴抽出を行う 
+     * @param line 特徴抽出したい行番号
+     * @param node 特徴抽出する行をプログラムのASTノード
+     * @return ステートメントの特徴ベクトル
+     */
     public StatementFeatureVec extract(int line, Node node) {
         List<Node> nodes = NodeUtility.getAllNodesInDepthFirstOrder(node);
         List<Node> nodesInTheLine = nodes.stream()
-            .filter(n -> n.getBegin().get().line == line)
+            .filter(n ->  {
+                if(!n.getBegin().isPresent()) return false;
+                return n.getBegin().get().line == line;
+            })
             .collect(Collectors.toList());
 
         StatementFeatureVec vec = new StatementFeatureVec();
@@ -31,6 +43,7 @@ public class StatementFeatureExtractor {
             if(nodeInTheLine instanceof MethodCallExpr) {
                 vec.methodCallStmt += 1;
             }
+            // Streamは未対応
             if(nodeInTheLine instanceof ForStmt || nodeInTheLine instanceof WhileStmt || nodeInTheLine instanceof ForeachStmt) {
                 vec.loopStmt += 1;
             }
