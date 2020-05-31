@@ -82,11 +82,14 @@ public class ProjectBuilder {
         }
 
         //resources内のファイルをbuildPath直下にコピペする
-        
-        try {        
-            File resourcesDir = new File(project.getRootPath() + "/src/test/resources");
-            if (resourcesDir.listFiles() != null) {
-                FileUtils.copyDirectory(resourcesDir,new File(config.getBuildPath()));
+        try {
+            File mainResourcesDir = new File(project.getRootPath() + "/src/main/resources");
+            File testResourcesDir = new File(project.getRootPath() + "/src/test/resources");
+            if (mainResourcesDir.listFiles() != null) {
+                FileUtils.copyDirectory(mainResourcesDir,new File(config.getBuildPath()));
+            }
+            if (testResourcesDir.listFiles() != null) {
+                FileUtils.copyDirectory(testResourcesDir,new File(config.getBuildPath()));
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());
