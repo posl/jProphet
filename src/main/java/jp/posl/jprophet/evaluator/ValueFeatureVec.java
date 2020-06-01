@@ -25,4 +25,24 @@ public class ValueFeatureVec {
         LOCAL,
         ARGUMENT
     }
+
+    public ValueFeatureVec() {
+        this(false, false, false, false, false, false, false, false, false, false, ValueType.OTHER, Scope.FIELD);
+    }
+    public ValueFeatureVec(boolean constant, boolean condition, boolean ifStmt, boolean loop,
+            boolean commutativeOp, boolean binaryOpL, boolean binaryOpR, boolean unaryOp,
+            boolean replacedByMod, boolean parameter, ValueType type, Scope scope) {
+        this.constant = constant;
+        this.condition = condition;
+        this.ifStmt = ifStmt;
+        this.loop = loop;
+        this.commutativeOp = commutativeOp;
+        this.binaryOpL = binaryOpL;
+        this.binaryOpR = binaryOpR;
+        this.unaryOp = unaryOp;
+        this.replacedByMod = replacedByMod;
+        this.parameter = parameter;
+        this.type = type;
+        this.scope = scope;
+    }
 }

@@ -10,6 +10,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.ForeachStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
@@ -68,14 +69,7 @@ public class ValueFeatureExtractor {
         return vec;
     }
 
-    private ValueFeatureVec extractStmtFeature(Node variable, ValueFeatureVec vec) {
-        vec.scope = Scope.FIELD;
-        if (variable.findParent(MethodDeclaration.class).isPresent()) {
-            vec.scope = Scope.LOCAL;
-        }
-        if (variable.toString().startsWith("final")) {
-            vec.constant = true;
-        }
+    private ValueFeatureVec extractContextFeature(Node variable, ValueFeatureVec vec) {
         if (variable.findParent(IfStmt.class).isPresent()) {
             vec.condition = true;
         }
@@ -88,14 +82,31 @@ public class ValueFeatureExtractor {
         return vec;
     }
 
+    private ValueFeatureVec extractScopeFeature(Node declarator, ValueFeatureVec vec) {
+        vec.scope = Scope.FIELD;
+        if (declarator.findParent(MethodDeclaration.class).isPresent()) {
+            vec.scope = Scope.LOCAL;
+            if (declarator instanceof Parameter) {
+                vec.scope = Scope.ARGUMENT;
+            }
+        }
+
+        if (declarator.getParentNode().get().toString().startsWith("final")) {
+            vec.constant = true;
+        }
+        return vec;
+    }
+
     public List<ValueFeatureVec> extract(Node node) {
         final List<ValueFeatureVec> vecs = new ArrayList<>();
         final List<NameExpr> nameExprs = node.findAll(NameExpr.class);
         for (NameExpr nameExpr: nameExprs) {
             final ValueFeatureVec vec = new ValueFeatureVec();
-            Type type = findDeclarator(nameExpr).get().findParent(Type.class).get();
+            Node declarator = findDeclarator(nameExpr).get();
+            this.extractScopeFeature(declarator, vec);
+            Type type = declarator.findFirst(Type.class).get();
             this.extractTypeFeature(type, vec);
-            this.extractStmtFeature(nameExpr, vec);
+            this.extractContextFeature(nameExpr, vec);
             vecs.add(vec);
         }
         final List<Node> declarators = node.findAll(VariableDeclarator.class).stream()
@@ -107,9 +118,10 @@ public class ValueFeatureExtractor {
         );
         for (Node declarator : declarators) {
             final ValueFeatureVec vec = new ValueFeatureVec();
-            Type type = declarator.findParent(Type.class).get();
+            this.extractScopeFeature(declarator, vec);
+            Type type = declarator.findFirst(Type.class).get();
             this.extractTypeFeature(type, vec);
-            this.extractStmtFeature(declarator, vec);
+            this.extractContextFeature(declarator, vec);
             vecs.add(vec);
         }
         return vecs;
