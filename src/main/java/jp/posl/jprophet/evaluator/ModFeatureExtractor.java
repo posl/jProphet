@@ -3,6 +3,7 @@ package jp.posl.jprophet.evaluator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
 
@@ -27,6 +28,7 @@ public class ModFeatureExtractor {
      * なお，InsertControlは飛び飛びの複数の行から判定されることがあるが，属するプログラムチャンクは
      * ifの存在するチャンクである
      * @param nodeWithDiffType 差分情報付きの抽出対象の修正後AST
+     * @param chanks 修正差分チャンクのリスト
      * @return 特徴ベクトル
      */
     public Map<ProgramChank, ModFeatureVec> extract(NodeWithDiffType nodeWithDiffType, List<ProgramChank> chanks) {
@@ -67,14 +69,21 @@ public class ModFeatureExtractor {
         }
 
         Map<ProgramChank, ModFeatureVec> map = new HashMap<ProgramChank, ModFeatureVec>();
-        final int line = node.getRange().get().begin.line;
+        int line;
+        try {
+            line = node.getBegin().orElseThrow().line;
+        } catch (NoSuchElementException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            return map;
+        }
         final Predicate<ProgramChank> lineIsInChankRange = chank -> chank.getBegin() <= line && line <= chank.getEnd();
         chanks.stream()
             .filter(lineIsInChankRange)
             .findFirst()
             .ifPresent((c) -> map.put(c, vec));
         
-        final BinaryOperator<Map<ProgramChank, ModFeatureVec>> mapAccumlator = (accum, newMap) -> {
+        final BinaryOperator<Map<ProgramChank, ModFeatureVec>> mapAccumulator = (accum, newMap) -> {
             newMap.forEach((key, value) -> {
                 accum.merge(key, value, (v1, v2) -> {
                     v1.add(v2);
@@ -85,6 +94,6 @@ public class ModFeatureExtractor {
         };
         return nodeWithDiffType.getChildNodes().stream()
             .map(childNode -> this.extract(childNode, chanks))
-            .reduce(map, mapAccumlator);
+            .reduce(map, mapAccumulator);
     }
 }
