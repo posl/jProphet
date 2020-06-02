@@ -31,18 +31,18 @@ public class PatchCandidateGenerator{
      * @return 条件式が抽象化された修正パッチ候補のリスト
      */
     public List<PatchCandidate> exec(Project project, List<AstOperation> operations, List<Suspiciousness> suspiciousnesses){
-        List<FileLocator> fileLocators = project.getSrcFileLocators();                
+        final List<FileLocator> fileLocators = project.getSrcFileLocators();                
         List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
         int patchCandidateID = 1;
         for(FileLocator fileLocator : fileLocators){
             try {
-                List<String> lines = Files.readAllLines(Paths.get(fileLocator.getPath()), StandardCharsets.UTF_8);
-                String sourceCode = String.join("\n", lines);
-                List<Node> targetNodes = NodeUtility.getAllNodesFromCode(sourceCode);
+                final List<String> lines = Files.readAllLines(Paths.get(fileLocator.getPath()), StandardCharsets.UTF_8);
+                final String sourceCode = String.join("\n", lines);
+                final List<Node> targetNodes = NodeUtility.getAllNodesFromCode(sourceCode);
                 for(Node targetNode : targetNodes){
                     //疑惑値0のtargetNodeはパッチを生成しない
                     if (!isZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
-                        List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
+                        final List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
                         for(AppliedOperationResult result : appliedOperationResults){
                             candidates.add(new DefaultPatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
                             patchCandidateID += 1;
@@ -68,7 +68,7 @@ public class PatchCandidateGenerator{
     private boolean isZeroSuspiciousness(String fqn, Node node, List<Suspiciousness> suspiciousnesses) {
         try {
             final int line = node.getRange().orElseThrow().begin.line;
-            Optional<Suspiciousness> suspiciousness = suspiciousnesses.stream()
+            final Optional<Suspiciousness> suspiciousness = suspiciousnesses.stream()
                 .filter(s -> s.getFQN().equals(fqn))
                 .filter(s -> s.getLineNumber() == line)
                 .findAny();
