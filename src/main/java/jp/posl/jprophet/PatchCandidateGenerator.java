@@ -41,7 +41,7 @@ public class PatchCandidateGenerator{
                 final List<Node> targetNodes = NodeUtility.getAllNodesFromCode(sourceCode);
                 for(Node targetNode : targetNodes){
                     //疑惑値0のtargetNodeはパッチを生成しない
-                    if (!isZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
+                    if (!findZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
                         final List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
                         for(AppliedOperationResult result : appliedOperationResults){
                             candidates.add(new DefaultPatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
@@ -65,7 +65,7 @@ public class PatchCandidateGenerator{
      * @param suspiciousnesses flで得られた疑惑値のリスト
      * @return 疑惑値0ならtrue,それ以外false
      */
-    private boolean isZeroSuspiciousness(String fqn, Node node, List<Suspiciousness> suspiciousnesses) {
+    private boolean findZeroSuspiciousness(String fqn, Node node, List<Suspiciousness> suspiciousnesses) {
         try {
             final int line = node.getRange().orElseThrow().begin.line;
             final Optional<Suspiciousness> suspiciousness = suspiciousnesses.stream()
