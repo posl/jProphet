@@ -54,7 +54,7 @@ public class PatchCandidateGeneratorTest {
 
         List<PatchCandidate> candidates = this.patchCandidateGenerator.exec(stubProject, List.of(stubOperation), suspiciousenesses);
 
-        int astNodeNumOfTest01 = 17;
+        final int astNodeNumOfTest01 = 17;
         assertThat(candidates.size()).isEqualTo(astNodeNumOfTest01);
     }
 

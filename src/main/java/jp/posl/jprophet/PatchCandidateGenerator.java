@@ -40,7 +40,7 @@ public class PatchCandidateGenerator{
                 String sourceCode = String.join("\n", lines);
                 List<Node> targetNodes = NodeUtility.getAllNodesFromCode(sourceCode);
                 for(Node targetNode : targetNodes){
-                    //ここで疑惑値0のtargetNodeをはじく
+                    //疑惑値0のtargetNodeはパッチを生成しない
                     if (!isZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
                         List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
                         for(AppliedOperationResult result : appliedOperationResults){
