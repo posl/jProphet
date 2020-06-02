@@ -1,7 +1,5 @@
 package jp.posl.jprophet.project;
 
-import java.util.NoSuchElementException;
-
 import jp.posl.jprophet.RepairConfiguration;
 
 /**

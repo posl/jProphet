@@ -29,7 +29,7 @@ public class AstDiff {
         final List<Node> originalNodes = NodeUtility.getAllNodesInDepthFirstOrder(original);
         final List<Node> revisedNodes = NodeUtility.getAllNodesInDepthFirstOrder(revised);
 
-        Function<Node, String> takeFirstLine = node -> {
+        final Function<Node, String> takeFirstLine = node -> {
             final String[] lines = node.toString().split("\n");
             if (lines.length > 0) {
                 return lines[0];
