@@ -9,8 +9,8 @@ import com.github.javaparser.ast.Node;
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.evaluator.ValueFeatureVec.Scope;
-import jp.posl.jprophet.evaluator.ValueFeatureVec.ValueType;
+import jp.posl.jprophet.evaluator.ValueFeature.Scope;
+import jp.posl.jprophet.evaluator.ValueFeature.ValueType;
 
 public class ValueFeatureExtractorTest {
     @Test public void test() {
@@ -25,22 +25,22 @@ public class ValueFeatureExtractorTest {
 
         Node node = NodeUtility.getAllNodesFromCode(src).get(0);
         ValueFeatureExtractor extractor = new ValueFeatureExtractor();
-        List<ValueFeatureVec> actualVecs = extractor.extract(node);
+        List<ValueFeature> actualFeatures = extractor.extract(node);
 
-        ValueFeatureVec expectedFieldVec = new ValueFeatureVec();
-        expectedFieldVec.type = ValueType.STRING;
-        expectedFieldVec.scope = Scope.FIELD;
-        ValueFeatureVec expectedParameterVec = new ValueFeatureVec();
-        expectedParameterVec.type = ValueType.OBJECT;
-        expectedParameterVec.scope = Scope.ARGUMENT;
-        ValueFeatureVec expectedLocalVarVec = new ValueFeatureVec();
-        expectedLocalVarVec.type = ValueType.NUM;
-        expectedLocalVarVec.scope = Scope.LOCAL;
-        expectedLocalVarVec.constant = true;
+        ValueFeature expectedFieldFeature = new ValueFeature();
+        expectedFieldFeature.type = ValueType.STRING;
+        expectedFieldFeature.scope = Scope.FIELD;
+        ValueFeature expectedParameterFeature = new ValueFeature();
+        expectedParameterFeature.type = ValueType.OBJECT;
+        expectedParameterFeature.scope = Scope.ARGUMENT;
+        ValueFeature expectedLocalVarFeature = new ValueFeature();
+        expectedLocalVarFeature.type = ValueType.NUM;
+        expectedLocalVarFeature.scope = Scope.LOCAL;
+        expectedLocalVarFeature.constant = true;
 
-        assertThat(actualVecs.get(0)).isEqualToComparingFieldByField(expectedFieldVec);
-        assertThat(actualVecs.get(1)).isEqualToComparingFieldByField(expectedLocalVarVec);
-        assertThat(actualVecs.get(2)).isEqualToComparingFieldByField(expectedParameterVec);
+        assertThat(actualFeatures.get(0)).isEqualToComparingFieldByField(expectedFieldFeature);
+        assertThat(actualFeatures.get(1)).isEqualToComparingFieldByField(expectedLocalVarFeature);
+        assertThat(actualFeatures.get(2)).isEqualToComparingFieldByField(expectedParameterFeature);
         return;
     }
 }
