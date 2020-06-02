@@ -27,6 +27,7 @@ public class UnitTestExecutor implements TestExecutor {
     //そうするとメイン関数を変更する事になるのでとりあえず後回し
     
     private final String gradleTestPath = "/src/test/java/"; //出来ればgradleから取得したい
+    private final long waitTime = 5000; //タイムアウトさせる時間[ms]
 
 
     /**
@@ -97,11 +98,22 @@ public class UnitTestExecutor implements TestExecutor {
     private boolean runAllTestClass(List<Class<?>> classes){
         final JUnitCore junitCore = new JUnitCore();
         for (Class<?> testClass : testClasses){
-            final boolean isSuccess = junitCore.run(testClass).wasSuccessful();
+
+            //タイムアウト処理
+            TestThread testThread = new TestThread(junitCore, testClass);
+            testThread.start();
+            try {
+                //waitTime ms 経過でスキップ
+                testThread.join(waitTime);
+            } catch (InterruptedException e) {
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+                System.exit(-1);
+            }
+            final boolean isSuccess = ((TestThread) testThread).getIsSuccess();
             if(!isSuccess) return false;
         }
         return true;
     }
 
 }
-

@@ -1,33 +1,33 @@
 package jp.posl.jprophet.evaluator;
 
 /**
- * プログラムのステートメント(行)ごとの特徴を表現するベクトル 
+ * プログラムのステートメント(行)ごとの特徴を表現するクラス
  */
-public class StatementFeatureVec {
+public class StatementFeature {
     /* 代入文 */
-    public int assignStmt = 0;
+    public int assignStmt;
     /* メソッド呼び出し */
-    public int methodCallStmt = 0;
+    public int methodCallStmt;
     /* ループ構文 */
-    public int loopStmt = 0;
+    public int loopStmt;
     /* if文 */
-    public int ifStmt = 0;
+    public int ifStmt;
     /* return文 */
-    public int returnStmt = 0;
+    public int returnStmt;
     /* break文 */
-    public int breakStmt = 0;
+    public int breakStmt;
     /* continue文 */
-    public int continueStmt = 0;
+    public int continueStmt;
 
     /**
-     * 全要素を全て0で初期化されたベクトルを生成
+     * 全要素を全て0で初期化
      */
-    public StatementFeatureVec() {
-        /* 何もしない */
+    public StatementFeature() {
+        this(0, 0, 0, 0, 0, 0, 0);
     }
 
     /**
-     * 各要素を与えられた数値で初期化してベクトルを生成
+     * 各要素を与えられた数値で初期化
      * @param assignStmt     AssignStmtの値
      * @param methodCallStmt MethodCallStmtの値 
      * @param loopStmt       LoopStmtの値
@@ -36,7 +36,7 @@ public class StatementFeatureVec {
      * @param breakStmt      ReplaceMethodの値
      * @param continueStmt   InsertSmtの値
      */
-    public StatementFeatureVec(int assignStmt, int methodCallStmt, int loopStmt, int ifStmt, int returnStmt, int breakStmt, int continueStmt) {
+    public StatementFeature(int assignStmt, int methodCallStmt, int loopStmt, int ifStmt, int returnStmt, int breakStmt, int continueStmt) {
         this.assignStmt = assignStmt;
         this.methodCallStmt = methodCallStmt;
         this.loopStmt = loopStmt;
