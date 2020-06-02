@@ -43,10 +43,10 @@ public class VariableReplacementOperation implements AstOperation {
 
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
 
-        Function<String, Expression> constructField = fieldName -> new FieldAccessExpr(new ThisExpr(), fieldName);
+        final Function<String, Expression> constructField = fieldName -> new FieldAccessExpr(new ThisExpr(), fieldName);
         candidates.addAll(this.replaceVariables(targetNode, constructField, fieldNames));
 
-        Function<String, Expression> constructVar = varName -> new NameExpr(varName);
+        final Function<String, Expression> constructVar = varName -> new NameExpr(varName);
         candidates.addAll(this.replaceVariables(targetNode, constructVar, localVarNames));
         candidates.addAll(this.replaceVariables(targetNode, constructVar, parameterNames));
 

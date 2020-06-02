@@ -2,6 +2,7 @@ package jp.posl.jprophet.evaluator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.github.javaparser.ast.Node;
 
@@ -64,5 +65,93 @@ public class NodeWithDiffType {
      */
     public TYPE getDiffType() {
         return this.diffType;
+    }
+
+    /**
+     * ASTを走査し全ての{@code diffType}のnodeを返す
+     * @param diffType 探したいdiffの種類
+     * @return diffTypeが一致するノードのリスト
+     */
+    public List<NodeWithDiffType> findAll(TYPE diffType) {
+        final List<NodeWithDiffType> nodes = new ArrayList<NodeWithDiffType>();
+        if(this.diffType == diffType) {
+            nodes.add(this);
+        }
+        for(NodeWithDiffType child: this.childNodes) {
+            nodes.addAll(child.findAll(diffType));
+        }
+        return nodes;
+    }
+
+    /**
+     * ASTを走査し全ての{@code nodeType}のnodeを返す
+     * @param nodeType 探したいnodeのクラス
+     * @return nodeTypeが一致するノードのリスト
+     */
+    public <T extends Node> List<NodeWithDiffType> findAll(Class<T> nodeType) {
+        final List<NodeWithDiffType> nodes = new ArrayList<NodeWithDiffType>();
+        if(this.node.getClass() == nodeType) {
+            nodes.add(this);
+        }
+        for(NodeWithDiffType child: this.childNodes) {
+            nodes.addAll(child.findAll(nodeType));
+        }
+        return nodes;
+    }
+
+    /**
+     * 差分情報を元に連続する変更されたコードの位置を特定する 
+     * @return プログラムチャンクのリスト
+     */
+    public List<ProgramChank> identifyModifiedProgramChanks() {
+        final List<NodeWithDiffType> nodesWithDiffType = this.getAllNodeInSourceCodeOrder();
+        final List<ProgramChank> chanks = new ArrayList<ProgramChank>();
+        int beginLine = 0;
+        int previousLine = 0;
+        boolean counting = false;
+        for(NodeWithDiffType node: nodesWithDiffType) {
+            int line;
+            try {
+                line = node.getNode().getBegin().orElseThrow().line;
+            } catch (NoSuchElementException e) {
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+                continue;
+            }
+            if(!counting && node.getDiffType() != TYPE.SAME) {
+                beginLine = line;
+                counting = true;
+            }
+            if(counting && node.getDiffType() == TYPE.SAME && line != previousLine) {;
+                chanks.add(new ProgramChank(beginLine, previousLine));
+                counting = false;
+            }
+            previousLine = line;
+        }
+        if(counting) {
+            chanks.add(new ProgramChank(beginLine, previousLine));
+        }
+        return chanks;
+    }
+
+    /**
+     * 木構造に含まれる全てのNodeWithDiffTypeを，元のソースコードに登場する順番で取得する
+     * @return NodeWithDiffTypeのリスト
+     */
+    private List<NodeWithDiffType> getAllNodeInSourceCodeOrder() {
+        final List<NodeWithDiffType> nodes = new ArrayList<NodeWithDiffType>();
+        nodes.add(this);
+        this.getChildNodes().stream()
+            .map(childNode -> childNode.getAllNodeInSourceCodeOrder())
+            .forEach(nodes::addAll);
+        return nodes;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return this.node.toString();
     }
 }
