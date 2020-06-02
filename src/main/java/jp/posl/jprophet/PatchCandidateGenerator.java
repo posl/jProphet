@@ -6,11 +6,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 
+import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.operation.AstOperation;
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.patch.DefaultPatchCandidate;
@@ -23,9 +26,11 @@ public class PatchCandidateGenerator{
      * バグのあるソースコード群から修正パッチ候補を生成する 
      * 
      * @param project 修正パッチ候補を生成する対象のプロジェクト 
+     * @param operations 適応するテンプレート
+     * @param suspiciousnesses flで得られた疑惑値のリスト
      * @return 条件式が抽象化された修正パッチ候補のリスト
      */
-    public List<PatchCandidate> exec(Project project, List<AstOperation> operations){
+    public List<PatchCandidate> exec(Project project, List<AstOperation> operations, List<Suspiciousness> suspiciousnesses){
         List<FileLocator> fileLocators = project.getSrcFileLocators();                
         List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
         int patchCandidateID = 1;
@@ -35,10 +40,13 @@ public class PatchCandidateGenerator{
                 String sourceCode = String.join("\n", lines);
                 List<Node> targetNodes = NodeUtility.getAllNodesFromCode(sourceCode);
                 for(Node targetNode : targetNodes){
-                    List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
-                    for(AppliedOperationResult result : appliedOperationResults){
-                        candidates.add(new DefaultPatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
-                        patchCandidateID += 1;
+                    //ここで疑惑値0のtargetNodeをはじく
+                    if (!isZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
+                        List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
+                        for(AppliedOperationResult result : appliedOperationResults){
+                            candidates.add(new DefaultPatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
+                            patchCandidateID += 1;
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -48,6 +56,36 @@ public class PatchCandidateGenerator{
         }
 
         return candidates;
+    }
+
+    /**
+     * nodeの疑惑値が0であるかを判定する
+     * @param fqn nodeの基となったファイルfqn
+     * @param node ノード
+     * @param suspiciousnesses flで得られた疑惑値のリスト
+     * @return 疑惑値0ならtrue,それ以外false
+     */
+    private boolean isZeroSuspiciousness(String fqn, Node node, List<Suspiciousness> suspiciousnesses) {
+        try {
+            final int line = node.getRange().orElseThrow().begin.line;
+            Optional<Suspiciousness> suspiciousness = suspiciousnesses.stream()
+                .filter(s -> s.getFQN().equals(fqn))
+                .filter(s -> s.getLineNumber() == line)
+                .findAny();
+
+            if (suspiciousness.isPresent()) {
+                if(suspiciousness.get().getValue() == 0) {
+                    return true; //疑惑値0の場合
+                } else {
+                    return false;  //疑惑値0以外の場合
+                }
+            } else {
+                return true; //疑惑値がついてない場合
+            }
+            
+        } catch (NoSuchElementException e){
+            return true;
+        }
     }
 
     /**
