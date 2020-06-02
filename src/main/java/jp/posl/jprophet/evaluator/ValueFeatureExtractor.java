@@ -20,8 +20,8 @@ import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.PrimitiveType.Primitive;
 
-import jp.posl.jprophet.evaluator.ValueFeatureVec.Scope;
-import jp.posl.jprophet.evaluator.ValueFeatureVec.ValueType;
+import jp.posl.jprophet.evaluator.ValueFeature.Scope;
+import jp.posl.jprophet.evaluator.ValueFeature.ValueType;
 import jp.posl.jprophet.operation.DeclarationCollector;;
 
 public class ValueFeatureExtractor {
@@ -48,66 +48,66 @@ public class ValueFeatureExtractor {
         return Optional.empty();
     }
 
-    private ValueFeatureVec extractTypeFeature(Type type, ValueFeatureVec vec) {
+    private ValueFeature extractTypeFeature(Type type, ValueFeature feature) {
         if(type instanceof PrimitiveType) {
             final PrimitiveType primitive = (PrimitiveType) type;
             if(primitive.getType() == Primitive.BOOLEAN) {
-                vec.type = ValueType.BOOLEAN;
+                feature.type = ValueType.BOOLEAN;
             }
             if(primitive.getType() == Primitive.INT || primitive.getType() == Primitive.DOUBLE ||
                 primitive.getType() == Primitive.INT || primitive.getType() == Primitive.FLOAT) {
-                vec.type = ValueType.NUM;
+                feature.type = ValueType.NUM;
             }
         }
         if(type instanceof ClassOrInterfaceType) {
             final ClassOrInterfaceType classOrInterface = (ClassOrInterfaceType) type;
-            vec.type = ValueType.OBJECT;
+            feature.type = ValueType.OBJECT;
             if(classOrInterface.getNameAsString().equals("String")) {
-                vec.type = ValueType.STRING;
+                feature.type = ValueType.STRING;
             }
         }
-        return vec;
+        return feature;
     }
 
-    private ValueFeatureVec extractContextFeature(Node variable, ValueFeatureVec vec) {
+    private ValueFeature extractContextFeature(Node variable, ValueFeature feature) {
         if (variable.findParent(IfStmt.class).isPresent()) {
-            vec.condition = true;
+            feature.condition = true;
         }
         final boolean inForStmt = variable.findParent(ForStmt.class).isPresent();
         final boolean inForeachStmt = variable.findParent(ForeachStmt.class).isPresent();
         final boolean inWhileStmt = variable.findParent(WhileStmt.class).isPresent();
         if (inForStmt || inForeachStmt || inWhileStmt) {
-            vec.condition = true;
+            feature.condition = true;
         }
-        return vec;
+        return feature;
     }
 
-    private ValueFeatureVec extractScopeFeature(Node declarator, ValueFeatureVec vec) {
-        vec.scope = Scope.FIELD;
+    private ValueFeature extractScopeFeature(Node declarator, ValueFeature feature) {
+        feature.scope = Scope.FIELD;
         if (declarator.findParent(MethodDeclaration.class).isPresent()) {
-            vec.scope = Scope.LOCAL;
+            feature.scope = Scope.LOCAL;
             if (declarator instanceof Parameter) {
-                vec.scope = Scope.ARGUMENT;
+                feature.scope = Scope.ARGUMENT;
             }
         }
 
         if (declarator.getParentNode().get().toString().startsWith("final")) {
-            vec.constant = true;
+            feature.constant = true;
         }
-        return vec;
+        return feature;
     }
 
-    public List<ValueFeatureVec> extract(Node node) {
-        final List<ValueFeatureVec> vecs = new ArrayList<>();
+    public List<ValueFeature> extract(Node node) {
+        final List<ValueFeature> features = new ArrayList<>();
         final List<NameExpr> nameExprs = node.findAll(NameExpr.class);
         for (NameExpr nameExpr: nameExprs) {
-            final ValueFeatureVec vec = new ValueFeatureVec();
+            final ValueFeature feature = new ValueFeature();
             Node declarator = findDeclarator(nameExpr).get();
-            this.extractScopeFeature(declarator, vec);
+            this.extractScopeFeature(declarator, feature);
             Type type = declarator.findFirst(Type.class).get();
-            this.extractTypeFeature(type, vec);
-            this.extractContextFeature(nameExpr, vec);
-            vecs.add(vec);
+            this.extractTypeFeature(type, feature);
+            this.extractContextFeature(nameExpr, feature);
+            features.add(feature);
         }
         final List<Node> declarators = node.findAll(VariableDeclarator.class).stream()
             .map(v -> (Node)v)
@@ -117,13 +117,13 @@ public class ValueFeatureExtractor {
             .collect(Collectors.toList())
         );
         for (Node declarator : declarators) {
-            final ValueFeatureVec vec = new ValueFeatureVec();
-            this.extractScopeFeature(declarator, vec);
+            final ValueFeature feature = new ValueFeature();
+            this.extractScopeFeature(declarator, feature);
             Type type = declarator.findFirst(Type.class).get();
-            this.extractTypeFeature(type, vec);
-            this.extractContextFeature(declarator, vec);
-            vecs.add(vec);
+            this.extractTypeFeature(type, feature);
+            this.extractContextFeature(declarator, feature);
+            features.add(feature);
         }
-        return vecs;
+        return features;
     }
 }

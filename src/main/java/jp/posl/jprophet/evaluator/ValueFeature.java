@@ -1,6 +1,6 @@
 package jp.posl.jprophet.evaluator;
 
-public class ValueFeatureVec {
+public class ValueFeature {
     public boolean constant = false;
     public boolean condition = false;
     public boolean ifStmt = false;
@@ -26,10 +26,10 @@ public class ValueFeatureVec {
         ARGUMENT
     }
 
-    public ValueFeatureVec() {
+    public ValueFeature() {
         this(false, false, false, false, false, false, false, false, false, false, ValueType.OTHER, Scope.FIELD);
     }
-    public ValueFeatureVec(boolean constant, boolean condition, boolean ifStmt, boolean loop,
+    public ValueFeature(boolean constant, boolean condition, boolean ifStmt, boolean loop,
             boolean commutativeOp, boolean binaryOpL, boolean binaryOpR, boolean unaryOp,
             boolean replacedByMod, boolean parameter, ValueType type, Scope scope) {
         this.constant = constant;
