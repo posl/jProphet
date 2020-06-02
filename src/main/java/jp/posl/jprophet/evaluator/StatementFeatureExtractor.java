@@ -24,9 +24,9 @@ public class StatementFeatureExtractor {
      * 特徴抽出を行う 
      * @param line 特徴抽出したい行番号
      * @param node 特徴抽出する行をプログラムのASTノード
-     * @return ステートメントの特徴ベクトル
+     * @return ステートメントの特徴
      */
-    public StatementFeatureVec extract(int line, Node node) {
+    public StatementFeature extract(int line, Node node) {
         List<Node> nodes = NodeUtility.getAllNodesInDepthFirstOrder(node);
         List<Node> nodesInTheLine = nodes.stream()
             .filter(n ->  {
@@ -35,31 +35,31 @@ public class StatementFeatureExtractor {
             })
             .collect(Collectors.toList());
 
-        StatementFeatureVec vec = new StatementFeatureVec();
+        StatementFeature feature = new StatementFeature();
         for(Node nodeInTheLine: nodesInTheLine) {
             if(nodeInTheLine instanceof AssignExpr) {
-                vec.assignStmt += 1;
+                feature.assignStmt += 1;
             }
             if(nodeInTheLine instanceof MethodCallExpr) {
-                vec.methodCallStmt += 1;
+                feature.methodCallStmt += 1;
             }
             // Streamは未対応
             if(nodeInTheLine instanceof ForStmt || nodeInTheLine instanceof WhileStmt || nodeInTheLine instanceof ForeachStmt) {
-                vec.loopStmt += 1;
+                feature.loopStmt += 1;
             }
             if(nodeInTheLine instanceof IfStmt) {
-                vec.ifStmt += 1;
+                feature.ifStmt += 1;
             }
             if(nodeInTheLine instanceof ReturnStmt) {
-                vec.returnStmt += 1;
+                feature.returnStmt += 1;
             }
             if(nodeInTheLine instanceof BreakStmt) {
-                vec.breakStmt += 1;
+                feature.breakStmt += 1;
             }
             if(nodeInTheLine instanceof ContinueStmt) {
-                vec.continueStmt += 1;
+                feature.continueStmt += 1;
             }
         }
-        return vec;
+        return feature;
     }    
 }

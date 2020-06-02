@@ -30,13 +30,13 @@ public class StatementFeatureExtractorTest {
 
         final StatementFeatureExtractor extractor = new StatementFeatureExtractor();
         final Node node = NodeUtility.getAllNodesFromCode(src).get(0);
-        final StatementFeatureVec expectedAssignStmtVec     = new StatementFeatureVec(1, 0, 0, 0, 0, 0, 0);
-        final StatementFeatureVec expectedMethodCallStmtVec = new StatementFeatureVec(0, 1, 0, 0, 0, 0, 0);
-        final StatementFeatureVec expectedLoopStmtVec       = new StatementFeatureVec(0, 0, 1, 0, 0, 0, 0);
-        final StatementFeatureVec expectedIfStmtVec         = new StatementFeatureVec(0, 0, 0, 1, 0, 0, 0);
-        final StatementFeatureVec expectedReturnStmtVec     = new StatementFeatureVec(0, 0, 0, 0, 1, 0, 0);
-        final StatementFeatureVec expectedBreakStmtVec      = new StatementFeatureVec(0, 0, 0, 0, 0, 1, 0);
-        final StatementFeatureVec expectedContinueStmtVec   = new StatementFeatureVec(0, 0, 0, 0, 0, 0, 1);
+        final StatementFeature expectedAssignStmtVec     = new StatementFeature(1, 0, 0, 0, 0, 0, 0);
+        final StatementFeature expectedMethodCallStmtVec = new StatementFeature(0, 1, 0, 0, 0, 0, 0);
+        final StatementFeature expectedLoopStmtVec       = new StatementFeature(0, 0, 1, 0, 0, 0, 0);
+        final StatementFeature expectedIfStmtVec         = new StatementFeature(0, 0, 0, 1, 0, 0, 0);
+        final StatementFeature expectedReturnStmtVec     = new StatementFeature(0, 0, 0, 0, 1, 0, 0);
+        final StatementFeature expectedBreakStmtVec      = new StatementFeature(0, 0, 0, 0, 0, 1, 0);
+        final StatementFeature expectedContinueStmtVec   = new StatementFeature(0, 0, 0, 0, 0, 0, 1);
 
         assertThat(extractor.extract(3, node)).isEqualToComparingFieldByField(expectedAssignStmtVec);
         assertThat(extractor.extract(4, node)).isEqualToComparingFieldByField(expectedMethodCallStmtVec);
@@ -63,7 +63,7 @@ public class StatementFeatureExtractorTest {
 
         final StatementFeatureExtractor extractor = new StatementFeatureExtractor();
         final Node node = NodeUtility.getAllNodesFromCode(src).get(0);
-        final StatementFeatureVec expectedVec = new StatementFeatureVec(1, 1, 1, 1, 1, 1, 1);
+        final StatementFeature expectedVec = new StatementFeature(1, 1, 1, 1, 1, 1, 1);
 
         assertThat(extractor.extract(3, node)).isEqualToComparingFieldByField(expectedVec);
     }
