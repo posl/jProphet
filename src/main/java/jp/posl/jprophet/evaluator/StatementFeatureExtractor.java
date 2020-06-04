@@ -20,20 +20,31 @@ import jp.posl.jprophet.NodeUtility;
  * AST情報を基にプログラムの各行のステートメントの特徴を抽出するクラス
  */
 public class StatementFeatureExtractor {
+    final List<Node> nodesInOrderOfSourceCode;
+
+    /**
+     * 抽出対象のプログラムのASTを元に特徴抽出を行う抽出器を作成
+     * @param root 特徴抽出するプログラムのASTノード
+     */
+    public StatementFeatureExtractor(Node root) {
+        nodesInOrderOfSourceCode = NodeUtility.getAllNodesInDepthFirstOrder(root);
+    }
+
     /**
      * 特徴抽出を行う 
      * @param line 特徴抽出したい行番号
-     * @param node 特徴抽出する行をプログラムのASTノード
      * @return ステートメントの特徴
      */
-    public StatementFeature extract(int line, Node node) {
-        List<Node> nodes = NodeUtility.getAllNodesInDepthFirstOrder(node);
-        List<Node> nodesInTheLine = nodes.stream()
+    public StatementFeature extract(int line) {
+        List<Node> nodesInTheLine = this.nodesInOrderOfSourceCode.stream()
             .filter(n ->  {
                 if(!n.getBegin().isPresent()) return false;
                 return n.getBegin().get().line == line;
             })
             .collect(Collectors.toList());
+        if(nodesInTheLine.isEmpty()) {
+            throw new IllegalArgumentException("There is no such line in the AST.");
+        }
 
         StatementFeature feature = new StatementFeature();
         for(Node nodeInTheLine: nodesInTheLine) {
