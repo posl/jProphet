@@ -3,7 +3,7 @@ package jp.posl.jprophet.evaluator;
 import com.github.javaparser.ast.Node;
 
 import org.junit.Test;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import jp.posl.jprophet.NodeUtility;
 
@@ -11,7 +11,7 @@ public class StatementFeatureExtractorTest {
     /**
      * 各ステートメントタイプを判別できるかテスト
      */
-    @Test public void testEachStmtVec() {
+    @Test public void testEachStmtFeature() {
         final String src = new StringBuilder().append("")
             .append("public class A {\n")
             .append("   public void a() {\n")
@@ -28,25 +28,25 @@ public class StatementFeatureExtractorTest {
             .append("}\n")
             .toString();
 
-        final StatementFeatureExtractor extractor = new StatementFeatureExtractor();
         final Node node = NodeUtility.getAllNodesFromCode(src).get(0);
-        final StatementFeature expectedAssignStmtVec     = new StatementFeature(1, 0, 0, 0, 0, 0, 0);
-        final StatementFeature expectedMethodCallStmtVec = new StatementFeature(0, 1, 0, 0, 0, 0, 0);
-        final StatementFeature expectedLoopStmtVec       = new StatementFeature(0, 0, 1, 0, 0, 0, 0);
-        final StatementFeature expectedIfStmtVec         = new StatementFeature(0, 0, 0, 1, 0, 0, 0);
-        final StatementFeature expectedReturnStmtVec     = new StatementFeature(0, 0, 0, 0, 1, 0, 0);
-        final StatementFeature expectedBreakStmtVec      = new StatementFeature(0, 0, 0, 0, 0, 1, 0);
-        final StatementFeature expectedContinueStmtVec   = new StatementFeature(0, 0, 0, 0, 0, 0, 1);
+        final StatementFeatureExtractor extractor = new StatementFeatureExtractor(node);
+        final StatementFeature expectedAssignStmtFeature     = new StatementFeature(1, 0, 0, 0, 0, 0, 0);
+        final StatementFeature expectedMethodCallStmtFeature = new StatementFeature(0, 1, 0, 0, 0, 0, 0);
+        final StatementFeature expectedLoopStmtFeature       = new StatementFeature(0, 0, 1, 0, 0, 0, 0);
+        final StatementFeature expectedIfStmtFeature         = new StatementFeature(0, 0, 0, 1, 0, 0, 0);
+        final StatementFeature expectedReturnStmtFeature     = new StatementFeature(0, 0, 0, 0, 1, 0, 0);
+        final StatementFeature expectedBreakStmtFeature      = new StatementFeature(0, 0, 0, 0, 0, 1, 0);
+        final StatementFeature expectedContinueStmtFeature   = new StatementFeature(0, 0, 0, 0, 0, 0, 1);
 
-        assertThat(extractor.extract(3, node)).isEqualToComparingFieldByField(expectedAssignStmtVec);
-        assertThat(extractor.extract(4, node)).isEqualToComparingFieldByField(expectedMethodCallStmtVec);
-        assertThat(extractor.extract(5, node)).isEqualToComparingFieldByField(expectedLoopStmtVec);
-        assertThat(extractor.extract(6, node)).isEqualToComparingFieldByField(expectedLoopStmtVec);
-        assertThat(extractor.extract(7, node)).isEqualToComparingFieldByField(expectedLoopStmtVec);
-        assertThat(extractor.extract(8, node)).isEqualToComparingFieldByField(expectedIfStmtVec);
-        assertThat(extractor.extract(9, node)).isEqualToComparingFieldByField(expectedReturnStmtVec);
-        assertThat(extractor.extract(10, node)).isEqualToComparingFieldByField(expectedBreakStmtVec);
-        assertThat(extractor.extract(11, node)).isEqualToComparingFieldByField(expectedContinueStmtVec);
+        assertThat(extractor.extract(3)).isEqualToComparingFieldByField(expectedAssignStmtFeature);
+        assertThat(extractor.extract(4)).isEqualToComparingFieldByField(expectedMethodCallStmtFeature);
+        assertThat(extractor.extract(5)).isEqualToComparingFieldByField(expectedLoopStmtFeature);
+        assertThat(extractor.extract(6)).isEqualToComparingFieldByField(expectedLoopStmtFeature);
+        assertThat(extractor.extract(7)).isEqualToComparingFieldByField(expectedLoopStmtFeature);
+        assertThat(extractor.extract(8)).isEqualToComparingFieldByField(expectedIfStmtFeature);
+        assertThat(extractor.extract(9)).isEqualToComparingFieldByField(expectedReturnStmtFeature);
+        assertThat(extractor.extract(10)).isEqualToComparingFieldByField(expectedBreakStmtFeature);
+        assertThat(extractor.extract(11)).isEqualToComparingFieldByField(expectedContinueStmtFeature);
     }
 
     /**
@@ -61,10 +61,24 @@ public class StatementFeatureExtractorTest {
             .append("}\n")
             .toString();
 
-        final StatementFeatureExtractor extractor = new StatementFeatureExtractor();
         final Node node = NodeUtility.getAllNodesFromCode(src).get(0);
-        final StatementFeature expectedVec = new StatementFeature(1, 1, 1, 1, 1, 1, 1);
+        final StatementFeatureExtractor extractor = new StatementFeatureExtractor(node);
+        final StatementFeature expectedFeature = new StatementFeature(1, 1, 1, 1, 1, 1, 1);
 
-        assertThat(extractor.extract(3, node)).isEqualToComparingFieldByField(expectedVec);
+        assertThat(extractor.extract(3)).isEqualToComparingFieldByField(expectedFeature);
+    }
+
+    @Test public void testIllegalLine() {
+        final String src = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("   }\n")
+            .append("}\n")
+            .toString();
+
+        final Node node = NodeUtility.getAllNodesFromCode(src).get(0);
+        final StatementFeatureExtractor extractor = new StatementFeatureExtractor(node);
+
+        assertThatThrownBy(() -> extractor.extract(10)).isInstanceOf(IllegalArgumentException.class);
     }
 }
