@@ -2,6 +2,7 @@ package jp.posl.jprophet;
 
 import org.junit.Test;
 
+import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.operation.AstOperation;
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.project.FileLocator;
@@ -31,7 +32,7 @@ public class PatchCandidateGeneratorTest {
     @Test public void testForExec(){
         // 一つのファイルを持ったプロジェクトのスタブを生成
         String filePath = "src/test/resources/test01.java";
-        List<FileLocator> fileLocatorsForTest = new ArrayList<FileLocator>(Arrays.asList(new FileLocator(filePath, null)));
+        List<FileLocator> fileLocatorsForTest = new ArrayList<FileLocator>(Arrays.asList(new FileLocator(filePath, "test01")));
         Project stubProject = mock(GradleProject.class);
         when(stubProject.getSrcFileLocators()).thenReturn(fileLocatorsForTest);
         
@@ -43,9 +44,51 @@ public class PatchCandidateGeneratorTest {
             }
         };
 
-        List<PatchCandidate> candidates = this.patchCandidateGenerator.exec(stubProject, List.of(stubOperation));
+        List<Suspiciousness> suspiciousenesses = new ArrayList<Suspiciousness>();
+        suspiciousenesses.add(new Suspiciousness("test01", 1, 1));
+        suspiciousenesses.add(new Suspiciousness("test01", 2, 1));
+        suspiciousenesses.add(new Suspiciousness("test01", 3, 1));
+        suspiciousenesses.add(new Suspiciousness("test01", 4, 1));
+        suspiciousenesses.add(new Suspiciousness("test01", 5, 1));
+        suspiciousenesses.add(new Suspiciousness("test01", 6, 1));
 
-        int astNodeNumOfTest01 = 17;
+        List<PatchCandidate> candidates = this.patchCandidateGenerator.exec(stubProject, List.of(stubOperation), suspiciousenesses);
+
+        final int astNodeNumOfTest01 = 17;
         assertThat(candidates.size()).isEqualTo(astNodeNumOfTest01);
+    }
+
+    /**
+     * 疑惑値が0の文のパッチを生成していないか
+     */
+    @Test public void testForZeroSuspiciousness(){
+        // 一つのファイルを持ったプロジェクトのスタブを生成
+        String filePath = "src/test/resources/test01.java";
+        List<FileLocator> fileLocatorsForTest = new ArrayList<FileLocator>(Arrays.asList(new FileLocator(filePath, "test01")));
+        Project stubProject = mock(GradleProject.class);
+        when(stubProject.getSrcFileLocators()).thenReturn(fileLocatorsForTest);
+        
+        // 必ず一つのRepairUnitを返すAstOperationの匿名クラスを実装してGeneratorに注入
+        AstOperation stubOperation = new AstOperation(){
+            @Override
+            public List<CompilationUnit> exec(Node targetNode) {
+                return List.of(targetNode.findCompilationUnit().orElseThrow()); 
+            }
+        };
+
+        List<Suspiciousness> suspiciousenesses = new ArrayList<Suspiciousness>();
+        suspiciousenesses.add(new Suspiciousness("test01", 1, 0));
+        suspiciousenesses.add(new Suspiciousness("test01", 2, 0));
+        suspiciousenesses.add(new Suspiciousness("test01", 3, 0));
+        suspiciousenesses.add(new Suspiciousness("test01", 4, 1));
+        suspiciousenesses.add(new Suspiciousness("test01", 5, 0));
+        suspiciousenesses.add(new Suspiciousness("test01", 5, 0));
+
+        List<PatchCandidate> candidates = this.patchCandidateGenerator.exec(stubProject, List.of(stubOperation), suspiciousenesses);
+
+        final int lineOfPatchedStatement = 4;
+        for (PatchCandidate candidate : candidates){
+            assertThat(candidate.getLineNumber().get()).isEqualTo(lineOfPatchedStatement);
+        }
     }
 }

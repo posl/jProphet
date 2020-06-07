@@ -82,7 +82,7 @@ public class JProphetMain {
         final List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
-        final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations);
+        final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations, suspiciousenesses);
         
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
         patchEvaluator.descendingSortBySuspiciousness(patchCandidates, suspiciousenesses);
