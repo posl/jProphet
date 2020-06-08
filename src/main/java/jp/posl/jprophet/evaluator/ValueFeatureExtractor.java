@@ -24,61 +24,72 @@ import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.PrimitiveType.Primitive;
 
-import jp.posl.jprophet.evaluator.ValueFeature.Scope;
-import jp.posl.jprophet.evaluator.ValueFeature.VarType;
 import jp.posl.jprophet.operation.DeclarationCollector;;
 
+/**
+ * 修正パッチの変数の特徴抽出を行うクラス
+ */
 public class ValueFeatureExtractor {
-    public List<ValueFeature> extract(Node node) {
+    /**
+     * プログラム中に登場する全ての変数についてその特徴を抽出する
+     * @param root ソースコードのASTのルートノード
+     * @return プログラム中の変数の特徴リスト
+     */
+    public List<ValueFeature> extract(Node root) {
         final List<ValueFeature> features = new ArrayList<>();
-        final List<NameExpr> variables = node.findAll(NameExpr.class);
+        final List<NameExpr> variables = root.findAll(NameExpr.class);
         for (NameExpr variable: variables) {
             final ValueFeature feature = new ValueFeature();
             findDeclarator(variable).ifPresent((declarator) -> {
-                this.extractScopeFeature(declarator, feature);
+                this.extractScopeFeature(declarator);
                 declarator.findFirst(Type.class).ifPresent((type) -> {
-                    this.extractTypeFeature(type, feature);
+                    this.extractTypeFeature(type);
                 });
             });
-            this.extractContextFeature(variable, feature);
-            this.extractOperationFeature(variable, feature);
+            feature.add(this.extractContextFeature(variable));
+            feature.add(this.extractOperationFeature(variable));
             features.add(feature);
         }
-        final List<Node> declarators = node.findAll(VariableDeclarator.class).stream()
+        final List<Node> declarators = root.findAll(VariableDeclarator.class).stream()
             .map(v -> (Node)v)
             .collect(Collectors.toList());
-        declarators.addAll(node.findAll(Parameter.class).stream()
+        declarators.addAll(root.findAll(Parameter.class).stream()
             .map(p -> (Node)p)
             .collect(Collectors.toList())
         );
         for (Node declarator : declarators) {
             final ValueFeature feature = new ValueFeature();
-            this.extractScopeFeature(declarator, feature);
-            Type type = declarator.findFirst(Type.class).get();
-            this.extractTypeFeature(type, feature);
-            this.extractContextFeature(declarator, feature);
+            feature.add(this.extractScopeFeature(declarator));
+            final Type type = declarator.findFirst(Type.class).get();
+            feature.add(this.extractTypeFeature(type));
+            feature.add(this.extractContextFeature(declarator));
             features.add(feature);
         }
         return features;
     }
 
-    private Optional<Node> findDeclarator(NameExpr nameExpr) {
+    /**
+     * 変数の宣言ノードを探索する
+     * @param variable 宣言ノードを探索したい変数のノード
+     * @return 宣言ノード，存在しない場合empty()を返す
+     */
+    private Optional<Node> findDeclarator(NameExpr variable) {
         final DeclarationCollector collector = new DeclarationCollector();
 
-        Optional<VariableDeclarator> localVarDeclarator = collector.collectLocalVarsDeclared(nameExpr).stream()
-            .filter(var -> var.getName().equals(nameExpr.getName()))
+        final Optional<VariableDeclarator> localVarDeclarator = collector.collectLocalVarsDeclared(variable).stream()
+            .filter(var -> var.getName().equals(variable.getName()))
             .findFirst();
         if(localVarDeclarator.isPresent()) {
             return Optional.of((Node)localVarDeclarator.get());
         }
-        Optional<Parameter> parameter = collector.collectParameters(nameExpr).stream()
-            .filter(para -> para.getName().equals(nameExpr.getName()))
+        final Optional<Parameter> parameter = collector.collectParameters(variable).stream()
+            .filter(para -> para.getName().equals(variable.getName()))
             .findFirst();
         if(parameter.isPresent()) {
             return Optional.of((Node)parameter.get());
         };
-        Optional<VariableDeclarator> fieldDeclarator = collector.collectFileds(nameExpr).stream()
-            .filter(field -> field.getName().equals(nameExpr.getName()))
+        final Optional<VariableDeclarator> fieldDeclarator = collector.collectFileds(variable).stream()
+            .filter(field -> field.getName().equals(variable.getName()))
             .findFirst();
         if(fieldDeclarator.isPresent()) {
             return Optional.of((Node)fieldDeclarator.get());
@@ -87,31 +98,44 @@ public class ValueFeatureExtractor {
         return Optional.empty();
     }
 
-    private ValueFeature extractTypeFeature(Type type, ValueFeature feature) {
+    /**
+     * 型情報を抽出する  
+     * @param type 型ノード
+     * @return 変数の型の特徴
+     */
+    private ValueFeature extractTypeFeature(Type type) {
+        final ValueFeature feature = new ValueFeature();
         if(type instanceof PrimitiveType) {
             final PrimitiveType primitive = (PrimitiveType) type;
             if(primitive.getType() == Primitive.BOOLEAN) {
-                feature.type = VarType.BOOLEAN;
+                feature.boolType = true;
             }
             if(primitive.getType() == Primitive.INT || primitive.getType() == Primitive.DOUBLE ||
-                primitive.getType() == Primitive.INT || primitive.getType() == Primitive.FLOAT) {
-                feature.type = VarType.NUM;
+                    primitive.getType() == Primitive.LONG || primitive.getType() == Primitive.SHORT ||
+                    primitive.getType() == Primitive.FLOAT) {
+                feature.numType = true;
             }
         }
         if(type instanceof ClassOrInterfaceType) {
+            feature.objectType = true;
             final ClassOrInterfaceType classOrInterface = (ClassOrInterfaceType) type;
-            feature.type = VarType.OBJECT;
             if(classOrInterface.getNameAsString().equals("String")) {
-                feature.type = VarType.STRING;
+                feature.stringType = true;
             }
         }
         return feature;
     }
 
-    private ValueFeature extractContextFeature(Node variable, ValueFeature feature) {
+    /**
+     * 変数がif文やループなど構文上においてどこに位置するかという特徴
+     * @param variable 変数ノード
+     * @return 変数の特徴
+     */
+    private ValueFeature extractContextFeature(Node variable) {
+        final ValueFeature feature = new ValueFeature();
         if (variable.findParent(IfStmt.class).isPresent()) {
             feature.ifStmt = true;
-            Expression condition = variable.findParent(IfStmt.class).get().getCondition();
+            final Expression condition = variable.findParent(IfStmt.class).get().getCondition();
             if(condition.equals(variable)) {
                 feature.condition = true;
             }
@@ -122,20 +146,25 @@ public class ValueFeatureExtractor {
         if (inForStmt || inForeachStmt || inWhileStmt) {
             feature.loop = true;
         }
-
         feature.parameter = variable.findParent(MethodCallExpr.class).isPresent();
         feature.assign    = variable.findParent(AssignExpr.class).isPresent();
         return feature;
     }
 
-    private ValueFeature extractOperationFeature(Node variable, ValueFeature feature) {
+    /**
+     * 変数の被演算子としての特徴を抽出
+     * @param variable 変数ノード
+     * @return 変数の特徴
+     */
+    private ValueFeature extractOperationFeature(Node variable) {
+        final ValueFeature feature = new ValueFeature();
         if(variable.findParent(BinaryExpr.class).isPresent()) {
-            BinaryExpr binaryExpr = variable.findParent(BinaryExpr.class).get();
-            List<String> commutativeOpRepresentations = List.of("+", "*", "==", "!=", "||", "&&");
+            final BinaryExpr binaryExpr = variable.findParent(BinaryExpr.class).get();
+            final List<String> commutativeOpRepresentations = List.of("+", "*", "==", "!=", "||", "&&");
             feature.commutativeOp = commutativeOpRepresentations.stream()
                 .anyMatch(op -> binaryExpr.getOperator().asString().equals(op));
 
-            List<String> noncommutativeOpRepresentations = List.of("-", "/", "%", "<", ">", "<=", ">=");
+            final List<String> noncommutativeOpRepresentations = List.of("-", "/", "%", "<", ">", "<=", ">=");
             feature.noncommutativeOpL = noncommutativeOpRepresentations.stream()
                 .anyMatch(op -> binaryExpr.getOperator().asString().equals(op) && binaryExpr.getLeft().equals(variable));
             feature.noncommutativeOpR = noncommutativeOpRepresentations.stream()
@@ -147,13 +176,23 @@ public class ValueFeatureExtractor {
         return feature;
     }
 
-    private ValueFeature extractScopeFeature(Node declarator, ValueFeature feature) {
-        feature.scope = Scope.FIELD;
+    /**
+     * 宣言ノードを元に変数のスコープを特定
+     * @param declarator
+     * @return 変数の特徴
+     */
+    private ValueFeature extractScopeFeature(Node declarator) {
+        final ValueFeature feature = new ValueFeature();
         if (declarator.findParent(MethodDeclaration.class).isPresent()) {
-            feature.scope = Scope.LOCAL;
             if (declarator instanceof Parameter) {
-                feature.scope = Scope.ARGUMENT;
+                feature.argument = true;
             }
+            else {
+                feature.local = true;
+            }
+        }
+        else {
+            feature.field = true;
         }
 
         if (declarator.getParentNode().get().toString().startsWith("final")) {
@@ -161,5 +200,4 @@ public class ValueFeatureExtractor {
         }
         return feature;
     }
-
 }

@@ -9,8 +9,6 @@ import com.github.javaparser.ast.Node;
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.evaluator.ValueFeature.Scope;
-import jp.posl.jprophet.evaluator.ValueFeature.VarType;
 
 public class ValueFeatureExtractorTest {
     @Test public void testDeclaration() {
@@ -29,18 +27,19 @@ public class ValueFeatureExtractorTest {
         List<ValueFeature> actualFeatures = extractor.extract(node);
 
         ValueFeature expectedFieldFeature = new ValueFeature();
-        expectedFieldFeature.type = VarType.STRING;
-        expectedFieldFeature.scope = Scope.FIELD;
+        expectedFieldFeature.stringType = true;
+        expectedFieldFeature.objectType = true;
+        expectedFieldFeature.field = true;
         ValueFeature expectedLocalVarFeature = new ValueFeature();
-        expectedLocalVarFeature.type = VarType.BOOLEAN;
-        expectedLocalVarFeature.scope = Scope.LOCAL;
+        expectedLocalVarFeature.boolType = true;
+        expectedLocalVarFeature.local = true;
         ValueFeature expectedLocalConstFeature = new ValueFeature();
-        expectedLocalConstFeature.type = VarType.NUM;
-        expectedLocalConstFeature.scope = Scope.LOCAL;
+        expectedLocalConstFeature.numType = true;
+        expectedLocalConstFeature.local = true;
         expectedLocalConstFeature.constant = true;
         ValueFeature expectedArgumentFeature = new ValueFeature();
-        expectedArgumentFeature.type = VarType.OBJECT;
-        expectedArgumentFeature.scope = Scope.ARGUMENT;
+        expectedArgumentFeature.objectType = true; 
+        expectedArgumentFeature.argument = true; 
 
         assertThat(actualFeatures.get(0)).isEqualToComparingFieldByField(expectedFieldFeature);
         assertThat(actualFeatures.get(1)).isEqualToComparingFieldByField(expectedLocalVarFeature);
@@ -83,8 +82,9 @@ public class ValueFeatureExtractorTest {
         expectedFeatureInForeachCond.loop = true;
         ValueFeature expectedDeclarationFeatureInForeachCond = new ValueFeature();
         expectedDeclarationFeatureInForeachCond.loop = true;
-        expectedDeclarationFeatureInForeachCond.type = VarType.STRING;
-        expectedDeclarationFeatureInForeachCond.scope = Scope.LOCAL;
+        expectedDeclarationFeatureInForeachCond.stringType = true;
+        expectedDeclarationFeatureInForeachCond.objectType = true;
+        expectedDeclarationFeatureInForeachCond.local = true;
         ValueFeature expectedParameterFeature = new ValueFeature();
         expectedParameterFeature.parameter = true;
 
