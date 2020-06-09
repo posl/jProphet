@@ -57,7 +57,8 @@ public class JProphetMain {
             new CtrlFlowIntroductionOperation(), 
             new InsertInitOperation(), 
             new VariableReplacementOperation(),
-            new CopyReplaceOperation()
+            new CopyReplaceOperation(),
+            new MethodReplacementOperation()
         ));
 
 
