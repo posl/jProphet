@@ -10,6 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 
@@ -38,7 +39,8 @@ public class PatchCandidateGenerator{
             try {
                 final List<String> lines = Files.readAllLines(Paths.get(fileLocator.getPath()), StandardCharsets.UTF_8);
                 final String sourceCode = String.join("\n", lines);
-                final List<Node> targetNodes = NodeUtility.getAllNodesFromCode(sourceCode);
+                CompilationUnit cu = JavaParser.parse(sourceCode);
+                final List<Node> targetNodes = NodeUtility.getAllDescendantNodes(cu);
                 for(Node targetNode : targetNodes){
                     //疑惑値0のtargetNodeはパッチを生成しない
                     if (!findZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
