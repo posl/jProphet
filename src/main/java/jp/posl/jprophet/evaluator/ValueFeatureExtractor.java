@@ -166,9 +166,9 @@ public class ValueFeatureExtractor {
 
             final List<String> noncommutativeOpRepresentations = List.of("-", "/", "%", "<", ">", "<=", ">=");
             feature.noncommutativeOpL = noncommutativeOpRepresentations.stream()
-                .anyMatch(op -> binaryExpr.getOperator().asString().equals(op) && binaryExpr.getLeft().equals(variable));
+                .anyMatch(op -> binaryExpr.getOperator().asString().equals(op) && binaryExpr.getLeft().containsWithin(variable));
             feature.noncommutativeOpR = noncommutativeOpRepresentations.stream()
-                .anyMatch(op -> binaryExpr.getOperator().asString().equals(op) && binaryExpr.getRight().equals(variable));
+                .anyMatch(op -> binaryExpr.getOperator().asString().equals(op) && binaryExpr.getRight().containsWithin(variable));
         }
         if(variable.findParent(UnaryExpr.class).isPresent()) {
             feature.unaryOp = true;

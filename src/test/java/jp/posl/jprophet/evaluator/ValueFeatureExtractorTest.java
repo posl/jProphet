@@ -11,6 +11,9 @@ import org.junit.Test;
 import jp.posl.jprophet.NodeUtility;
 
 public class ValueFeatureExtractorTest {
+    /**
+     * 宣言ノードにおける変数の型やスコープの特徴抽出のテスト
+     */
     @Test public void testDeclaration() {
         final String src = new StringBuilder().append("")
             .append("public class A {\n")
@@ -45,9 +48,11 @@ public class ValueFeatureExtractorTest {
         assertThat(actualFeatures.get(1)).isEqualToComparingFieldByField(expectedLocalVarFeature);
         assertThat(actualFeatures.get(2)).isEqualToComparingFieldByField(expectedLocalConstFeature);
         assertThat(actualFeatures.get(3)).isEqualToComparingFieldByField(expectedArgumentFeature);
-        return;
     }
 
+    /**
+     * 変数がどのステートメントに含まれているか
+     */
     @Test public void testValueInStmt() {
         final String src = new StringBuilder().append("")
             .append("public class A {\n")
@@ -97,9 +102,11 @@ public class ValueFeatureExtractorTest {
         assertThat(actualFeatures.get(6)).isEqualToComparingFieldByField(expectedParameterFeature);
         // 宣言時の変数の特徴は，リストの最後尾に並ぶ
         assertThat(actualFeatures.get(7)).isEqualToComparingFieldByField(expectedDeclarationFeatureInForeachCond);
-        return;
     }
 
+    /**
+     * 変数が可換演算中に存在する時の特徴抽出
+     */
     @Test public void testValueOfCommutativeOperator() {
         final String src = new StringBuilder().append("")
             .append("public class A {\n")
@@ -124,9 +131,11 @@ public class ValueFeatureExtractorTest {
         actualFeatures.stream().forEach(actual -> {
             assertThat(actual).isEqualToComparingFieldByField(expectedFeature);
         });
-        return;
     }
 
+    /**
+     * 変数が二項演算中に存在する時の特徴抽出
+     */
     @Test public void testValueOfBinaryOperator() {
         final String src = new StringBuilder().append("")
             .append("public class A {\n")
@@ -155,9 +164,37 @@ public class ValueFeatureExtractorTest {
             assertThat(actualFeatures.get(i)).isEqualToComparingFieldByField(expectedLeftVarFeature);
             assertThat(actualFeatures.get(i + 1)).isEqualToComparingFieldByField(expectedRightVarFeature);
         }
-        return;
     }
 
+    /**
+     * 変数が二項演算の被演算子の子ノードに存在する時
+     */
+    @Test public void test() {
+        final String src = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    public void a() {\n")
+            .append("        (a - hoge(b));\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        Node node = NodeUtility.getAllNodesFromCode(src).get(0);
+        ValueFeatureExtractor extractor = new ValueFeatureExtractor();
+        List<ValueFeature> actualFeatures = extractor.extract(node);
+
+        ValueFeature expectedLeftVarFeature = new ValueFeature();
+        expectedLeftVarFeature.noncommutativeOpL = true;
+        ValueFeature expectedRightVarFeature = new ValueFeature();
+        expectedRightVarFeature.noncommutativeOpR = true;
+        expectedRightVarFeature.parameter = true;
+        
+        assertThat(actualFeatures.get(0)).isEqualToComparingFieldByField(expectedLeftVarFeature);
+        assertThat(actualFeatures.get(1)).isEqualToComparingFieldByField(expectedRightVarFeature);
+    }
+
+    /**
+     * 変数が単項演算中に存在する時
+     */
     @Test public void testValueOfUnaryOperator() {
         final String src = new StringBuilder().append("")
             .append("public class A {\n")
@@ -178,6 +215,5 @@ public class ValueFeatureExtractorTest {
         actualFeatures.stream().forEach(actual -> {
             assertThat(actual).isEqualToComparingFieldByField(expectedFeature);
         });
-        return;
     }
 }
