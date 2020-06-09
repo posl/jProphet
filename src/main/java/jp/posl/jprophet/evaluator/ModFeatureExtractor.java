@@ -29,17 +29,17 @@ public class ModFeatureExtractor {
      * ifの存在するチャンクである
      * @param nodeWithDiffType 差分情報付きの抽出対象の修正後AST
      * @param chanks 修正差分チャンクのリスト
-     * @return 特徴ベクトル
+     * @return 変更の特徴
      */
-    public Map<ProgramChank, ModFeatureVec> extract(NodeWithDiffType nodeWithDiffType, List<ProgramChank> chanks) {
+    public Map<ProgramChank, ModFeature> extract(NodeWithDiffType nodeWithDiffType, List<ProgramChank> chanks) {
         final Node node = nodeWithDiffType.getNode();
         final TYPE type = nodeWithDiffType.getDiffType();
 
-        final ModFeatureVec vec = new ModFeatureVec();
+        final ModFeature feature = new ModFeature();
         if(type == TYPE.INSERT) {
             if(node instanceof IfStmt) {
                 if(nodeWithDiffType.findAll(TYPE.SAME).size() > 0) {
-                    vec.insertGuard += 1;
+                    feature.insertGuard += 1;
                 }
                 final List<Class<? extends Statement>> controlStmtClasses = List.of(ReturnStmt.class, BreakStmt.class, ContinueStmt.class);
                 final Boolean controlInserted = controlStmtClasses.stream()    
@@ -49,26 +49,26 @@ public class ModFeatureExtractor {
                             .findAny().isPresent();
                     });
                 if(controlInserted) {
-                    vec.insertControl += 1;
+                    feature.insertControl += 1;
                 }
             }
             else if(node instanceof Statement) {
-                vec.insertStmt += 1;
+                feature.insertStmt += 1;
             }
         }
         if(type == TYPE.CHANGE) {
             if(node instanceof IfStmt) {
-                vec.replaceCond += 1;
+                feature.replaceCond += 1;
             }
             else if(node instanceof MethodCallExpr) {
-                vec.replaceMethod += 1;
+                feature.replaceMethod += 1;
             }
             else if (node instanceof NameExpr) {
-                vec.replaceVar += 1;
+                feature.replaceVar += 1;
             }
         }
 
-        Map<ProgramChank, ModFeatureVec> map = new HashMap<ProgramChank, ModFeatureVec>();
+        Map<ProgramChank, ModFeature> map = new HashMap<ProgramChank, ModFeature>();
         int line;
         try {
             line = node.getBegin().orElseThrow().line;
@@ -81,9 +81,9 @@ public class ModFeatureExtractor {
         chanks.stream()
             .filter(lineIsInChankRange)
             .findFirst()
-            .ifPresent((c) -> map.put(c, vec));
+            .ifPresent((c) -> map.put(c, feature));
         
-        final BinaryOperator<Map<ProgramChank, ModFeatureVec>> mapAccumulator = (accum, newMap) -> {
+        final BinaryOperator<Map<ProgramChank, ModFeature>> mapAccumulator = (accum, newMap) -> {
             newMap.forEach((key, value) -> {
                 accum.merge(key, value, (v1, v2) -> {
                     v1.add(v2);
