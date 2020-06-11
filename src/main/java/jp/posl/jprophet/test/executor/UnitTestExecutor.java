@@ -49,11 +49,14 @@ public class UnitTestExecutor implements TestExecutor {
     @Override
     public TestExecutorResult exec(RepairConfiguration config)  {
         try {
-            builder.build(config);
-            getClassLoader(config.getBuildPath());
-            testClasses = loadTestClass(config.getTargetProject());
-            final boolean result = runAllTestClass(testClasses);
-            return new TestExecutorResult(result, List.of(new UnitTestResult(result)));
+            if(builder.build(config)) {
+                getClassLoader(config.getBuildPath());
+                testClasses = loadTestClass(config.getTargetProject());
+                final boolean result = runAllTestClass(testClasses);
+                return new TestExecutorResult(result, List.of(new UnitTestResult(result)));
+            } else {
+                return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
+            }
         }
         catch (MalformedURLException | ClassNotFoundException e) {
             System.err.println(e.getMessage());
