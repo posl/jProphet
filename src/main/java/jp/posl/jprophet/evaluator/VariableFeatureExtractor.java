@@ -29,17 +29,17 @@ import jp.posl.jprophet.operation.DeclarationCollector;;
 /**
  * 修正パッチの変数の特徴抽出を行うクラス
  */
-public class ValueFeatureExtractor {
+public class VariableFeatureExtractor {
     /**
      * プログラム中に登場する全ての変数についてその特徴を抽出する
      * @param root ソースコードのASTのルートノード
      * @return プログラム中の変数の特徴リスト
      */
-    public List<ValueFeature> extract(Node root) {
-        final List<ValueFeature> features = new ArrayList<>();
+    public List<VariableFeature> extract(Node root) {
+        final List<VariableFeature> features = new ArrayList<>();
         final List<NameExpr> variables = root.findAll(NameExpr.class);
         for (NameExpr variable: variables) {
-            final ValueFeature feature = new ValueFeature();
+            final VariableFeature feature = new VariableFeature();
             findDeclarator(variable).ifPresent((declarator) -> {
                 this.extractScopeFeature(declarator);
                 declarator.findFirst(Type.class).ifPresent((type) -> {
@@ -58,7 +58,7 @@ public class ValueFeatureExtractor {
             .collect(Collectors.toList())
         );
         for (Node declarator : declarators) {
-            final ValueFeature feature = new ValueFeature();
+            final VariableFeature feature = new VariableFeature();
             feature.add(this.extractScopeFeature(declarator));
             final Type type = declarator.findFirst(Type.class).get();
             feature.add(this.extractTypeFeature(type));
@@ -103,8 +103,8 @@ public class ValueFeatureExtractor {
      * @param type 型ノード
      * @return 変数の型の特徴
      */
-    private ValueFeature extractTypeFeature(Type type) {
-        final ValueFeature feature = new ValueFeature();
+    private VariableFeature extractTypeFeature(Type type) {
+        final VariableFeature feature = new VariableFeature();
         if(type instanceof PrimitiveType) {
             final PrimitiveType primitive = (PrimitiveType) type;
             if(primitive.getType() == Primitive.BOOLEAN) {
@@ -131,8 +131,8 @@ public class ValueFeatureExtractor {
      * @param variable 変数ノード
      * @return 変数の特徴
      */
-    private ValueFeature extractContextFeature(Node variable) {
-        final ValueFeature feature = new ValueFeature();
+    private VariableFeature extractContextFeature(Node variable) {
+        final VariableFeature feature = new VariableFeature();
         if (variable.findParent(IfStmt.class).isPresent()) {
             feature.ifStmt = true;
             final Expression condition = variable.findParent(IfStmt.class).get().getCondition();
@@ -156,8 +156,8 @@ public class ValueFeatureExtractor {
      * @param variable 変数ノード
      * @return 変数の特徴
      */
-    private ValueFeature extractOperationFeature(Node variable) {
-        final ValueFeature feature = new ValueFeature();
+    private VariableFeature extractOperationFeature(Node variable) {
+        final VariableFeature feature = new VariableFeature();
         if(variable.findParent(BinaryExpr.class).isPresent()) {
             final BinaryExpr binaryExpr = variable.findParent(BinaryExpr.class).get();
             final List<String> commutativeOpRepresentations = List.of("+", "*", "==", "!=", "||", "&&");
@@ -181,8 +181,8 @@ public class ValueFeatureExtractor {
      * @param declarator
      * @return 変数の特徴
      */
-    private ValueFeature extractScopeFeature(Node declarator) {
-        final ValueFeature feature = new ValueFeature();
+    private VariableFeature extractScopeFeature(Node declarator) {
+        final VariableFeature feature = new VariableFeature();
         if (declarator.findParent(MethodDeclaration.class).isPresent()) {
             if (declarator instanceof Parameter) {
                 feature.argument = true;
