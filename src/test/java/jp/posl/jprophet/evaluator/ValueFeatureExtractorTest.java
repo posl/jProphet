@@ -26,21 +26,21 @@ public class ValueFeatureExtractorTest {
             .toString();
 
         Node node = NodeUtility.getAllNodesFromCode(src).get(0);
-        ValueFeatureExtractor extractor = new ValueFeatureExtractor();
-        List<ValueFeature> actualFeatures = extractor.extract(node);
+        VariableFeatureExtractor extractor = new VariableFeatureExtractor();
+        List<VariableFeature> actualFeatures = extractor.extract(node);
 
-        ValueFeature expectedFieldFeature = new ValueFeature();
+        VariableFeature expectedFieldFeature = new VariableFeature();
         expectedFieldFeature.stringType = true;
         expectedFieldFeature.objectType = true;
         expectedFieldFeature.field = true;
-        ValueFeature expectedLocalVarFeature = new ValueFeature();
+        VariableFeature expectedLocalVarFeature = new VariableFeature();
         expectedLocalVarFeature.boolType = true;
         expectedLocalVarFeature.local = true;
-        ValueFeature expectedLocalConstFeature = new ValueFeature();
+        VariableFeature expectedLocalConstFeature = new VariableFeature();
         expectedLocalConstFeature.numType = true;
         expectedLocalConstFeature.local = true;
         expectedLocalConstFeature.constant = true;
-        ValueFeature expectedArgumentFeature = new ValueFeature();
+        VariableFeature expectedArgumentFeature = new VariableFeature();
         expectedArgumentFeature.objectType = true; 
         expectedArgumentFeature.argument = true; 
 
@@ -71,26 +71,26 @@ public class ValueFeatureExtractorTest {
             .toString();
 
         Node node = NodeUtility.getAllNodesFromCode(src).get(0);
-        ValueFeatureExtractor extractor = new ValueFeatureExtractor();
-        List<ValueFeature> actualFeatures = extractor.extract(node);
+        VariableFeatureExtractor extractor = new VariableFeatureExtractor();
+        List<VariableFeature> actualFeatures = extractor.extract(node);
 
-        ValueFeature expectedFeatureInCond = new ValueFeature();
+        VariableFeature expectedFeatureInCond = new VariableFeature();
         expectedFeatureInCond.condition = true;
         expectedFeatureInCond.ifStmt = true;
-        ValueFeature expectedFeatureInIfStmt = new ValueFeature();
+        VariableFeature expectedFeatureInIfStmt = new VariableFeature();
         expectedFeatureInIfStmt.ifStmt = true;
         expectedFeatureInIfStmt.assign = true;
-        ValueFeature expectedFeatureInLoop = new ValueFeature();
+        VariableFeature expectedFeatureInLoop = new VariableFeature();
         expectedFeatureInLoop.loop = true;
         expectedFeatureInLoop.assign = true;
-        ValueFeature expectedFeatureInForeachCond = new ValueFeature();
+        VariableFeature expectedFeatureInForeachCond = new VariableFeature();
         expectedFeatureInForeachCond.loop = true;
-        ValueFeature expectedDeclarationFeatureInForeachCond = new ValueFeature();
+        VariableFeature expectedDeclarationFeatureInForeachCond = new VariableFeature();
         expectedDeclarationFeatureInForeachCond.loop = true;
         expectedDeclarationFeatureInForeachCond.stringType = true;
         expectedDeclarationFeatureInForeachCond.objectType = true;
         expectedDeclarationFeatureInForeachCond.local = true;
-        ValueFeature expectedParameterFeature = new ValueFeature();
+        VariableFeature expectedParameterFeature = new VariableFeature();
         expectedParameterFeature.parameter = true;
 
         assertThat(actualFeatures.get(0)).isEqualToComparingFieldByField(expectedFeatureInCond);
@@ -122,10 +122,10 @@ public class ValueFeatureExtractorTest {
             .toString();
 
         Node node = NodeUtility.getAllNodesFromCode(src).get(0);
-        ValueFeatureExtractor extractor = new ValueFeatureExtractor();
-        List<ValueFeature> actualFeatures = extractor.extract(node);
+        VariableFeatureExtractor extractor = new VariableFeatureExtractor();
+        List<VariableFeature> actualFeatures = extractor.extract(node);
 
-        ValueFeature expectedFeature = new ValueFeature();
+        VariableFeature expectedFeature = new VariableFeature();
         expectedFeature.commutativeOp = true;
         
         actualFeatures.stream().forEach(actual -> {
@@ -152,12 +152,12 @@ public class ValueFeatureExtractorTest {
             .toString();
 
         Node node = NodeUtility.getAllNodesFromCode(src).get(0);
-        ValueFeatureExtractor extractor = new ValueFeatureExtractor();
-        List<ValueFeature> actualFeatures = extractor.extract(node);
+        VariableFeatureExtractor extractor = new VariableFeatureExtractor();
+        List<VariableFeature> actualFeatures = extractor.extract(node);
 
-        ValueFeature expectedLeftVarFeature = new ValueFeature();
+        VariableFeature expectedLeftVarFeature = new VariableFeature();
         expectedLeftVarFeature.noncommutativeOpL = true;
-        ValueFeature expectedRightVarFeature = new ValueFeature();
+        VariableFeature expectedRightVarFeature = new VariableFeature();
         expectedRightVarFeature.noncommutativeOpR = true;
         
         for(int i = 0; i < actualFeatures.size(); i += 2) {
@@ -179,12 +179,12 @@ public class ValueFeatureExtractorTest {
             .toString();
 
         Node node = NodeUtility.getAllNodesFromCode(src).get(0);
-        ValueFeatureExtractor extractor = new ValueFeatureExtractor();
-        List<ValueFeature> actualFeatures = extractor.extract(node);
+        VariableFeatureExtractor extractor = new VariableFeatureExtractor();
+        List<VariableFeature> actualFeatures = extractor.extract(node);
 
-        ValueFeature expectedLeftVarFeature = new ValueFeature();
+        VariableFeature expectedLeftVarFeature = new VariableFeature();
         expectedLeftVarFeature.noncommutativeOpL = true;
-        ValueFeature expectedRightVarFeature = new ValueFeature();
+        VariableFeature expectedRightVarFeature = new VariableFeature();
         expectedRightVarFeature.noncommutativeOpR = true;
         expectedRightVarFeature.parameter = true;
         
@@ -206,10 +206,10 @@ public class ValueFeatureExtractorTest {
             .toString();
 
         Node node = NodeUtility.getAllNodesFromCode(src).get(0);
-        ValueFeatureExtractor extractor = new ValueFeatureExtractor();
-        List<ValueFeature> actualFeatures = extractor.extract(node);
+        VariableFeatureExtractor extractor = new VariableFeatureExtractor();
+        List<VariableFeature> actualFeatures = extractor.extract(node);
 
-        ValueFeature expectedFeature = new ValueFeature();
+        VariableFeature expectedFeature = new VariableFeature();
         expectedFeature.unaryOp = true;
         
         actualFeatures.stream().forEach(actual -> {

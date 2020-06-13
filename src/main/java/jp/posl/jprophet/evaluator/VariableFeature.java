@@ -3,7 +3,7 @@ package jp.posl.jprophet.evaluator;
 /**
  * 修正パッチの変数の特徴を表現するクラス
  */
-public class ValueFeature {
+public class VariableFeature {
     /* booleanかどうか */
     public boolean boolType = false;
     /* 数値型かどうか */
@@ -43,7 +43,7 @@ public class ValueFeature {
      * 各フィールド同士の論理和を取り更新する
      * @param feature 対象の特徴
      */
-    public void add(ValueFeature feature) {
+    public void add(VariableFeature feature) {
         this.boolType          = this.boolType   || feature.boolType;
         this.numType           = this.numType    || feature.numType;
         this.stringType        = this.stringType || feature.stringType;
