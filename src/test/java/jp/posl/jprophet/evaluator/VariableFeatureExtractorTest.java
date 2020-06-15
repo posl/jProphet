@@ -15,7 +15,7 @@ import org.junit.Test;
 import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.evaluator.VariableFeature.VarType;
 
-public class ValueFeatureExtractorTest {
+public class VariableFeatureExtractorTest {
     /**
      * 宣言ノードにおける変数の型やスコープの特徴抽出のテスト
      */
