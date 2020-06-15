@@ -2,6 +2,7 @@ package jp.posl.jprophet.evaluator;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.github.javaparser.ast.Node;
 
@@ -9,6 +10,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.evaluator.ModFeature.ModType;
 
 public class ModFeatureExtractorTest {
 
@@ -47,7 +49,7 @@ public class ModFeatureExtractorTest {
         final Map<ProgramChank, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
 
         // BreakStmtがInsertStmtとして加算されている
-        final ModFeature expectedModFeature = new ModFeature(3, 0, 0, 0, 0, 3);
+        final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.INSERT_CONTROL, ModType.INSERT_STMT));
         final ProgramChank expectedChank = new ProgramChank(3, 8);
 
         assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
@@ -87,9 +89,9 @@ public class ModFeatureExtractorTest {
 
         final Map<ProgramChank, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
 
-        final ModFeature expectedModFeatureOfIf = new ModFeature(1, 1, 0, 0, 0, 1);
+        final ModFeature expectedModFeatureOfIf = new ModFeature(Set.of(ModType.INSERT_CONTROL, ModType.INSERT_GUARD, ModType.INSERT_STMT));
         final ProgramChank expectedChankOfIf = new ProgramChank(3, 3);
-        final ModFeature expectedModFeatureOfReturn = new ModFeature(0, 0, 0, 0, 0, 1);
+        final ModFeature expectedModFeatureOfReturn = new ModFeature(Set.of(ModType.INSERT_STMT));
         final ProgramChank expectedChankOfReturn = new ProgramChank(5, 5);
 
         assertThat(actualMap.get(expectedChankOfIf)).isEqualToComparingFieldByField(expectedModFeatureOfIf);
@@ -128,7 +130,7 @@ public class ModFeatureExtractorTest {
 
         final Map<ProgramChank, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
 
-        final ModFeature expectedModFeature = new ModFeature(0, 1, 0, 0, 0, 0);
+        final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.INSERT_GUARD));
         final ProgramChank expectedChank = new ProgramChank(3, 3);
 
         assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
@@ -166,7 +168,7 @@ public class ModFeatureExtractorTest {
 
         final Map<ProgramChank, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
 
-        final ModFeature expectedModFeature = new ModFeature(0, 1, 0, 0, 0, 0);
+        final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.INSERT_GUARD));
         final ProgramChank expectedChank = new ProgramChank(3, 3);
 
         assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
@@ -206,7 +208,7 @@ public class ModFeatureExtractorTest {
         final Map<ProgramChank, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
 
         // 条件式内部が変数のためReplaceVarも判定される
-        final ModFeature expectedModFeature = new ModFeature(0, 0, 1, 1, 0, 0);
+        final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.REPLACE_COND, ModType.REPLACE_VAR));
         final ProgramChank expectedChank = new ProgramChank(3, 3);
 
         assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
@@ -243,7 +245,7 @@ public class ModFeatureExtractorTest {
 
         final Map<ProgramChank, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
 
-        final ModFeature expectedModFeature = new ModFeature(0, 0, 0, 1, 0, 0);
+        final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.REPLACE_VAR));
         final ProgramChank expectedChank = new ProgramChank(3, 3);
 
         assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
@@ -280,7 +282,7 @@ public class ModFeatureExtractorTest {
 
         final Map<ProgramChank, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
 
-        final ModFeature expectedModFeature = new ModFeature(0, 0, 0, 0, 1, 0);
+        final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.REPLACE_METHOD));
         final ProgramChank expectedChank = new ProgramChank(3, 3);
 
         assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
@@ -316,7 +318,7 @@ public class ModFeatureExtractorTest {
 
         final Map<ProgramChank, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
 
-        final ModFeature expectedModFeature = new ModFeature(0, 0, 0, 0, 0, 1);
+        final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.INSERT_STMT));
         final ProgramChank expectedChank = new ProgramChank(3, 3);
 
         assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);

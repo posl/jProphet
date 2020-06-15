@@ -1,36 +1,46 @@
 package jp.posl.jprophet.evaluator;
 
 import org.junit.Test;
+
+import jp.posl.jprophet.evaluator.StatementFeature.StatementType;
+
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class StatementFeatureTest {
     /**
      * 引数なしコンストラクタをテスト
      */
     @Test public void testConstructor() {
-        StatementFeature feature = new StatementFeature();
+        final StatementFeature feature = new StatementFeature();
 
-        assertThat(feature.assignStmt).isEqualTo(0);
-        assertThat(feature.methodCallStmt).isEqualTo(0);
-        assertThat(feature.loopStmt).isEqualTo(0);
-        assertThat(feature.ifStmt).isEqualTo(0);
-        assertThat(feature.returnStmt).isEqualTo(0);
-        assertThat(feature.breakStmt).isEqualTo(0);
-        assertThat(feature.continueStmt).isEqualTo(0);
+        assertThat(feature.getTypes().isEmpty()).isTrue();
     }
 
     /**
      * 引数ありコンストラクタをテスト
      */
     @Test public void testConstructorWithParameter() {
-        StatementFeature feature = new StatementFeature(1, 2, 3, 4, 5, 6, 7);
+        final Set<StatementType> expectedTypes = Set.of(StatementType.ASSIGN);
+        final StatementFeature feature = new StatementFeature(expectedTypes);
 
-        assertThat(feature.assignStmt).isEqualTo(1);
-        assertThat(feature.methodCallStmt).isEqualTo(2);
-        assertThat(feature.loopStmt).isEqualTo(3);
-        assertThat(feature.ifStmt).isEqualTo(4);
-        assertThat(feature.returnStmt).isEqualTo(5);
-        assertThat(feature.breakStmt).isEqualTo(6);
-        assertThat(feature.continueStmt).isEqualTo(7);
+        assertThat(feature.getTypes()).isEqualTo(expectedTypes);
+    }
+
+    /**
+     * addメソッドによる特徴の追加をテスト
+     */
+    @Test
+    public void testForTypeAddition() {
+        Set<StatementType> augendTypes = new HashSet<>(Arrays.asList(StatementType.ASSIGN));
+        StatementFeature augend = new StatementFeature(augendTypes);
+        augend.add(StatementType.BREAK);
+
+        StatementFeature expected = new StatementFeature(Set.of(StatementType.ASSIGN, StatementType.BREAK));
+
+        assertThat(augend).isEqualToComparingFieldByField(expected);
     }
 }

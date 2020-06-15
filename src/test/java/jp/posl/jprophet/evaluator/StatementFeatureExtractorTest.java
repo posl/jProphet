@@ -5,7 +5,10 @@ import com.github.javaparser.ast.Node;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Set;
+
 import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.evaluator.StatementFeature.StatementType;
 
 public class StatementFeatureExtractorTest {
     /**
@@ -30,13 +33,13 @@ public class StatementFeatureExtractorTest {
 
         final Node node = NodeUtility.getAllNodesFromCode(src).get(0);
         final StatementFeatureExtractor extractor = new StatementFeatureExtractor(node);
-        final StatementFeature expectedAssignStmtFeature     = new StatementFeature(1, 0, 0, 0, 0, 0, 0);
-        final StatementFeature expectedMethodCallStmtFeature = new StatementFeature(0, 1, 0, 0, 0, 0, 0);
-        final StatementFeature expectedLoopStmtFeature       = new StatementFeature(0, 0, 1, 0, 0, 0, 0);
-        final StatementFeature expectedIfStmtFeature         = new StatementFeature(0, 0, 0, 1, 0, 0, 0);
-        final StatementFeature expectedReturnStmtFeature     = new StatementFeature(0, 0, 0, 0, 1, 0, 0);
-        final StatementFeature expectedBreakStmtFeature      = new StatementFeature(0, 0, 0, 0, 0, 1, 0);
-        final StatementFeature expectedContinueStmtFeature   = new StatementFeature(0, 0, 0, 0, 0, 0, 1);
+        final StatementFeature expectedAssignStmtFeature     = new StatementFeature(Set.of(StatementType.ASSIGN));
+        final StatementFeature expectedMethodCallStmtFeature = new StatementFeature(Set.of(StatementType.METHOD_CALL));
+        final StatementFeature expectedLoopStmtFeature       = new StatementFeature(Set.of(StatementType.LOOP));
+        final StatementFeature expectedIfStmtFeature         = new StatementFeature(Set.of(StatementType.IF));
+        final StatementFeature expectedReturnStmtFeature     = new StatementFeature(Set.of(StatementType.RETURN));
+        final StatementFeature expectedBreakStmtFeature      = new StatementFeature(Set.of(StatementType.BREAK));
+        final StatementFeature expectedContinueStmtFeature   = new StatementFeature(Set.of(StatementType.CONTINUE));
 
         assertThat(extractor.extract(3)).isEqualToComparingFieldByField(expectedAssignStmtFeature);
         assertThat(extractor.extract(4)).isEqualToComparingFieldByField(expectedMethodCallStmtFeature);
@@ -63,7 +66,16 @@ public class StatementFeatureExtractorTest {
 
         final Node node = NodeUtility.getAllNodesFromCode(src).get(0);
         final StatementFeatureExtractor extractor = new StatementFeatureExtractor(node);
-        final StatementFeature expectedFeature = new StatementFeature(1, 1, 1, 1, 1, 1, 1);
+        final Set<StatementType> expectedTypes = Set.of(
+            StatementType.ASSIGN, 
+            StatementType.METHOD_CALL, 
+            StatementType.LOOP, 
+            StatementType.IF, 
+            StatementType.RETURN, 
+            StatementType.BREAK, 
+            StatementType.CONTINUE
+        );
+        final StatementFeature expectedFeature = new StatementFeature(expectedTypes);
 
         assertThat(extractor.extract(3)).isEqualToComparingFieldByField(expectedFeature);
     }

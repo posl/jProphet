@@ -3,18 +3,19 @@ package jp.posl.jprophet.evaluator;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.NameExpr;
 
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.evaluator.VariableFeature.VarType;
 
-public class ValueFeatureExtractorTest {
+public class VariableFeatureExtractorTest {
     /**
      * 宣言ノードにおける変数の型やスコープの特徴抽出のテスト
      */
@@ -35,17 +36,20 @@ public class ValueFeatureExtractorTest {
             .map(nameExpr -> extractor.extract(nameExpr))
             .collect(Collectors.toList());
 
-        VariableFeature expectedFieldFeature = new VariableFeature();
-        expectedFieldFeature.stringType = true;
-        expectedFieldFeature.objectType = true;
-        expectedFieldFeature.field = true;
-        VariableFeature expectedLocalVarFeature = new VariableFeature();
-        expectedLocalVarFeature.boolType = true;
-        expectedLocalVarFeature.local = true;
-        VariableFeature expectedLocalConstFeature = new VariableFeature();
-        expectedLocalConstFeature.numType = true;
-        expectedLocalConstFeature.local = true;
-        expectedLocalConstFeature.constant = true;
+        VariableFeature expectedFieldFeature = new VariableFeature(Set.of(
+            VarType.STRING,
+            VarType.OBJECT,
+            VarType.FIELD
+        ));
+        VariableFeature expectedLocalVarFeature = new VariableFeature(Set.of(
+            VarType.BOOLEAN,
+            VarType.LOCAL
+        ));
+        VariableFeature expectedLocalConstFeature = new VariableFeature(Set.of(
+            VarType.NUM,
+            VarType.LOCAL,
+            VarType.CONSTANT
+        ));
 
     
         System.out.println(root.findAll(VariableDeclarator.class).get(0));
@@ -80,24 +84,24 @@ public class ValueFeatureExtractorTest {
             .map(nameExpr -> extractor.extract(nameExpr))
             .collect(Collectors.toList());
 
-        VariableFeature expectedFeatureInCond = new VariableFeature();
-        expectedFeatureInCond.condition = true;
-        expectedFeatureInCond.ifStmt = true;
-        VariableFeature expectedFeatureInIfStmt = new VariableFeature();
-        expectedFeatureInIfStmt.ifStmt = true;
-        expectedFeatureInIfStmt.assign = true;
-        VariableFeature expectedFeatureInLoop = new VariableFeature();
-        expectedFeatureInLoop.loop = true;
-        expectedFeatureInLoop.assign = true;
-        VariableFeature expectedFeatureInForeachCond = new VariableFeature();
-        expectedFeatureInForeachCond.loop = true;
-        VariableFeature expectedDeclarationFeatureInForeachCond = new VariableFeature();
-        expectedDeclarationFeatureInForeachCond.loop = true;
-        expectedDeclarationFeatureInForeachCond.stringType = true;
-        expectedDeclarationFeatureInForeachCond.objectType = true;
-        expectedDeclarationFeatureInForeachCond.local = true;
-        VariableFeature expectedParameterFeature = new VariableFeature();
-        expectedParameterFeature.parameter = true;
+        VariableFeature expectedFeatureInCond = new VariableFeature(Set.of(
+            VarType.IN_CONDITION,
+            VarType.IN_IF_STMT
+        ));
+        VariableFeature expectedFeatureInIfStmt = new VariableFeature(Set.of(
+            VarType.IN_IF_STMT,
+            VarType.IN_ASSIGN_STMT
+        ));
+        VariableFeature expectedFeatureInLoop = new VariableFeature(Set.of(
+            VarType.IN_LOOP,
+            VarType.IN_ASSIGN_STMT
+        ));
+        VariableFeature expectedFeatureInForeachCond = new VariableFeature(Set.of(
+            VarType.IN_LOOP
+        ));
+        VariableFeature expectedParameterFeature = new VariableFeature(Set.of(
+            VarType.PARAMETER
+        ));
 
         assertThat(actualFeatures.get(0)).isEqualToComparingFieldByField(expectedFeatureInCond);
         assertThat(actualFeatures.get(1)).isEqualToComparingFieldByField(expectedFeatureInIfStmt);
@@ -131,8 +135,9 @@ public class ValueFeatureExtractorTest {
             .map(nameExpr -> extractor.extract(nameExpr))
             .collect(Collectors.toList());
 
-        VariableFeature expectedFeature = new VariableFeature();
-        expectedFeature.commutativeOp = true;
+        VariableFeature expectedFeature = new VariableFeature(Set.of(
+            VarType.COMMUTATIVE_OPERAND
+        ));
         
         actualFeatures.stream().forEach(actual -> {
             assertThat(actual).isEqualToComparingFieldByField(expectedFeature);
@@ -163,10 +168,12 @@ public class ValueFeatureExtractorTest {
             .map(nameExpr -> extractor.extract(nameExpr))
             .collect(Collectors.toList());
 
-        VariableFeature expectedLeftVarFeature = new VariableFeature();
-        expectedLeftVarFeature.noncommutativeOpL = true;
-        VariableFeature expectedRightVarFeature = new VariableFeature();
-        expectedRightVarFeature.noncommutativeOpR = true;
+        VariableFeature expectedLeftVarFeature = new VariableFeature(Set.of(
+            VarType.NONCOMMUTATIVE_OPERAND_LEFT
+        ));
+        VariableFeature expectedRightVarFeature = new VariableFeature(Set.of(
+            VarType.NONCOMMUTATIVE_OPERAND_RIGHT
+        ));
         
         for(int i = 0; i < actualFeatures.size(); i += 2) {
             assertThat(actualFeatures.get(i)).isEqualToComparingFieldByField(expectedLeftVarFeature);
@@ -192,11 +199,13 @@ public class ValueFeatureExtractorTest {
             .map(nameExpr -> extractor.extract(nameExpr))
             .collect(Collectors.toList());
 
-        VariableFeature expectedLeftVarFeature = new VariableFeature();
-        expectedLeftVarFeature.noncommutativeOpL = true;
-        VariableFeature expectedRightVarFeature = new VariableFeature();
-        expectedRightVarFeature.noncommutativeOpR = true;
-        expectedRightVarFeature.parameter = true;
+        VariableFeature expectedLeftVarFeature = new VariableFeature(Set.of(
+            VarType.NONCOMMUTATIVE_OPERAND_LEFT
+        ));
+        VariableFeature expectedRightVarFeature = new VariableFeature(Set.of(
+            VarType.NONCOMMUTATIVE_OPERAND_RIGHT,
+            VarType.PARAMETER
+        ));
         
         assertThat(actualFeatures.get(0)).isEqualToComparingFieldByField(expectedLeftVarFeature);
         assertThat(actualFeatures.get(1)).isEqualToComparingFieldByField(expectedRightVarFeature);
@@ -221,8 +230,9 @@ public class ValueFeatureExtractorTest {
             .map(nameExpr -> extractor.extract(nameExpr))
             .collect(Collectors.toList());
 
-        VariableFeature expectedFeature = new VariableFeature();
-        expectedFeature.unaryOp = true;
+        VariableFeature expectedFeature = new VariableFeature(Set.of(
+            VarType.UNARY_OPERAND
+        ));
         
         actualFeatures.stream().forEach(actual -> {
             assertThat(actual).isEqualToComparingFieldByField(expectedFeature);
