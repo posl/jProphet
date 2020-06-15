@@ -3,8 +3,12 @@ package jp.posl.jprophet.evaluator;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.NameExpr;
 
 import org.junit.Test;
 
@@ -18,16 +22,18 @@ public class ValueFeatureExtractorTest {
         final String src = new StringBuilder().append("")
             .append("public class A {\n")
             .append("    final public String str;\n")
-            .append("    public void a(Object o) {\n")
+            .append("    public void a() {\n")
             .append("        boolean bool = 0;\n")
             .append("        final int i = 0;\n")
             .append("    }\n")
             .append("}\n")
             .toString();
 
-        Node node = NodeUtility.getAllNodesFromCode(src).get(0);
+        Node root = NodeUtility.getAllNodesFromCode(src).get(0);
         VariableFeatureExtractor extractor = new VariableFeatureExtractor();
-        List<VariableFeature> actualFeatures = extractor.extract(node);
+        List<VariableFeature> actualDeclaratorFeatures = root.findAll(VariableDeclarator.class).stream()
+            .map(nameExpr -> extractor.extract(nameExpr))
+            .collect(Collectors.toList());
 
         VariableFeature expectedFieldFeature = new VariableFeature();
         expectedFieldFeature.stringType = true;
@@ -40,14 +46,12 @@ public class ValueFeatureExtractorTest {
         expectedLocalConstFeature.numType = true;
         expectedLocalConstFeature.local = true;
         expectedLocalConstFeature.constant = true;
-        VariableFeature expectedArgumentFeature = new VariableFeature();
-        expectedArgumentFeature.objectType = true; 
-        expectedArgumentFeature.argument = true; 
 
-        assertThat(actualFeatures.get(0)).isEqualToComparingFieldByField(expectedFieldFeature);
-        assertThat(actualFeatures.get(1)).isEqualToComparingFieldByField(expectedLocalVarFeature);
-        assertThat(actualFeatures.get(2)).isEqualToComparingFieldByField(expectedLocalConstFeature);
-        assertThat(actualFeatures.get(3)).isEqualToComparingFieldByField(expectedArgumentFeature);
+    
+        System.out.println(root.findAll(VariableDeclarator.class).get(0));
+        assertThat(actualDeclaratorFeatures.get(0)).isEqualToComparingFieldByField(expectedFieldFeature);
+        assertThat(actualDeclaratorFeatures.get(1)).isEqualToComparingFieldByField(expectedLocalVarFeature);
+        assertThat(actualDeclaratorFeatures.get(2)).isEqualToComparingFieldByField(expectedLocalConstFeature);
     }
 
     /**
@@ -70,9 +74,11 @@ public class ValueFeatureExtractorTest {
             .append("}\n")
             .toString();
 
-        Node node = NodeUtility.getAllNodesFromCode(src).get(0);
+        Node root = NodeUtility.getAllNodesFromCode(src).get(0);
         VariableFeatureExtractor extractor = new VariableFeatureExtractor();
-        List<VariableFeature> actualFeatures = extractor.extract(node);
+        List<VariableFeature> actualFeatures = root.findAll(NameExpr.class).stream()
+            .map(nameExpr -> extractor.extract(nameExpr))
+            .collect(Collectors.toList());
 
         VariableFeature expectedFeatureInCond = new VariableFeature();
         expectedFeatureInCond.condition = true;
@@ -100,8 +106,6 @@ public class ValueFeatureExtractorTest {
         assertThat(actualFeatures.get(4)).isEqualToComparingFieldByField(expectedFeatureInForeachCond);
         assertThat(actualFeatures.get(5)).isEqualToComparingFieldByField(expectedFeatureInLoop);
         assertThat(actualFeatures.get(6)).isEqualToComparingFieldByField(expectedParameterFeature);
-        // 宣言時の変数の特徴は，リストの最後尾に並ぶ
-        assertThat(actualFeatures.get(7)).isEqualToComparingFieldByField(expectedDeclarationFeatureInForeachCond);
     }
 
     /**
@@ -121,9 +125,11 @@ public class ValueFeatureExtractorTest {
             .append("}\n")
             .toString();
 
-        Node node = NodeUtility.getAllNodesFromCode(src).get(0);
+        Node root = NodeUtility.getAllNodesFromCode(src).get(0);
         VariableFeatureExtractor extractor = new VariableFeatureExtractor();
-        List<VariableFeature> actualFeatures = extractor.extract(node);
+        List<VariableFeature> actualFeatures = root.findAll(NameExpr.class).stream()
+            .map(nameExpr -> extractor.extract(nameExpr))
+            .collect(Collectors.toList());
 
         VariableFeature expectedFeature = new VariableFeature();
         expectedFeature.commutativeOp = true;
@@ -151,9 +157,11 @@ public class ValueFeatureExtractorTest {
             .append("}\n")
             .toString();
 
-        Node node = NodeUtility.getAllNodesFromCode(src).get(0);
+        Node root = NodeUtility.getAllNodesFromCode(src).get(0);
         VariableFeatureExtractor extractor = new VariableFeatureExtractor();
-        List<VariableFeature> actualFeatures = extractor.extract(node);
+        List<VariableFeature> actualFeatures = root.findAll(NameExpr.class).stream()
+            .map(nameExpr -> extractor.extract(nameExpr))
+            .collect(Collectors.toList());
 
         VariableFeature expectedLeftVarFeature = new VariableFeature();
         expectedLeftVarFeature.noncommutativeOpL = true;
@@ -178,9 +186,11 @@ public class ValueFeatureExtractorTest {
             .append("}\n")
             .toString();
 
-        Node node = NodeUtility.getAllNodesFromCode(src).get(0);
+        Node root = NodeUtility.getAllNodesFromCode(src).get(0);
         VariableFeatureExtractor extractor = new VariableFeatureExtractor();
-        List<VariableFeature> actualFeatures = extractor.extract(node);
+        List<VariableFeature> actualFeatures = root.findAll(NameExpr.class).stream()
+            .map(nameExpr -> extractor.extract(nameExpr))
+            .collect(Collectors.toList());
 
         VariableFeature expectedLeftVarFeature = new VariableFeature();
         expectedLeftVarFeature.noncommutativeOpL = true;
@@ -205,9 +215,11 @@ public class ValueFeatureExtractorTest {
             .append("}\n")
             .toString();
 
-        Node node = NodeUtility.getAllNodesFromCode(src).get(0);
+        Node root = NodeUtility.getAllNodesFromCode(src).get(0);
         VariableFeatureExtractor extractor = new VariableFeatureExtractor();
-        List<VariableFeature> actualFeatures = extractor.extract(node);
+        List<VariableFeature> actualFeatures = root.findAll(NameExpr.class).stream()
+            .map(nameExpr -> extractor.extract(nameExpr))
+            .collect(Collectors.toList());
 
         VariableFeature expectedFeature = new VariableFeature();
         expectedFeature.unaryOp = true;

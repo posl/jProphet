@@ -1,9 +1,7 @@
 package jp.posl.jprophet.evaluator;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -31,41 +29,35 @@ import jp.posl.jprophet.operation.DeclarationCollector;;
  */
 public class VariableFeatureExtractor {
     /**
-     * プログラム中に登場する全ての変数についてその特徴を抽出する
-     * @param root ソースコードのASTのルートノード
-     * @return プログラム中の変数の特徴リスト
+     * 参照されている変数の特徴を抽出する
+     * @param variable 変数のノード
+     * @return 変数の特徴
      */
-    public List<VariableFeature> extract(Node root) {
-        final List<VariableFeature> features = new ArrayList<>();
-        final List<NameExpr> variables = root.findAll(NameExpr.class);
-        for (NameExpr variable: variables) {
-            final VariableFeature feature = new VariableFeature();
-            findDeclarator(variable).ifPresent((declarator) -> {
-                this.extractScopeFeature(declarator);
-                declarator.findFirst(Type.class).ifPresent((type) -> {
-                    this.extractTypeFeature(type);
-                });
+    public VariableFeature extract(NameExpr variable) {
+        final VariableFeature feature = new VariableFeature();
+        findDeclarator(variable).ifPresent((declarator) -> {
+            this.extractScopeFeature(declarator);
+            declarator.findFirst(Type.class).ifPresent((type) -> {
+                this.extractTypeFeature(type);
             });
-            feature.add(this.extractContextFeature(variable));
-            feature.add(this.extractOperationFeature(variable));
-            features.add(feature);
-        }
-        final List<Node> declarators = root.findAll(VariableDeclarator.class).stream()
-            .map(v -> (Node)v)
-            .collect(Collectors.toList());
-        declarators.addAll(root.findAll(Parameter.class).stream()
-            .map(p -> (Node)p)
-            .collect(Collectors.toList())
-        );
-        for (Node declarator : declarators) {
-            final VariableFeature feature = new VariableFeature();
-            feature.add(this.extractScopeFeature(declarator));
-            final Type type = declarator.findFirst(Type.class).get();
-            feature.add(this.extractTypeFeature(type));
-            feature.add(this.extractContextFeature(declarator));
-            features.add(feature);
-        }
-        return features;
+        });
+        feature.add(this.extractContextFeature(variable));
+        feature.add(this.extractOperationFeature(variable));
+        return feature;
+    }
+    
+    /**
+     * 宣言時の変数の特徴を抽出する
+     * @param declarator 変数の宣言ノード
+     * @return 変数の特徴
+     */
+    public VariableFeature extract(VariableDeclarator declarator) {
+        final VariableFeature feature = new VariableFeature();
+        feature.add(this.extractScopeFeature(declarator));
+        final Type type = declarator.findFirst(Type.class).get();
+        feature.add(this.extractTypeFeature(type));
+        feature.add(this.extractContextFeature(declarator));
+        return feature;
     }
 
     /**
