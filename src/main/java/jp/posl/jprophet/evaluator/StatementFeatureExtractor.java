@@ -15,6 +15,7 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.WhileStmt;
 
 import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.evaluator.StatementFeature.StatementType;
 
 /**
  * AST情報を基にプログラムの各行のステートメントの特徴を抽出するクラス
@@ -49,26 +50,26 @@ public class StatementFeatureExtractor {
         StatementFeature feature = new StatementFeature();
         for(Node nodeInTheLine: nodesInTheLine) {
             if(nodeInTheLine instanceof AssignExpr) {
-                feature.assignStmt += 1;
+                feature.add(StatementType.ASSIGN);
             }
             if(nodeInTheLine instanceof MethodCallExpr) {
-                feature.methodCallStmt += 1;
+                feature.add(StatementType.METHOD_CALL);
             }
             // Streamは未対応
             if(nodeInTheLine instanceof ForStmt || nodeInTheLine instanceof WhileStmt || nodeInTheLine instanceof ForeachStmt) {
-                feature.loopStmt += 1;
+                feature.add(StatementType.LOOP);
             }
             if(nodeInTheLine instanceof IfStmt) {
-                feature.ifStmt += 1;
+                feature.add(StatementType.IF);
             }
             if(nodeInTheLine instanceof ReturnStmt) {
-                feature.returnStmt += 1;
+                feature.add(StatementType.RETURN);
             }
             if(nodeInTheLine instanceof BreakStmt) {
-                feature.breakStmt += 1;
+                feature.add(StatementType.BREAK);
             }
             if(nodeInTheLine instanceof ContinueStmt) {
-                feature.continueStmt += 1;
+                feature.add(StatementType.CONTINUE);
             }
         }
         return feature;

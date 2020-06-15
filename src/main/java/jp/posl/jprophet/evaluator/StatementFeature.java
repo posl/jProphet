@@ -1,49 +1,59 @@
 package jp.posl.jprophet.evaluator;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * プログラムのステートメント(行)ごとの特徴を表現するクラス
  */
 public class StatementFeature {
-    /* 代入文 */
-    public int assignStmt;
-    /* メソッド呼び出し */
-    public int methodCallStmt;
-    /* ループ構文 */
-    public int loopStmt;
-    /* if文 */
-    public int ifStmt;
-    /* return文 */
-    public int returnStmt;
-    /* break文 */
-    public int breakStmt;
-    /* continue文 */
-    public int continueStmt;
+    enum StatementType {
+        /* 代入文 */
+        ASSIGN,
+        /* メソッド呼び出し */
+        METHOD_CALL,
+        /* ループ構文 */
+        LOOP,
+        /* if文 */
+        IF,
+        /* return文 */
+        RETURN,
+        /* break文 */
+        BREAK,
+        /* continue文 */
+        CONTINUE
+    };
+
+    final private Set<StatementType> types;
 
     /**
-     * 全要素を全て0で初期化
+     * 特徴を持たない空のStatementFeatureを生成
      */
     public StatementFeature() {
-        this(0, 0, 0, 0, 0, 0, 0);
+        this.types = new HashSet<>();        
     }
 
     /**
-     * 各要素を与えられた数値で初期化
-     * @param assignStmt     AssignStmtの値
-     * @param methodCallStmt MethodCallStmtの値 
-     * @param loopStmt       LoopStmtの値
-     * @param ifStmt         IfStmtの値
-     * @param returnStmt     ReturnStmtの値
-     * @param breakStmt      ReplaceMethodの値
-     * @param continueStmt   InsertSmtの値
+     * typesを初期値としたStatementFeatureを生成
+     * @param types 初期値
      */
-    public StatementFeature(int assignStmt, int methodCallStmt, int loopStmt, int ifStmt, int returnStmt, int breakStmt, int continueStmt) {
-        this.assignStmt = assignStmt;
-        this.methodCallStmt = methodCallStmt;
-        this.loopStmt = loopStmt;
-        this.ifStmt = ifStmt;
-        this.returnStmt = returnStmt;
-        this.breakStmt = breakStmt;
-        this.continueStmt = continueStmt;
+    public StatementFeature(Set<StatementType> types) {
+        this.types = types;        
     }
-    
+
+    /**
+     * ステートメントの特徴を取得
+     * @return 特徴のセット
+     */
+    public Set<StatementType> getTypes() {
+        return this.types;
+    }
+
+    /**
+     * ステートメントの特徴を追加
+     * @param types 追加するステートメントの種類
+     */
+    public void add(StatementType type) {
+        this.types.add(type);
+    }
 }

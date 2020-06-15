@@ -2,7 +2,7 @@ package jp.posl.jprophet.evaluator;
 
 import org.junit.Test;
 
-import jp.posl.jprophet.evaluator.ModFeature.ModType;
+import jp.posl.jprophet.evaluator.VariableFeature.VarType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,12 +10,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ModFeatureTest {
+
+public class VariableFeatureTest {
     /**
      * 引数なしコンストラクタをテスト
      */
     @Test public void testConstructor() {
-        ModFeature feature = new ModFeature();
+        VariableFeature feature = new VariableFeature();
 
         assertThat(feature.getTypes().isEmpty()).isTrue();
     }
@@ -24,8 +25,8 @@ public class ModFeatureTest {
      * 引数ありコンストラクタをテスト
      */
     @Test public void testConstructorWithParameter() {
-        Set<ModType> expectedTypes = Set.of(ModType.INSERT_CONTROL, ModType.INSERT_GUARD);
-        ModFeature feature = new ModFeature(expectedTypes);
+        Set<VarType> expectedTypes = Set.of(VarType.ARGUMENT, VarType.BOOLEAN);
+        VariableFeature feature = new VariableFeature(expectedTypes);
 
         assertThat(feature.getTypes()).isEqualTo(expectedTypes);
     }
@@ -34,13 +35,13 @@ public class ModFeatureTest {
      * addメソッドによる各特徴同士の足し算をテスト
      */
     @Test public void testForFeatureAddition() {
-        Set<ModType> addendTypes = new HashSet<>(Arrays.asList(ModType.INSERT_CONTROL));
-        Set<ModType> augendTypes = new HashSet<>(Arrays.asList(ModType.INSERT_GUARD));
-        ModFeature addend = new ModFeature(addendTypes);
-        ModFeature augend = new ModFeature(augendTypes);
+        Set<VarType> addendTypes = new HashSet<>(Arrays.asList(VarType.ARGUMENT));
+        Set<VarType> augendTypes = new HashSet<>(Arrays.asList(VarType.BOOLEAN));
+        VariableFeature addend = new VariableFeature(addendTypes);
+        VariableFeature augend = new VariableFeature(augendTypes);
         augend.add(addend);
 
-        ModFeature expected = new ModFeature(Set.of(ModType.INSERT_CONTROL, ModType.INSERT_GUARD));
+        VariableFeature expected = new VariableFeature(Set.of(VarType.ARGUMENT, VarType.BOOLEAN));
 
         assertThat(augend).isEqualToComparingFieldByField(expected);
     }
@@ -49,11 +50,11 @@ public class ModFeatureTest {
      * addメソッドによる特徴の追加をテスト
      */
     @Test public void testForTypeAddition() {
-        Set<ModType> augendTypes = new HashSet<>(Arrays.asList(ModType.INSERT_GUARD));
-        ModFeature augend = new ModFeature(augendTypes);
-        augend.add(ModType.INSERT_CONTROL);
+        Set<VarType> augendTypes = new HashSet<>(Arrays.asList(VarType.ARGUMENT));
+        VariableFeature augend = new VariableFeature(augendTypes);
+        augend.add(VarType.BOOLEAN);
 
-        ModFeature expected = new ModFeature(Set.of(ModType.INSERT_CONTROL, ModType.INSERT_GUARD));
+        VariableFeature expected = new VariableFeature(Set.of(VarType.ARGUMENT, VarType.BOOLEAN));
 
         assertThat(augend).isEqualToComparingFieldByField(expected);
     }

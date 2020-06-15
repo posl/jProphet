@@ -16,6 +16,7 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
+import jp.posl.jprophet.evaluator.ModFeature.ModType;
 import jp.posl.jprophet.evaluator.NodeWithDiffType.TYPE;
 
 /**
@@ -39,7 +40,7 @@ public class ModFeatureExtractor {
         if(type == TYPE.INSERT) {
             if(node instanceof IfStmt) {
                 if(nodeWithDiffType.findAll(TYPE.SAME).size() > 0) {
-                    feature.insertGuard += 1;
+                    feature.add(ModType.INSERT_GUARD);
                 }
                 final List<Class<? extends Statement>> controlStmtClasses = List.of(ReturnStmt.class, BreakStmt.class, ContinueStmt.class);
                 final Boolean controlInserted = controlStmtClasses.stream()    
@@ -49,22 +50,22 @@ public class ModFeatureExtractor {
                             .findAny().isPresent();
                     });
                 if(controlInserted) {
-                    feature.insertControl += 1;
+                    feature.add(ModType.INSERT_CONTROL);
                 }
             }
             else if(node instanceof Statement) {
-                feature.insertStmt += 1;
+                feature.add(ModType.INSERT_STMT);
             }
         }
         if(type == TYPE.CHANGE) {
             if(node instanceof IfStmt) {
-                feature.replaceCond += 1;
+                feature.add(ModType.REPLACE_COND);
             }
             else if(node instanceof MethodCallExpr) {
-                feature.replaceMethod += 1;
+                feature.add(ModType.REPLACE_METHOD);
             }
             else if (node instanceof NameExpr) {
-                feature.replaceVar += 1;
+                feature.add(ModType.REPLACE_VAR);
             }
         }
 
