@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.NameExpr;
 
@@ -48,7 +47,6 @@ public class ValueFeatureExtractorTest {
         expectedLocalConstFeature.constant = true;
 
     
-        System.out.println(root.findAll(VariableDeclarator.class).get(0));
         assertThat(actualDeclaratorFeatures.get(0)).isEqualToComparingFieldByField(expectedFieldFeature);
         assertThat(actualDeclaratorFeatures.get(1)).isEqualToComparingFieldByField(expectedLocalVarFeature);
         assertThat(actualDeclaratorFeatures.get(2)).isEqualToComparingFieldByField(expectedLocalConstFeature);
