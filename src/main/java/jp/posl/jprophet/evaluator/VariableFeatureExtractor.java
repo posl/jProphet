@@ -66,7 +66,7 @@ public class VariableFeatureExtractor {
      * @param variable 宣言ノードを探索したい変数のノード
      * @return 宣言ノード，存在しない場合empty()を返す
      */
-    private Optional<Node> findDeclarator(NameExpr variable) {
+    public Optional<Node> findDeclarator(NameExpr variable) {
         final DeclarationCollector collector = new DeclarationCollector();
 
         final Optional<VariableDeclarator> localVarDeclarator = collector.collectLocalVarsDeclared(variable).stream()
@@ -80,7 +80,7 @@ public class VariableFeatureExtractor {
             .findFirst();
         if(parameter.isPresent()) {
             return Optional.of((Node)parameter.get());
-        };
+        }
         final Optional<VariableDeclarator> fieldDeclarator = collector.collectFileds(variable).stream()
             .filter(field -> field.getName().equals(variable.getName()))
             .findFirst();
