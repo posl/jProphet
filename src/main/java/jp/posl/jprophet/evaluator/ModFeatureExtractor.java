@@ -29,10 +29,10 @@ public class ModFeatureExtractor {
      * なお，InsertControlは飛び飛びの複数の行から判定されることがあるが，属するプログラムチャンクは
      * ifの存在するチャンクである
      * @param nodeWithDiffType 差分情報付きの抽出対象の修正後AST
-     * @param chanks 修正差分チャンクのリスト
+     * @param chunks 修正差分チャンクのリスト
      * @return 変更の特徴
      */
-    public Map<ProgramChank, ModFeature> extract(NodeWithDiffType nodeWithDiffType, List<ProgramChank> chanks) {
+    public Map<ProgramChunk, ModFeature> extract(NodeWithDiffType nodeWithDiffType, List<ProgramChunk> chunks) {
         final Node node = nodeWithDiffType.getNode();
         final TYPE type = nodeWithDiffType.getDiffType();
 
@@ -69,7 +69,7 @@ public class ModFeatureExtractor {
             }
         }
 
-        Map<ProgramChank, ModFeature> map = new HashMap<ProgramChank, ModFeature>();
+        Map<ProgramChunk, ModFeature> map = new HashMap<ProgramChunk, ModFeature>();
         int line;
         try {
             line = node.getBegin().orElseThrow().line;
@@ -78,13 +78,13 @@ public class ModFeatureExtractor {
             e.printStackTrace();
             return map;
         }
-        final Predicate<ProgramChank> lineIsInChankRange = chank -> chank.getBegin() <= line && line <= chank.getEnd();
-        chanks.stream()
-            .filter(lineIsInChankRange)
+        final Predicate<ProgramChunk> lineIsInChunkRange = chunk -> chunk.getBegin() <= line && line <= chunk.getEnd();
+        chunks.stream()
+            .filter(lineIsInChunkRange)
             .findFirst()
             .ifPresent((c) -> map.put(c, feature));
         
-        final BinaryOperator<Map<ProgramChank, ModFeature>> mapAccumulator = (accum, newMap) -> {
+        final BinaryOperator<Map<ProgramChunk, ModFeature>> mapAccumulator = (accum, newMap) -> {
             newMap.forEach((key, value) -> {
                 accum.merge(key, value, (v1, v2) -> {
                     v1.add(v2);
@@ -94,7 +94,7 @@ public class ModFeatureExtractor {
             return accum;
         };
         return nodeWithDiffType.getChildNodes().stream()
-            .map(childNode -> this.extract(childNode, chanks))
+            .map(childNode -> this.extract(childNode, chunks))
             .reduce(map, mapAccumulator);
     }
 }

@@ -12,53 +12,51 @@ import jp.posl.jprophet.evaluator.StatementFeature.StatementType;
 import jp.posl.jprophet.evaluator.VariableFeature.VarType;
 
 public class FeatureVector {
-    final private int size1 = StatementPos.values().length + StatementType.values().length + ModType.values().length;
-    final private int size2 = StatementPos.values().length + VarType.values().length * 2;
-    // final List<Long> vector;
+    final List<Integer> modFeatureVector;
+    final List<Integer> varFeatureVector;
+
+    final private int numOfStmtPosTypes = StatementPos.values().length;
+    final private int numOfStmtTypes = StatementType.values().length;
+    final private int numOfModTypes = ModType.values().length;
+    final private int numOfVarTypes = VarType.values().length;
 
     public FeatureVector() {
-        // vector = new ArrayList<>(Collections.nCopies(size1 + size2, 0));
+        this.modFeatureVector = new ArrayList<>(Collections.nCopies(numOfStmtPosTypes * numOfStmtTypes * numOfModTypes, 0));
+        this.varFeatureVector = new ArrayList<>(Collections.nCopies(numOfStmtPosTypes * numOfVarTypes * numOfVarTypes, 0));
     }
 
-    public void add(StatementPos stmtPos, StatementFeature stmtFeature, ModFeature modFeature) {
-        final Long index = this.toIndex(stmtPos, stmtFeature, modFeature);
-        // vector.set(index, 1);
-        return;
+    public List<Integer> get() {
+        List<Integer> vector = new ArrayList<>();
+        vector.addAll(this.modFeatureVector);
+        vector.addAll(this.varFeatureVector);
+        return vector;
     }
 
-    public void add(StatementPos stmtPos, VariableFeature originalVarFeature, VariableFeature fixedVarFeature) {
+    public void add(StatementPos stmtPos, StatementType stmtType, ModType modType) {
+        final int index = this.toIndex(stmtPos, stmtType, modType);
+        this.modFeatureVector.set(index, 1);
+    }
 
+    public void add(StatementPos stmtPos, VarType originalVarType, VarType fixedVarType) {
+        final int index =  this.toIndex(stmtPos, originalVarType, fixedVarType);
+        this.varFeatureVector.set(index, 1);
     }
     
-    private Long toIndex(StatementPos stmtPos, StatementFeature stmtFeature, ModFeature modFeature) {
-        final int stmtOrdinal = stmtPos.ordinal();
-        List<Integer> is = new ArrayList<>(Collections.nCopies(StatementPos.values().length, 0));
-        is.set(stmtOrdinal, 1);
+    private int toIndex(StatementPos stmtPos, StatementType stmtType, ModType modType) {
+        final int stmtPosOrdinal = stmtPos.ordinal();
+        final int stmtTypeOrdinal = stmtType.ordinal();
+        final int modTypeOrdinal = modType.ordinal();
 
-        final List<Integer> stmtTypeOrdinals = stmtFeature.getTypes().stream()
-            .map(type -> type.ordinal()).collect(Collectors.toList());
-        List<Integer> is1 = new ArrayList<>(Collections.nCopies(StatementType.values().length, 0));
-        stmtTypeOrdinals.stream()
-            .forEach(index -> is1.set(index, 1));
-
-        final List<Integer> modTypeOrdinals = modFeature.getTypes().stream()
-            .map(type -> type.ordinal()).collect(Collectors.toList());
-        List<Integer> is2 = new ArrayList<>(Collections.nCopies(ModType.values().length, 0));
-        modTypeOrdinals.stream()
-            .forEach(index -> is2.set(index, 1));
-
-        StringBuilder hoge = new StringBuilder();
-        is.stream().forEach(i -> hoge.append(i.toString()));
-        is1.stream().forEach(i -> hoge.append(i.toString()));
-        is2.stream().forEach(i -> hoge.append(i.toString()));
-        for(int i = 0; i < this.size2; i++) {
-            hoge.append("0");
-        }
-        
-        return Long.parseLong(hoge.toString(), 2);
+        final int index = stmtPosOrdinal + (numOfStmtPosTypes * stmtTypeOrdinal) + (numOfStmtPosTypes * numOfStmtTypes * modTypeOrdinal);
+        return index;
     }
 
-    private int toIndex(StatementPos stmtPos, VariableFeature originalVarFeature, VariableFeature fixedVarFeature) {
-        return 0;
+    private int toIndex(StatementPos stmtPos, VarType originalVarType, VarType fixedVarType) {
+        final int stmtPosOrdinal = stmtPos.ordinal();
+        final int originalVarTypeOrdinal = originalVarType.ordinal();
+        final int fixedVarTypeOrdinal = fixedVarType.ordinal();
+
+        final int index = stmtPosOrdinal + (numOfStmtPosTypes * originalVarTypeOrdinal) + (numOfStmtPosTypes * numOfVarTypes * fixedVarTypeOrdinal);
+        return index;
     }
 }

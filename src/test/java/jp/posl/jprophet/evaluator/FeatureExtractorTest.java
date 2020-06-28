@@ -13,7 +13,8 @@ import jp.posl.jprophet.patch.DefaultPatchCandidate;
 import jp.posl.jprophet.patch.PatchCandidate;
 
 public class FeatureExtractorTest {
-    @Test void hoge() {
+
+    @Test public void testFeatureExtractor() {
         final FeatureExtractor featureExtractor = new FeatureExtractor();
         final String originalSource = new StringBuilder().append("")
             .append("public class A {\n")
@@ -25,8 +26,7 @@ public class FeatureExtractorTest {
         final String revisedSource = new StringBuilder().append("")
             .append("public class A {\n")
             .append("   public void a() {\n")
-            .append("       if(fuga)\n")
-            .append("           break;\n")
+            .append("       hoge = 0;\n")
             .append("   }\n")
             .append("}\n")
             .toString();

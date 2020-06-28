@@ -44,15 +44,15 @@ public class ModFeatureExtractorTest {
         final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
-        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
+        final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChank, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
+        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
 
         // BreakStmtがInsertStmtとして加算されている
         final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.INSERT_CONTROL, ModType.INSERT_STMT));
-        final ProgramChank expectedChank = new ProgramChank(3, 8);
+        final ProgramChunk expectedChunk = new ProgramChunk(3, 8);
 
-        assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
+        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModFeature);
     }
 
     /**
@@ -85,17 +85,17 @@ public class ModFeatureExtractorTest {
         final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
-        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
+        final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChank, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
+        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
 
         final ModFeature expectedModFeatureOfIf = new ModFeature(Set.of(ModType.INSERT_CONTROL, ModType.INSERT_GUARD, ModType.INSERT_STMT));
-        final ProgramChank expectedChankOfIf = new ProgramChank(3, 3);
+        final ProgramChunk expectedChunkOfIf = new ProgramChunk(3, 3);
         final ModFeature expectedModFeatureOfReturn = new ModFeature(Set.of(ModType.INSERT_STMT));
-        final ProgramChank expectedChankOfReturn = new ProgramChank(5, 5);
+        final ProgramChunk expectedChunkOfReturn = new ProgramChunk(5, 5);
 
-        assertThat(actualMap.get(expectedChankOfIf)).isEqualToComparingFieldByField(expectedModFeatureOfIf);
-        assertThat(actualMap.get(expectedChankOfReturn)).isEqualToComparingFieldByField(expectedModFeatureOfReturn);
+        assertThat(actualMap.get(expectedChunkOfIf)).isEqualToComparingFieldByField(expectedModFeatureOfIf);
+        assertThat(actualMap.get(expectedChunkOfReturn)).isEqualToComparingFieldByField(expectedModFeatureOfReturn);
         return;
     }
 
@@ -126,14 +126,14 @@ public class ModFeatureExtractorTest {
         final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
-        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
+        final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChank, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
+        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
 
         final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.INSERT_GUARD));
-        final ProgramChank expectedChank = new ProgramChank(3, 3);
+        final ProgramChunk expectedChunk = new ProgramChunk(3, 3);
 
-        assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
+        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModFeature);
         return;
     }
 
@@ -164,14 +164,14 @@ public class ModFeatureExtractorTest {
         final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
-        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
+        final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChank, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
+        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
 
         final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.INSERT_GUARD));
-        final ProgramChank expectedChank = new ProgramChank(3, 3);
+        final ProgramChunk expectedChunk = new ProgramChunk(3, 3);
 
-        assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
+        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModFeature);
         return;
     }
 
@@ -203,15 +203,15 @@ public class ModFeatureExtractorTest {
         final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
-        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
+        final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChank, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
+        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
 
         // 条件式内部が変数のためReplaceVarも判定される
         final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.REPLACE_COND, ModType.REPLACE_VAR));
-        final ProgramChank expectedChank = new ProgramChank(3, 3);
+        final ProgramChunk expectedChunk = new ProgramChunk(3, 3);
 
-        assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
+        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModFeature);
         return;
     }
 
@@ -241,14 +241,14 @@ public class ModFeatureExtractorTest {
         final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
-        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
+        final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChank, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
+        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
 
         final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.REPLACE_VAR));
-        final ProgramChank expectedChank = new ProgramChank(3, 3);
+        final ProgramChunk expectedChunk = new ProgramChunk(3, 3);
 
-        assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
+        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModFeature);
         return;
     }
 
@@ -278,14 +278,14 @@ public class ModFeatureExtractorTest {
         final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
-        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
+        final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChank, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
+        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
 
         final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.REPLACE_METHOD));
-        final ProgramChank expectedChank = new ProgramChank(3, 3);
+        final ProgramChunk expectedChunk = new ProgramChunk(3, 3);
 
-        assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
+        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModFeature);
         return;
     }
 
@@ -314,14 +314,14 @@ public class ModFeatureExtractorTest {
         final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
-        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
+        final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChank, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chanks);
+        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
 
         final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.INSERT_STMT));
-        final ProgramChank expectedChank = new ProgramChank(3, 3);
+        final ProgramChunk expectedChunk = new ProgramChunk(3, 3);
 
-        assertThat(actualMap.get(expectedChank)).isEqualToComparingFieldByField(expectedModFeature);
+        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModFeature);
         return;
     }
 }
