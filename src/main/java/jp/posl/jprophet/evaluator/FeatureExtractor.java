@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.stmt.Statement;
 
 import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.evaluator.StatementFeature.StatementType;

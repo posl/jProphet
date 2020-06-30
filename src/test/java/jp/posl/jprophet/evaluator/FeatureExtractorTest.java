@@ -36,6 +36,7 @@ public class FeatureExtractorTest {
 
         final PatchCandidate patchCandidate = new DefaultPatchCandidate(originalNodes.get(0), revisedNodes.get(0).findCompilationUnit().get(), "", "", MethodReplacementOperation.class, 0);
         final FeatureExtractor extractor = new FeatureExtractor();
-        FeatureVector vec = extractor.extract(patchCandidate);
+        FeatureVector featureVector = extractor.extract(patchCandidate);
+        List<Boolean> binaryVector = featureVector.get();
     }
 }

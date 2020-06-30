@@ -12,8 +12,9 @@ import jp.posl.jprophet.evaluator.StatementFeature.StatementType;
 import jp.posl.jprophet.evaluator.VariableFeature.VarType;
 
 public class FeatureVector {
-    final List<Integer> modFeatureVector;
-    final List<Integer> varFeatureVector;
+    final List<Boolean> modTypeVector;
+    final List<Boolean> modFeatureVector;
+    final List<Boolean> varFeatureVector;
 
     final private int numOfStmtPosTypes = StatementPos.values().length;
     final private int numOfStmtTypes = StatementType.values().length;
@@ -21,25 +22,32 @@ public class FeatureVector {
     final private int numOfVarTypes = VarType.values().length;
 
     public FeatureVector() {
-        this.modFeatureVector = new ArrayList<>(Collections.nCopies(numOfStmtPosTypes * numOfStmtTypes * numOfModTypes, 0));
-        this.varFeatureVector = new ArrayList<>(Collections.nCopies(numOfStmtPosTypes * numOfVarTypes * numOfVarTypes, 0));
+        this.modTypeVector = new ArrayList<>(Collections.nCopies(numOfModTypes, false));
+        this.modFeatureVector = new ArrayList<>(Collections.nCopies(numOfStmtPosTypes * numOfStmtTypes * numOfModTypes, false));
+        this.varFeatureVector = new ArrayList<>(Collections.nCopies(numOfStmtPosTypes * numOfVarTypes * numOfVarTypes, false));
     }
 
-    public List<Integer> get() {
-        List<Integer> vector = new ArrayList<>();
+    public List<Boolean> get() {
+        List<Boolean> vector = new ArrayList<>();
+        vector.addAll(this.modTypeVector);
         vector.addAll(this.modFeatureVector);
         vector.addAll(this.varFeatureVector);
         return vector;
     }
 
+    public void add(ModType modType) {
+        final int index = modType.ordinal();        
+        this.modTypeVector.set(index, true);
+    }
+
     public void add(StatementPos stmtPos, StatementType stmtType, ModType modType) {
         final int index = this.toIndex(stmtPos, stmtType, modType);
-        this.modFeatureVector.set(index, 1);
+        this.modFeatureVector.set(index, true);
     }
 
     public void add(StatementPos stmtPos, VarType originalVarType, VarType fixedVarType) {
         final int index =  this.toIndex(stmtPos, originalVarType, fixedVarType);
-        this.varFeatureVector.set(index, 1);
+        this.varFeatureVector.set(index, true);
     }
     
     private int toIndex(StatementPos stmtPos, StatementType stmtType, ModType modType) {

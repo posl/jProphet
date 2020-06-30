@@ -10,63 +10,57 @@ import jp.posl.jprophet.evaluator.VariableFeature.VarType;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class FeatureVectorTest {
-    final private int numOfStmtPosTypes = StatementPos.values().length;
-    final private int numOfStmtTypes = StatementType.values().length;
-    final private int numOfModTypes = ModType.values().length;
-    final private int numOfVarTypes = VarType.values().length;
-    final private int modFeatureVectorSize = numOfStmtPosTypes * numOfStmtTypes * numOfModTypes;
-    final private int varFeatureVectorSize = numOfStmtPosTypes * numOfVarTypes * numOfVarTypes;
-    final private int vectorSize = modFeatureVectorSize + varFeatureVectorSize;
 
-    //TODO
-    @Test public void hoge() {
-        FeatureVector vector = new FeatureVector();
-        final VarType originalVarType = VarType.NONCOMMUTATIVE_OPERAND_RIGHT;
-        final VarType fixedVarType = VarType.NONCOMMUTATIVE_OPERAND_RIGHT;
-        vector.add(StatementPos.NEXT, originalVarType, fixedVarType);
-
-        final List<Integer> expectVector = new ArrayList<>(Collections.nCopies(vectorSize, 0));
-        expectVector.set(vectorSize - 1, 1);
-        assertThat(vector.get()).containsExactlyElementsOf(expectVector);
-    }
-
-    //TODO
-    @Test public void hoge2() {
-        FeatureVector vector = new FeatureVector();
-        final VarType originalVarType = VarType.BOOLEAN;
-        final VarType fixedVarType = VarType.BOOLEAN;
-        vector.add(StatementPos.TARGET, originalVarType, fixedVarType);
-
-        final List<Integer> expectVector = new ArrayList<>(Collections.nCopies(vectorSize, 0));
-        expectVector.set(modFeatureVectorSize, 1);
-        assertThat(vector.get()).containsExactlyElementsOf(expectVector);
-    }
-
-    //TODO
-    @Test public void hoge3() {
-        FeatureVector vector = new FeatureVector();
-        final StatementType stmtType = StatementType.ASSIGN;
-        final ModType modType = ModType.INSERT_CONTROL;
-        vector.add(StatementPos.TARGET, stmtType, modType);
-
-        final List<Integer> expectVector = new ArrayList<>(Collections.nCopies(vectorSize, 0));
-        expectVector.set(0, 1);
-        assertThat(vector.get()).containsExactlyElementsOf(expectVector);
-    }
-
-    //TODO
-    @Test public void hoge4() {
-        FeatureVector vector = new FeatureVector();
-        final StatementType stmtType = StatementType.CONTINUE;
-        final ModType modType = ModType.INSERT_STMT;
-        vector.add(StatementPos.NEXT, stmtType, modType);
-
-        final List<Integer> expectVector = new ArrayList<>(Collections.nCopies(vectorSize, 0));
-        expectVector.set(modFeatureVectorSize - 1, 1);
-        assertThat(vector.get()).containsExactlyElementsOf(expectVector);
+    /**
+     * 特徴の入力パラーメータごとに，binaryVectorがtrueになるインデックスが異なることをテスト
+     */
+    @Test public void testUniqueIndex() {
+        final List<FeatureVector>  vectors = new ArrayList<>();
+        for(int i = 0; i < ModType.values().length; i++) {
+            final FeatureVector vector = new FeatureVector();
+            final ModType modType = ModType.values()[i];
+            vector.add(modType);
+            vectors.add(vector);
+        }
+         
+        for (int i = 0; i < StatementPos.values().length; i++) {
+            for (int j = 0; j < StatementType.values().length; j++) {
+                for(int k = 0; k < ModType.values().length; k++) {
+                    final FeatureVector vector = new FeatureVector();
+                    final StatementPos pos = StatementPos.values()[i];
+                    final StatementType stmtType = StatementType.values()[j];
+                    final ModType modType = ModType.values()[k];
+                    vector.add(pos, stmtType, modType);
+                    vectors.add(vector);
+                }
+            }
+        }
+        for (int i = 0; i < StatementPos.values().length; i++) {
+            for (int j = 0; j < VarType.values().length; j++) {
+                for(int k = 0; k < VarType.values().length; k++) {
+                    final FeatureVector vector = new FeatureVector();
+                    final StatementPos pos = StatementPos.values()[i];
+                    final VarType originalVarType = VarType.values()[j];
+                    final VarType fixedVarType = VarType.values()[k];
+                    vector.add(pos, originalVarType, fixedVarType);
+                    vectors.add(vector);
+                }
+            }
+        }
+        for (int i = 0; i < vectors.size(); i++) {
+            for (int j = 0; j < vectors.size(); j++) {
+                if (i == j) {
+                    continue;
+                }
+                final List<Boolean> originalBinaryVector = vectors.get(i).get();
+                final int originalIndex = originalBinaryVector.indexOf(true);
+                final List<Boolean> fixedBinaryVector = vectors.get(j).get();
+                final int fixedIndex = fixedBinaryVector.indexOf(true);
+                assertThat(originalIndex).isNotEqualTo(fixedIndex);
+            }
+        }
     }
 }
