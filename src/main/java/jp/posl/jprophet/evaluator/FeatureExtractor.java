@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.Node;
@@ -11,6 +12,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.NameExpr;
 
 import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.evaluator.ModFeature.ModType;
 import jp.posl.jprophet.evaluator.StatementFeature.StatementType;
 import jp.posl.jprophet.evaluator.VariableFeature.VarType;
 import jp.posl.jprophet.patch.PatchCandidate;
@@ -23,15 +25,6 @@ public class FeatureExtractor {
         NEXT
     }
 
-    static class StatementChunk {
-        public Map<Node, StatementType> statementMaps;
-        public StatementPos pos;
-        public StatementChunk(Map<Node, StatementType> statementMaps, StatementPos pos) {
-            this.statementMaps = statementMaps;
-            this.pos   = pos;
-        }
-    }
-
     public FeatureVector extract(PatchCandidate patch) {
         final Node originalRoot = patch.getOriginalCompilationUnit().findRootNode();
         final Node fixedRoot = patch.getCompilationUnit().findRootNode();
@@ -41,139 +34,94 @@ public class FeatureExtractor {
 
         final ModFeatureExtractor modFeatureExtractor = new ModFeatureExtractor();
         final Map<ProgramChunk,ModFeature> modFeatureMap = modFeatureExtractor.extract(nodeWithDiffType, chunks);
-        final StatementFeatureExtractor stmtFeatureExtractor = new StatementFeatureExtractor();
-        final VariableFeatureExtractor varFeatureExtractor = new VariableFeatureExtractor();
-        final List<NameExpr> originalVariables = originalRoot.findAll(NameExpr.class);
         final FeatureVector vector = new FeatureVector();
 
-        final Set<ProgramChunk> set = modFeatureMap.keySet();
+        final Set<Entry<ProgramChunk, ModFeature>> set = modFeatureMap.entrySet();
         set.stream()
-            .forEach(chunk -> {
-                final ModFeature modFeature = modFeatureMap.get(chunk);
-                modFeature.getTypes().stream()
-                    .forEach(modType -> vector.add(modType));
-                final List<Node> allFixedNodes = NodeUtility.getAllNodesInDepthFirstOrder(fixedRoot);
-                final Map<Node, StatementType> targetStmtMaps = allFixedNodes.stream()
-                    .filter(node -> {
-                        final int nodeBegin = node.getBegin().orElseThrow().line;
-                        final boolean nodeWithinChunk = chunk.getBegin() <= nodeBegin && nodeBegin <= chunk.getEnd(); 
-                        final boolean nodeIsStmt = stmtFeatureExtractor.extract(node).isPresent();
-                        if(nodeWithinChunk && nodeIsStmt) {
-                            return true;
-                        }
-                        return false;
-                    })
-                    .collect(Collectors.toMap(
-                        stmt -> stmt, stmt -> stmtFeatureExtractor.extract(stmt).orElseThrow()
-                    ));
-
-                final List<Node> prevStmts = allFixedNodes.stream()
-                    .filter(node -> {
-                        final int nodeBegin = node.getBegin().orElseThrow().line;
-                        final boolean nodeComesBeforeChunk = nodeBegin < chunk.getBegin(); 
-                        final boolean nodeIsStmt = stmtFeatureExtractor.extract(node).isPresent();
-                        if(nodeComesBeforeChunk && nodeIsStmt) {
-                            return true;
-                        }
-                        return false;
-                    })
-                    .collect(Collectors.toList());
-                Map<Node, StatementType> prev3StmtMaps;
-                if (prevStmts.size() >= 3) {
-                    prev3StmtMaps = prevStmts.subList(prevStmts.size() - 3, prevStmts.size()).stream()
-                        .collect(Collectors.toMap(
-                            stmt -> stmt, stmt -> stmtFeatureExtractor.extract(stmt).orElseThrow()
-                        ));
-                }
-                else {
-                    prev3StmtMaps = prevStmts.stream()
-                        .collect(Collectors.toMap(
-                            stmt -> stmt, stmt -> stmtFeatureExtractor.extract(stmt).orElseThrow()
-                        ));
-                }
-
-                final List<Node> nextStmts = allFixedNodes.stream()
-                    .filter(node -> {
-                        final int nodeBegin = node.getBegin().orElseThrow().line;
-                        final boolean nodeComesAfterChunk = chunk.getEnd() < nodeBegin; 
-                        final boolean nodeIsStmt = stmtFeatureExtractor.extract(node).isPresent();
-                        if(nodeComesAfterChunk && nodeIsStmt) {
-                            return true;
-                        }
-                        return false;
-                    })
-                    .collect(Collectors.toList());
-                Map<Node, StatementType> next3StmtMaps;
-                if (nextStmts.size() > 3) {
-                    next3StmtMaps = nextStmts.subList(0, 3).stream()
-                        .collect(Collectors.toMap(
-                            stmt -> stmt, stmt -> stmtFeatureExtractor.extract(stmt).orElseThrow()
-                        ));
-                }
-                else {
-                    next3StmtMaps = nextStmts.stream()
-                        .collect(Collectors.toMap(
-                            stmt -> stmt, stmt -> stmtFeatureExtractor.extract(stmt).orElseThrow()
-                        ));
-                }
-
-                List<StatementChunk> statementChunks = List.of(
-                    new StatementChunk(targetStmtMaps, StatementPos.TARGET),
-                    new StatementChunk(prev3StmtMaps,  StatementPos.PREV),
-                    new StatementChunk(next3StmtMaps,  StatementPos.NEXT)
-                );
+            .forEach(entry -> {
+                final ProgramChunk fixedChunk = entry.getKey();
+                final ModFeature modFeature = entry.getValue();
                 // 変更の特徴抽出
-                statementChunks.stream().forEach(stmtChunk -> {
-                    stmtChunk.statementMaps.forEach((stmt, stmtType) -> {
-                        modFeature.getTypes().stream()
-                            .forEach(modType -> vector.add(stmtChunk.pos, stmtType, modType));
-                    });
-                });
+                this.extractModFeature(fixedChunk, modFeature, vector, fixedRoot);
 
                 // 変数の特徴抽出
-                final List<NameExpr> fixedVariables = fixedRoot.findAll(NameExpr.class);
-                for(NameExpr fixedVar: fixedVariables) {
-                    if(!varFeatureExtractor.findDeclarator(fixedVar).isPresent()) {
-                        continue;
-                    }
-                    final Node fixedVarDec = varFeatureExtractor.findDeclarator(fixedVar).orElseThrow();
-                    final List<NameExpr> originalVarsWithSameName = originalVariables.stream()
-                        .filter(original -> original.getNameAsString().equals(fixedVar.getNameAsString()))
-                        .collect(Collectors.toList());
-                    final List<NameExpr> originalVarsWithSameScope = originalVarsWithSameName.stream()
-                        .filter(original-> {
-                            final Optional<Node> declarator = varFeatureExtractor.findDeclarator(original);
-                            if(!declarator.isPresent()) {
-                                return false;
-                            }
-                            final Node originalVarDec = declarator.orElseThrow();
-                            final boolean originalVarIsNotField = originalVarDec.findParent(MethodDeclaration.class).isPresent();
-                            final boolean fixedVarIsNotField = fixedVarDec.findParent(MethodDeclaration.class).isPresent();
-                            final boolean bothIsField = !originalVarIsNotField && !fixedVarIsNotField;
-                            if(bothIsField) return true;
-                            if(!bothIsField) {
-                                final String methodNameWhereOriginalVarWasDeclared = originalVarDec.findParent(MethodDeclaration.class).orElseThrow().getNameAsString();
-                                final String methodNameWhereFixedlVarWasDeclared = fixedVarDec.findParent(MethodDeclaration.class).orElseThrow().getNameAsString();
-                                if(methodNameWhereOriginalVarWasDeclared.equals(methodNameWhereFixedlVarWasDeclared)) {
-                                    return true;
-                                }
-                            } 
-                            return false;
-                        })
-                        .collect(Collectors.toList());
-                    if(originalVarsWithSameScope.size() > 0) {
-                        final NameExpr sameVarAsFixedVar = originalVarsWithSameScope.get(0);
-                        this.hoge(chunk, sameVarAsFixedVar, fixedVar, vector);
-                    }
-                    else if(originalVarsWithSameName.size() > 0) {
-                        final NameExpr sameVarAsFixedVar = originalVarsWithSameName.get(0);
-                        this.hoge(chunk, sameVarAsFixedVar, fixedVar, vector);
-
-                    }
-                }
+                this.extractVariableFeature(fixedChunk, modFeature, vector, originalRoot, fixedRoot);
             });
 
         return vector;
+    }
+
+    private void extractModFeature(ProgramChunk fixedChunk, ModFeature modFeature, FeatureVector vector, Node fixedRoot) {
+        final StatementFeatureExtractor stmtFeatureExtractor = new StatementFeatureExtractor();
+
+        modFeature.getTypes().stream()
+            .forEach(modType -> vector.add(modType));
+
+        final List<Node> allFixedNodes = NodeUtility.getAllNodesInDepthFirstOrder(fixedRoot);
+        final List<Node> allStmts = allFixedNodes.stream()
+            .filter(node -> stmtFeatureExtractor.extract(node).isPresent())
+            .collect(Collectors.toList());
+
+        allStmts.stream().forEach(stmt -> {
+            final int stmtBegin = stmt.getBegin().orElseThrow().line;
+            final boolean nodeComesBeforeChunk = stmtBegin < fixedChunk.getBegin(); 
+            final boolean nodeComesAfterChunk = fixedChunk.getEnd() < stmtBegin; 
+            StatementPos pos = StatementPos.TARGET;
+            if (nodeComesBeforeChunk) {
+                pos = StatementPos.PREV;
+            }
+            if (nodeComesAfterChunk) {
+                pos = StatementPos.NEXT;
+            }
+            StatementType stmtType = stmtFeatureExtractor.extract(stmt).orElseThrow();
+            for (ModType modType: modFeature.getTypes()) {
+                vector.add(pos, stmtType, modType);
+            }
+        });
+    }
+
+    private void extractVariableFeature(ProgramChunk fixedChunk, ModFeature modFeature, FeatureVector vector, Node originalRoot, Node fixedRoot) {
+        final VariableFeatureExtractor varFeatureExtractor = new VariableFeatureExtractor();
+        final List<NameExpr> originalVariables = originalRoot.findAll(NameExpr.class);
+        final List<NameExpr> fixedVariables = fixedRoot.findAll(NameExpr.class);
+        for(NameExpr fixedVar: fixedVariables) {
+            if(!varFeatureExtractor.findDeclarator(fixedVar).isPresent()) {
+                continue;
+            }
+            final Node fixedVarDec = varFeatureExtractor.findDeclarator(fixedVar).orElseThrow();
+            final List<NameExpr> originalVarsWithSameName = originalVariables.stream()
+                .filter(original -> original.getNameAsString().equals(fixedVar.getNameAsString()))
+                .collect(Collectors.toList());
+            final List<NameExpr> originalVarsWithSameScope = originalVarsWithSameName.stream()
+                .filter(original-> {
+                    final Optional<Node> declarator = varFeatureExtractor.findDeclarator(original);
+                    if(!declarator.isPresent()) {
+                        return false;
+                    }
+                    final Node originalVarDec = declarator.orElseThrow();
+                    final boolean originalVarIsNotField = originalVarDec.findParent(MethodDeclaration.class).isPresent();
+                    final boolean fixedVarIsNotField = fixedVarDec.findParent(MethodDeclaration.class).isPresent();
+                    final boolean bothIsField = !originalVarIsNotField && !fixedVarIsNotField;
+                    if(bothIsField) return true;
+                    if(!bothIsField) {
+                        final String methodNameWhereOriginalVarWasDeclared = originalVarDec.findParent(MethodDeclaration.class).orElseThrow().getNameAsString();
+                        final String methodNameWhereFixedlVarWasDeclared = fixedVarDec.findParent(MethodDeclaration.class).orElseThrow().getNameAsString();
+                        if(methodNameWhereOriginalVarWasDeclared.equals(methodNameWhereFixedlVarWasDeclared)) {
+                            return true;
+                        }
+                    } 
+                    return false;
+                })
+                .collect(Collectors.toList());
+            if(originalVarsWithSameScope.size() > 0) {
+                final NameExpr sameVarAsFixedVar = originalVarsWithSameScope.get(0);
+                this.hoge(fixedChunk, sameVarAsFixedVar, fixedVar, vector);
+            }
+            else if(originalVarsWithSameName.size() > 0) {
+                final NameExpr sameVarAsFixedVar = originalVarsWithSameName.get(0);
+                this.hoge(fixedChunk, sameVarAsFixedVar, fixedVar, vector);
+            }
+        }
     }
 
     private FeatureVector hoge(ProgramChunk fixedChunk, NameExpr originalVar, NameExpr fixedVar, FeatureVector vector) {
