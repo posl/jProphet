@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.NameExpr;
 
 import org.junit.Test;
@@ -24,39 +23,45 @@ public class VariableFeatureExtractorTest {
             .append("public class A {\n")
             .append("    final public String str;\n")
             .append("    public void a() {\n")
-            .append("        boolean bool = 0;\n")
+            .append("        boolean bool = true;\n")
             .append("        final int i = 0;\n")
+            .append("        bool = false;\n")
+            .append("        i = 1;\n")
+            .append("        str = \"str\";\n")
             .append("    }\n")
             .append("}\n")
             .toString();
 
         Node root = NodeUtility.getAllNodesFromCode(src).get(0);
         VariableFeatureExtractor extractor = new VariableFeatureExtractor();
-        List<VariableFeature> actualDeclaratorFeatures = root.findAll(VariableDeclarator.class).stream()
+        List<VariableFeature> actualFeatures = root.findAll(NameExpr.class).stream()
             .map(nameExpr -> extractor.extract(nameExpr))
             .collect(Collectors.toList());
 
         VariableFeature expectedFieldFeature = new VariableFeature(Set.of(
             VarType.STRING,
             VarType.OBJECT,
-            VarType.FIELD
+            VarType.FIELD,
+            VarType.IN_ASSIGN_STMT
         ));
         VariableFeature expectedLocalVarFeature = new VariableFeature(Set.of(
             VarType.BOOLEAN,
-            VarType.LOCAL
+            VarType.LOCAL,
+            VarType.IN_ASSIGN_STMT
         ));
         VariableFeature expectedLocalConstFeature = new VariableFeature(Set.of(
             VarType.NUM,
             VarType.LOCAL,
-            VarType.CONSTANT
+            VarType.CONSTANT,
+            VarType.IN_ASSIGN_STMT
         ));
 
     
-        System.out.println(root.findAll(VariableDeclarator.class).get(0));
-        assertThat(actualDeclaratorFeatures.get(0)).isEqualToComparingFieldByField(expectedFieldFeature);
-        assertThat(actualDeclaratorFeatures.get(1)).isEqualToComparingFieldByField(expectedLocalVarFeature);
-        assertThat(actualDeclaratorFeatures.get(2)).isEqualToComparingFieldByField(expectedLocalConstFeature);
+        assertThat(actualFeatures.get(0)).isEqualToComparingFieldByField(expectedLocalVarFeature);
+        assertThat(actualFeatures.get(1)).isEqualToComparingFieldByField(expectedLocalConstFeature);
+        assertThat(actualFeatures.get(2)).isEqualToComparingFieldByField(expectedFieldFeature);
     }
+
 
     /**
      * 変数がどのステートメントに含まれているか

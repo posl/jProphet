@@ -3,11 +3,9 @@ package jp.posl.jprophet.evaluator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import jp.posl.jprophet.evaluator.FeatureExtractor.StatementPos;
 import jp.posl.jprophet.evaluator.ModFeature.ModType;
-import jp.posl.jprophet.evaluator.NodeWithDiffType.TYPE;
 import jp.posl.jprophet.evaluator.StatementFeature.StatementType;
 import jp.posl.jprophet.evaluator.VariableFeature.VarType;
 

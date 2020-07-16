@@ -47,19 +47,6 @@ public class VariableFeatureExtractor {
         return feature;
     }
     
-    /**
-     * 宣言時の変数の特徴を抽出する
-     * @param declarator 変数の宣言ノード
-     * @return 変数の特徴
-     */
-    public VariableFeature extract(VariableDeclarator declarator) {
-        final VariableFeature feature = new VariableFeature();
-        feature.add(this.extractScopeFeature(declarator));
-        final Type type = declarator.findFirst(Type.class).get();
-        feature.add(this.extractTypeFeature(type));
-        feature.add(this.extractContextFeature(declarator));
-        return feature;
-    }
 
     /**
      * 変数の宣言ノードを探索する
