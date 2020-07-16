@@ -253,6 +253,43 @@ public class ModFeatureExtractorTest {
     }
 
     /**
+     * メソッドの引数としてのReplaceVarパターンの修正を判定できるかテスト
+     */
+    @Test public void testModFeatureForReplaceVarAsParameter() {
+        final String originalSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       hoge(foo);\n")
+            .append("   }\n")
+            .append("}\n")
+            .toString();
+
+        final String revisedSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("   public void a() {\n")
+            .append("       hoge(bar);\n")
+            .append("   }\n")
+            .append("}\n")
+            .toString();
+
+        final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
+        final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
+
+        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
+        final AstDiff diff = new AstDiff();
+        final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
+        final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
+
+        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
+
+        final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.REPLACE_VAR));
+        final ProgramChunk expectedChunk = new ProgramChunk(3, 3);
+
+        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModFeature);
+        return;
+    }
+
+    /**
      * ReplaceMethodパターンの修正を判定できるかテスト
      */
     @Test public void testModFeatureForReplaceMethod() {

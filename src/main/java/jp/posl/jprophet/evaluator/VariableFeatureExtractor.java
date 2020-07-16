@@ -37,9 +37,9 @@ public class VariableFeatureExtractor {
     public VariableFeature extract(NameExpr variable) {
         final VariableFeature feature = new VariableFeature();
         findDeclarator(variable).ifPresent((declarator) -> {
-            this.extractScopeFeature(declarator);
+            feature.add(this.extractScopeFeature(declarator));
             declarator.findFirst(Type.class).ifPresent((type) -> {
-                this.extractTypeFeature(type);
+                feature.add(this.extractTypeFeature(type));
             });
         });
         feature.add(this.extractContextFeature(variable));

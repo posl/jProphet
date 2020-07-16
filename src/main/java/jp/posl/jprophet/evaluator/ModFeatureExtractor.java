@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
@@ -61,11 +62,15 @@ public class ModFeatureExtractor {
             if(node instanceof IfStmt) {
                 feature.add(ModType.REPLACE_COND);
             }
-            else if(node instanceof MethodCallExpr) {
-                feature.add(ModType.REPLACE_METHOD);
-            }
             else if (node instanceof NameExpr) {
                 feature.add(ModType.REPLACE_VAR);
+            }
+            else if(node instanceof SimpleName) {
+                if(node.getParentNode().isPresent()) {
+                    if(node.getParentNode().orElseThrow() instanceof MethodCallExpr) {
+                        feature.add(ModType.REPLACE_METHOD);
+                    }
+                }
             }
         }
 

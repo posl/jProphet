@@ -23,10 +23,10 @@ public class FeatureExtractor {
         NEXT
     }
 
-    static class Statements {
+    static class StatementChunk {
         public Map<Node, StatementType> statementMaps;
         public StatementPos pos;
-        public Statements(Map<Node, StatementType> statementMaps, StatementPos pos) {
+        public StatementChunk(Map<Node, StatementType> statementMaps, StatementPos pos) {
             this.statementMaps = statementMaps;
             this.pos   = pos;
         }
@@ -44,7 +44,6 @@ public class FeatureExtractor {
         final StatementFeatureExtractor stmtFeatureExtractor = new StatementFeatureExtractor();
         final VariableFeatureExtractor varFeatureExtractor = new VariableFeatureExtractor();
         final List<NameExpr> originalVariables = originalRoot.findAll(NameExpr.class);
-        final List<NameExpr> fixedVariables = fixedRoot.findAll(NameExpr.class);
         final FeatureVector vector = new FeatureVector();
 
         final Set<ProgramChunk> set = modFeatureMap.keySet();
@@ -118,71 +117,84 @@ public class FeatureExtractor {
                         ));
                 }
 
-                List<Statements> statementChunks = List.of(
-                    new Statements(targetStmtMaps, StatementPos.TARGET),
-                    new Statements(prev3StmtMaps,  StatementPos.PREV),
-                    new Statements(next3StmtMaps,  StatementPos.NEXT)
+                List<StatementChunk> statementChunks = List.of(
+                    new StatementChunk(targetStmtMaps, StatementPos.TARGET),
+                    new StatementChunk(prev3StmtMaps,  StatementPos.PREV),
+                    new StatementChunk(next3StmtMaps,  StatementPos.NEXT)
                 );
+                // 変更の特徴抽出
                 statementChunks.stream().forEach(stmtChunk -> {
                     stmtChunk.statementMaps.forEach((stmt, stmtType) -> {
                         modFeature.getTypes().stream()
                             .forEach(modType -> vector.add(stmtChunk.pos, stmtType, modType));
-
-                        for(NameExpr fixedVar: fixedVariables) {
-                            if(!varFeatureExtractor.findDeclarator(fixedVar).isPresent()) {
-                                continue;
-                            }
-                            final Node fixedVarDec = varFeatureExtractor.findDeclarator(fixedVar).orElseThrow();
-                            final List<NameExpr> originalVarsWithSameName = originalVariables.stream()
-                                .filter(original -> original.getNameAsString().equals(fixedVar.getNameAsString()))
-                                .collect(Collectors.toList());
-                            final List<NameExpr> originalVarsWithSameScope = originalVarsWithSameName.stream()
-                                .filter(original-> {
-                                    final Optional<Node> declarator = varFeatureExtractor.findDeclarator(original);
-                                    if(!declarator.isPresent()) {
-                                        return false;
-                                    }
-                                    final Node originalVarDec = declarator.orElseThrow();
-                                    final boolean originalVarIsNotField = originalVarDec.findParent(MethodDeclaration.class).isPresent();
-                                    final boolean fixedVarIsNotField = fixedVarDec.findParent(MethodDeclaration.class).isPresent();
-                                    final boolean bothIsField = !originalVarIsNotField && !fixedVarIsNotField;
-                                    if(bothIsField) return true;
-                                    if(!bothIsField) {
-                                        final String methodNameWhereOriginalVarWasDeclared = originalVarDec.findParent(MethodDeclaration.class).orElseThrow().getNameAsString();
-                                        final String methodNameWhereFixedlVarWasDeclared = fixedVarDec.findParent(MethodDeclaration.class).orElseThrow().getNameAsString();
-                                        if(methodNameWhereOriginalVarWasDeclared.equals(methodNameWhereFixedlVarWasDeclared)) {
-                                            return true;
-                                        }
-                                    } 
-                                    return false;
-                                })
-                                .collect(Collectors.toList());
-                            if(originalVarsWithSameScope.size() > 0) {
-                                final NameExpr sameVarAsFixedVar = originalVarsWithSameScope.get(0);
-                                VariableFeature originalVarFeature = varFeatureExtractor.extract(fixedVar);
-                                VariableFeature fixedVarFeature = varFeatureExtractor.extract(sameVarAsFixedVar);
-                                for (VarType originalVarType: originalVarFeature.getTypes()) {
-                                    for (VarType fixedVarType: fixedVarFeature.getTypes()) {
-                                        vector.add(StatementPos.TARGET, originalVarType, fixedVarType);
-                                    }
-                                }
-                            }
-                            else if(originalVarsWithSameName.size() > 0) {
-                                final NameExpr sameVarAsFixedVar = originalVarsWithSameName.get(0);
-                                final VariableFeature originalVarFeature = varFeatureExtractor.extract(fixedVar);
-                                final VariableFeature fixedVarFeature = varFeatureExtractor.extract(sameVarAsFixedVar);
-                                for (VarType originalVarType: originalVarFeature.getTypes()) {
-                                    for (VarType fixedVarType: fixedVarFeature.getTypes()) {
-                                        vector.add(StatementPos.TARGET, originalVarType, fixedVarType);
-                                    }
-                                }
-                            }
-                        }
                     });
                 });
 
+                // 変数の特徴抽出
+                final List<NameExpr> fixedVariables = fixedRoot.findAll(NameExpr.class);
+                for(NameExpr fixedVar: fixedVariables) {
+                    if(!varFeatureExtractor.findDeclarator(fixedVar).isPresent()) {
+                        continue;
+                    }
+                    final Node fixedVarDec = varFeatureExtractor.findDeclarator(fixedVar).orElseThrow();
+                    final List<NameExpr> originalVarsWithSameName = originalVariables.stream()
+                        .filter(original -> original.getNameAsString().equals(fixedVar.getNameAsString()))
+                        .collect(Collectors.toList());
+                    final List<NameExpr> originalVarsWithSameScope = originalVarsWithSameName.stream()
+                        .filter(original-> {
+                            final Optional<Node> declarator = varFeatureExtractor.findDeclarator(original);
+                            if(!declarator.isPresent()) {
+                                return false;
+                            }
+                            final Node originalVarDec = declarator.orElseThrow();
+                            final boolean originalVarIsNotField = originalVarDec.findParent(MethodDeclaration.class).isPresent();
+                            final boolean fixedVarIsNotField = fixedVarDec.findParent(MethodDeclaration.class).isPresent();
+                            final boolean bothIsField = !originalVarIsNotField && !fixedVarIsNotField;
+                            if(bothIsField) return true;
+                            if(!bothIsField) {
+                                final String methodNameWhereOriginalVarWasDeclared = originalVarDec.findParent(MethodDeclaration.class).orElseThrow().getNameAsString();
+                                final String methodNameWhereFixedlVarWasDeclared = fixedVarDec.findParent(MethodDeclaration.class).orElseThrow().getNameAsString();
+                                if(methodNameWhereOriginalVarWasDeclared.equals(methodNameWhereFixedlVarWasDeclared)) {
+                                    return true;
+                                }
+                            } 
+                            return false;
+                        })
+                        .collect(Collectors.toList());
+                    if(originalVarsWithSameScope.size() > 0) {
+                        final NameExpr sameVarAsFixedVar = originalVarsWithSameScope.get(0);
+                        this.hoge(chunk, sameVarAsFixedVar, fixedVar, vector);
+                    }
+                    else if(originalVarsWithSameName.size() > 0) {
+                        final NameExpr sameVarAsFixedVar = originalVarsWithSameName.get(0);
+                        this.hoge(chunk, sameVarAsFixedVar, fixedVar, vector);
+
+                    }
+                }
             });
 
+        return vector;
+    }
+
+    private FeatureVector hoge(ProgramChunk fixedChunk, NameExpr originalVar, NameExpr fixedVar, FeatureVector vector) {
+        final VariableFeatureExtractor varFeatureExtractor = new VariableFeatureExtractor();
+        final VariableFeature originalVarFeature = varFeatureExtractor.extract(originalVar);
+        final VariableFeature fixedVarFeature = varFeatureExtractor.extract(fixedVar);
+        final int nodeBegin = fixedVar.getBegin().orElseThrow().line;
+        final boolean nodeComesBeforeChunk = nodeBegin < fixedChunk.getBegin(); 
+        final boolean nodeComesAfterChunk = fixedChunk.getEnd() < nodeBegin; 
+        StatementPos pos = StatementPos.TARGET;
+        if (nodeComesBeforeChunk) {
+            pos = StatementPos.PREV;
+        }
+        if (nodeComesAfterChunk) {
+            pos = StatementPos.NEXT;
+        }
+        for (VarType originalVarType: originalVarFeature.getTypes()) {
+            for (VarType fixedVarType: fixedVarFeature.getTypes()) {
+                vector.add(pos, originalVarType, fixedVarType);
+            }
+        }
         return vector;
     }
 
