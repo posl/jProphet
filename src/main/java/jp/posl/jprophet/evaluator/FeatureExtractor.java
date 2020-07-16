@@ -24,8 +24,8 @@ public class FeatureExtractor {
     }
 
     static class Statements {
-        Map<Node, StatementType> statementMaps;
-        StatementPos pos;
+        public Map<Node, StatementType> statementMaps;
+        public StatementPos pos;
         public Statements(Map<Node, StatementType> statementMaps, StatementPos pos) {
             this.statementMaps = statementMaps;
             this.pos   = pos;
@@ -50,7 +50,9 @@ public class FeatureExtractor {
         final Set<ProgramChunk> set = modFeatureMap.keySet();
         set.stream()
             .forEach(chunk -> {
-				final ModFeature modFeature = modFeatureMap.get(chunk);
+                final ModFeature modFeature = modFeatureMap.get(chunk);
+                modFeature.getTypes().stream()
+                    .forEach(modType -> vector.add(modType));
                 final List<Node> allFixedNodes = NodeUtility.getAllNodesInDepthFirstOrder(fixedRoot);
                 final Map<Node, StatementType> targetStmtMaps = allFixedNodes.stream()
                     .filter(node -> {
