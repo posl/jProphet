@@ -1,8 +1,7 @@
-package jp.posl.jprophet.evaluator;
+package jp.posl.jprophet.evaluator.extractor;
 
 import org.junit.Test;
 
-import jp.posl.jprophet.evaluator.extractor.FeatureVector;
 import jp.posl.jprophet.evaluator.extractor.FeatureExtractor.StatementPos;
 import jp.posl.jprophet.evaluator.extractor.feature.ModFeature.ModType;
 import jp.posl.jprophet.evaluator.extractor.feature.StatementFeature.StatementType;

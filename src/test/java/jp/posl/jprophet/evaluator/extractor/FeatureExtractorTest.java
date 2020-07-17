@@ -1,4 +1,4 @@
-package jp.posl.jprophet.evaluator;
+package jp.posl.jprophet.evaluator.extractor;
 
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,8 +8,6 @@ import java.util.List;
 import com.github.javaparser.ast.Node;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.evaluator.extractor.FeatureExtractor;
-import jp.posl.jprophet.evaluator.extractor.FeatureVector;
 import jp.posl.jprophet.evaluator.extractor.FeatureExtractor.StatementPos;
 import jp.posl.jprophet.evaluator.extractor.feature.ModFeature.ModType;
 import jp.posl.jprophet.evaluator.extractor.feature.StatementFeature.StatementType;

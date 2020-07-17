@@ -1,4 +1,4 @@
-package jp.posl.jprophet.evaluator;
+package jp.posl.jprophet.evaluator.extractor;
 
 import java.util.List;
 import java.util.Map;
@@ -10,6 +10,9 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.evaluator.AstDiff;
+import jp.posl.jprophet.evaluator.NodeWithDiffType;
+import jp.posl.jprophet.evaluator.ProgramChunk;
 import jp.posl.jprophet.evaluator.extractor.ModFeatureExtractor;
 import jp.posl.jprophet.evaluator.extractor.feature.ModFeature;
 import jp.posl.jprophet.evaluator.extractor.feature.ModFeature.ModType;

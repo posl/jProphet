@@ -1,4 +1,4 @@
-package jp.posl.jprophet.evaluator;
+package jp.posl.jprophet.evaluator.extractor;
 
 import com.github.javaparser.ast.Node;
 

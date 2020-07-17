@@ -1,4 +1,4 @@
-package jp.posl.jprophet.evaluator;
+package jp.posl.jprophet.evaluator.extractor;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -12,7 +12,6 @@ import com.github.javaparser.ast.expr.NameExpr;
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.evaluator.extractor.VariableFeatureExtractor;
 import jp.posl.jprophet.evaluator.extractor.feature.VariableFeature;
 import jp.posl.jprophet.evaluator.extractor.feature.VariableFeature.VarType;
 

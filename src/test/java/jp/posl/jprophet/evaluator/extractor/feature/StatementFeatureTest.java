@@ -1,8 +1,7 @@
-package jp.posl.jprophet.evaluator;
+package jp.posl.jprophet.evaluator.extractor.feature;
 
 import org.junit.Test;
 
-import jp.posl.jprophet.evaluator.extractor.feature.StatementFeature;
 import jp.posl.jprophet.evaluator.extractor.feature.StatementFeature.StatementType;
 
 import static org.assertj.core.api.Assertions.assertThat;
