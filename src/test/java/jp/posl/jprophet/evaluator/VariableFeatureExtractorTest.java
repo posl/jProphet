@@ -12,7 +12,9 @@ import com.github.javaparser.ast.expr.NameExpr;
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.evaluator.VariableFeature.VarType;
+import jp.posl.jprophet.evaluator.extractor.VariableFeatureExtractor;
+import jp.posl.jprophet.evaluator.extractor.feature.VariableFeature;
+import jp.posl.jprophet.evaluator.extractor.feature.VariableFeature.VarType;
 
 public class VariableFeatureExtractorTest {
     /**

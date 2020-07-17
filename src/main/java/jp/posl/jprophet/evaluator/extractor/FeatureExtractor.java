@@ -1,4 +1,4 @@
-package jp.posl.jprophet.evaluator;
+package jp.posl.jprophet.evaluator.extractor;
 
 import java.util.List;
 import java.util.Map;
@@ -12,9 +12,13 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.NameExpr;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.evaluator.ModFeature.ModType;
-import jp.posl.jprophet.evaluator.StatementFeature.StatementType;
-import jp.posl.jprophet.evaluator.VariableFeature.VarType;
+import jp.posl.jprophet.evaluator.AstDiff;
+import jp.posl.jprophet.evaluator.NodeWithDiffType;
+import jp.posl.jprophet.evaluator.ProgramChunk;
+import jp.posl.jprophet.evaluator.extractor.feature.*;
+import jp.posl.jprophet.evaluator.extractor.feature.ModFeature.ModType;
+import jp.posl.jprophet.evaluator.extractor.feature.StatementFeature.StatementType;
+import jp.posl.jprophet.evaluator.extractor.feature.VariableFeature.VarType;
 import jp.posl.jprophet.patch.PatchCandidate;
 
 public class FeatureExtractor {

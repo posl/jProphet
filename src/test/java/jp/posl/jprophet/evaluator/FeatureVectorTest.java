@@ -2,10 +2,11 @@ package jp.posl.jprophet.evaluator;
 
 import org.junit.Test;
 
-import jp.posl.jprophet.evaluator.FeatureExtractor.StatementPos;
-import jp.posl.jprophet.evaluator.ModFeature.ModType;
-import jp.posl.jprophet.evaluator.StatementFeature.StatementType;
-import jp.posl.jprophet.evaluator.VariableFeature.VarType;
+import jp.posl.jprophet.evaluator.extractor.FeatureVector;
+import jp.posl.jprophet.evaluator.extractor.FeatureExtractor.StatementPos;
+import jp.posl.jprophet.evaluator.extractor.feature.ModFeature.ModType;
+import jp.posl.jprophet.evaluator.extractor.feature.StatementFeature.StatementType;
+import jp.posl.jprophet.evaluator.extractor.feature.VariableFeature.VarType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,8 +1,6 @@
-package jp.posl.jprophet.evaluator;
+package jp.posl.jprophet.evaluator.extractor;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.AssignExpr;
@@ -15,8 +13,7 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.WhileStmt;
 
-import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.evaluator.StatementFeature.StatementType;
+import jp.posl.jprophet.evaluator.extractor.feature.StatementFeature.StatementType;
 
 /**
  * AST情報を基にプログラムの各行のステートメントの特徴を抽出するクラス

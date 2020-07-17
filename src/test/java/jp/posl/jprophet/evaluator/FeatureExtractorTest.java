@@ -8,10 +8,12 @@ import java.util.List;
 import com.github.javaparser.ast.Node;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.evaluator.FeatureExtractor.StatementPos;
-import jp.posl.jprophet.evaluator.ModFeature.ModType;
-import jp.posl.jprophet.evaluator.StatementFeature.StatementType;
-import jp.posl.jprophet.evaluator.VariableFeature.VarType;
+import jp.posl.jprophet.evaluator.extractor.FeatureExtractor;
+import jp.posl.jprophet.evaluator.extractor.FeatureVector;
+import jp.posl.jprophet.evaluator.extractor.FeatureExtractor.StatementPos;
+import jp.posl.jprophet.evaluator.extractor.feature.ModFeature.ModType;
+import jp.posl.jprophet.evaluator.extractor.feature.StatementFeature.StatementType;
+import jp.posl.jprophet.evaluator.extractor.feature.VariableFeature.VarType;
 import jp.posl.jprophet.operation.MethodReplacementOperation;
 import jp.posl.jprophet.patch.DefaultPatchCandidate;
 import jp.posl.jprophet.patch.PatchCandidate;

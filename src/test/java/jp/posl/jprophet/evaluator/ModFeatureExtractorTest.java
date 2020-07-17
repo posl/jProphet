@@ -10,7 +10,9 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.evaluator.ModFeature.ModType;
+import jp.posl.jprophet.evaluator.extractor.ModFeatureExtractor;
+import jp.posl.jprophet.evaluator.extractor.feature.ModFeature;
+import jp.posl.jprophet.evaluator.extractor.feature.ModFeature.ModType;
 
 public class ModFeatureExtractorTest {
 

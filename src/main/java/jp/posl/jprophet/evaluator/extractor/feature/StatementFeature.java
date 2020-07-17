@@ -1,4 +1,4 @@
-package jp.posl.jprophet.evaluator;
+package jp.posl.jprophet.evaluator.extractor.feature;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,7 +7,7 @@ import java.util.Set;
  * プログラムのステートメント(行)ごとの特徴を表現するクラス
  */
 public class StatementFeature {
-    enum StatementType {
+    public enum StatementType {
         /* 代入文 */
         ASSIGN,
         /* メソッド呼び出し */

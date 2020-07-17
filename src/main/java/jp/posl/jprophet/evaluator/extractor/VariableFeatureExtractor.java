@@ -1,4 +1,4 @@
-package jp.posl.jprophet.evaluator;
+package jp.posl.jprophet.evaluator.extractor;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +22,8 @@ import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.PrimitiveType.Primitive;
 
-import jp.posl.jprophet.evaluator.VariableFeature.VarType;
+import jp.posl.jprophet.evaluator.extractor.feature.VariableFeature;
+import jp.posl.jprophet.evaluator.extractor.feature.VariableFeature.VarType;
 import jp.posl.jprophet.operation.DeclarationCollector;;
 
 /**

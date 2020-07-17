@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.Set;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.evaluator.StatementFeature.StatementType;
+import jp.posl.jprophet.evaluator.extractor.feature.StatementFeature.StatementType;
 
 public class StatementFeatureExtractorTest {
     /**

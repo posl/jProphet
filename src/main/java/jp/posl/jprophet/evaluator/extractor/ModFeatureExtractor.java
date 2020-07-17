@@ -1,4 +1,4 @@
-package jp.posl.jprophet.evaluator;
+package jp.posl.jprophet.evaluator.extractor;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +17,11 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
-import jp.posl.jprophet.evaluator.ModFeature.ModType;
+import jp.posl.jprophet.evaluator.NodeWithDiffType;
+import jp.posl.jprophet.evaluator.ProgramChunk;
+import jp.posl.jprophet.evaluator.extractor.feature.ModFeature.ModType;
 import jp.posl.jprophet.evaluator.NodeWithDiffType.TYPE;
+import jp.posl.jprophet.evaluator.extractor.feature.ModFeature;
 
 /**
  * 修正パッチの変更の特徴抽出を行うクラス

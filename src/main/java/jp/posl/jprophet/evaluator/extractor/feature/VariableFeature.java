@@ -1,4 +1,4 @@
-package jp.posl.jprophet.evaluator;
+package jp.posl.jprophet.evaluator.extractor.feature;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,7 +7,7 @@ import java.util.Set;
  * 修正パッチの変数の特徴を表現するクラス
  */
 public class VariableFeature {
-    enum VarType {
+    public enum VarType {
         /* booleanかどうか */
         BOOLEAN,
         /* 数値型かどうか */
