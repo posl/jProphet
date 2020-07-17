@@ -17,7 +17,7 @@ public class ModKindsTest {
     @Test public void testConstructor() {
         ModKinds kinds = new ModKinds();
 
-        assertThat(kinds.getTypes().isEmpty()).isTrue();
+        assertThat(kinds.getKinds().isEmpty()).isTrue();
     }
 
     /**
@@ -27,11 +27,11 @@ public class ModKindsTest {
         Set<ModKind> expectedTypes = Set.of(ModKind.INSERT_CONTROL, ModKind.INSERT_GUARD);
         ModKinds kinds = new ModKinds(expectedTypes);
 
-        assertThat(kinds.getTypes()).isEqualTo(expectedTypes);
+        assertThat(kinds.getKinds()).isEqualTo(expectedTypes);
     }
 
     /**
-     * addメソッドによる各特徴同士の足し算をテスト
+     * addメソッドによるModKids同士の足し算をテスト
      */
     @Test public void testForKindAddition() {
         Set<ModKind> addendTypes = new HashSet<>(Arrays.asList(ModKind.INSERT_CONTROL));
@@ -46,7 +46,7 @@ public class ModKindsTest {
     }
 
     /**
-     * addメソッドによる特徴の追加をテスト
+     * addメソッドによるModKindの追加をテスト
      */
     @Test public void testForTypeAddition() {
         Set<ModKind> augendTypes = new HashSet<>(Arrays.asList(ModKind.INSERT_GUARD));

@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 修正パッチの変更の特徴を表現するクラス
+ * 修正パッチの変更の種類を表現するクラス
  */
 public class ModKinds {
     public enum ModKind {
@@ -22,44 +22,44 @@ public class ModKinds {
         INSERT_STMT
     }
 
-    final private Set<ModKind> types;
+    final private Set<ModKind> kinds;
 
     /**
-     * 特徴を持たない空のModKindを生成
+     * 空のModKindを生成
      */
     public ModKinds() {
-        this.types = new HashSet<>();        
+        this.kinds = new HashSet<>();        
     }
 
     /**
-     * typesを初期値としたModKindを生成
-     * @param types 初期値
+     * kindsを初期値としたModKindを生成
+     * @param kinds 初期値
      */
-    public ModKinds(Set<ModKind> types) {
-        this.types = types;        
+    public ModKinds(Set<ModKind> kinds) {
+        this.kinds = kinds;        
     }
 
     /**
-     * 変更の特徴を取得
-     * @return 特徴のセット
+     * 変更の種類を取得
+     * @return 種類のセット
      */
-    public Set<ModKind> getTypes() {
-        return this.types;
+    public Set<ModKind> getKinds() {
+        return this.kinds;
     }
 
     /**
-     * 変更の特徴を追加
-     * @param types 追加する変更の種類
+     * 変更の種類を追加
+     * @param kinds 追加する変更の種類
      */
-    public void add(ModKind type) {
-        this.types.add(type);
+    public void add(ModKind kind) {
+        this.kinds.add(kind);
     }
 
     /**
-     * 二つの変更の特徴を足し合わせる
-     * @param kinds 加算する特徴
+     * 二つの変更の種類を足し合わせる
+     * @param kinds 加算する種類
      */
     public void add(ModKinds kinds) {
-        this.types.addAll(kinds.getTypes());
+        this.kinds.addAll(kinds.getKinds());
     }
 }

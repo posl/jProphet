@@ -22,30 +22,30 @@ import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.PrimitiveType.Primitive;
 
-import jp.posl.jprophet.evaluator.extractor.feature.VariableKinds;
-import jp.posl.jprophet.evaluator.extractor.feature.VariableKinds.VarKind;
+import jp.posl.jprophet.evaluator.extractor.feature.VariableCharacteristics;
+import jp.posl.jprophet.evaluator.extractor.feature.VariableCharacteristics.VarChar;
 import jp.posl.jprophet.operation.DeclarationCollector;;
 
 /**
- * 修正パッチの変数の特徴抽出を行うクラス
+ * 修正パッチの変数の種類抽出を行うクラス
  */
-public class VariableKindExtractor {
+public class VariableCharacteristicExtractor {
     /**
      * 参照されている変数の特徴を抽出する
      * @param variable 変数のノード
      * @return 変数の特徴
      */
-    public VariableKinds extract(NameExpr variable) {
-        final VariableKinds kinds = new VariableKinds();
+    public VariableCharacteristics extract(NameExpr variable) {
+        final VariableCharacteristics varChars = new VariableCharacteristics();
         findDeclarator(variable).ifPresent((declarator) -> {
-            kinds.add(this.extractScopeKind(declarator));
+            varChars.add(this.extractCharsOfScope(declarator));
             declarator.findFirst(Type.class).ifPresent((type) -> {
-                kinds.add(this.extractTypeKind(type));
+                varChars.add(this.extractCharsOfType(type));
             });
         });
-        kinds.add(this.extractContextKind(variable));
-        kinds.add(this.extractOperationKind(variable));
-        return kinds;
+        varChars.add(this.extractCharsOfContext(variable));
+        varChars.add(this.extractCharsOfOperation(variable));
+        return varChars;
     }
     
 
@@ -84,27 +84,27 @@ public class VariableKindExtractor {
      * @param type 型ノード
      * @return 変数の型の特徴
      */
-    private VariableKinds extractTypeKind(Type type) {
-        final VariableKinds kinds = new VariableKinds();
+    private VariableCharacteristics extractCharsOfType(Type type) {
+        final VariableCharacteristics chars = new VariableCharacteristics();
         if(type instanceof PrimitiveType) {
             final PrimitiveType primitive = (PrimitiveType) type;
             if(primitive.getType() == Primitive.BOOLEAN) {
-                kinds.add(VarKind.BOOLEAN);
+                chars.add(VarChar.BOOLEAN);
             }
             if(primitive.getType() == Primitive.INT || primitive.getType() == Primitive.DOUBLE ||
                     primitive.getType() == Primitive.LONG || primitive.getType() == Primitive.SHORT ||
                     primitive.getType() == Primitive.FLOAT) {
-                kinds.add(VarKind.NUM);
+                chars.add(VarChar.NUM);
             }
         }
         if(type instanceof ClassOrInterfaceType) {
-            kinds.add(VarKind.OBJECT);
+            chars.add(VarChar.OBJECT);
             final ClassOrInterfaceType classOrInterface = (ClassOrInterfaceType) type;
             if(classOrInterface.getNameAsString().equals("String")) {
-                kinds.add(VarKind.STRING);
+                chars.add(VarChar.STRING);
             }
         }
-        return kinds;
+        return chars;
     }
 
     /**
@@ -112,28 +112,28 @@ public class VariableKindExtractor {
      * @param variable 変数ノード
      * @return 変数の特徴
      */
-    private VariableKinds extractContextKind(Node variable) {
-        final VariableKinds kinds = new VariableKinds();
+    private VariableCharacteristics extractCharsOfContext(Node variable) {
+        final VariableCharacteristics chars = new VariableCharacteristics();
         if (variable.findParent(IfStmt.class).isPresent()) {
-            kinds.add(VarKind.IN_IF_STMT);
+            chars.add(VarChar.IN_IF_STMT);
             final Expression condition = variable.findParent(IfStmt.class).get().getCondition();
             if(condition.equals(variable)) {
-                kinds.add(VarKind.IN_CONDITION);
+                chars.add(VarChar.IN_CONDITION);
             }
         }
         final boolean inForStmt = variable.findParent(ForStmt.class).isPresent();
         final boolean inForeachStmt = variable.findParent(ForeachStmt.class).isPresent();
         final boolean inWhileStmt = variable.findParent(WhileStmt.class).isPresent();
         if (inForStmt || inForeachStmt || inWhileStmt) {
-            kinds.add(VarKind.IN_LOOP);
+            chars.add(VarChar.IN_LOOP);
         }
         if (variable.findParent(MethodCallExpr.class).isPresent()) {
-            kinds.add(VarKind.PARAMETER);   
+            chars.add(VarChar.PARAMETER);   
         }
         if (variable.findParent(AssignExpr.class).isPresent()) {
-            kinds.add(VarKind.IN_ASSIGN_STMT);   
+            chars.add(VarChar.IN_ASSIGN_STMT);   
         }
-        return kinds;
+        return chars;
     }
 
     /**
@@ -141,32 +141,32 @@ public class VariableKindExtractor {
      * @param variable 変数ノード
      * @return 変数の特徴
      */
-    private VariableKinds extractOperationKind(Node variable) {
-        final VariableKinds kinds = new VariableKinds();
+    private VariableCharacteristics extractCharsOfOperation(Node variable) {
+        final VariableCharacteristics chars = new VariableCharacteristics();
         if(variable.findParent(BinaryExpr.class).isPresent()) {
             final BinaryExpr binaryExpr = variable.findParent(BinaryExpr.class).get();
             final List<String> commutativeOpRepresentations = List.of("+", "*", "==", "!=", "||", "&&");
             final boolean isCommutativeOperand = commutativeOpRepresentations.stream()
                 .anyMatch(op -> binaryExpr.getOperator().asString().equals(op));
             if (isCommutativeOperand) {
-                kinds.add(VarKind.COMMUTATIVE_OPERAND);
+                chars.add(VarChar.COMMUTATIVE_OPERAND);
             }
             final List<String> noncommutativeOpRepresentations = List.of("-", "/", "%", "<", ">", "<=", ">=");
             final boolean isLeftNoncommutativeOperand = noncommutativeOpRepresentations.stream()
                 .anyMatch(op -> binaryExpr.getOperator().asString().equals(op) && binaryExpr.getLeft().containsWithin(variable));
             if (isLeftNoncommutativeOperand) {
-                kinds.add(VarKind.NONCOMMUTATIVE_OPERAND_LEFT);
+                chars.add(VarChar.NONCOMMUTATIVE_OPERAND_LEFT);
             }
             final boolean isRightNoncommutativeOperand = noncommutativeOpRepresentations.stream()
                 .anyMatch(op -> binaryExpr.getOperator().asString().equals(op) && binaryExpr.getRight().containsWithin(variable));
             if (isRightNoncommutativeOperand) {
-                kinds.add(VarKind.NONCOMMUTATIVE_OPERAND_RIGHT);
+                chars.add(VarChar.NONCOMMUTATIVE_OPERAND_RIGHT);
             }
         }
         if(variable.findParent(UnaryExpr.class).isPresent()) {
-                kinds.add(VarKind.UNARY_OPERAND);
+                chars.add(VarChar.UNARY_OPERAND);
         }
-        return kinds;
+        return chars;
     }
 
     /**
@@ -174,23 +174,23 @@ public class VariableKindExtractor {
      * @param declarator
      * @return 変数の特徴
      */
-    private VariableKinds extractScopeKind(Node declarator) {
-        final VariableKinds kinds = new VariableKinds();
+    private VariableCharacteristics extractCharsOfScope(Node declarator) {
+        final VariableCharacteristics chars = new VariableCharacteristics();
         if (declarator.findParent(MethodDeclaration.class).isPresent()) {
             if (declarator instanceof Parameter) {
-                kinds.add(VarKind.ARGUMENT);
+                chars.add(VarChar.ARGUMENT);
             }
             else {
-                kinds.add(VarKind.LOCAL);
+                chars.add(VarChar.LOCAL);
             }
         }
         else {
-            kinds.add(VarKind.FIELD);
+            chars.add(VarChar.FIELD);
         }
 
         if (declarator.getParentNode().get().toString().startsWith("final")) {
-            kinds.add(VarKind.CONSTANT);
+            chars.add(VarChar.CONSTANT);
         }
-        return kinds;
+        return chars;
     }
 }

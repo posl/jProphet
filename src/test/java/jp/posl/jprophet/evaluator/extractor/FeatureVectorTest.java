@@ -3,9 +3,9 @@ package jp.posl.jprophet.evaluator.extractor;
 import org.junit.Test;
 
 import jp.posl.jprophet.evaluator.extractor.FeatureExtractor.StatementPos;
-import jp.posl.jprophet.evaluator.extractor.StatementKindExtractor.StatementType;
+import jp.posl.jprophet.evaluator.extractor.StatementKindExtractor.StatementKind;
 import jp.posl.jprophet.evaluator.extractor.feature.ModKinds.ModKind;
-import jp.posl.jprophet.evaluator.extractor.feature.VariableKinds.VarKind;
+import jp.posl.jprophet.evaluator.extractor.feature.VariableCharacteristics.VarChar;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,11 +27,11 @@ public class FeatureVectorTest {
         }
          
         for (int i = 0; i < StatementPos.values().length; i++) {
-            for (int j = 0; j < StatementType.values().length; j++) {
+            for (int j = 0; j < StatementKind.values().length; j++) {
                 for(int k = 0; k < ModKind.values().length; k++) {
                     final FeatureVector vector = new FeatureVector();
                     final StatementPos pos = StatementPos.values()[i];
-                    final StatementType stmtType = StatementType.values()[j];
+                    final StatementKind stmtType = StatementKind.values()[j];
                     final ModKind modType = ModKind.values()[k];
                     vector.add(pos, stmtType, modType);
                     vectors.add(vector);
@@ -39,12 +39,12 @@ public class FeatureVectorTest {
             }
         }
         for (int i = 0; i < StatementPos.values().length; i++) {
-            for (int j = 0; j < VarKind.values().length; j++) {
-                for(int k = 0; k < VarKind.values().length; k++) {
+            for (int j = 0; j < VarChar.values().length; j++) {
+                for(int k = 0; k < VarChar.values().length; k++) {
                     final FeatureVector vector = new FeatureVector();
                     final StatementPos pos = StatementPos.values()[i];
-                    final VarKind originalVarType = VarKind.values()[j];
-                    final VarKind fixedVarType = VarKind.values()[k];
+                    final VarChar originalVarType = VarChar.values()[j];
+                    final VarChar fixedVarType = VarChar.values()[k];
                     vector.add(pos, originalVarType, fixedVarType);
                     vectors.add(vector);
                 }
@@ -62,5 +62,22 @@ public class FeatureVectorTest {
                 assertThat(originalIndex).isNotEqualTo(fixedIndex);
             }
         }
+    }
+
+    /**
+     * vector同士の論理和のテスト
+     */
+    @Test public void testVectorAddition() {
+        final FeatureVector vector1 = new FeatureVector();
+        vector1.add(ModKind.INSERT_CONTROL);
+        final FeatureVector vector2 = new FeatureVector();
+        vector2.add(ModKind.REPLACE_COND);
+        vector1.add(vector2);
+
+        final FeatureVector expectedVector = new FeatureVector();
+        expectedVector.add(ModKind.INSERT_CONTROL);
+        expectedVector.add(ModKind.REPLACE_COND);
+
+        assertThat(vector1).isEqualToComparingFieldByField(expectedVector);
     }
 }

@@ -15,20 +15,28 @@ import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.evaluator.AstDiff;
 import jp.posl.jprophet.evaluator.NodeWithDiffType;
 import jp.posl.jprophet.evaluator.ProgramChunk;
-import jp.posl.jprophet.evaluator.extractor.StatementKindExtractor.StatementType;
+import jp.posl.jprophet.evaluator.extractor.StatementKindExtractor.StatementKind;
 import jp.posl.jprophet.evaluator.extractor.feature.*;
 import jp.posl.jprophet.evaluator.extractor.feature.ModKinds.ModKind;
-import jp.posl.jprophet.evaluator.extractor.feature.VariableKinds.VarKind;
+import jp.posl.jprophet.evaluator.extractor.feature.VariableCharacteristics.VarChar;
 import jp.posl.jprophet.patch.PatchCandidate;
 
 public class FeatureExtractor {
 
+    /**
+     * パッチの修正部分(TARGET)かその前後(PREV, NEXT)かの表現
+     */
     public enum StatementPos {
         TARGET,
         PREV,
         NEXT
     }
 
+    /**
+     * パッチから特徴ベクトルを抽出
+     * @param patch 特徴抽出を行うパッチ
+     * @return 特徴ベクトル
+     */
     public FeatureVector extract(PatchCandidate patch) {
         final Node originalRoot = patch.getOriginalCompilationUnit().findRootNode();
         final Node fixedRoot = patch.getCompilationUnit().findRootNode();
@@ -43,22 +51,27 @@ public class FeatureExtractor {
         final Set<Entry<ProgramChunk, ModKinds>> set = modKindMap.entrySet();
         set.stream()
             .forEach(entry -> {
-                final ProgramChunk fixedChunk = entry.getKey();
-                final ModKinds modKind = entry.getValue();
-                // 変更の特徴抽出
-                this.extractModFeature(fixedChunk, modKind, vector, fixedRoot);
-
-                // 変数の特徴抽出
-                this.extractVariableFeature(fixedChunk, modKind, vector, originalRoot, fixedRoot);
+                final ProgramChunk patchTargetChunk = entry.getKey();
+                final ModKinds modKinds = entry.getValue();
+                vector.add(this.extractModFeature(patchTargetChunk, modKinds, fixedRoot));
+                vector.add(this.extractVariableFeature(patchTargetChunk, originalRoot, fixedRoot));
             });
 
         return vector;
     }
 
-    private void extractModFeature(ProgramChunk fixedChunk, ModKinds modKind, FeatureVector vector, Node fixedRoot) {
+    /**
+     * 変更の特徴を抽出する
+     * @param patchTargetChunk パッチ適用部分のコード
+     * @param modKinds 修正の種別
+     * @param fixedRoot 修正前コードのルートノード
+     * @return 特徴ベクトル
+     */
+    private FeatureVector extractModFeature(ProgramChunk patchTargetChunk, ModKinds modKinds, Node fixedRoot) {
+        final FeatureVector vector = new FeatureVector();
         final StatementKindExtractor stmtKindExtractor = new StatementKindExtractor();
 
-        modKind.getTypes().stream()
+        modKinds.getKinds().stream()
             .forEach(modType -> vector.add(modType));
 
         final List<Node> allFixedNodes = NodeUtility.getAllNodesInDepthFirstOrder(fixedRoot);
@@ -68,8 +81,8 @@ public class FeatureExtractor {
 
         allStmts.stream().forEach(stmt -> {
             final int stmtBegin = stmt.getBegin().orElseThrow().line;
-            final boolean nodeComesBeforeChunk = stmtBegin < fixedChunk.getBegin(); 
-            final boolean nodeComesAfterChunk = fixedChunk.getEnd() < stmtBegin; 
+            final boolean nodeComesBeforeChunk = stmtBegin < patchTargetChunk.getBegin(); 
+            final boolean nodeComesAfterChunk = patchTargetChunk.getEnd() < stmtBegin; 
             StatementPos pos = StatementPos.TARGET;
             if (nodeComesBeforeChunk) {
                 pos = StatementPos.PREV;
@@ -77,28 +90,37 @@ public class FeatureExtractor {
             if (nodeComesAfterChunk) {
                 pos = StatementPos.NEXT;
             }
-            StatementType stmtType = stmtKindExtractor.extract(stmt).orElseThrow();
-            for (ModKind modType: modKind.getTypes()) {
+            final StatementKind stmtType = stmtKindExtractor.extract(stmt).orElseThrow();
+            for (ModKind modType: modKinds.getKinds()) {
                 vector.add(pos, stmtType, modType);
             }
         });
+        return vector;
     }
 
-    private void extractVariableFeature(ProgramChunk fixedChunk, ModKinds modKind, FeatureVector vector, Node originalRoot, Node fixedRoot) {
-        final VariableKindExtractor varKindExtractor = new VariableKindExtractor();
+    /**
+     * 変数の特徴を抽出 
+     * @param patchTargetChunk パッチ適用部分のコード
+     * @param originalRoot 修正前コードのルートノード
+     * @param fixedRoot 修正後コードのルートノード
+     * @return 特徴ベクトル
+     */
+    private FeatureVector extractVariableFeature(ProgramChunk patchTargetChunk, Node originalRoot, Node fixedRoot) {
+        final FeatureVector vector = new FeatureVector();
+        final VariableCharacteristicExtractor varCharExtractor = new VariableCharacteristicExtractor();
         final List<NameExpr> originalVariables = originalRoot.findAll(NameExpr.class);
         final List<NameExpr> fixedVariables = fixedRoot.findAll(NameExpr.class);
         for(NameExpr fixedVar: fixedVariables) {
-            if(!varKindExtractor.findDeclarator(fixedVar).isPresent()) {
+            if(!varCharExtractor.findDeclarator(fixedVar).isPresent()) {
                 continue;
             }
-            final Node fixedVarDec = varKindExtractor.findDeclarator(fixedVar).orElseThrow();
+            final Node fixedVarDec = varCharExtractor.findDeclarator(fixedVar).orElseThrow();
             final List<NameExpr> originalVarsWithSameName = originalVariables.stream()
                 .filter(original -> original.getNameAsString().equals(fixedVar.getNameAsString()))
                 .collect(Collectors.toList());
             final List<NameExpr> originalVarsWithSameScope = originalVarsWithSameName.stream()
                 .filter(original-> {
-                    final Optional<Node> declarator = varKindExtractor.findDeclarator(original);
+                    final Optional<Node> declarator = varCharExtractor.findDeclarator(original);
                     if(!declarator.isPresent()) {
                         return false;
                     }
@@ -119,22 +141,31 @@ public class FeatureExtractor {
                 .collect(Collectors.toList());
             if(originalVarsWithSameScope.size() > 0) {
                 final NameExpr sameVarAsFixedVar = originalVarsWithSameScope.get(0);
-                this.hoge(fixedChunk, sameVarAsFixedVar, fixedVar, vector);
+                vector.add(this.createVectorByVarRelation(patchTargetChunk, sameVarAsFixedVar, fixedVar));
             }
             else if(originalVarsWithSameName.size() > 0) {
                 final NameExpr sameVarAsFixedVar = originalVarsWithSameName.get(0);
-                this.hoge(fixedChunk, sameVarAsFixedVar, fixedVar, vector);
+                vector.add(this.createVectorByVarRelation(patchTargetChunk, sameVarAsFixedVar, fixedVar));
             }
         }
+        return vector;
     }
 
-    private FeatureVector hoge(ProgramChunk fixedChunk, NameExpr originalVar, NameExpr fixedVar, FeatureVector vector) {
-        final VariableKindExtractor varKindExtractor = new VariableKindExtractor();
-        final VariableKinds originalVarKind = varKindExtractor.extract(originalVar);
-        final VariableKinds fixedVarKind = varKindExtractor.extract(fixedVar);
+    /**
+     * 修正前と修正後の二つの変数から特徴を抽出する
+     * @param patchTargetChunk パッチ適用部分のコード
+     * @param originalVar 修正前コード中の変数
+     * @param fixedVar 修正後コード中の変数
+     * @return 特徴ベクトル
+     */
+    private FeatureVector createVectorByVarRelation(ProgramChunk patchTargetChunk, NameExpr originalVar, NameExpr fixedVar) {
+        final FeatureVector vector = new FeatureVector();
+        final VariableCharacteristicExtractor varCharsExtractor = new VariableCharacteristicExtractor();
+        final VariableCharacteristics originalVarChars = varCharsExtractor.extract(originalVar);
+        final VariableCharacteristics fixedVarChars = varCharsExtractor.extract(fixedVar);
         final int nodeBegin = fixedVar.getBegin().orElseThrow().line;
-        final boolean nodeComesBeforeChunk = nodeBegin < fixedChunk.getBegin(); 
-        final boolean nodeComesAfterChunk = fixedChunk.getEnd() < nodeBegin; 
+        final boolean nodeComesBeforeChunk = nodeBegin < patchTargetChunk.getBegin(); 
+        final boolean nodeComesAfterChunk = patchTargetChunk.getEnd() < nodeBegin; 
         StatementPos pos = StatementPos.TARGET;
         if (nodeComesBeforeChunk) {
             pos = StatementPos.PREV;
@@ -142,9 +173,9 @@ public class FeatureExtractor {
         if (nodeComesAfterChunk) {
             pos = StatementPos.NEXT;
         }
-        for (VarKind originalVarType: originalVarKind.getTypes()) {
-            for (VarKind fixedVarType: fixedVarKind.getTypes()) {
-                vector.add(pos, originalVarType, fixedVarType);
+        for (VarChar originalVarChar: originalVarChars.getTypes()) {
+            for (VarChar fixedVarChar: fixedVarChars.getTypes()) {
+                vector.add(pos, originalVarChar, fixedVarChar);
             }
         }
         return vector;

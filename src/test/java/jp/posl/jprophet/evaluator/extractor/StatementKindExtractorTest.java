@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.evaluator.extractor.StatementKindExtractor.StatementType;
+import jp.posl.jprophet.evaluator.extractor.StatementKindExtractor.StatementKind;
 
 public class StatementKindExtractorTest {
     /**
@@ -34,20 +34,20 @@ public class StatementKindExtractorTest {
 
         final List<Node> nodes = NodeUtility.getAllNodesFromCode(src);
         final StatementKindExtractor extractor = new StatementKindExtractor();
-        final List<StatementType> types = nodes.stream()
+        final List<StatementKind> types = nodes.stream()
             .map(node -> extractor.extract(node))
             .filter(type -> type.isPresent())
             .map(type -> type.orElseThrow())
             .collect(Collectors.toList());
         
-        List<StatementType> expectedTypes = List.of(
-            StatementType.ASSIGN,
-            StatementType.METHOD_CALL,
-            StatementType.LOOP,
-            StatementType.IF,
-            StatementType.RETURN,
-            StatementType.BREAK,
-            StatementType.CONTINUE
+        final List<StatementKind> expectedTypes = List.of(
+            StatementKind.ASSIGN,
+            StatementKind.METHOD_CALL,
+            StatementKind.LOOP,
+            StatementKind.IF,
+            StatementKind.RETURN,
+            StatementKind.BREAK,
+            StatementKind.CONTINUE
         );
 
         assertThat(types).containsAll(expectedTypes);

@@ -6,8 +6,8 @@ import java.util.Set;
 /**
  * 修正パッチの変数の特徴を表現するクラス
  */
-public class VariableKinds {
-    public enum VarKind{
+public class VariableCharacteristics {
+    public enum VarChar{
         /* booleanかどうか */
         BOOLEAN,
         /* 数値型かどうか */
@@ -44,44 +44,44 @@ public class VariableKinds {
         NONCOMMUTATIVE_OPERAND_RIGHT
     }
 
-    final private Set<VarKind> types;
+    final private Set<VarChar> chars;
 
     /**
-     * 特徴を持たない空のVariableKindsを生成
+     * 特徴を持たない空のVariableCharacteristicsを生成
      */
-    public VariableKinds() {
-        this.types = new HashSet<>();
+    public VariableCharacteristics() {
+        this.chars = new HashSet<>();
     }
 
     /**
-     * typesを初期値としたVariableKindsを生成
-     * @param types 初期値
+     * typesを初期値としたVariableCharacteristicsを生成
+     * @param varChars 初期値
      */
-    public VariableKinds(Set<VarKind> types) {
-        this.types = types;
+    public VariableCharacteristics(Set<VarChar> varChars) {
+        this.chars = varChars;
     }
 
     /**
      * 変数の特徴を取得
      * @return 特徴のセット
      */
-    public Set<VarKind> getTypes() {
-        return this.types;
+    public Set<VarChar> getTypes() {
+        return this.chars;
     }
 
     /**
      * 変数の特徴を追加
-     * @param types 追加する変数の種類
+     * @param chars 追加する変数の種類
      */
-    public void add(VarKind type) {
-        this.types.add(type);
+    public void add(VarChar chars) {
+        this.chars.add(chars);
     }
 
     /**
      * 二つの変数の特徴を足し合わせる
-     * @param kinds 加算する特徴
+     * @param varCharacteristics 加算する特徴
      */
-    public void add(VariableKinds kinds) {
-        this.types.addAll(kinds.getTypes());
+    public void add(VariableCharacteristics varCharacteristics) {
+        this.chars.addAll(varCharacteristics.getTypes());
     }
 }

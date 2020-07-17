@@ -24,17 +24,17 @@ import jp.posl.jprophet.evaluator.NodeWithDiffType.TYPE;
 import jp.posl.jprophet.evaluator.extractor.feature.ModKinds;
 
 /**
- * 修正パッチの変更の特徴抽出を行うクラス
+ * 修正パッチの変更の種類特定を行うクラス
  */
 public class ModKindExtractor {
     /**
-     * 修正パッチの変更の特徴をソースコード中の連続する複数の変更行であるプログラムチャンクごとに抽出する
+     * 修正パッチの変更の種類をソースコード中の連続する複数の変更行であるプログラムチャンクごとに抽出する
      * <p>
      * なお，InsertControlは飛び飛びの複数の行から判定されることがあるが，属するプログラムチャンクは
      * ifの存在するチャンクである
      * @param nodeWithDiffType 差分情報付きの抽出対象の修正後AST
      * @param chunks 修正差分チャンクのリスト
-     * @return 変更の特徴
+     * @return 変更の種類
      */
     public Map<ProgramChunk, ModKinds> extract(NodeWithDiffType nodeWithDiffType, List<ProgramChunk> chunks) {
         final Node node = nodeWithDiffType.getNode();
