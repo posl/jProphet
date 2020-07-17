@@ -12,10 +12,10 @@ import com.github.javaparser.ast.expr.NameExpr;
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.evaluator.extractor.feature.VariableFeature;
-import jp.posl.jprophet.evaluator.extractor.feature.VariableFeature.VarType;
+import jp.posl.jprophet.evaluator.extractor.feature.VariableKinds;
+import jp.posl.jprophet.evaluator.extractor.feature.VariableKinds.VarKind;
 
-public class VariableFeatureExtractorTest {
+public class VariableKindExtractorTest {
     /**
      * 宣言ノードにおける変数の型やスコープの特徴抽出のテスト
      */
@@ -34,33 +34,33 @@ public class VariableFeatureExtractorTest {
             .toString();
 
         Node root = NodeUtility.getAllNodesFromCode(src).get(0);
-        VariableFeatureExtractor extractor = new VariableFeatureExtractor();
-        List<VariableFeature> actualFeatures = root.findAll(NameExpr.class).stream()
+        VariableKindExtractor extractor = new VariableKindExtractor();
+        List<VariableKinds> actualKindsList = root.findAll(NameExpr.class).stream()
             .map(nameExpr -> extractor.extract(nameExpr))
             .collect(Collectors.toList());
 
-        VariableFeature expectedFieldFeature = new VariableFeature(Set.of(
-            VarType.STRING,
-            VarType.OBJECT,
-            VarType.FIELD,
-            VarType.IN_ASSIGN_STMT
+        VariableKinds expectedFieldKind = new VariableKinds(Set.of(
+            VarKind.STRING,
+            VarKind.OBJECT,
+            VarKind.FIELD,
+            VarKind.IN_ASSIGN_STMT
         ));
-        VariableFeature expectedLocalVarFeature = new VariableFeature(Set.of(
-            VarType.BOOLEAN,
-            VarType.LOCAL,
-            VarType.IN_ASSIGN_STMT
+        VariableKinds expectedLocalVarKind = new VariableKinds(Set.of(
+            VarKind.BOOLEAN,
+            VarKind.LOCAL,
+            VarKind.IN_ASSIGN_STMT
         ));
-        VariableFeature expectedLocalConstFeature = new VariableFeature(Set.of(
-            VarType.NUM,
-            VarType.LOCAL,
-            VarType.CONSTANT,
-            VarType.IN_ASSIGN_STMT
+        VariableKinds expectedLocalConstKind = new VariableKinds(Set.of(
+            VarKind.NUM,
+            VarKind.LOCAL,
+            VarKind.CONSTANT,
+            VarKind.IN_ASSIGN_STMT
         ));
 
     
-        assertThat(actualFeatures.get(0)).isEqualToComparingFieldByField(expectedLocalVarFeature);
-        assertThat(actualFeatures.get(1)).isEqualToComparingFieldByField(expectedLocalConstFeature);
-        assertThat(actualFeatures.get(2)).isEqualToComparingFieldByField(expectedFieldFeature);
+        assertThat(actualKindsList.get(0)).isEqualToComparingFieldByField(expectedLocalVarKind);
+        assertThat(actualKindsList.get(1)).isEqualToComparingFieldByField(expectedLocalConstKind);
+        assertThat(actualKindsList.get(2)).isEqualToComparingFieldByField(expectedFieldKind);
     }
 
 
@@ -85,37 +85,37 @@ public class VariableFeatureExtractorTest {
             .toString();
 
         Node root = NodeUtility.getAllNodesFromCode(src).get(0);
-        VariableFeatureExtractor extractor = new VariableFeatureExtractor();
-        List<VariableFeature> actualFeatures = root.findAll(NameExpr.class).stream()
+        VariableKindExtractor extractor = new VariableKindExtractor();
+        List<VariableKinds> actualKindsList = root.findAll(NameExpr.class).stream()
             .map(nameExpr -> extractor.extract(nameExpr))
             .collect(Collectors.toList());
 
-        VariableFeature expectedFeatureInCond = new VariableFeature(Set.of(
-            VarType.IN_CONDITION,
-            VarType.IN_IF_STMT
+        VariableKinds expectedKindsInCond = new VariableKinds(Set.of(
+            VarKind.IN_CONDITION,
+            VarKind.IN_IF_STMT
         ));
-        VariableFeature expectedFeatureInIfStmt = new VariableFeature(Set.of(
-            VarType.IN_IF_STMT,
-            VarType.IN_ASSIGN_STMT
+        VariableKinds expectedKindsInIfStmt = new VariableKinds(Set.of(
+            VarKind.IN_IF_STMT,
+            VarKind.IN_ASSIGN_STMT
         ));
-        VariableFeature expectedFeatureInLoop = new VariableFeature(Set.of(
-            VarType.IN_LOOP,
-            VarType.IN_ASSIGN_STMT
+        VariableKinds expectedKindsInLoop = new VariableKinds(Set.of(
+            VarKind.IN_LOOP,
+            VarKind.IN_ASSIGN_STMT
         ));
-        VariableFeature expectedFeatureInForeachCond = new VariableFeature(Set.of(
-            VarType.IN_LOOP
+        VariableKinds expectedKindsInForeachCond = new VariableKinds(Set.of(
+            VarKind.IN_LOOP
         ));
-        VariableFeature expectedParameterFeature = new VariableFeature(Set.of(
-            VarType.PARAMETER
+        VariableKinds expectedParameterKind = new VariableKinds(Set.of(
+            VarKind.PARAMETER
         ));
 
-        assertThat(actualFeatures.get(0)).isEqualToComparingFieldByField(expectedFeatureInCond);
-        assertThat(actualFeatures.get(1)).isEqualToComparingFieldByField(expectedFeatureInIfStmt);
-        assertThat(actualFeatures.get(2)).isEqualToComparingFieldByField(expectedFeatureInLoop);
-        assertThat(actualFeatures.get(3)).isEqualToComparingFieldByField(expectedFeatureInLoop);
-        assertThat(actualFeatures.get(4)).isEqualToComparingFieldByField(expectedFeatureInForeachCond);
-        assertThat(actualFeatures.get(5)).isEqualToComparingFieldByField(expectedFeatureInLoop);
-        assertThat(actualFeatures.get(6)).isEqualToComparingFieldByField(expectedParameterFeature);
+        assertThat(actualKindsList.get(0)).isEqualToComparingFieldByField(expectedKindsInCond);
+        assertThat(actualKindsList.get(1)).isEqualToComparingFieldByField(expectedKindsInIfStmt);
+        assertThat(actualKindsList.get(2)).isEqualToComparingFieldByField(expectedKindsInLoop);
+        assertThat(actualKindsList.get(3)).isEqualToComparingFieldByField(expectedKindsInLoop);
+        assertThat(actualKindsList.get(4)).isEqualToComparingFieldByField(expectedKindsInForeachCond);
+        assertThat(actualKindsList.get(5)).isEqualToComparingFieldByField(expectedKindsInLoop);
+        assertThat(actualKindsList.get(6)).isEqualToComparingFieldByField(expectedParameterKind);
     }
 
     /**
@@ -136,17 +136,17 @@ public class VariableFeatureExtractorTest {
             .toString();
 
         Node root = NodeUtility.getAllNodesFromCode(src).get(0);
-        VariableFeatureExtractor extractor = new VariableFeatureExtractor();
-        List<VariableFeature> actualFeatures = root.findAll(NameExpr.class).stream()
+        VariableKindExtractor extractor = new VariableKindExtractor();
+        List<VariableKinds> actualKindsList = root.findAll(NameExpr.class).stream()
             .map(nameExpr -> extractor.extract(nameExpr))
             .collect(Collectors.toList());
 
-        VariableFeature expectedFeature = new VariableFeature(Set.of(
-            VarType.COMMUTATIVE_OPERAND
+        VariableKinds expectedKinds = new VariableKinds(Set.of(
+            VarKind.COMMUTATIVE_OPERAND
         ));
         
-        actualFeatures.stream().forEach(actual -> {
-            assertThat(actual).isEqualToComparingFieldByField(expectedFeature);
+        actualKindsList.stream().forEach(actual -> {
+            assertThat(actual).isEqualToComparingFieldByField(expectedKinds);
         });
     }
 
@@ -169,21 +169,21 @@ public class VariableFeatureExtractorTest {
             .toString();
 
         Node root = NodeUtility.getAllNodesFromCode(src).get(0);
-        VariableFeatureExtractor extractor = new VariableFeatureExtractor();
-        List<VariableFeature> actualFeatures = root.findAll(NameExpr.class).stream()
+        VariableKindExtractor extractor = new VariableKindExtractor();
+        List<VariableKinds> actualKindsList = root.findAll(NameExpr.class).stream()
             .map(nameExpr -> extractor.extract(nameExpr))
             .collect(Collectors.toList());
 
-        VariableFeature expectedLeftVarFeature = new VariableFeature(Set.of(
-            VarType.NONCOMMUTATIVE_OPERAND_LEFT
+        VariableKinds expectedLeftVarKind = new VariableKinds(Set.of(
+            VarKind.NONCOMMUTATIVE_OPERAND_LEFT
         ));
-        VariableFeature expectedRightVarFeature = new VariableFeature(Set.of(
-            VarType.NONCOMMUTATIVE_OPERAND_RIGHT
+        VariableKinds expectedRightVarKind = new VariableKinds(Set.of(
+            VarKind.NONCOMMUTATIVE_OPERAND_RIGHT
         ));
         
-        for(int i = 0; i < actualFeatures.size(); i += 2) {
-            assertThat(actualFeatures.get(i)).isEqualToComparingFieldByField(expectedLeftVarFeature);
-            assertThat(actualFeatures.get(i + 1)).isEqualToComparingFieldByField(expectedRightVarFeature);
+        for(int i = 0; i < actualKindsList.size(); i += 2) {
+            assertThat(actualKindsList.get(i)).isEqualToComparingFieldByField(expectedLeftVarKind);
+            assertThat(actualKindsList.get(i + 1)).isEqualToComparingFieldByField(expectedRightVarKind);
         }
     }
 
@@ -200,21 +200,21 @@ public class VariableFeatureExtractorTest {
             .toString();
 
         Node root = NodeUtility.getAllNodesFromCode(src).get(0);
-        VariableFeatureExtractor extractor = new VariableFeatureExtractor();
-        List<VariableFeature> actualFeatures = root.findAll(NameExpr.class).stream()
+        VariableKindExtractor extractor = new VariableKindExtractor();
+        List<VariableKinds> actualKindsList = root.findAll(NameExpr.class).stream()
             .map(nameExpr -> extractor.extract(nameExpr))
             .collect(Collectors.toList());
 
-        VariableFeature expectedLeftVarFeature = new VariableFeature(Set.of(
-            VarType.NONCOMMUTATIVE_OPERAND_LEFT
+        VariableKinds expectedLeftVarKind = new VariableKinds(Set.of(
+            VarKind.NONCOMMUTATIVE_OPERAND_LEFT
         ));
-        VariableFeature expectedRightVarFeature = new VariableFeature(Set.of(
-            VarType.NONCOMMUTATIVE_OPERAND_RIGHT,
-            VarType.PARAMETER
+        VariableKinds expectedRightVarKind = new VariableKinds(Set.of(
+            VarKind.NONCOMMUTATIVE_OPERAND_RIGHT,
+            VarKind.PARAMETER
         ));
         
-        assertThat(actualFeatures.get(0)).isEqualToComparingFieldByField(expectedLeftVarFeature);
-        assertThat(actualFeatures.get(1)).isEqualToComparingFieldByField(expectedRightVarFeature);
+        assertThat(actualKindsList.get(0)).isEqualToComparingFieldByField(expectedLeftVarKind);
+        assertThat(actualKindsList.get(1)).isEqualToComparingFieldByField(expectedRightVarKind);
     }
 
     /**
@@ -231,17 +231,17 @@ public class VariableFeatureExtractorTest {
             .toString();
 
         Node root = NodeUtility.getAllNodesFromCode(src).get(0);
-        VariableFeatureExtractor extractor = new VariableFeatureExtractor();
-        List<VariableFeature> actualFeatures = root.findAll(NameExpr.class).stream()
+        VariableKindExtractor extractor = new VariableKindExtractor();
+        List<VariableKinds> actualKindsList = root.findAll(NameExpr.class).stream()
             .map(nameExpr -> extractor.extract(nameExpr))
             .collect(Collectors.toList());
 
-        VariableFeature expectedFeature = new VariableFeature(Set.of(
-            VarType.UNARY_OPERAND
+        VariableKinds expectedKinds = new VariableKinds(Set.of(
+            VarKind.UNARY_OPERAND
         ));
         
-        actualFeatures.stream().forEach(actual -> {
-            assertThat(actual).isEqualToComparingFieldByField(expectedFeature);
+        actualKindsList.stream().forEach(actual -> {
+            assertThat(actual).isEqualToComparingFieldByField(expectedKinds);
         });
     }
 }

@@ -9,9 +9,9 @@ import com.github.javaparser.ast.Node;
 
 import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.evaluator.extractor.FeatureExtractor.StatementPos;
-import jp.posl.jprophet.evaluator.extractor.feature.ModFeature.ModType;
-import jp.posl.jprophet.evaluator.extractor.feature.StatementFeature.StatementType;
-import jp.posl.jprophet.evaluator.extractor.feature.VariableFeature.VarType;
+import jp.posl.jprophet.evaluator.extractor.StatementKindExtractor.StatementType;
+import jp.posl.jprophet.evaluator.extractor.feature.ModKinds.ModKind;
+import jp.posl.jprophet.evaluator.extractor.feature.VariableKinds.VarKind;
 import jp.posl.jprophet.operation.MethodReplacementOperation;
 import jp.posl.jprophet.patch.DefaultPatchCandidate;
 import jp.posl.jprophet.patch.PatchCandidate;
@@ -46,31 +46,31 @@ public class FeatureExtractorTest {
         FeatureVector featureVector = extractor.extract(patchCandidate);
         List<Boolean> binaryVector = featureVector.get();
         final FeatureVector expectedVector = new FeatureVector();
-        final ModType modType = ModType.INSERT_STMT;
+        final ModKind modType = ModKind.INSERT_STMT;
         expectedVector.add(modType);
 
         expectedVector.add(StatementPos.PREV, StatementType.ASSIGN, modType);
         expectedVector.add(StatementPos.TARGET, StatementType.METHOD_CALL, modType);
 
-        expectedVector.add(StatementPos.PREV, VarType.LOCAL, VarType.LOCAL);
-        expectedVector.add(StatementPos.PREV, VarType.LOCAL, VarType.NUM);
-        expectedVector.add(StatementPos.PREV, VarType.LOCAL, VarType.IN_ASSIGN_STMT);
-        expectedVector.add(StatementPos.PREV, VarType.NUM, VarType.NUM);
-        expectedVector.add(StatementPos.PREV, VarType.NUM, VarType.LOCAL);
-        expectedVector.add(StatementPos.PREV, VarType.NUM, VarType.IN_ASSIGN_STMT);
-        expectedVector.add(StatementPos.PREV, VarType.IN_ASSIGN_STMT, VarType.IN_ASSIGN_STMT);
-        expectedVector.add(StatementPos.PREV, VarType.IN_ASSIGN_STMT, VarType.LOCAL);
-        expectedVector.add(StatementPos.PREV, VarType.IN_ASSIGN_STMT, VarType.NUM);
+        expectedVector.add(StatementPos.PREV, VarKind.LOCAL, VarKind.LOCAL);
+        expectedVector.add(StatementPos.PREV, VarKind.LOCAL, VarKind.NUM);
+        expectedVector.add(StatementPos.PREV, VarKind.LOCAL, VarKind.IN_ASSIGN_STMT);
+        expectedVector.add(StatementPos.PREV, VarKind.NUM, VarKind.NUM);
+        expectedVector.add(StatementPos.PREV, VarKind.NUM, VarKind.LOCAL);
+        expectedVector.add(StatementPos.PREV, VarKind.NUM, VarKind.IN_ASSIGN_STMT);
+        expectedVector.add(StatementPos.PREV, VarKind.IN_ASSIGN_STMT, VarKind.IN_ASSIGN_STMT);
+        expectedVector.add(StatementPos.PREV, VarKind.IN_ASSIGN_STMT, VarKind.LOCAL);
+        expectedVector.add(StatementPos.PREV, VarKind.IN_ASSIGN_STMT, VarKind.NUM);
 
-        expectedVector.add(StatementPos.TARGET, VarType.LOCAL, VarType.LOCAL);
-        expectedVector.add(StatementPos.TARGET, VarType.LOCAL, VarType.NUM);
-        expectedVector.add(StatementPos.TARGET, VarType.LOCAL, VarType.PARAMETER);
-        expectedVector.add(StatementPos.TARGET, VarType.NUM, VarType.NUM);
-        expectedVector.add(StatementPos.TARGET, VarType.NUM, VarType.LOCAL);
-        expectedVector.add(StatementPos.TARGET, VarType.NUM, VarType.PARAMETER);
-        expectedVector.add(StatementPos.TARGET, VarType.IN_ASSIGN_STMT, VarType.PARAMETER);
-        expectedVector.add(StatementPos.TARGET, VarType.IN_ASSIGN_STMT, VarType.LOCAL);
-        expectedVector.add(StatementPos.TARGET, VarType.IN_ASSIGN_STMT, VarType.NUM);
+        expectedVector.add(StatementPos.TARGET, VarKind.LOCAL, VarKind.LOCAL);
+        expectedVector.add(StatementPos.TARGET, VarKind.LOCAL, VarKind.NUM);
+        expectedVector.add(StatementPos.TARGET, VarKind.LOCAL, VarKind.PARAMETER);
+        expectedVector.add(StatementPos.TARGET, VarKind.NUM, VarKind.NUM);
+        expectedVector.add(StatementPos.TARGET, VarKind.NUM, VarKind.LOCAL);
+        expectedVector.add(StatementPos.TARGET, VarKind.NUM, VarKind.PARAMETER);
+        expectedVector.add(StatementPos.TARGET, VarKind.IN_ASSIGN_STMT, VarKind.PARAMETER);
+        expectedVector.add(StatementPos.TARGET, VarKind.IN_ASSIGN_STMT, VarKind.LOCAL);
+        expectedVector.add(StatementPos.TARGET, VarKind.IN_ASSIGN_STMT, VarKind.NUM);
         assertThat(expectedVector.get()).containsExactlyElementsOf(binaryVector);
     }
 
@@ -107,78 +107,78 @@ public class FeatureExtractorTest {
         List<Boolean> binaryVector = featureVector.get();
         final FeatureVector expectedVector = new FeatureVector();
 
-        final ModType modType1 = ModType.INSERT_STMT;
+        final ModKind modType1 = ModKind.INSERT_STMT;
         expectedVector.add(modType1);
         expectedVector.add(StatementPos.TARGET, StatementType.ASSIGN, modType1);
         expectedVector.add(StatementPos.NEXT, StatementType.ASSIGN, modType1);
         expectedVector.add(StatementPos.NEXT, StatementType.METHOD_CALL, modType1);
 
-        expectedVector.add(StatementPos.TARGET, VarType.LOCAL, VarType.LOCAL);
-        expectedVector.add(StatementPos.TARGET, VarType.LOCAL, VarType.NUM);
-        expectedVector.add(StatementPos.TARGET, VarType.LOCAL, VarType.IN_ASSIGN_STMT);
-        expectedVector.add(StatementPos.TARGET, VarType.NUM, VarType.NUM);
-        expectedVector.add(StatementPos.TARGET, VarType.NUM, VarType.LOCAL);
-        expectedVector.add(StatementPos.TARGET, VarType.NUM, VarType.IN_ASSIGN_STMT);
-        expectedVector.add(StatementPos.TARGET, VarType.IN_ASSIGN_STMT, VarType.IN_ASSIGN_STMT);
-        expectedVector.add(StatementPos.TARGET, VarType.IN_ASSIGN_STMT, VarType.LOCAL);
-        expectedVector.add(StatementPos.TARGET, VarType.IN_ASSIGN_STMT, VarType.NUM);
+        expectedVector.add(StatementPos.TARGET, VarKind.LOCAL, VarKind.LOCAL);
+        expectedVector.add(StatementPos.TARGET, VarKind.LOCAL, VarKind.NUM);
+        expectedVector.add(StatementPos.TARGET, VarKind.LOCAL, VarKind.IN_ASSIGN_STMT);
+        expectedVector.add(StatementPos.TARGET, VarKind.NUM, VarKind.NUM);
+        expectedVector.add(StatementPos.TARGET, VarKind.NUM, VarKind.LOCAL);
+        expectedVector.add(StatementPos.TARGET, VarKind.NUM, VarKind.IN_ASSIGN_STMT);
+        expectedVector.add(StatementPos.TARGET, VarKind.IN_ASSIGN_STMT, VarKind.IN_ASSIGN_STMT);
+        expectedVector.add(StatementPos.TARGET, VarKind.IN_ASSIGN_STMT, VarKind.LOCAL);
+        expectedVector.add(StatementPos.TARGET, VarKind.IN_ASSIGN_STMT, VarKind.NUM);
 
-        expectedVector.add(StatementPos.NEXT, VarType.LOCAL, VarType.LOCAL);
-        expectedVector.add(StatementPos.NEXT, VarType.LOCAL, VarType.NUM);
-        expectedVector.add(StatementPos.NEXT, VarType.LOCAL, VarType.IN_ASSIGN_STMT);
-        expectedVector.add(StatementPos.NEXT, VarType.NUM, VarType.NUM);
-        expectedVector.add(StatementPos.NEXT, VarType.NUM, VarType.LOCAL);
-        expectedVector.add(StatementPos.NEXT, VarType.NUM, VarType.IN_ASSIGN_STMT);
-        expectedVector.add(StatementPos.NEXT, VarType.IN_ASSIGN_STMT, VarType.IN_ASSIGN_STMT);
-        expectedVector.add(StatementPos.NEXT, VarType.IN_ASSIGN_STMT, VarType.LOCAL);
-        expectedVector.add(StatementPos.NEXT, VarType.IN_ASSIGN_STMT, VarType.NUM);
+        expectedVector.add(StatementPos.NEXT, VarKind.LOCAL, VarKind.LOCAL);
+        expectedVector.add(StatementPos.NEXT, VarKind.LOCAL, VarKind.NUM);
+        expectedVector.add(StatementPos.NEXT, VarKind.LOCAL, VarKind.IN_ASSIGN_STMT);
+        expectedVector.add(StatementPos.NEXT, VarKind.NUM, VarKind.NUM);
+        expectedVector.add(StatementPos.NEXT, VarKind.NUM, VarKind.LOCAL);
+        expectedVector.add(StatementPos.NEXT, VarKind.NUM, VarKind.IN_ASSIGN_STMT);
+        expectedVector.add(StatementPos.NEXT, VarKind.IN_ASSIGN_STMT, VarKind.IN_ASSIGN_STMT);
+        expectedVector.add(StatementPos.NEXT, VarKind.IN_ASSIGN_STMT, VarKind.LOCAL);
+        expectedVector.add(StatementPos.NEXT, VarKind.IN_ASSIGN_STMT, VarKind.NUM);
 
-        expectedVector.add(StatementPos.NEXT, VarType.LOCAL, VarType.LOCAL);
-        expectedVector.add(StatementPos.NEXT, VarType.LOCAL, VarType.NUM);
-        expectedVector.add(StatementPos.NEXT, VarType.LOCAL, VarType.PARAMETER);
-        expectedVector.add(StatementPos.NEXT, VarType.NUM, VarType.NUM);
-        expectedVector.add(StatementPos.NEXT, VarType.NUM, VarType.LOCAL);
-        expectedVector.add(StatementPos.NEXT, VarType.NUM, VarType.PARAMETER);
-        expectedVector.add(StatementPos.NEXT, VarType.IN_ASSIGN_STMT, VarType.PARAMETER);
-        expectedVector.add(StatementPos.NEXT, VarType.IN_ASSIGN_STMT, VarType.LOCAL);
-        expectedVector.add(StatementPos.NEXT, VarType.IN_ASSIGN_STMT, VarType.NUM);
+        expectedVector.add(StatementPos.NEXT, VarKind.LOCAL, VarKind.LOCAL);
+        expectedVector.add(StatementPos.NEXT, VarKind.LOCAL, VarKind.NUM);
+        expectedVector.add(StatementPos.NEXT, VarKind.LOCAL, VarKind.PARAMETER);
+        expectedVector.add(StatementPos.NEXT, VarKind.NUM, VarKind.NUM);
+        expectedVector.add(StatementPos.NEXT, VarKind.NUM, VarKind.LOCAL);
+        expectedVector.add(StatementPos.NEXT, VarKind.NUM, VarKind.PARAMETER);
+        expectedVector.add(StatementPos.NEXT, VarKind.IN_ASSIGN_STMT, VarKind.PARAMETER);
+        expectedVector.add(StatementPos.NEXT, VarKind.IN_ASSIGN_STMT, VarKind.LOCAL);
+        expectedVector.add(StatementPos.NEXT, VarKind.IN_ASSIGN_STMT, VarKind.NUM);
 
 
-        final ModType modType2 = ModType.REPLACE_VAR;
+        final ModKind modType2 = ModKind.REPLACE_VAR;
         expectedVector.add(modType2);
         expectedVector.add(StatementPos.PREV, StatementType.ASSIGN, modType2);
         expectedVector.add(StatementPos.PREV, StatementType.ASSIGN, modType2);
         expectedVector.add(StatementPos.TARGET, StatementType.METHOD_CALL, modType2);
 
-        expectedVector.add(StatementPos.PREV, VarType.LOCAL, VarType.LOCAL);
-        expectedVector.add(StatementPos.PREV, VarType.LOCAL, VarType.NUM);
-        expectedVector.add(StatementPos.PREV, VarType.LOCAL, VarType.IN_ASSIGN_STMT);
-        expectedVector.add(StatementPos.PREV, VarType.NUM, VarType.NUM);
-        expectedVector.add(StatementPos.PREV, VarType.NUM, VarType.LOCAL);
-        expectedVector.add(StatementPos.PREV, VarType.NUM, VarType.IN_ASSIGN_STMT);
-        expectedVector.add(StatementPos.PREV, VarType.IN_ASSIGN_STMT, VarType.IN_ASSIGN_STMT);
-        expectedVector.add(StatementPos.PREV, VarType.IN_ASSIGN_STMT, VarType.LOCAL);
-        expectedVector.add(StatementPos.PREV, VarType.IN_ASSIGN_STMT, VarType.NUM);
+        expectedVector.add(StatementPos.PREV, VarKind.LOCAL, VarKind.LOCAL);
+        expectedVector.add(StatementPos.PREV, VarKind.LOCAL, VarKind.NUM);
+        expectedVector.add(StatementPos.PREV, VarKind.LOCAL, VarKind.IN_ASSIGN_STMT);
+        expectedVector.add(StatementPos.PREV, VarKind.NUM, VarKind.NUM);
+        expectedVector.add(StatementPos.PREV, VarKind.NUM, VarKind.LOCAL);
+        expectedVector.add(StatementPos.PREV, VarKind.NUM, VarKind.IN_ASSIGN_STMT);
+        expectedVector.add(StatementPos.PREV, VarKind.IN_ASSIGN_STMT, VarKind.IN_ASSIGN_STMT);
+        expectedVector.add(StatementPos.PREV, VarKind.IN_ASSIGN_STMT, VarKind.LOCAL);
+        expectedVector.add(StatementPos.PREV, VarKind.IN_ASSIGN_STMT, VarKind.NUM);
 
-        expectedVector.add(StatementPos.PREV, VarType.LOCAL, VarType.LOCAL);
-        expectedVector.add(StatementPos.PREV, VarType.LOCAL, VarType.NUM);
-        expectedVector.add(StatementPos.PREV, VarType.LOCAL, VarType.IN_ASSIGN_STMT);
-        expectedVector.add(StatementPos.PREV, VarType.NUM, VarType.NUM);
-        expectedVector.add(StatementPos.PREV, VarType.NUM, VarType.LOCAL);
-        expectedVector.add(StatementPos.PREV, VarType.NUM, VarType.IN_ASSIGN_STMT);
-        expectedVector.add(StatementPos.PREV, VarType.IN_ASSIGN_STMT, VarType.IN_ASSIGN_STMT);
-        expectedVector.add(StatementPos.PREV, VarType.IN_ASSIGN_STMT, VarType.LOCAL);
-        expectedVector.add(StatementPos.PREV, VarType.IN_ASSIGN_STMT, VarType.NUM);
+        expectedVector.add(StatementPos.PREV, VarKind.LOCAL, VarKind.LOCAL);
+        expectedVector.add(StatementPos.PREV, VarKind.LOCAL, VarKind.NUM);
+        expectedVector.add(StatementPos.PREV, VarKind.LOCAL, VarKind.IN_ASSIGN_STMT);
+        expectedVector.add(StatementPos.PREV, VarKind.NUM, VarKind.NUM);
+        expectedVector.add(StatementPos.PREV, VarKind.NUM, VarKind.LOCAL);
+        expectedVector.add(StatementPos.PREV, VarKind.NUM, VarKind.IN_ASSIGN_STMT);
+        expectedVector.add(StatementPos.PREV, VarKind.IN_ASSIGN_STMT, VarKind.IN_ASSIGN_STMT);
+        expectedVector.add(StatementPos.PREV, VarKind.IN_ASSIGN_STMT, VarKind.LOCAL);
+        expectedVector.add(StatementPos.PREV, VarKind.IN_ASSIGN_STMT, VarKind.NUM);
 
-        expectedVector.add(StatementPos.TARGET, VarType.LOCAL, VarType.LOCAL);
-        expectedVector.add(StatementPos.TARGET, VarType.LOCAL, VarType.NUM);
-        expectedVector.add(StatementPos.TARGET, VarType.LOCAL, VarType.PARAMETER);
-        expectedVector.add(StatementPos.TARGET, VarType.NUM, VarType.NUM);
-        expectedVector.add(StatementPos.TARGET, VarType.NUM, VarType.LOCAL);
-        expectedVector.add(StatementPos.TARGET, VarType.NUM, VarType.PARAMETER);
-        expectedVector.add(StatementPos.TARGET, VarType.IN_ASSIGN_STMT, VarType.PARAMETER);
-        expectedVector.add(StatementPos.TARGET, VarType.IN_ASSIGN_STMT, VarType.LOCAL);
-        expectedVector.add(StatementPos.TARGET, VarType.IN_ASSIGN_STMT, VarType.NUM);
+        expectedVector.add(StatementPos.TARGET, VarKind.LOCAL, VarKind.LOCAL);
+        expectedVector.add(StatementPos.TARGET, VarKind.LOCAL, VarKind.NUM);
+        expectedVector.add(StatementPos.TARGET, VarKind.LOCAL, VarKind.PARAMETER);
+        expectedVector.add(StatementPos.TARGET, VarKind.NUM, VarKind.NUM);
+        expectedVector.add(StatementPos.TARGET, VarKind.NUM, VarKind.LOCAL);
+        expectedVector.add(StatementPos.TARGET, VarKind.NUM, VarKind.PARAMETER);
+        expectedVector.add(StatementPos.TARGET, VarKind.IN_ASSIGN_STMT, VarKind.PARAMETER);
+        expectedVector.add(StatementPos.TARGET, VarKind.IN_ASSIGN_STMT, VarKind.LOCAL);
+        expectedVector.add(StatementPos.TARGET, VarKind.IN_ASSIGN_STMT, VarKind.NUM);
 
 
         assertThat(expectedVector.get()).containsExactlyElementsOf(binaryVector);

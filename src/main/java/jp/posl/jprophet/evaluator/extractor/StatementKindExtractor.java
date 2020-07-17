@@ -13,12 +13,28 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.WhileStmt;
 
-import jp.posl.jprophet.evaluator.extractor.feature.StatementFeature.StatementType;
 
 /**
  * AST情報を基にプログラムの各行のステートメントの特徴を抽出するクラス
  */
-public class StatementFeatureExtractor {
+public class StatementKindExtractor {
+    public enum StatementType {
+        /* 代入文 */
+        ASSIGN,
+        /* メソッド呼び出し */
+        METHOD_CALL,
+        /* ループ構文 */
+        LOOP,
+        /* if文 */
+        IF,
+        /* return文 */
+        RETURN,
+        /* break文 */
+        BREAK,
+        /* continue文 */
+        CONTINUE
+    };
+
     /**
      * 特徴抽出を行う 
      * @param line 特徴抽出したい行番号

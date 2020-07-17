@@ -19,14 +19,14 @@ import com.github.javaparser.ast.stmt.Statement;
 
 import jp.posl.jprophet.evaluator.NodeWithDiffType;
 import jp.posl.jprophet.evaluator.ProgramChunk;
-import jp.posl.jprophet.evaluator.extractor.feature.ModFeature.ModType;
+import jp.posl.jprophet.evaluator.extractor.feature.ModKinds.ModKind;
 import jp.posl.jprophet.evaluator.NodeWithDiffType.TYPE;
-import jp.posl.jprophet.evaluator.extractor.feature.ModFeature;
+import jp.posl.jprophet.evaluator.extractor.feature.ModKinds;
 
 /**
  * 修正パッチの変更の特徴抽出を行うクラス
  */
-public class ModFeatureExtractor {
+public class ModKindExtractor {
     /**
      * 修正パッチの変更の特徴をソースコード中の連続する複数の変更行であるプログラムチャンクごとに抽出する
      * <p>
@@ -36,15 +36,15 @@ public class ModFeatureExtractor {
      * @param chunks 修正差分チャンクのリスト
      * @return 変更の特徴
      */
-    public Map<ProgramChunk, ModFeature> extract(NodeWithDiffType nodeWithDiffType, List<ProgramChunk> chunks) {
+    public Map<ProgramChunk, ModKinds> extract(NodeWithDiffType nodeWithDiffType, List<ProgramChunk> chunks) {
         final Node node = nodeWithDiffType.getNode();
         final TYPE type = nodeWithDiffType.getDiffType();
 
-        final ModFeature feature = new ModFeature();
+        final ModKinds kinds = new ModKinds();
         if(type == TYPE.INSERT) {
             if(node instanceof IfStmt) {
                 if(nodeWithDiffType.findAll(TYPE.SAME).size() > 0) {
-                    feature.add(ModType.INSERT_GUARD);
+                    kinds.add(ModKind.INSERT_GUARD);
                 }
                 final List<Class<? extends Statement>> controlStmtClasses = List.of(ReturnStmt.class, BreakStmt.class, ContinueStmt.class);
                 final Boolean controlInserted = controlStmtClasses.stream()    
@@ -54,30 +54,30 @@ public class ModFeatureExtractor {
                             .findAny().isPresent();
                     });
                 if(controlInserted) {
-                    feature.add(ModType.INSERT_CONTROL);
+                    kinds.add(ModKind.INSERT_CONTROL);
                 }
             }
             else if(node instanceof Statement) {
-                feature.add(ModType.INSERT_STMT);
+                kinds.add(ModKind.INSERT_STMT);
             }
         }
         if(type == TYPE.CHANGE) {
             if(node instanceof IfStmt) {
-                feature.add(ModType.REPLACE_COND);
+                kinds.add(ModKind.REPLACE_COND);
             }
             else if (node instanceof NameExpr) {
-                feature.add(ModType.REPLACE_VAR);
+                kinds.add(ModKind.REPLACE_VAR);
             }
             else if(node instanceof SimpleName) {
                 if(node.getParentNode().isPresent()) {
                     if(node.getParentNode().orElseThrow() instanceof MethodCallExpr) {
-                        feature.add(ModType.REPLACE_METHOD);
+                        kinds.add(ModKind.REPLACE_METHOD);
                     }
                 }
             }
         }
 
-        Map<ProgramChunk, ModFeature> map = new HashMap<ProgramChunk, ModFeature>();
+        Map<ProgramChunk, ModKinds> map = new HashMap<ProgramChunk, ModKinds>();
         int line;
         try {
             line = node.getBegin().orElseThrow().line;
@@ -90,9 +90,9 @@ public class ModFeatureExtractor {
         chunks.stream()
             .filter(lineIsInChunkRange)
             .findFirst()
-            .ifPresent((c) -> map.put(c, feature));
+            .ifPresent((c) -> map.put(c, kinds));
         
-        final BinaryOperator<Map<ProgramChunk, ModFeature>> mapAccumulator = (accum, newMap) -> {
+        final BinaryOperator<Map<ProgramChunk, ModKinds>> mapAccumulator = (accum, newMap) -> {
             newMap.forEach((key, value) -> {
                 accum.merge(key, value, (v1, v2) -> {
                     v1.add(v2);

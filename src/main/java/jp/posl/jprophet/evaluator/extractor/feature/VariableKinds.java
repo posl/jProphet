@@ -6,8 +6,8 @@ import java.util.Set;
 /**
  * 修正パッチの変数の特徴を表現するクラス
  */
-public class VariableFeature {
-    public enum VarType {
+public class VariableKinds {
+    public enum VarKind{
         /* booleanかどうか */
         BOOLEAN,
         /* 数値型かどうか */
@@ -44,20 +44,20 @@ public class VariableFeature {
         NONCOMMUTATIVE_OPERAND_RIGHT
     }
 
-    final private Set<VarType> types;
+    final private Set<VarKind> types;
 
     /**
-     * 特徴を持たない空のVariableFeatureを生成
+     * 特徴を持たない空のVariableKindsを生成
      */
-    public VariableFeature() {
+    public VariableKinds() {
         this.types = new HashSet<>();
     }
 
     /**
-     * typesを初期値としたVariableFeatureを生成
+     * typesを初期値としたVariableKindsを生成
      * @param types 初期値
      */
-    public VariableFeature(Set<VarType> types) {
+    public VariableKinds(Set<VarKind> types) {
         this.types = types;
     }
 
@@ -65,7 +65,7 @@ public class VariableFeature {
      * 変数の特徴を取得
      * @return 特徴のセット
      */
-    public Set<VarType> getTypes() {
+    public Set<VarKind> getTypes() {
         return this.types;
     }
 
@@ -73,15 +73,15 @@ public class VariableFeature {
      * 変数の特徴を追加
      * @param types 追加する変数の種類
      */
-    public void add(VarType type) {
+    public void add(VarKind type) {
         this.types.add(type);
     }
 
     /**
      * 二つの変数の特徴を足し合わせる
-     * @param feature 加算する特徴
+     * @param kinds 加算する特徴
      */
-    public void add(VariableFeature feature) {
-        this.types.addAll(feature.getTypes());
+    public void add(VariableKinds kinds) {
+        this.types.addAll(kinds.getTypes());
     }
 }

@@ -6,8 +6,8 @@ import java.util.Set;
 /**
  * 修正パッチの変更の特徴を表現するクラス
  */
-public class ModFeature {
-    public enum ModType {
+public class ModKinds {
+    public enum ModKind {
         /* ifガードを伴う制御文の挿入 */
         INSERT_CONTROL,
         /* ifガードの挿入 */
@@ -22,20 +22,20 @@ public class ModFeature {
         INSERT_STMT
     }
 
-    final private Set<ModType> types;
+    final private Set<ModKind> types;
 
     /**
-     * 特徴を持たない空のModFeatureを生成
+     * 特徴を持たない空のModKindを生成
      */
-    public ModFeature() {
+    public ModKinds() {
         this.types = new HashSet<>();        
     }
 
     /**
-     * typesを初期値としたModFeatureを生成
+     * typesを初期値としたModKindを生成
      * @param types 初期値
      */
-    public ModFeature(Set<ModType> types) {
+    public ModKinds(Set<ModKind> types) {
         this.types = types;        
     }
 
@@ -43,7 +43,7 @@ public class ModFeature {
      * 変更の特徴を取得
      * @return 特徴のセット
      */
-    public Set<ModType> getTypes() {
+    public Set<ModKind> getTypes() {
         return this.types;
     }
 
@@ -51,15 +51,15 @@ public class ModFeature {
      * 変更の特徴を追加
      * @param types 追加する変更の種類
      */
-    public void add(ModType type) {
+    public void add(ModKind type) {
         this.types.add(type);
     }
 
     /**
      * 二つの変更の特徴を足し合わせる
-     * @param feature 加算する特徴
+     * @param kinds 加算する特徴
      */
-    public void add(ModFeature feature) {
-        this.types.addAll(feature.getTypes());
+    public void add(ModKinds kinds) {
+        this.types.addAll(kinds.getTypes());
     }
 }

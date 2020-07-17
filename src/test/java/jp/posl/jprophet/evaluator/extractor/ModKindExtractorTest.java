@@ -13,16 +13,15 @@ import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.evaluator.AstDiff;
 import jp.posl.jprophet.evaluator.NodeWithDiffType;
 import jp.posl.jprophet.evaluator.ProgramChunk;
-import jp.posl.jprophet.evaluator.extractor.ModFeatureExtractor;
-import jp.posl.jprophet.evaluator.extractor.feature.ModFeature;
-import jp.posl.jprophet.evaluator.extractor.feature.ModFeature.ModType;
+import jp.posl.jprophet.evaluator.extractor.feature.ModKinds;
+import jp.posl.jprophet.evaluator.extractor.feature.ModKinds.ModKind;
 
-public class ModFeatureExtractorTest {
+public class ModKindExtractorTest {
 
     /**
      * InsertControlパターンの修正を判定できるかテスト
      */
-    @Test public void testModFeatureForInsertControl() {
+    @Test public void testModKindForInsertControl() {
         final String originalSource = new StringBuilder().append("")
             .append("public class A {\n")
             .append("   public void a() {\n")
@@ -46,18 +45,18 @@ public class ModFeatureExtractorTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
+        final ModKindExtractor extractor = new ModKindExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
         final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
+        final Map<ProgramChunk, ModKinds> actualMap = extractor.extract(nodeWithDiffType, chunks);
 
         // BreakStmtがInsertStmtとして加算されている
-        final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.INSERT_CONTROL, ModType.INSERT_STMT));
+        final ModKinds expectedModKind = new ModKinds(Set.of(ModKind.INSERT_CONTROL, ModKind.INSERT_STMT));
         final ProgramChunk expectedChunk = new ProgramChunk(3, 8);
 
-        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModFeature);
+        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModKind);
     }
 
     /**
@@ -87,27 +86,27 @@ public class ModFeatureExtractorTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
+        final ModKindExtractor extractor = new ModKindExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
         final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
+        final Map<ProgramChunk, ModKinds> actualMap = extractor.extract(nodeWithDiffType, chunks);
 
-        final ModFeature expectedModFeatureOfIf = new ModFeature(Set.of(ModType.INSERT_CONTROL, ModType.INSERT_GUARD, ModType.INSERT_STMT));
+        final ModKinds expectedModKindOfIf = new ModKinds(Set.of(ModKind.INSERT_CONTROL, ModKind.INSERT_GUARD, ModKind.INSERT_STMT));
         final ProgramChunk expectedChunkOfIf = new ProgramChunk(3, 3);
-        final ModFeature expectedModFeatureOfReturn = new ModFeature(Set.of(ModType.INSERT_STMT));
+        final ModKinds expectedModKindOfReturn = new ModKinds(Set.of(ModKind.INSERT_STMT));
         final ProgramChunk expectedChunkOfReturn = new ProgramChunk(5, 5);
 
-        assertThat(actualMap.get(expectedChunkOfIf)).isEqualToComparingFieldByField(expectedModFeatureOfIf);
-        assertThat(actualMap.get(expectedChunkOfReturn)).isEqualToComparingFieldByField(expectedModFeatureOfReturn);
+        assertThat(actualMap.get(expectedChunkOfIf)).isEqualToComparingFieldByField(expectedModKindOfIf);
+        assertThat(actualMap.get(expectedChunkOfReturn)).isEqualToComparingFieldByField(expectedModKindOfReturn);
         return;
     }
 
     /**
      * 制御文(return, break)に対してifガードを挿入したパッチがInsertControlと判定されない
      */
-    @Test public void testModFeatureForInsertGuardWithPreExistingControl() {
+    @Test public void testModKindForInsertGuardWithPreExistingControl() {
         final String originalSource = new StringBuilder().append("")
             .append("public class A {\n")
             .append("   public void a() {\n")
@@ -128,24 +127,24 @@ public class ModFeatureExtractorTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
+        final ModKindExtractor extractor = new ModKindExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
         final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
+        final Map<ProgramChunk, ModKinds> actualMap = extractor.extract(nodeWithDiffType, chunks);
 
-        final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.INSERT_GUARD));
+        final ModKinds expectedModKind = new ModKinds(Set.of(ModKind.INSERT_GUARD));
         final ProgramChunk expectedChunk = new ProgramChunk(3, 3);
 
-        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModFeature);
+        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModKind);
         return;
     }
 
     /**
      * InsertGuardパターンの修正を判定できるかテスト
      */
-    @Test public void testModFeatureForInsertGuard() {
+    @Test public void testModKindForInsertGuard() {
         final String originalSource = new StringBuilder().append("")
             .append("public class A {\n")
             .append("   public void a() {\n")
@@ -166,24 +165,24 @@ public class ModFeatureExtractorTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
+        final ModKindExtractor extractor = new ModKindExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
         final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
+        final Map<ProgramChunk, ModKinds> actualMap = extractor.extract(nodeWithDiffType, chunks);
 
-        final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.INSERT_GUARD));
+        final ModKinds expectedModKind = new ModKinds(Set.of(ModKind.INSERT_GUARD));
         final ProgramChunk expectedChunk = new ProgramChunk(3, 3);
 
-        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModFeature);
+        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModKind);
         return;
     }
 
     /**
      * ReplaceCondパターンの修正を判定できるかテスト
      */
-    @Test public void testModFeatureForReplaceCond() {
+    @Test public void testModKindForReplaceCond() {
         final String originalSource = new StringBuilder().append("")
             .append("public class A {\n")
             .append("   public void a() {\n")
@@ -205,25 +204,25 @@ public class ModFeatureExtractorTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
+        final ModKindExtractor extractor = new ModKindExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
         final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
+        final Map<ProgramChunk, ModKinds> actualMap = extractor.extract(nodeWithDiffType, chunks);
 
         // 条件式内部が変数のためReplaceVarも判定される
-        final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.REPLACE_COND, ModType.REPLACE_VAR));
+        final ModKinds expectedModKind = new ModKinds(Set.of(ModKind.REPLACE_COND, ModKind.REPLACE_VAR));
         final ProgramChunk expectedChunk = new ProgramChunk(3, 3);
 
-        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModFeature);
+        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModKind);
         return;
     }
 
     /**
      * ReplaceVarパターンの修正を判定できるかテスト
      */
-    @Test public void testModFeatureForReplaceVar() {
+    @Test public void testModKindForReplaceVar() {
         final String originalSource = new StringBuilder().append("")
             .append("public class A {\n")
             .append("   public void a() {\n")
@@ -243,24 +242,24 @@ public class ModFeatureExtractorTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
+        final ModKindExtractor extractor = new ModKindExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
         final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
+        final Map<ProgramChunk, ModKinds> actualMap = extractor.extract(nodeWithDiffType, chunks);
 
-        final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.REPLACE_VAR));
+        final ModKinds expectedModKind = new ModKinds(Set.of(ModKind.REPLACE_VAR));
         final ProgramChunk expectedChunk = new ProgramChunk(3, 3);
 
-        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModFeature);
+        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModKind);
         return;
     }
 
     /**
      * メソッドの引数としてのReplaceVarパターンの修正を判定できるかテスト
      */
-    @Test public void testModFeatureForReplaceVarAsParameter() {
+    @Test public void testModKindForReplaceVarAsParameter() {
         final String originalSource = new StringBuilder().append("")
             .append("public class A {\n")
             .append("   public void a() {\n")
@@ -280,24 +279,24 @@ public class ModFeatureExtractorTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
+        final ModKindExtractor extractor = new ModKindExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
         final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
+        final Map<ProgramChunk, ModKinds> actualMap = extractor.extract(nodeWithDiffType, chunks);
 
-        final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.REPLACE_VAR));
+        final ModKinds expectedModKind = new ModKinds(Set.of(ModKind.REPLACE_VAR));
         final ProgramChunk expectedChunk = new ProgramChunk(3, 3);
 
-        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModFeature);
+        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModKind);
         return;
     }
 
     /**
      * ReplaceMethodパターンの修正を判定できるかテスト
      */
-    @Test public void testModFeatureForReplaceMethod() {
+    @Test public void testModKindForReplaceMethod() {
         final String originalSource = new StringBuilder().append("")
             .append("public class A {\n")
             .append("   public void a() {\n")
@@ -317,24 +316,24 @@ public class ModFeatureExtractorTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
+        final ModKindExtractor extractor = new ModKindExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
         final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
+        final Map<ProgramChunk, ModKinds> actualMap = extractor.extract(nodeWithDiffType, chunks);
 
-        final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.REPLACE_METHOD));
+        final ModKinds expectedModKind = new ModKinds(Set.of(ModKind.REPLACE_METHOD));
         final ProgramChunk expectedChunk = new ProgramChunk(3, 3);
 
-        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModFeature);
+        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModKind);
         return;
     }
 
     /**
      * InsertStmtパターンの修正を判定できるかテスト
      */
-    @Test public void testModFeatureForInsertStmt() {
+    @Test public void testModKindForInsertStmt() {
         final String originalSource = new StringBuilder().append("")
             .append("public class A {\n")
             .append("   public void a() {\n")
@@ -353,17 +352,17 @@ public class ModFeatureExtractorTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final ModFeatureExtractor patchFeature = new ModFeatureExtractor();
+        final ModKindExtractor extractor = new ModKindExtractor();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
         final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final Map<ProgramChunk, ModFeature> actualMap = patchFeature.extract(nodeWithDiffType, chunks);
+        final Map<ProgramChunk, ModKinds> actualMap = extractor.extract(nodeWithDiffType, chunks);
 
-        final ModFeature expectedModFeature = new ModFeature(Set.of(ModType.INSERT_STMT));
+        final ModKinds expectedModKind = new ModKinds(Set.of(ModKind.INSERT_STMT));
         final ProgramChunk expectedChunk = new ProgramChunk(3, 3);
 
-        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModFeature);
+        assertThat(actualMap.get(expectedChunk)).isEqualToComparingFieldByField(expectedModKind);
         return;
     }
 }

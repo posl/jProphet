@@ -3,9 +3,9 @@ package jp.posl.jprophet.evaluator.extractor;
 import org.junit.Test;
 
 import jp.posl.jprophet.evaluator.extractor.FeatureExtractor.StatementPos;
-import jp.posl.jprophet.evaluator.extractor.feature.ModFeature.ModType;
-import jp.posl.jprophet.evaluator.extractor.feature.StatementFeature.StatementType;
-import jp.posl.jprophet.evaluator.extractor.feature.VariableFeature.VarType;
+import jp.posl.jprophet.evaluator.extractor.StatementKindExtractor.StatementType;
+import jp.posl.jprophet.evaluator.extractor.feature.ModKinds.ModKind;
+import jp.posl.jprophet.evaluator.extractor.feature.VariableKinds.VarKind;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,32 +19,32 @@ public class FeatureVectorTest {
      */
     @Test public void testUniqueIndex() {
         final List<FeatureVector>  vectors = new ArrayList<>();
-        for(int i = 0; i < ModType.values().length; i++) {
+        for(int i = 0; i < ModKind.values().length; i++) {
             final FeatureVector vector = new FeatureVector();
-            final ModType modType = ModType.values()[i];
+            final ModKind modType = ModKind.values()[i];
             vector.add(modType);
             vectors.add(vector);
         }
          
         for (int i = 0; i < StatementPos.values().length; i++) {
             for (int j = 0; j < StatementType.values().length; j++) {
-                for(int k = 0; k < ModType.values().length; k++) {
+                for(int k = 0; k < ModKind.values().length; k++) {
                     final FeatureVector vector = new FeatureVector();
                     final StatementPos pos = StatementPos.values()[i];
                     final StatementType stmtType = StatementType.values()[j];
-                    final ModType modType = ModType.values()[k];
+                    final ModKind modType = ModKind.values()[k];
                     vector.add(pos, stmtType, modType);
                     vectors.add(vector);
                 }
             }
         }
         for (int i = 0; i < StatementPos.values().length; i++) {
-            for (int j = 0; j < VarType.values().length; j++) {
-                for(int k = 0; k < VarType.values().length; k++) {
+            for (int j = 0; j < VarKind.values().length; j++) {
+                for(int k = 0; k < VarKind.values().length; k++) {
                     final FeatureVector vector = new FeatureVector();
                     final StatementPos pos = StatementPos.values()[i];
-                    final VarType originalVarType = VarType.values()[j];
-                    final VarType fixedVarType = VarType.values()[k];
+                    final VarKind originalVarType = VarKind.values()[j];
+                    final VarKind fixedVarType = VarKind.values()[k];
                     vector.add(pos, originalVarType, fixedVarType);
                     vectors.add(vector);
                 }

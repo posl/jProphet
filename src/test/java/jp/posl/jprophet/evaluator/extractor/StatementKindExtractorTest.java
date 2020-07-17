@@ -6,17 +6,16 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.evaluator.extractor.feature.StatementFeature.StatementType;
+import jp.posl.jprophet.evaluator.extractor.StatementKindExtractor.StatementType;
 
-public class StatementFeatureExtractorTest {
+public class StatementKindExtractorTest {
     /**
      * 各ステートメントタイプを判別できるかテスト
      */
-    @Test public void testEachStmtFeature() {
+    @Test public void testEachStmtKind() {
         final String src = new StringBuilder().append("")
             .append("public class A {\n")
             .append("   public void a() {\n")
@@ -34,7 +33,7 @@ public class StatementFeatureExtractorTest {
             .toString();
 
         final List<Node> nodes = NodeUtility.getAllNodesFromCode(src);
-        final StatementFeatureExtractor extractor = new StatementFeatureExtractor();
+        final StatementKindExtractor extractor = new StatementKindExtractor();
         final List<StatementType> types = nodes.stream()
             .map(node -> extractor.extract(node))
             .filter(type -> type.isPresent())

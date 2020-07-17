@@ -15,10 +15,10 @@ import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.evaluator.AstDiff;
 import jp.posl.jprophet.evaluator.NodeWithDiffType;
 import jp.posl.jprophet.evaluator.ProgramChunk;
+import jp.posl.jprophet.evaluator.extractor.StatementKindExtractor.StatementType;
 import jp.posl.jprophet.evaluator.extractor.feature.*;
-import jp.posl.jprophet.evaluator.extractor.feature.ModFeature.ModType;
-import jp.posl.jprophet.evaluator.extractor.feature.StatementFeature.StatementType;
-import jp.posl.jprophet.evaluator.extractor.feature.VariableFeature.VarType;
+import jp.posl.jprophet.evaluator.extractor.feature.ModKinds.ModKind;
+import jp.posl.jprophet.evaluator.extractor.feature.VariableKinds.VarKind;
 import jp.posl.jprophet.patch.PatchCandidate;
 
 public class FeatureExtractor {
@@ -36,34 +36,34 @@ public class FeatureExtractor {
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalRoot, fixedRoot);
         final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
 
-        final ModFeatureExtractor modFeatureExtractor = new ModFeatureExtractor();
-        final Map<ProgramChunk,ModFeature> modFeatureMap = modFeatureExtractor.extract(nodeWithDiffType, chunks);
+        final ModKindExtractor modKindExtractor = new ModKindExtractor();
+        final Map<ProgramChunk,ModKinds> modKindMap = modKindExtractor.extract(nodeWithDiffType, chunks);
         final FeatureVector vector = new FeatureVector();
 
-        final Set<Entry<ProgramChunk, ModFeature>> set = modFeatureMap.entrySet();
+        final Set<Entry<ProgramChunk, ModKinds>> set = modKindMap.entrySet();
         set.stream()
             .forEach(entry -> {
                 final ProgramChunk fixedChunk = entry.getKey();
-                final ModFeature modFeature = entry.getValue();
+                final ModKinds modKind = entry.getValue();
                 // 変更の特徴抽出
-                this.extractModFeature(fixedChunk, modFeature, vector, fixedRoot);
+                this.extractModFeature(fixedChunk, modKind, vector, fixedRoot);
 
                 // 変数の特徴抽出
-                this.extractVariableFeature(fixedChunk, modFeature, vector, originalRoot, fixedRoot);
+                this.extractVariableFeature(fixedChunk, modKind, vector, originalRoot, fixedRoot);
             });
 
         return vector;
     }
 
-    private void extractModFeature(ProgramChunk fixedChunk, ModFeature modFeature, FeatureVector vector, Node fixedRoot) {
-        final StatementFeatureExtractor stmtFeatureExtractor = new StatementFeatureExtractor();
+    private void extractModFeature(ProgramChunk fixedChunk, ModKinds modKind, FeatureVector vector, Node fixedRoot) {
+        final StatementKindExtractor stmtKindExtractor = new StatementKindExtractor();
 
-        modFeature.getTypes().stream()
+        modKind.getTypes().stream()
             .forEach(modType -> vector.add(modType));
 
         final List<Node> allFixedNodes = NodeUtility.getAllNodesInDepthFirstOrder(fixedRoot);
         final List<Node> allStmts = allFixedNodes.stream()
-            .filter(node -> stmtFeatureExtractor.extract(node).isPresent())
+            .filter(node -> stmtKindExtractor.extract(node).isPresent())
             .collect(Collectors.toList());
 
         allStmts.stream().forEach(stmt -> {
@@ -77,28 +77,28 @@ public class FeatureExtractor {
             if (nodeComesAfterChunk) {
                 pos = StatementPos.NEXT;
             }
-            StatementType stmtType = stmtFeatureExtractor.extract(stmt).orElseThrow();
-            for (ModType modType: modFeature.getTypes()) {
+            StatementType stmtType = stmtKindExtractor.extract(stmt).orElseThrow();
+            for (ModKind modType: modKind.getTypes()) {
                 vector.add(pos, stmtType, modType);
             }
         });
     }
 
-    private void extractVariableFeature(ProgramChunk fixedChunk, ModFeature modFeature, FeatureVector vector, Node originalRoot, Node fixedRoot) {
-        final VariableFeatureExtractor varFeatureExtractor = new VariableFeatureExtractor();
+    private void extractVariableFeature(ProgramChunk fixedChunk, ModKinds modKind, FeatureVector vector, Node originalRoot, Node fixedRoot) {
+        final VariableKindExtractor varKindExtractor = new VariableKindExtractor();
         final List<NameExpr> originalVariables = originalRoot.findAll(NameExpr.class);
         final List<NameExpr> fixedVariables = fixedRoot.findAll(NameExpr.class);
         for(NameExpr fixedVar: fixedVariables) {
-            if(!varFeatureExtractor.findDeclarator(fixedVar).isPresent()) {
+            if(!varKindExtractor.findDeclarator(fixedVar).isPresent()) {
                 continue;
             }
-            final Node fixedVarDec = varFeatureExtractor.findDeclarator(fixedVar).orElseThrow();
+            final Node fixedVarDec = varKindExtractor.findDeclarator(fixedVar).orElseThrow();
             final List<NameExpr> originalVarsWithSameName = originalVariables.stream()
                 .filter(original -> original.getNameAsString().equals(fixedVar.getNameAsString()))
                 .collect(Collectors.toList());
             final List<NameExpr> originalVarsWithSameScope = originalVarsWithSameName.stream()
                 .filter(original-> {
-                    final Optional<Node> declarator = varFeatureExtractor.findDeclarator(original);
+                    final Optional<Node> declarator = varKindExtractor.findDeclarator(original);
                     if(!declarator.isPresent()) {
                         return false;
                     }
@@ -129,9 +129,9 @@ public class FeatureExtractor {
     }
 
     private FeatureVector hoge(ProgramChunk fixedChunk, NameExpr originalVar, NameExpr fixedVar, FeatureVector vector) {
-        final VariableFeatureExtractor varFeatureExtractor = new VariableFeatureExtractor();
-        final VariableFeature originalVarFeature = varFeatureExtractor.extract(originalVar);
-        final VariableFeature fixedVarFeature = varFeatureExtractor.extract(fixedVar);
+        final VariableKindExtractor varKindExtractor = new VariableKindExtractor();
+        final VariableKinds originalVarKind = varKindExtractor.extract(originalVar);
+        final VariableKinds fixedVarKind = varKindExtractor.extract(fixedVar);
         final int nodeBegin = fixedVar.getBegin().orElseThrow().line;
         final boolean nodeComesBeforeChunk = nodeBegin < fixedChunk.getBegin(); 
         final boolean nodeComesAfterChunk = fixedChunk.getEnd() < nodeBegin; 
@@ -142,8 +142,8 @@ public class FeatureExtractor {
         if (nodeComesAfterChunk) {
             pos = StatementPos.NEXT;
         }
-        for (VarType originalVarType: originalVarFeature.getTypes()) {
-            for (VarType fixedVarType: fixedVarFeature.getTypes()) {
+        for (VarKind originalVarType: originalVarKind.getTypes()) {
+            for (VarKind fixedVarType: fixedVarKind.getTypes()) {
                 vector.add(pos, originalVarType, fixedVarType);
             }
         }
