@@ -5,7 +5,9 @@ import com.github.javaparser.ast.Node;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.evaluator.extractor.feature.StatementFeature.StatementType;
@@ -31,5 +33,24 @@ public class StatementFeatureExtractorTest {
             .append("}\n")
             .toString();
 
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(src);
+        final StatementFeatureExtractor extractor = new StatementFeatureExtractor();
+        final List<StatementType> types = nodes.stream()
+            .map(node -> extractor.extract(node))
+            .filter(type -> type.isPresent())
+            .map(type -> type.orElseThrow())
+            .collect(Collectors.toList());
+        
+        List<StatementType> expectedTypes = List.of(
+            StatementType.ASSIGN,
+            StatementType.METHOD_CALL,
+            StatementType.LOOP,
+            StatementType.IF,
+            StatementType.RETURN,
+            StatementType.BREAK,
+            StatementType.CONTINUE
+        );
+
+        assertThat(types).containsAll(expectedTypes);
     }
 }
