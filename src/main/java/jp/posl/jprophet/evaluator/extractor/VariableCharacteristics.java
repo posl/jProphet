@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 修正パッチの変数の特徴を表現するクラス
+ * 修正パッチの変数の特性を表現するクラス
  */
 public class VariableCharacteristics {
     public enum VarChar{
@@ -47,7 +47,7 @@ public class VariableCharacteristics {
     final private Set<VarChar> chars;
 
     /**
-     * 特徴を持たない空のVariableCharacteristicsを生成
+     * 特性を持たない空のVariableCharacteristicsを生成
      */
     public VariableCharacteristics() {
         this.chars = new HashSet<>();
@@ -62,15 +62,15 @@ public class VariableCharacteristics {
     }
 
     /**
-     * 変数の特徴を取得
-     * @return 特徴のセット
+     * 変数の特性を取得
+     * @return 特性のセット
      */
     public Set<VarChar> getTypes() {
         return this.chars;
     }
 
     /**
-     * 変数の特徴を追加
+     * 変数の特性を追加
      * @param chars 追加する変数の種類
      */
     public void add(VarChar chars) {
@@ -78,8 +78,8 @@ public class VariableCharacteristics {
     }
 
     /**
-     * 二つの変数の特徴を足し合わせる
-     * @param varCharacteristics 加算する特徴
+     * 二つの変数の特性を足し合わせる
+     * @param varCharacteristics 加算する特性
      */
     public void add(VariableCharacteristics varCharacteristics) {
         this.chars.addAll(varCharacteristics.getTypes());

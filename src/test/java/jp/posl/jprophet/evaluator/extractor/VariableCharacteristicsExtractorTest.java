@@ -12,12 +12,11 @@ import com.github.javaparser.ast.expr.NameExpr;
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.evaluator.extractor.VariableCharacteristics;
 import jp.posl.jprophet.evaluator.extractor.VariableCharacteristics.VarChar;
 
 public class VariableCharacteristicsExtractorTest {
     /**
-     * 宣言ノードにおける変数の型やスコープの特徴抽出のテスト
+     * 宣言ノードにおける変数の型やスコープの特性抽出のテスト
      */
     @Test public void testDeclaration() {
         final String src = new StringBuilder().append("")
@@ -119,7 +118,7 @@ public class VariableCharacteristicsExtractorTest {
     }
 
     /**
-     * 変数が可換演算中に存在する時の特徴抽出
+     * 変数が可換演算中に存在する時の特性抽出
      */
     @Test public void testValueOfCommutativeOperator() {
         final String src = new StringBuilder().append("")
@@ -151,7 +150,7 @@ public class VariableCharacteristicsExtractorTest {
     }
 
     /**
-     * 変数が二項演算中に存在する時の特徴抽出
+     * 変数が二項演算中に存在する時の特性抽出
      */
     @Test public void testValueOfBinaryOperator() {
         final String src = new StringBuilder().append("")

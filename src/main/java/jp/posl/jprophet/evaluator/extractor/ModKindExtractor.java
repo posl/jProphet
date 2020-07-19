@@ -21,7 +21,6 @@ import jp.posl.jprophet.evaluator.NodeWithDiffType;
 import jp.posl.jprophet.evaluator.ProgramChunk;
 import jp.posl.jprophet.evaluator.extractor.ModKinds.ModKind;
 import jp.posl.jprophet.evaluator.NodeWithDiffType.TYPE;
-import jp.posl.jprophet.evaluator.extractor.ModKinds;
 
 /**
  * 修正パッチの変更の種類特定を行うクラス

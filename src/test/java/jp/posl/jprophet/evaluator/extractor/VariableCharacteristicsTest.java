@@ -32,7 +32,7 @@ public class VariableCharacteristicsTest {
     }
 
     /**
-     * addメソッドによる各特徴同士の足し算をテスト
+     * addメソッドによる各特性同士の足し算をテスト
      */
     @Test public void testForcharAddition() {
         Set<VarChar> addendTypes = new HashSet<>(Arrays.asList(VarChar.ARGUMENT));
@@ -47,7 +47,7 @@ public class VariableCharacteristicsTest {
     }
 
     /**
-     * addメソッドによる特徴の追加をテスト
+     * addメソッドによる特性の追加をテスト
      */
     @Test public void testForTypeAddition() {
         Set<VarChar> augendTypes = new HashSet<>(Arrays.asList(VarChar.ARGUMENT));

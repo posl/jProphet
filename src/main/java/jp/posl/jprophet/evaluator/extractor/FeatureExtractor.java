@@ -23,7 +23,8 @@ import jp.posl.jprophet.patch.PatchCandidate;
 public class FeatureExtractor {
 
     /**
-     * パッチの修正部分(TARGET)かその前後(PREV, NEXT)かの表現
+     * 対象のステートメントが,
+     * パッチの修正部分(TARGET)かその前後(PREV, NEXT)かを表現
      */
     public enum StatementPos {
         TARGET,
@@ -60,7 +61,9 @@ public class FeatureExtractor {
     }
 
     /**
-     * 変更の特徴を抽出する
+     * パッチの変更に関する特徴抽出を行う
+     * パッチの種類の集合とパッチが適量されたプログラムに登場するステートメントの種類の集合の間の直積集合の要素ごとに
+     * 特徴抽出を行う
      * @param patchTargetChunk パッチ適用部分のコード
      * @param modKinds 修正の種別
      * @param fixedRoot 修正前コードのルートノード
@@ -98,7 +101,9 @@ public class FeatureExtractor {
     }
 
     /**
-     * 変数の特徴を抽出 
+     * パッチ中に登場する変数に関する特徴抽出を行う 
+     * 修正後のプログラムに登場する変数を集め，それぞれの変数と同一の変数を
+     * 修正前プログラムから探索し，その二つの変数の組み合わせごとに特徴抽出を行う
      * @param patchTargetChunk パッチ適用部分のコード
      * @param originalRoot 修正前コードのルートノード
      * @param fixedRoot 修正後コードのルートノード
@@ -151,7 +156,9 @@ public class FeatureExtractor {
     }
 
     /**
-     * 修正前と修正後の二つの変数から特徴を抽出する
+     * 修正前と修正後の二つの変数の間の特徴ベクトルを抽出する
+     * 修正前の変数をa，修正後の変数をbとした時に変数aのもつ特性の集合Aと
+     * 変数bのもつ特性の集合Bの直積集合の要素を一つずつベクトルに変換する
      * @param patchTargetChunk パッチ適用部分のコード
      * @param originalVar 修正前コード中の変数
      * @param fixedVar 修正後コード中の変数

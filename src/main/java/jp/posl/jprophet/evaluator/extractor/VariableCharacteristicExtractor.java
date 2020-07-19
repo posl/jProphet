@@ -22,18 +22,17 @@ import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.PrimitiveType.Primitive;
 
-import jp.posl.jprophet.evaluator.extractor.VariableCharacteristics;
 import jp.posl.jprophet.evaluator.extractor.VariableCharacteristics.VarChar;
 import jp.posl.jprophet.operation.DeclarationCollector;;
 
 /**
- * 修正パッチの変数の種類抽出を行うクラス
+ * 修正パッチの変数の特性抽出を行うクラス
  */
 public class VariableCharacteristicExtractor {
     /**
-     * 参照されている変数の特徴を抽出する
+     * 参照されている変数の特性を抽出する
      * @param variable 変数のノード
-     * @return 変数の特徴
+     * @return 変数の特性
      */
     public VariableCharacteristics extract(NameExpr variable) {
         final VariableCharacteristics varChars = new VariableCharacteristics();
@@ -82,7 +81,7 @@ public class VariableCharacteristicExtractor {
     /**
      * 型情報を抽出する  
      * @param type 型ノード
-     * @return 変数の型の特徴
+     * @return 変数の型の特性
      */
     private VariableCharacteristics extractCharsOfType(Type type) {
         final VariableCharacteristics chars = new VariableCharacteristics();
@@ -108,9 +107,9 @@ public class VariableCharacteristicExtractor {
     }
 
     /**
-     * 変数がif文やループなど構文上においてどこに位置するかという特徴
+     * 変数がif文やループなど構文上においてどこに位置するかという特性
      * @param variable 変数ノード
-     * @return 変数の特徴
+     * @return 変数の特性
      */
     private VariableCharacteristics extractCharsOfContext(Node variable) {
         final VariableCharacteristics chars = new VariableCharacteristics();
@@ -137,9 +136,9 @@ public class VariableCharacteristicExtractor {
     }
 
     /**
-     * 変数の被演算子としての特徴を抽出
+     * 変数の被演算子としての特性を抽出
      * @param variable 変数ノード
-     * @return 変数の特徴
+     * @return 変数の特性
      */
     private VariableCharacteristics extractCharsOfOperation(Node variable) {
         final VariableCharacteristics chars = new VariableCharacteristics();
@@ -172,7 +171,7 @@ public class VariableCharacteristicExtractor {
     /**
      * 宣言ノードを元に変数のスコープを特定
      * @param declarator
-     * @return 変数の特徴
+     * @return 変数の特性
      */
     private VariableCharacteristics extractCharsOfScope(Node declarator) {
         final VariableCharacteristics chars = new VariableCharacteristics();

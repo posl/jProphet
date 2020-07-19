@@ -13,7 +13,6 @@ import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.evaluator.AstDiff;
 import jp.posl.jprophet.evaluator.NodeWithDiffType;
 import jp.posl.jprophet.evaluator.ProgramChunk;
-import jp.posl.jprophet.evaluator.extractor.ModKinds;
 import jp.posl.jprophet.evaluator.extractor.ModKinds.ModKind;
 
 public class ModKindExtractorTest {
