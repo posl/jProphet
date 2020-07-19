@@ -22,8 +22,8 @@ import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.PrimitiveType.Primitive;
 
-import jp.posl.jprophet.evaluator.extractor.feature.VariableCharacteristics;
-import jp.posl.jprophet.evaluator.extractor.feature.VariableCharacteristics.VarChar;
+import jp.posl.jprophet.evaluator.extractor.VariableCharacteristics;
+import jp.posl.jprophet.evaluator.extractor.VariableCharacteristics.VarChar;
 import jp.posl.jprophet.operation.DeclarationCollector;;
 
 /**

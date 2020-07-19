@@ -1,8 +1,8 @@
-package jp.posl.jprophet.evaluator.extractor.feature;
+package jp.posl.jprophet.evaluator.extractor;
 
 import org.junit.Test;
 
-import jp.posl.jprophet.evaluator.extractor.feature.VariableCharacteristics.VarChar;
+import jp.posl.jprophet.evaluator.extractor.VariableCharacteristics.VarChar;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class VariableCharsTest {
+public class VariableCharacteristicsTest {
     /**
      * 引数なしコンストラクタをテスト
      */

@@ -12,8 +12,8 @@ import com.github.javaparser.ast.expr.NameExpr;
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.evaluator.extractor.feature.VariableCharacteristics;
-import jp.posl.jprophet.evaluator.extractor.feature.VariableCharacteristics.VarChar;
+import jp.posl.jprophet.evaluator.extractor.VariableCharacteristics;
+import jp.posl.jprophet.evaluator.extractor.VariableCharacteristics.VarChar;
 
 public class VariableCharacteristicsExtractorTest {
     /**

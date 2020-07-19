@@ -1,4 +1,4 @@
-package jp.posl.jprophet.evaluator.extractor.feature;
+package jp.posl.jprophet.evaluator.extractor;
 
 import java.util.HashSet;
 import java.util.Set;

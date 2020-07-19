@@ -1,8 +1,8 @@
-package jp.posl.jprophet.evaluator.extractor.feature;
+package jp.posl.jprophet.evaluator.extractor;
 
 import org.junit.Test;
 
-import jp.posl.jprophet.evaluator.extractor.feature.ModKinds.ModKind;
+import jp.posl.jprophet.evaluator.extractor.ModKinds.ModKind;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

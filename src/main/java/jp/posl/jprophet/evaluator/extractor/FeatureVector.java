@@ -6,8 +6,8 @@ import java.util.List;
 
 import jp.posl.jprophet.evaluator.extractor.FeatureExtractor.StatementPos;
 import jp.posl.jprophet.evaluator.extractor.StatementKindExtractor.StatementKind;
-import jp.posl.jprophet.evaluator.extractor.feature.ModKinds.ModKind;
-import jp.posl.jprophet.evaluator.extractor.feature.VariableCharacteristics.VarChar;
+import jp.posl.jprophet.evaluator.extractor.ModKinds.ModKind;
+import jp.posl.jprophet.evaluator.extractor.VariableCharacteristics.VarChar;
 
 /**
  * パッチの特徴ベクトルを表現するクラス
