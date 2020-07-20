@@ -14,12 +14,11 @@ import jp.posl.jprophet.operation.AstOperation;
  * 実際にプログラムの生成が可能なパッチ候補の実装クラス
  */
 public class DefaultPatchCandidate implements PatchCandidate {
-    private final Node targetNodeBeforeFix;
-    private final CompilationUnit fixedCompilationUnit;
     private final String fixedFilePath;
     private final String fixedFileFqn;
     private Class<? extends AstOperation> operation;
     private final int id;
+    private final DiffWithType diffWithType;
 
     /**
      * 以下の引数の情報を元にパッチ候補を生成 
@@ -29,10 +28,8 @@ public class DefaultPatchCandidate implements PatchCandidate {
      * @param fixedFileFQN 修正されたファイルのFQN
      * @param operation 適用されたオペレータのクラス
      */
-    public DefaultPatchCandidate(Node targetNodeBeforeFix, CompilationUnit fixedCompilationUnit, 
-                                 String fixedFilePath, String fixedFileFQN, Class<? extends AstOperation> operation, int id) {
-        this.targetNodeBeforeFix = targetNodeBeforeFix;
-        this.fixedCompilationUnit = fixedCompilationUnit;
+    public DefaultPatchCandidate(DiffWithType diffWithType, String fixedFilePath, String fixedFileFQN, Class<? extends AstOperation> operation, int id) {
+        this.diffWithType = diffWithType;
         this.fixedFilePath = fixedFilePath;
         this.fixedFileFqn = fixedFileFQN;
         this.operation = operation;
@@ -69,7 +66,8 @@ public class DefaultPatchCandidate implements PatchCandidate {
      */
     @Override
     public CompilationUnit getCompilationUnit(){
-        return this.fixedCompilationUnit;
+        //TODO: 修正後のCompilationUnitを返すようにする
+        return this.diffWithType.getTargetNodeBeforeFix().findCompilationUnit().get(); 
     }
 
     /**
@@ -78,7 +76,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
     @Override
     public Optional<Integer> getLineNumber() {
         try {
-            Range range = this.targetNodeBeforeFix.getRange().orElseThrow();        
+            Range range = this.diffWithType.getTargetNodeBeforeFix().getRange().orElseThrow();        
             return Optional.of(range.begin.line);
         } catch (NoSuchElementException e) {
             System.err.println(e.getMessage());
@@ -109,7 +107,7 @@ public class DefaultPatchCandidate implements PatchCandidate {
             .append("\n")
             .append("used operation  : " + this.operation.getSimpleName())
             .append("\n\n")
-            .append(new RepairDiff(this.targetNodeBeforeFix, fixedCompilationUnit).toString())
+            .append(new RepairDiff(this.diffWithType.getTargetNodeBeforeFix(), getCompilationUnit()).toString())
             .toString();
     }
 }
