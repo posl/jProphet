@@ -3,7 +3,6 @@ package jp.posl.jprophet;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.stmt.Statement;
-import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.JavaToken;
 import com.github.javaparser.ParseProblemException;
@@ -100,8 +99,7 @@ public final class NodeUtility {
     public static Node deepCopyByReparse(Node node) {
         CompilationUnit compilationUnit = node.findCompilationUnit().orElseThrow();
 
-        LexicalPreservingPrinter.setup(compilationUnit);
-        String source = LexicalPreservingPrinter.print(compilationUnit);
+        String source = lexicalPreservingPrint(compilationUnit);
         CompilationUnit newCu = JavaParser.parse(source);
         List<Node> nodes = NodeUtility.getAllDescendantNodes(newCu);
         Node newNode = nodes.stream().filter(n -> {
@@ -385,13 +383,24 @@ public final class NodeUtility {
      * @return パースし直したcompilationUnit
      */
     public static Optional<CompilationUnit> reparseCompilationUnit(CompilationUnit compilationUnit){
-        LexicalPreservingPrinter.setup(compilationUnit);
-        String source = LexicalPreservingPrinter.print(compilationUnit);
+        String source = lexicalPreservingPrint(compilationUnit);
         try {
             return Optional.of(JavaParser.parse(source));
         } catch (ParseProblemException e){
             return Optional.empty();
         }
+    }
+
+    public static String lexicalPreservingPrint(Node node){
+        final JavaToken begin = node.getTokenRange().orElseThrow().getBegin();
+        final JavaToken end = node.getTokenRange().orElseThrow().getEnd();
+        JavaToken current = begin;
+        StringBuilder sb = new StringBuilder();
+        while(!current.equals(end)) {
+            sb.append(current.getText());
+            current = current.getNextToken().orElseThrow();
+        }
+        return sb.toString();
     }
 
     /**
