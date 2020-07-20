@@ -4,7 +4,7 @@ package jp.posl.jprophet.evaluator;
  * 修正パッチの変更の特徴を表現するクラス
  */
 public class ModFeature {
-    /*  ifガードを伴う制御文の挿入 */
+    /* ifガードを伴う制御文の挿入 */
     public int insertControl;
     /* ifガードの挿入 */
     public int insertGuard;

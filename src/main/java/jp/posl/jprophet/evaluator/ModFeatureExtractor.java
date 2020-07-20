@@ -19,7 +19,7 @@ import com.github.javaparser.ast.stmt.Statement;
 import jp.posl.jprophet.evaluator.NodeWithDiffType.TYPE;
 
 /**
- * 修正パッチの特徴抽出を行うクラス
+ * 修正パッチの変更の特徴抽出を行うクラス
  */
 public class ModFeatureExtractor {
     /**
