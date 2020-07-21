@@ -18,6 +18,7 @@ import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.WhileStmt;
 
 import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.patch.DiffWithType;
 
 
 /**
@@ -35,7 +36,7 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
      * {@inheritDoc}
      */
     @Override
-    public List<CompilationUnit> exec(Node targetNode){
+    public List<DiffWithType> exec(Node targetNode){
         if(!(targetNode instanceof Statement)) return new ArrayList<>();
         if(targetNode instanceof BlockStmt) return new ArrayList<>();
 
@@ -50,7 +51,8 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
                 .ifPresent(compilationUnits::addAll);
         }
 
-        return compilationUnits;
+        //return compilationUnits;
+        return new ArrayList<DiffWithType>();
     }
 
     /**

@@ -13,6 +13,7 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
 import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.patch.DiffWithType;
 
 
 /**
@@ -22,7 +23,7 @@ public class CondIntroductionOperation implements AstOperation{
     /**
      * {@inheritDoc}
      */
-    public List<CompilationUnit> exec(Node targetNode){
+    public List<DiffWithType> exec(Node targetNode){
         if(!(targetNode instanceof Statement)) return new ArrayList<>();
         if(targetNode instanceof BlockStmt) return new ArrayList<>();
 
@@ -39,6 +40,7 @@ public class CondIntroductionOperation implements AstOperation{
 
         final ConcreteConditions concreteConditions = new ConcreteConditions(abstCondition);
         final List<CompilationUnit> candidates = concreteConditions.getCompilationUnits();
-        return candidates;
+        //return candidates;
+        return new ArrayList<DiffWithType>();
     }
 }

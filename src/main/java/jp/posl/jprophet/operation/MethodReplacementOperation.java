@@ -10,8 +10,8 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 
-
 import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.patch.DiffWithType;
 
 /**
  * 対象ステートメント中の変数を別のもので置き換える操作を行う
@@ -22,7 +22,7 @@ public class MethodReplacementOperation implements AstOperation {
      * <p>MethodCallExprをtargetNodeとして受け取った場合に置換が行われる</p>
      * @return 生成された修正後のCompilationUnitのリスト
      */
-    public List<CompilationUnit> exec(Node targetNode) {
+    public List<DiffWithType> exec(Node targetNode) {
         if (!(targetNode instanceof MethodCallExpr)) return new ArrayList<>(); 
         final MethodCallExpr targetMethodCallExpr = (MethodCallExpr) targetNode;
         final boolean hasScopeOfThis = targetMethodCallExpr.getScope().map(s -> s instanceof ThisExpr).orElse(true);
@@ -35,14 +35,15 @@ public class MethodReplacementOperation implements AstOperation {
         final List<MethodCallExpr> exprWithReplacedMethodName = this.replaceMethodName(targetMethodCallExpr, methodNameCandidates);
 
         final List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
-        exprWithReplacedMethodName.stream()
-            .forEach(methodCallExpr -> methodCallExpr.findCompilationUnit()
-            .ifPresent(candidates::add));
-        exprWithReplacedMethodName.stream()
-            .flatMap(methodCallExpr -> new VariableReplacementOperation().exec(methodCallExpr).stream())
-            .forEach(candidates::add);
+        //exprWithReplacedMethodName.stream()
+        //    .forEach(methodCallExpr -> methodCallExpr.findCompilationUnit()
+        //    .ifPresent(candidates::add));
+        //exprWithReplacedMethodName.stream()
+        //    .flatMap(methodCallExpr -> new VariableReplacementOperation().exec(methodCallExpr).stream())
+        //    .forEach(candidates::add);
 
-        return candidates;
+        //return candidates;
+        return new ArrayList<DiffWithType>();
     }
 
     /**

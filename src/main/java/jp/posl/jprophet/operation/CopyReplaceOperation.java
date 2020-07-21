@@ -16,6 +16,7 @@ import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
 import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.patch.DiffWithType;
 
 /**
  * 対象ステートメントの以前に現れているステートメントを，
@@ -27,7 +28,7 @@ public class CopyReplaceOperation implements AstOperation{
      * {@inheritDoc}
      */
     @Override
-    public List<CompilationUnit> exec(Node targetNode){
+    public List<DiffWithType> exec(Node targetNode){
         List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
         if (targetNode instanceof Statement && !(targetNode instanceof BlockStmt)  && !(targetNode instanceof SwitchEntryStmt)){
             //修正対象のステートメントの属するメソッドノードを取得
@@ -38,7 +39,8 @@ public class CopyReplaceOperation implements AstOperation{
             }
         }
         //修正対象のステートメントの直前に,収集したステートメントのNodeを追加
-        return candidates;
+        //return candidates;
+        return new ArrayList<DiffWithType>();
     }
 
     /**
@@ -84,8 +86,8 @@ public class CopyReplaceOperation implements AstOperation{
         
         for (Node descendant : copiedNodeDescendants){
             VariableReplacementOperation vr = new VariableReplacementOperation();
-            List<CompilationUnit> copiedNodeList = vr.exec(descendant);
-            candidates.addAll(copiedNodeList);
+            //List<CompilationUnit> copiedNodeList = vr.exec(descendant);
+            //candidates.addAll(copiedNodeList);
         }
         return candidates;
     }

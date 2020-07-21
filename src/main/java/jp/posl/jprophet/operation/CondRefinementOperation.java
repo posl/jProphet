@@ -15,6 +15,7 @@ import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 import com.github.javaparser.ast.stmt.IfStmt;
 
 import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.patch.DiffWithType;
 
 
 /**
@@ -25,8 +26,8 @@ public class CondRefinementOperation implements AstOperation{
     /**
      * {@inheritDoc}
      */
-    public List<CompilationUnit> exec(Node node){
-        if (!(node instanceof IfStmt)) return new ArrayList<CompilationUnit>();
+    public List<DiffWithType> exec(Node node){
+        if (!(node instanceof IfStmt)) return new ArrayList<DiffWithType>();
 
         final List<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
         final Expression condition = (Expression)NodeUtility.deepCopyByReparse(((IfStmt)node).getCondition());
@@ -39,7 +40,9 @@ public class CondRefinementOperation implements AstOperation{
             .map(expr -> new ConcreteConditions(((EnclosedExpr)((UnaryExpr)expr.getRight()).getExpression()).getInner()).getCompilationUnits())
             .ifPresent(compilationUnits::addAll);
             
-        return compilationUnits;
+        //return compilationUnits;
+        return new ArrayList<DiffWithType>();
+
     }
 
     /**
