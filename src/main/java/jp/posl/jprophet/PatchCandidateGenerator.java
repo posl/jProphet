@@ -94,7 +94,7 @@ public class PatchCandidateGenerator{
      * @param repairUnits テンプレートを適用するASTノードのリスト
      * @return テンプレートが適用された修正候補のリスト
      */
-    private List<AppliedOperationResult> applyTemplate(Node node, List<AstOperation> operations) {
+    public List<AppliedOperationResult> applyTemplate(Node node, List<AstOperation> operations) {
         List<AppliedOperationResult> appliedOperationResults = new ArrayList<AppliedOperationResult>();
 
         operations.stream()

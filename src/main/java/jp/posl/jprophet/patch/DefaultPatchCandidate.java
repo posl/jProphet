@@ -13,7 +13,7 @@ import jp.posl.jprophet.operation.AstOperation;
 /**
  * 実際にプログラムの生成が可能なパッチ候補の実装クラス
  */
-public class DefaultPatchCandidate implements PatchCandidate {
+public class DefaultPatchCandidate implements Patch, PatchCandidate {
     private final Node targetNodeBeforeFix;
     private final CompilationUnit fixedCompilationUnit;
     private final String fixedFilePath;

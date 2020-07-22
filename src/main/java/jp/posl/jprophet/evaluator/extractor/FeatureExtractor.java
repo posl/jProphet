@@ -18,7 +18,7 @@ import jp.posl.jprophet.evaluator.ProgramChunk;
 import jp.posl.jprophet.evaluator.extractor.StatementKindExtractor.StatementKind;
 import jp.posl.jprophet.evaluator.extractor.ModKinds.ModKind;
 import jp.posl.jprophet.evaluator.extractor.VariableCharacteristics.VarChar;
-import jp.posl.jprophet.patch.PatchCandidate;
+import jp.posl.jprophet.patch.Patch;
 
 public class FeatureExtractor {
 
@@ -37,7 +37,7 @@ public class FeatureExtractor {
      * @param patch 特徴抽出を行うパッチ
      * @return 特徴ベクトル
      */
-    public FeatureVector extract(PatchCandidate patch) {
+    public FeatureVector extract(Patch patch) {
         final Node originalRoot = patch.getOriginalCompilationUnit().findRootNode();
         final Node fixedRoot = patch.getCompilationUnit().findRootNode();
         final AstDiff diff = new AstDiff();
