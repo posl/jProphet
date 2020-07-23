@@ -17,19 +17,18 @@ import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.PatchCandidateGenerator;
 import jp.posl.jprophet.evaluator.AstDiff;
 import jp.posl.jprophet.evaluator.extractor.FeatureExtractor;
-import jp.posl.jprophet.evaluator.extractor.FeatureVector;
 import jp.posl.jprophet.patch.DefaultPatch;
 import jp.posl.jprophet.patch.Patch;
 
 public class Learner {
 
     static class TrainingCase {
-        final public List<Boolean> binaryVectors;
-        final public boolean isPositiveCase;
+        final public List<Boolean> vectorOfCorrectPatch;
+        final public List<List<Boolean>> vectorsOfGeneratedPatch;
 
-        public TrainingCase(List<Boolean> binaryVectors, boolean isPositiveCase) {
-            this.binaryVectors = binaryVectors;
-            this.isPositiveCase = isPositiveCase;
+        public TrainingCase(List<Boolean> vectorOfCorrectPatch, List<List<Boolean>> vectorsOfGeneratedPatch) {
+            this.vectorOfCorrectPatch = vectorOfCorrectPatch;
+            this.vectorsOfGeneratedPatch = vectorsOfGeneratedPatch;
         }
     }
 
@@ -68,7 +67,6 @@ public class Learner {
         final PatchCandidateGenerator patchGenerator = new PatchCandidateGenerator();
         final List<TrainingCase> trainingCases = new ArrayList<TrainingCase>();
         for (Patch patch : patches) {
-            trainingCases.add(new TrainingCase(extractor.extract(patch).get(), true));
             final Node originalRootNode = patch.getOriginalCompilationUnit().findRootNode();
             final Node fixedRootNode = patch.getCompilationUnit().findRootNode();
             
@@ -78,8 +76,11 @@ public class Learner {
                 .map(result -> result.getCompilationUnit())
                 .map(cu -> new DefaultPatch(patch.getOriginalCompilationUnit(), cu))
                 .collect(Collectors.toList());
-            final List<FeatureVector> vectorsByGeneratedPatches = allGeneratedPatches.stream().map(extractor::extract).collect(Collectors.toList());
-            vectorsByGeneratedPatches.stream().forEach(vector -> trainingCases.add(new TrainingCase(vector.get(), false)));
+            final List<List<Boolean>> vectorsOfGeneratedPatches = allGeneratedPatches.stream()
+                .map(extractor::extract)
+                .map(vector -> vector.get())
+                .collect(Collectors.toList());
+            trainingCases.add(new TrainingCase(extractor.extract(patch).get(), vectorsOfGeneratedPatches));
         }
         return trainingCases;
     }
