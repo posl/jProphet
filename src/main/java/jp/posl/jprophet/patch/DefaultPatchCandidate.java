@@ -7,7 +7,9 @@ import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 
+import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.operation.AstOperation;
+import jp.posl.jprophet.patch.DiffWithType.ModifyType;
 
 
 /**
@@ -66,7 +68,11 @@ public class DefaultPatchCandidate implements PatchCandidate {
      */
     @Override
     public CompilationUnit getCompilationUnit(){
-        //TODO: 修正後のCompilationUnitを返すようにする
+        if (this.diffWithType.getModifyType().equals(ModifyType.INSERT)) {
+            return NodeUtility.insertNodeWithNewLine(this.diffWithType.getTargetNodeAfterFix(), this.diffWithType.getTargetNodeBeforeFix()).get().findCompilationUnit().get();
+        } else if (this.diffWithType.getModifyType().equals(ModifyType.CHANGE)) {
+            return NodeUtility.replaceNode(this.diffWithType.getTargetNodeAfterFix(), this.diffWithType.getTargetNodeBeforeFix()).get().findCompilationUnit().get();
+        }
         return this.diffWithType.getTargetNodeBeforeFix().findCompilationUnit().get(); 
     }
 

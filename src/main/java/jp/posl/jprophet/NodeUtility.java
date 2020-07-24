@@ -391,6 +391,12 @@ public final class NodeUtility {
         }
     }
 
+    /**
+     * 簡易版のlexicalPreservingPrinter
+     * Tokenを元にソースコードを生成する
+     * @param node ノード
+     * @return ソースコード
+     */
     public static String lexicalPreservingPrint(Node node){
         final JavaToken begin = node.getTokenRange().orElseThrow().getBegin();
         final JavaToken end = node.getTokenRange().orElseThrow().getEnd();
