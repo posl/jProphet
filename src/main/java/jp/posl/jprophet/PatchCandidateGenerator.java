@@ -18,6 +18,7 @@ import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.operation.AstOperation;
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.patch.DefaultPatchCandidate;
+import jp.posl.jprophet.patch.DiffWithType;
 import jp.posl.jprophet.project.FileLocator;
 import jp.posl.jprophet.project.Project;
 
@@ -46,7 +47,7 @@ public class PatchCandidateGenerator{
                     if (!findZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
                         final List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
                         for(AppliedOperationResult result : appliedOperationResults){
-                            candidates.add(new DefaultPatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
+                            candidates.add(new DefaultPatchCandidate(result.getDiffWithType(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
                             patchCandidateID += 1;
                         }
                     }
@@ -108,19 +109,19 @@ public class PatchCandidateGenerator{
 
 
     public class AppliedOperationResult {
-        private final CompilationUnit compilationUnit;
+        private final DiffWithType diffWithType;
         private final Class<? extends AstOperation> operation;
 
-        public AppliedOperationResult(CompilationUnit compilationUnit, Class<? extends AstOperation> operation) {
-            this.compilationUnit = compilationUnit;
+        public AppliedOperationResult(DiffWithType diffWithType, Class<? extends AstOperation> operation) {
+            this.diffWithType = diffWithType;
             this.operation = operation;
         }
 
         /**
-         * @return the compilationUnit
+         * @return the diffWithType
          */
-        public CompilationUnit getCompilationUnit() {
-            return compilationUnit;
+        public DiffWithType getDiffWithType() {
+            return diffWithType;
         }
 
         /**

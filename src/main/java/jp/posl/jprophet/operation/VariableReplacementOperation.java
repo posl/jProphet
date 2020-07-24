@@ -16,6 +16,7 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 
 import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.patch.DiffWithType;
 
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.ThisExpr;
@@ -36,7 +37,7 @@ public class VariableReplacementOperation implements AstOperation {
      * <p>MethodCallExprとAssignExprをtargetNodeとして受け取った場合に置換が行われる</p>
      * @return 生成された修正後のCompilationUnitのリスト
      */
-    public List<CompilationUnit> exec(Node targetNode) {
+    public List<DiffWithType> exec(Node targetNode) {
         final List<String> fieldNames = this.collectFieldNames(targetNode);
         final List<String> localVarNames = this.collectLocalVarNames(targetNode);
         final List<String> parameterNames = this.collectParameterNames(targetNode);
@@ -50,7 +51,8 @@ public class VariableReplacementOperation implements AstOperation {
         candidates.addAll(this.replaceVariables(targetNode, constructVar, localVarNames));
         candidates.addAll(this.replaceVariables(targetNode, constructVar, parameterNames));
 
-        return candidates;
+        //return candidates;
+        return new ArrayList<DiffWithType>();
     }
 
     /**
