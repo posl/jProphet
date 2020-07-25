@@ -124,4 +124,27 @@ public class FeatureVector {
         final int index = stmtPosOrdinal + (numOfStmtPosTypes * originalVarTypeOrdinal) + (numOfStmtPosTypes * numOfVarTypes * fixedVarTypeOrdinal);
         return index;
     }
+
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("MK: ");
+        for (int i = 0; i < this.modKindVector.size(); i++) {
+            if (this.modKindVector.get(i) == true) {
+                sb.append(i).append(", ");
+            }
+        }
+        sb.append(" MF: ");
+        for (int i = 0; i < this.modFeatureVector.size(); i++) {
+            if (this.modFeatureVector.get(i) == true) {
+                sb.append(i).append(", ");
+            }
+        }
+        sb.append(" VF: ");
+        for (int i = 0; i < this.varFeatureVector.size(); i++) {
+            if (this.varFeatureVector.get(i) == true) {
+                sb.append(i).append(", ");
+            }
+        }
+        return sb.toString();
+    }
 }

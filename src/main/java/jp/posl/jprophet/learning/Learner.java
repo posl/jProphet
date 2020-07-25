@@ -1,6 +1,5 @@
 package jp.posl.jprophet.learning;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,16 +17,17 @@ import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.PatchCandidateGenerator;
 import jp.posl.jprophet.evaluator.AstDiff;
 import jp.posl.jprophet.evaluator.extractor.FeatureExtractor;
+import jp.posl.jprophet.evaluator.extractor.FeatureVector;
 import jp.posl.jprophet.patch.DefaultPatch;
 import jp.posl.jprophet.patch.Patch;
 
 public class Learner {
 
     static class TrainingCase {
-        final public List<Boolean> vectorOfCorrectPatch;
-        final public List<List<Boolean>> vectorsOfGeneratedPatch;
+        final public FeatureVector vectorOfCorrectPatch;
+        final public List<FeatureVector> vectorsOfGeneratedPatch;
 
-        public TrainingCase(List<Boolean> vectorOfCorrectPatch, List<List<Boolean>> vectorsOfGeneratedPatch) {
+        public TrainingCase(FeatureVector vectorOfCorrectPatch, List<FeatureVector> vectorsOfGeneratedPatch) {
             this.vectorOfCorrectPatch = vectorOfCorrectPatch;
             this.vectorsOfGeneratedPatch = vectorsOfGeneratedPatch;
         }
@@ -89,11 +89,10 @@ public class Learner {
                 .map(result -> result.getCompilationUnit())
                 .map(cu -> new DefaultPatch(patch.getOriginalCompilationUnit(), cu))
                 .collect(Collectors.toList());
-            final List<List<Boolean>> vectorsOfGeneratedPatches = allGeneratedPatches.stream()
+            final List<FeatureVector> vectorsOfGeneratedPatches = allGeneratedPatches.stream()
                 .map(extractor::extract)
-                .map(vector -> vector.get())
                 .collect(Collectors.toList());
-            trainingCases.add(new TrainingCase(extractor.extract(patch).get(), vectorsOfGeneratedPatches));
+            trainingCases.add(new TrainingCase(extractor.extract(patch), vectorsOfGeneratedPatches));
         }
         return trainingCases;
     }
