@@ -1,5 +1,6 @@
 package jp.posl.jprophet.learning;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -43,23 +44,35 @@ public class Learner {
             return Collections.emptyList();
         }
         final List<Patch> patches = new ArrayList<Patch>();
-        for (Path path: trainingCasePaths) {
-            if (Files.isDirectory(path)) {
-                try {
-                    final Optional<Path> originalFilePath = Files.list(path)
-                        .filter(filePath -> filePath.getFileName().toString().equals(config.getOriginalFileName()))
-                        .findFirst();
-                    final Optional<Path> fixedFilePath = Files.list(path)
-                        .filter(filePath -> filePath.getFileName().toString().equals(config.getFixedFileName()))
-                        .findFirst();
-                    if (originalFilePath.isPresent() && !fixedFilePath.isPresent()) {
-                        final String originalSourceCode = String.join("\n", Files.readAllLines(originalFilePath.orElseThrow()));
-                        final String fixedSourceCode = String.join("\n", Files.readAllLines(fixedFilePath.orElseThrow()));
-                        patches.add(new DefaultPatch(originalSourceCode, fixedSourceCode));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+        for (Path trainingCasePath: trainingCasePaths) {
+            if (!Files.isDirectory(trainingCasePath)) {
+                continue;
+            }
+            try {
+                final Optional<Path> originalDirPath = Files.list(trainingCasePath)
+                    .filter(path -> Files.isDirectory(path))
+                    .filter(path -> path.getFileName().toString().equals(config.getOriginalDirName()))
+                    .findFirst();
+                final Optional<Path> fixedDirPath = Files.list(trainingCasePath)
+                    .filter(path -> Files.isDirectory(path))
+                    .filter(path -> path.getFileName().toString().equals(config.getFixedDirName()))
+                    .findFirst();
+                if (!originalDirPath.isPresent() || !fixedDirPath.isPresent()) {
+                    continue;
                 }
+                final List<Path> pathesInOriginalDir = Files.list(originalDirPath.orElseThrow()).collect(Collectors.toList());
+                final List<Path> pathesInFixedDir = Files.list(fixedDirPath.orElseThrow()).collect(Collectors.toList());
+                if (!(pathesInOriginalDir.size() == 1) || !(pathesInFixedDir.size() == 1)) {
+                    continue;
+                }
+                final Path originalFilePath = pathesInOriginalDir.get(0);
+                final Path fixedFilePath = pathesInFixedDir.get(0);
+                final String originalSourceCode = String.join("\n", Files.readAllLines(originalFilePath));
+                final String fixedSourceCode = String.join("\n", Files.readAllLines(fixedFilePath));
+                patches.add(new DefaultPatch(originalSourceCode, fixedSourceCode));
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+                e.printStackTrace();
             }
         }
 

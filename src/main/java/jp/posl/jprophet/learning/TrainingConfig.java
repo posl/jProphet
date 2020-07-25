@@ -6,14 +6,14 @@ import jp.posl.jprophet.operation.AstOperation;
 
 public class TrainingConfig {
     final private String dirPath;
-    final private String originalFileName;
-    final private String fixedFileName;
+    final private String originalDirName;
+    final private String fixedDirName;
     final private List<AstOperation> operations;
 
-    public TrainingConfig(String dirPath, String originalFileName, String fixedFileName, List<AstOperation> operations) {
+    public TrainingConfig(String dirPath, String originalDirName, String fixedDirName, List<AstOperation> operations) {
         this.dirPath = dirPath;
-        this.originalFileName = originalFileName;
-        this.fixedFileName = fixedFileName;
+        this.originalDirName = originalDirName;
+        this.fixedDirName = fixedDirName;
         this.operations = operations;
     }
 
@@ -21,12 +21,12 @@ public class TrainingConfig {
         return this.dirPath;
     }
 
-    public String getOriginalFileName() {
-        return this.originalFileName;
+    public String getOriginalDirName() {
+        return this.originalDirName;
     }
 
-    public String getFixedFileName() {
-        return this.fixedFileName;
+    public String getFixedDirName() {
+        return this.fixedDirName;
     }
 
     public List<AstOperation> getOperations() {
