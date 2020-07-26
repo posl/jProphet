@@ -14,7 +14,7 @@ import jp.posl.jprophet.evaluator.extractor.ModKinds.ModKind;
 import jp.posl.jprophet.evaluator.extractor.VariableCharacteristics.VarChar;
 import jp.posl.jprophet.operation.MethodReplacementOperation;
 import jp.posl.jprophet.patch.DefaultPatchCandidate;
-import jp.posl.jprophet.patch.PatchCandidate;
+import jp.posl.jprophet.patch.Patch;
 
 public class FeatureExtractorTest {
 
@@ -44,7 +44,7 @@ public class FeatureExtractorTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final PatchCandidate patchCandidate = new DefaultPatchCandidate(originalNodes.get(0), revisedNodes.get(0).findCompilationUnit().get(), "", "", MethodReplacementOperation.class, 0);
+        final Patch patchCandidate = new DefaultPatchCandidate(originalNodes.get(0), revisedNodes.get(0).findCompilationUnit().get(), "", "", MethodReplacementOperation.class, 0);
         final FeatureExtractor extractor = new FeatureExtractor();
         FeatureVector featureVector = extractor.extract(patchCandidate);
         List<Boolean> binaryVector = featureVector.get();
@@ -107,7 +107,7 @@ public class FeatureExtractorTest {
         final List<Node> originalNodes = NodeUtility.getAllNodesFromCode(originalSource);
         final List<Node> revisedNodes = NodeUtility.getAllNodesFromCode(revisedSource);
 
-        final PatchCandidate patchCandidate = new DefaultPatchCandidate(originalNodes.get(0), revisedNodes.get(0).findCompilationUnit().get(), "", "", MethodReplacementOperation.class, 0);
+        final Patch patchCandidate = new DefaultPatchCandidate(originalNodes.get(0), revisedNodes.get(0).findCompilationUnit().get(), "", "", MethodReplacementOperation.class, 0);
         final FeatureExtractor extractor = new FeatureExtractor();
         FeatureVector featureVector = extractor.extract(patchCandidate);
         List<Boolean> binaryVector = featureVector.get();
@@ -188,5 +188,4 @@ public class FeatureExtractorTest {
 
         assertThat(expectedVector.get()).containsExactlyElementsOf(binaryVector);
     }
-
 }

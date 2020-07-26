@@ -8,12 +8,14 @@ public class TrainingConfig {
     final private String dirPath;
     final private String originalDirName;
     final private String fixedDirName;
+    final private String outputPath;
     final private List<AstOperation> operations;
 
-    public TrainingConfig(String dirPath, String originalDirName, String fixedDirName, List<AstOperation> operations) {
+    public TrainingConfig(String dirPath, String originalDirName, String fixedDirName, String outputPath, List<AstOperation> operations) {
         this.dirPath = dirPath;
         this.originalDirName = originalDirName;
         this.fixedDirName = fixedDirName;
+        this.outputPath = outputPath;
         this.operations = operations;
     }
 
@@ -27,6 +29,10 @@ public class TrainingConfig {
 
     public String getFixedDirName() {
         return this.fixedDirName;
+    }
+
+    public String getOutputPath() {
+        return this.outputPath;
     }
 
     public List<AstOperation> getOperations() {
