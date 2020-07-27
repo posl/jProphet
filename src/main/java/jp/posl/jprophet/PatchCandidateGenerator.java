@@ -10,6 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 
@@ -32,14 +33,15 @@ public class PatchCandidateGenerator{
      * @return 条件式が抽象化された修正パッチ候補のリスト
      */
     public List<PatchCandidate> exec(Project project, List<AstOperation> operations, List<Suspiciousness> suspiciousnesses){
-        final List<FileLocator> fileLocators = project.getSrcFileLocators();                
+        final List<FileLocator> fileLocators = project.getSrcFileLocators();
         List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
         int patchCandidateID = 1;
         for(FileLocator fileLocator : fileLocators){
             try {
                 final List<String> lines = Files.readAllLines(Paths.get(fileLocator.getPath()), StandardCharsets.UTF_8);
                 final String sourceCode = String.join("\n", lines);
-                final List<Node> targetNodes = NodeUtility.getAllNodesFromCode(sourceCode);
+                CompilationUnit cu = JavaParser.parse(sourceCode);
+                final List<Node> targetNodes = NodeUtility.getAllDescendantNodes(cu);
                 for(Node targetNode : targetNodes){
                     //疑惑値0のtargetNodeはパッチを生成しない
                     if (!findZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {

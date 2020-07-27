@@ -6,12 +6,13 @@ import java.util.List;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 
 import difflib.Chunk;
 import difflib.Delta;
 import difflib.DiffUtils;
 import difflib.Patch;
+import jp.posl.jprophet.NodeUtility;
+
 import java.io.BufferedReader;
 import java.io.StringReader;
 
@@ -29,11 +30,9 @@ public class RepairDiff {
      * @param fixedCompilationUnit 修正後のCompilationUnit
      */
     public RepairDiff(Node targetNodeBeforeFix, CompilationUnit fixedCompilationUnit){     
-        LexicalPreservingPrinter.setup(targetNodeBeforeFix.findCompilationUnit().orElseThrow());
-        this.sourceBeforeFix =LexicalPreservingPrinter.print(targetNodeBeforeFix.findCompilationUnit().orElseThrow());
+        this.sourceBeforeFix =NodeUtility.lexicalPreservingPrint(targetNodeBeforeFix.findCompilationUnit().orElseThrow());
 
-        LexicalPreservingPrinter.setup(fixedCompilationUnit);
-        this.fixedSource = LexicalPreservingPrinter.print(fixedCompilationUnit);
+        this.fixedSource = NodeUtility.lexicalPreservingPrint(fixedCompilationUnit);
 
         this.collect(sourceBeforeFix, fixedSource);
     }
