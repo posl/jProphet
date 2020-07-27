@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.javaparser.ast.CompilationUnit;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
@@ -78,6 +80,9 @@ public class JProphetMain {
             ) {
         // フォルトローカライゼーション
         final List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
+
+        final List<CompilationUnit> compilationUnits = new AstGenerator().exec(suspiciousenesses, config.getTargetProject().getSrcFileLocators());
+        
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
         final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations, suspiciousenesses);

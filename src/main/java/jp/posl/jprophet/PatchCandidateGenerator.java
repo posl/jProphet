@@ -33,7 +33,7 @@ public class PatchCandidateGenerator{
      * @return 条件式が抽象化された修正パッチ候補のリスト
      */
     public List<PatchCandidate> exec(Project project, List<AstOperation> operations, List<Suspiciousness> suspiciousnesses){
-        final List<FileLocator> fileLocators = project.getSrcFileLocators();                
+        final List<FileLocator> fileLocators = project.getSrcFileLocators();
         List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
         int patchCandidateID = 1;
         for(FileLocator fileLocator : fileLocators){
