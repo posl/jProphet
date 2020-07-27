@@ -42,7 +42,7 @@ public class VariableReplacementOperation implements AstOperation {
         final List<String> localVarNames = this.collectLocalVarNames(targetNode);
         final List<String> parameterNames = this.collectParameterNames(targetNode);
 
-        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+        List<DiffWithType> candidates = new ArrayList<DiffWithType>();
 
         final Function<String, Expression> constructField = fieldName -> new FieldAccessExpr(new ThisExpr(), fieldName);
         candidates.addAll(this.replaceVariables(targetNode, constructField, fieldNames));
@@ -51,8 +51,7 @@ public class VariableReplacementOperation implements AstOperation {
         candidates.addAll(this.replaceVariables(targetNode, constructVar, localVarNames));
         candidates.addAll(this.replaceVariables(targetNode, constructVar, parameterNames));
 
-        //return candidates;
-        return new ArrayList<DiffWithType>();
+        return candidates;
     }
 
     /**
@@ -105,8 +104,8 @@ public class VariableReplacementOperation implements AstOperation {
      * @param varNames 置換先の変数名のリスト
      * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    private List<CompilationUnit> replaceVariables(Node targetNode, Function<String, Expression> constructVar, List<String> varNames){
-        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+    private List<DiffWithType> replaceVariables(Node targetNode, Function<String, Expression> constructVar, List<String> varNames){
+        List<DiffWithType> candidates = new ArrayList<DiffWithType>();
 
         candidates.addAll(this.replaceAssignExpr(targetNode, varNames, constructVar));
         candidates.addAll(this.replaceArgs(targetNode, varNames, constructVar));
@@ -123,8 +122,8 @@ public class VariableReplacementOperation implements AstOperation {
      * @param constructExpr 置換後の変数のASTノードを生成するラムダ式
      * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    private List<CompilationUnit> replaceAssignExpr(Node targetNode, List<String> varNames, Function<String, Expression> constructExpr){
-        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+    private List<DiffWithType> replaceAssignExpr(Node targetNode, List<String> varNames, Function<String, Expression> constructExpr){
+        List<DiffWithType> candidates = new ArrayList<DiffWithType>();
 
         if (targetNode instanceof AssignExpr) {
             Expression originalAssignedValue = ((AssignExpr)targetNode).getValue();
@@ -135,9 +134,11 @@ public class VariableReplacementOperation implements AstOperation {
                 if(originalAssignedValueName.equals(varName)){
                     continue;
                 }
-                NodeUtility.replaceNode(constructExpr.apply(varName), ((AssignExpr)targetNode).getValue())
-                    .flatMap(n -> n.findCompilationUnit())
-                    .ifPresent(candidates::add);
+                //NodeUtility.replaceNode(constructExpr.apply(varName), ((AssignExpr)targetNode).getValue())
+                //    .flatMap(n -> n.findCompilationUnit())
+                //    .ifPresent(candidates::add);
+                DiffWithType candidate = new DiffWithType(DiffWithType.ModifyType.CHANGE, ((AssignExpr)targetNode).getValue(), constructExpr.apply(varName));
+                candidates.add(candidate);
             }
         }
         return candidates;        
@@ -150,8 +151,8 @@ public class VariableReplacementOperation implements AstOperation {
      * @param constructExpr 置換後の変数のASTノードを生成するラムダ式
      * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    private List<CompilationUnit> replaceArgs(Node targetNode, List<String> varNames, Function<String, Expression> constructExpr){
-        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+    private List<DiffWithType> replaceArgs(Node targetNode, List<String> varNames, Function<String, Expression> constructExpr){
+        List<DiffWithType> candidates = new ArrayList<DiffWithType>();
 
         if (targetNode instanceof MethodCallExpr){
             List<Expression> args = ((MethodCallExpr)targetNode).getArguments();
@@ -160,9 +161,11 @@ public class VariableReplacementOperation implements AstOperation {
                     if(arg.toString().equals(varName)){
                         continue;
                     }
-                    NodeUtility.replaceNode(constructExpr.apply(varName), arg)
-                        .flatMap(n -> n.findCompilationUnit())
-                        .ifPresent(candidates::add);
+                    //NodeUtility.replaceNode(constructExpr.apply(varName), arg)
+                    //    .flatMap(n -> n.findCompilationUnit())
+                    //    .ifPresent(candidates::add);
+                    DiffWithType candidate = new DiffWithType(DiffWithType.ModifyType.CHANGE, arg, constructExpr.apply(varName));
+                    candidates.add(candidate);
                 }
             }
         }
@@ -176,8 +179,8 @@ public class VariableReplacementOperation implements AstOperation {
      * @param constructExpr 置換後の変数のASTノードを生成するラムダ式
      * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    private List<CompilationUnit> replaceNameExprInIfCondition(Node targetNode, List<String> varNames, Function<String, Expression> constructExpr){
-        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+    private List<DiffWithType> replaceNameExprInIfCondition(Node targetNode, List<String> varNames, Function<String, Expression> constructExpr){
+        List<DiffWithType> candidates = new ArrayList<DiffWithType>();
         
         if (targetNode instanceof IfStmt) {
             Expression condition = ((IfStmt)targetNode).getCondition();
@@ -187,9 +190,11 @@ public class VariableReplacementOperation implements AstOperation {
                     if(var.toString().equals(varName)){
                         continue;
                     }
-                    NodeUtility.replaceNode(constructExpr.apply(varName), var)
-                        .flatMap(n -> n.findCompilationUnit())
-                        .ifPresent(candidates::add);
+                    //NodeUtility.replaceNode(constructExpr.apply(varName), var)
+                    //    .flatMap(n -> n.findCompilationUnit())
+                    //    .ifPresent(candidates::add);
+                    DiffWithType candidate = new DiffWithType(DiffWithType.ModifyType.CHANGE, var, constructExpr.apply(varName));
+                    candidates.add(candidate);
                 }
             }
         }
@@ -203,8 +208,8 @@ public class VariableReplacementOperation implements AstOperation {
      * @param constructExpr 置換後の変数のASTノードを生成するラムダ式
      * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    private List<CompilationUnit> replaceVarInReturnStmt(Node targetNode, List<String> varNames, Function<String, Expression> constructExpr){
-        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+    private List<DiffWithType> replaceVarInReturnStmt(Node targetNode, List<String> varNames, Function<String, Expression> constructExpr){
+        List<DiffWithType> candidates = new ArrayList<DiffWithType>();
         
         if (targetNode instanceof ReturnStmt) {
             ((ReturnStmt)targetNode).getExpression().ifPresent(var -> {
@@ -212,9 +217,11 @@ public class VariableReplacementOperation implements AstOperation {
                     if(var.toString().equals(varName)){
                         continue;
                     }
-                    NodeUtility.replaceNode(constructExpr.apply(varName), var)
-                        .flatMap(n -> n.findCompilationUnit())
-                        .ifPresent(candidates::add);
+                    //NodeUtility.replaceNode(constructExpr.apply(varName), var)
+                    //    .flatMap(n -> n.findCompilationUnit())
+                    //    .ifPresent(candidates::add);
+                    DiffWithType candidate = new DiffWithType(DiffWithType.ModifyType.CHANGE, var, constructExpr.apply(varName));
+                    candidates.add(candidate);
                 }
             });
         }

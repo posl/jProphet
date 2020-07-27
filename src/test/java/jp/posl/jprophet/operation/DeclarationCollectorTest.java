@@ -17,6 +17,7 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 
 
 public class DeclarationCollectorTest {
+    /*
     @Test public void testCollectFields() {
         final String targetSource = new StringBuilder().append("")
             .append("public class A {\n\n")
@@ -104,4 +105,5 @@ public class DeclarationCollectorTest {
 
         assertThat(actualParameters).containsOnlyElementsOf(expectedParameters);
     }
+    */
 }

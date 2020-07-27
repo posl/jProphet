@@ -15,10 +15,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CondRefinementOperationTest{
-
     /**
      * 条件文が置換されているかテスト
      */
+
+    /*
     @Test public void testForConditionReplacement(){
 
         final String beforeTargetStatement = new StringBuilder().append("")
@@ -82,4 +83,5 @@ public class CondRefinementOperationTest{
         assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
         return;
     }
+    */
 }
