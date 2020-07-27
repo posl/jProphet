@@ -18,6 +18,7 @@ import jp.posl.jprophet.operation.VariableReplacementOperation;
 
 
 public class DefaultPatchCandidateTest {
+    /*
     private PatchCandidate patchCandidate;
     private String filePath = "src/test/resources/test01.java";
     private CompilationUnit compilationUnit;
@@ -48,6 +49,7 @@ public class DefaultPatchCandidateTest {
      * getLineNumberのテスト
      * src/test/resources/test01.java のメソッド定義の先頭の行番号をテスト
      */
+    /*
     @Test public void testForGetLineNumber() {
         int actualLineNumber = this.patchCandidate.getLineNumber().get();
         assertThat(actualLineNumber).isEqualTo(3);
@@ -56,6 +58,7 @@ public class DefaultPatchCandidateTest {
     /**
      * getFilePathのテスト
      */
+    /*
     @Test public void testForGetFilePath() {
         String actualFilePath = this.patchCandidate.getFilePath();
         String expectedFilePath = this.filePath;
@@ -65,6 +68,7 @@ public class DefaultPatchCandidateTest {
     /**
      * getFqnのテスト
      */
+    /*
     @Test public void testForGetFqn() {
         String actualFqn = this.patchCandidate.getFqn();
         String expectedFqn = this.fqn;
@@ -74,6 +78,7 @@ public class DefaultPatchCandidateTest {
     /**
      * getCompilationUnitのテスト
      */
+    /*
     @Test public void testForGetCompilationUnit() {
         CompilationUnit actualCompilationUnit = this.patchCandidate.getCompilationUnit();
         CompilationUnit expectedCompilationUnit = this.newFixedCompilationUnit;
@@ -89,6 +94,7 @@ public class DefaultPatchCandidateTest {
     /**
      * toStringのテスト
      */
+    /*
     @Test public void testForToString() {
         String diff = this.patchCandidate.toString();
         String expectedDiff = new StringBuilder().append("")
@@ -105,5 +111,5 @@ public class DefaultPatchCandidateTest {
 
         assertThat(diff).isEqualTo(expectedDiff);
     }
-
+    */
 }

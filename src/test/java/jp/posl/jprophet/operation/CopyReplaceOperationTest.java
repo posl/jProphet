@@ -20,6 +20,8 @@ public class CopyReplaceOperationTest{
     /**
      * copiedStatementが置換でき,targetStatementの前にコピペされているかテスト
      */
+
+     /*
     @Test public void testForStatementCopy(){
         
         final String beforeCopiedStatement = new StringBuilder().append("")
@@ -91,6 +93,7 @@ public class CopyReplaceOperationTest{
     /**
      * if文が含まれる場合のテスト
      */
+    /*
     @Test public void testForIfStatementCopy(){
 
         final String beforeTargetStatement = new StringBuilder().append("")
@@ -172,6 +175,7 @@ public class CopyReplaceOperationTest{
     /**
      * クラス外のステートメントに対して正常に動作するかテスト
      */
+    /*
     @Test public void testForWhenThereIsNoCopy(){
         final String sourceThatHasNothingToReplace = new StringBuilder().append("")
         .append("import java.util.List;\n")
@@ -191,6 +195,7 @@ public class CopyReplaceOperationTest{
     /**
      * 生成した修正パッチ候補に元のステートメントと同じものが含まれていないことをテスト
      */
+    /*
     @Test public void testThatCandidatesDoesNotContainOriginal(){
         final String targetStatement = 
                 "       la = lb;\n"; 
@@ -235,6 +240,7 @@ public class CopyReplaceOperationTest{
     /**
      * 少し複雑なコードで動作するかどうかテスト
      */
+    /*
     @Test public void testForRun(){
 
         final String targetSource = new StringBuilder().append("")
@@ -276,6 +282,7 @@ public class CopyReplaceOperationTest{
     /**
      * switch文がある時にエラーが起きないかテスト
      */
+    /*
     @Test public void testForSwitch(){
 
         final String targetSource = new StringBuilder().append("")
@@ -316,4 +323,5 @@ public class CopyReplaceOperationTest{
         }
         return;
     }
+    */
 }

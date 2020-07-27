@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.*;
 
 
 public class ConcreteConditionsTest {
+    /*
     @Test public void test() {
         String targetSource = new StringBuilder().append("")
             .append("public class A {\n\n") 
@@ -79,4 +80,5 @@ public class ConcreteConditionsTest {
 
         assertThat(actualCondExpressions).containsOnlyElementsOf(expectedCondExpressions);
     }
+    */
 }

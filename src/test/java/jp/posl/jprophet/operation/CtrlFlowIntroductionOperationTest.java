@@ -18,6 +18,7 @@ public class CtrlFlowIntroductionOperationTest {
     /**
      * returnをするifブロックが挿入されているかテスト
      */
+    /*
     @Test public void testForAddReturn(){
         final String targetSource = new StringBuilder().append("")
             .append("public class A {\n")
@@ -75,6 +76,7 @@ public class CtrlFlowIntroductionOperationTest {
     /**
      * for文内でbreakを行うifブロックが挿入されているかテスト
      */
+    /*
     @Test public void testForAddBreakInForLoop(){
         final String targetSource = new StringBuilder().append("")
             .append("public class A {\n")
@@ -129,6 +131,7 @@ public class CtrlFlowIntroductionOperationTest {
     /**
      * while文内でbreakを行うifブロックが挿入されているかテスト
      */
+    /*
     @Test public void testForAddBreakInWhileLoop(){
         final String targetSource = new StringBuilder().append("")
             .append("public class A {\n")
@@ -184,6 +187,7 @@ public class CtrlFlowIntroductionOperationTest {
      * switch文がある時にエラーが起きないかテスト
      * 特にtargetNodeがSwitchEntryStmtの時
      */
+    /*
     @Test public void testForSwitch(){
 
         final String targetSource = new StringBuilder().append("")
@@ -223,4 +227,5 @@ public class CtrlFlowIntroductionOperationTest {
         }
         return;
     }
+    */
 }

@@ -15,6 +15,7 @@ public class CondIntroductionOperationTest {
     /**
      * returnをするifブロックが挿入されているかテスト
      */
+    /*
     @Test public void test(){
         final String targetSource = new StringBuilder().append("")
             .append("public class A {\n\n")
@@ -65,5 +66,5 @@ public class CondIntroductionOperationTest {
         assertThat(candidateSources).containsAll(expectedSources);
         return;
     }
-
+    */
 }
