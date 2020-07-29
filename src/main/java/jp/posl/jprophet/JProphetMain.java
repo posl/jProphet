@@ -56,7 +56,7 @@ public class JProphetMain {
         final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(
             //new CondRefinementOperation(),
             //new CondIntroductionOperation(), 
-            //new CtrlFlowIntroductionOperation(), 
+            new CtrlFlowIntroductionOperation(), 
             //new InsertInitOperation(), 
             new VariableReplacementOperation()
             //new CopyReplaceOperation()

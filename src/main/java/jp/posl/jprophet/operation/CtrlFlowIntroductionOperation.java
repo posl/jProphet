@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.SimpleName;
@@ -19,6 +21,7 @@ import com.github.javaparser.ast.stmt.WhileStmt;
 
 import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.patch.DiffWithType;
+import jp.posl.jprophet.patch.DiffWithType.ModifyType;
 
 
 /**
@@ -40,19 +43,27 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
         if(!(targetNode instanceof Statement)) return new ArrayList<>();
         if(targetNode instanceof BlockStmt) return new ArrayList<>();
 
-        final List<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
-        this.insertIfStmtWithAbstCond(targetNode, new ReturnStmt())
-            .map(expr -> new ConcreteConditions((Expression)expr).getCompilationUnits())
-            .ifPresent(compilationUnits::addAll);
+        final DeclarationCollector collector = new DeclarationCollector();
+        final List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+        vars.addAll(collector.collectFileds(targetNode));
+        vars.addAll(collector.collectLocalVarsDeclared(targetNode));
+        final List<Parameter> parameters = collector.collectParameters(targetNode);
+
+        final String abstractConditionName = "ABST_HOLE";
+        final List<Expression> conditions = new ConcreteConditions(new MethodCallExpr(abstractConditionName), vars, parameters).getExpressions();
+
+        final List<DiffWithType> diffWithTypes = new ArrayList<DiffWithType>();
+        conditions.stream()
+            .map(c -> new IfStmt(c, new ReturnStmt(), null))
+            .forEach(stmt -> diffWithTypes.add(new DiffWithType(ModifyType.INSERT, targetNode, stmt)));
 
         if(targetNode.findParent(ForStmt.class).isPresent() || targetNode.findParent(WhileStmt.class).isPresent()) {
-            this.insertIfStmtWithAbstCond(targetNode, new BreakStmt((SimpleName) null))
-                .map(expr -> new ConcreteConditions((Expression)expr).getCompilationUnits())
-                .ifPresent(compilationUnits::addAll);
+            conditions.stream()
+                .map(c -> new IfStmt(c, new BreakStmt((SimpleName) null), null))
+                .forEach(stmt -> diffWithTypes.add(new DiffWithType(ModifyType.INSERT, targetNode, stmt)));
         }
 
-        //return compilationUnits;
-        return new ArrayList<DiffWithType>();
+        return diffWithTypes;
     }
 
     /**

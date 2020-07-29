@@ -27,13 +27,7 @@ public class ConcreteConditions {
      * 
      * @param abstCondition 条件式を生成したい箇所のExpressionノード
      */
-	public ConcreteConditions(Expression abstCondition) {
-        final DeclarationCollector collector = new DeclarationCollector();
-        final List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
-        vars.addAll(collector.collectFileds(abstCondition));
-        vars.addAll(collector.collectLocalVarsDeclared(abstCondition));
-        final List<Parameter> parameters = collector.collectParameters(abstCondition);
-        
+	public ConcreteConditions(Expression abstCondition, List<VariableDeclarator> vars, List<Parameter> parameters) {
         final List<String> booleanVarNames = this.collectBooleanNames(vars, parameters);
         final List<String> allVarNames = this.collectNames(vars, parameters);
         this.generateExpressions(abstCondition, booleanVarNames, allVarNames);
@@ -125,8 +119,9 @@ public class ConcreteConditions {
                 this.replaceWithBinaryExpr(abstCondition, name, new NullLiteralExpr(), Operator.NOT_EQUALS)
                     .ifPresent(this.expressions::add);
             });
-        this.replaceWithExpr(abstCondition, new BooleanLiteralExpr(true))
-            .ifPresent(this.expressions::add);
+        //this.replaceWithExpr(abstCondition, new BooleanLiteralExpr(true))
+        //    .ifPresent(this.expressions::add);
+        this.expressions.add(new BooleanLiteralExpr(true));
     }
 
     /**
@@ -139,8 +134,9 @@ public class ConcreteConditions {
      */
     private Optional<BinaryExpr> replaceWithBinaryExpr(Expression exprToReplace, String leftExprName, Expression rightExpr, Operator operator){
         final BinaryExpr newBinaryExpr = new BinaryExpr(new NameExpr(leftExprName), rightExpr, operator);
-        return this.replaceWithExpr(exprToReplace, newBinaryExpr)
-            .map(expr -> (BinaryExpr)expr);
+        //return this.replaceWithExpr(exprToReplace, newBinaryExpr)
+        //    .map(expr -> (BinaryExpr)expr);
+        return Optional.of(newBinaryExpr);
     }
 
     /**
@@ -150,6 +146,7 @@ public class ConcreteConditions {
      * @return 置換後の新しいExpression
      */
     private Optional<Expression> replaceWithExpr(Expression exprToReplace, Expression exprToReplaceWith){
+        //TODO:deepCopyByReparseがfindCompilationUnitするからエラー
         final Expression newCondition = (Expression)NodeUtility.deepCopyByReparse(exprToReplace);
         return NodeUtility.replaceNode(exprToReplaceWith, newCondition)
             .map(expr -> (Expression)expr);

@@ -6,6 +6,8 @@ import java.util.List;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -27,6 +29,12 @@ public class CondIntroductionOperation implements AstOperation{
         if(!(targetNode instanceof Statement)) return new ArrayList<>();
         if(targetNode instanceof BlockStmt) return new ArrayList<>();
 
+        final DeclarationCollector collector = new DeclarationCollector();
+        final List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+        vars.addAll(collector.collectFileds(targetNode));
+        vars.addAll(collector.collectLocalVarsDeclared(targetNode));
+        final List<Parameter> parameters = collector.collectParameters(targetNode);
+
         final String abstractConditionName = "ABST_HOLE";
         final Statement thenStmt = (Statement)NodeUtility.deepCopyByReparse(targetNode); 
         IfStmt newIfStmt;
@@ -38,7 +46,7 @@ public class CondIntroductionOperation implements AstOperation{
         final IfStmt replacedIfStmt = (IfStmt)NodeUtility.replaceNode(newIfStmt, targetNode).orElseThrow();
         final Expression abstCondition = replacedIfStmt.getCondition();
 
-        final ConcreteConditions concreteConditions = new ConcreteConditions(abstCondition);
+        final ConcreteConditions concreteConditions = new ConcreteConditions(abstCondition, vars, parameters);
         final List<CompilationUnit> candidates = concreteConditions.getCompilationUnits();
         //return candidates;
         return new ArrayList<DiffWithType>();

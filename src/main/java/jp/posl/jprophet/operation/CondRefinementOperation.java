@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
@@ -26,18 +28,24 @@ public class CondRefinementOperation implements AstOperation{
     /**
      * {@inheritDoc}
      */
-    public List<DiffWithType> exec(Node node){
-        if (!(node instanceof IfStmt)) return new ArrayList<DiffWithType>();
+    public List<DiffWithType> exec(Node targetNode){
+        if (!(targetNode instanceof IfStmt)) return new ArrayList<DiffWithType>();
+
+        final DeclarationCollector collector = new DeclarationCollector();
+        final List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+        vars.addAll(collector.collectFileds(targetNode));
+        vars.addAll(collector.collectLocalVarsDeclared(targetNode));
+        final List<Parameter> parameters = collector.collectParameters(targetNode);
 
         final List<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
-        final Expression condition = (Expression)NodeUtility.deepCopyByReparse(((IfStmt)node).getCondition());
+        final Expression condition = (Expression)NodeUtility.deepCopyByReparse(((IfStmt)targetNode).getCondition());
         final String abstractConditionName = "ABST_HOLE";
 
         this.replaceWithBinaryExprWithAbst(condition, new EnclosedExpr (new MethodCallExpr(abstractConditionName)), Operator.OR)
-            .map(expr -> new ConcreteConditions(((EnclosedExpr)expr.getRight()).getInner()).getCompilationUnits())
+            .map(expr -> new ConcreteConditions(((EnclosedExpr)expr.getRight()).getInner(), vars, parameters).getCompilationUnits())
             .ifPresent(compilationUnits::addAll);
         this.replaceWithBinaryExprWithAbst(condition, new UnaryExpr (new EnclosedExpr (new MethodCallExpr(abstractConditionName)), UnaryExpr.Operator.LOGICAL_COMPLEMENT), Operator.AND)
-            .map(expr -> new ConcreteConditions(((EnclosedExpr)((UnaryExpr)expr.getRight()).getExpression()).getInner()).getCompilationUnits())
+            .map(expr -> new ConcreteConditions(((EnclosedExpr)((UnaryExpr)expr.getRight()).getExpression()).getInner(), vars, parameters).getCompilationUnits())
             .ifPresent(compilationUnits::addAll);
             
         //return compilationUnits;
