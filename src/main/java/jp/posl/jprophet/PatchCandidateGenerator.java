@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,29 +33,21 @@ public class PatchCandidateGenerator{
      * @param suspiciousnesses flで得られた疑惑値のリスト
      * @return 条件式が抽象化された修正パッチ候補のリスト
      */
-    public List<PatchCandidate> exec(Project project, List<AstOperation> operations, List<Suspiciousness> suspiciousnesses){
-        final List<FileLocator> fileLocators = project.getSrcFileLocators();
+    public List<PatchCandidate> exec(List<AstOperation> operations, List<Suspiciousness> suspiciousnesses, Map<FileLocator, CompilationUnit> fileLocatorMap){
         List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
         int patchCandidateID = 1;
-        for(FileLocator fileLocator : fileLocators){
-            try {
-                final List<String> lines = Files.readAllLines(Paths.get(fileLocator.getPath()), StandardCharsets.UTF_8);
-                final String sourceCode = String.join("\n", lines);
-                CompilationUnit cu = JavaParser.parse(sourceCode);
-                final List<Node> targetNodes = NodeUtility.getAllDescendantNodes(cu);
-                for(Node targetNode : targetNodes){
-                    //疑惑値0のtargetNodeはパッチを生成しない
-                    if (!findZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
-                        final List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
-                        for(AppliedOperationResult result : appliedOperationResults){
-                            candidates.add(new DefaultPatchCandidate(result.getDiffWithType(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
-                            patchCandidateID += 1;
-                        }
+        for(Map.Entry<FileLocator, CompilationUnit> entry : fileLocatorMap.entrySet()){
+            final FileLocator fileLocator = entry.getKey();
+            final List<Node> targetNodes = NodeUtility.getAllDescendantNodes(entry.getValue());
+            for(Node targetNode : targetNodes){
+                //疑惑値0のtargetNodeはパッチを生成しない
+                if (!findZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
+                    final List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
+                    for(AppliedOperationResult result : appliedOperationResults){
+                        candidates.add(new DefaultPatchCandidate(result.getDiffWithType(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
+                        patchCandidateID += 1;
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                break;
             }
         }
 

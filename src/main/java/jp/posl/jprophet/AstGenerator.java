@@ -5,7 +5,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.JavaParser;
@@ -17,33 +19,32 @@ import jp.posl.jprophet.project.FileLocator;
 
 public class AstGenerator {
     
-    public List<CompilationUnit> exec(List<Suspiciousness> suspiciousenesses, List<FileLocator> fileLocators) {
-        final List<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
+    public Map<FileLocator,CompilationUnit> exec(List<Suspiciousness> suspiciousenesses, List<FileLocator> fileLocators) {
+        Map<FileLocator, CompilationUnit> fileLocatorMap = new HashMap<FileLocator, CompilationUnit>();
         List<String> excutedSourceFqn = suspiciousenesses.stream()
             .filter(s -> s.getValue() > 0)
             .map(s -> s.getFQN())
             .distinct()
             .collect(Collectors.toList());
         
-        List<String> executedSourcePaths = new ArrayList<String>();
+        List<FileLocator> targetFileLocators = new ArrayList<FileLocator>();
         for (String fqn : excutedSourceFqn) {
             fileLocators.stream()
                 .filter(f -> f.getFqn().equals(fqn))
-                .map(f -> f.getPath())
-                .findFirst().ifPresent(s -> executedSourcePaths.add(s));
+                .findFirst().ifPresent(s -> targetFileLocators.add(s));
         }
 
-        for (String executedSourcePath: executedSourcePaths) {
+        for (FileLocator targetFileLocator: targetFileLocators) {
             try {
-                final List<String> lines = Files.readAllLines(Paths.get(executedSourcePath), StandardCharsets.UTF_8);
+                final List<String> lines = Files.readAllLines(Paths.get(targetFileLocator.getPath()), StandardCharsets.UTF_8);
                 final String sourceCode = String.join("\n", lines);
-                compilationUnits.add(JavaParser.parse(sourceCode));
+                fileLocatorMap.put(targetFileLocator, JavaParser.parse(sourceCode));
             } catch (Exception e) {
                 break;
             }
         }
 
-        return compilationUnits;
+        return fileLocatorMap;
 
     }
 }
