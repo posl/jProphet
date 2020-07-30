@@ -36,7 +36,10 @@ public class CondIntroductionOperation implements AstOperation{
         vars.addAll(collector.collectLocalVarsDeclared(targetNode));
         final List<Parameter> parameters = collector.collectParameters(targetNode);
 
-        final Statement thenStmt = (Statement)NodeUtility.deepCopyByReparse(targetNode); 
+        //TODO:ノードの一部だけをディープコピーするようにした方がいい
+        //final Statement thenStmt = (Statement)NodeUtility.deepCopyByReparse(targetNode);
+        //final Statement thenStmt = (Statement)JavaParser.parseStatement(NodeUtility.lexicalPreservingPrint(targetNode));
+        final Statement thenStmt = (Statement)targetNode.clone();
 
         final List<DiffWithType> diffWithTypes = new ArrayList<DiffWithType>();
 
