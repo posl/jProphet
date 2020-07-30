@@ -4,17 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
-import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.patch.DiffWithType;
 import jp.posl.jprophet.patch.DiffWithType.ModifyType;
 
@@ -36,9 +32,6 @@ public class CondIntroductionOperation implements AstOperation{
         vars.addAll(collector.collectLocalVarsDeclared(targetNode));
         final List<Parameter> parameters = collector.collectParameters(targetNode);
 
-        //TODO:ノードの一部だけをディープコピーするようにした方がいい
-        //final Statement thenStmt = (Statement)NodeUtility.deepCopyByReparse(targetNode);
-        //final Statement thenStmt = (Statement)JavaParser.parseStatement(NodeUtility.lexicalPreservingPrint(targetNode));
         final Statement thenStmt = (Statement)targetNode.clone();
 
         final List<DiffWithType> diffWithTypes = new ArrayList<DiffWithType>();

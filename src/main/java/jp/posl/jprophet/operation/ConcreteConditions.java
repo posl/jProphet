@@ -103,26 +103,25 @@ public class ConcreteConditions {
     private void generateExpressions(List<String> booleanVarNames, List<String> allVarNames) {
         booleanVarNames.stream()
             .forEach(name -> {
-                this.expressions.add(this.replaceWithBinaryExpr(name, new BooleanLiteralExpr(true), Operator.EQUALS));
-                this.expressions.add(this.replaceWithBinaryExpr(name, new BooleanLiteralExpr(false), Operator.EQUALS));
+                this.expressions.add(this.generateBinaryExpr(name, new BooleanLiteralExpr(true), Operator.EQUALS));
+                this.expressions.add(this.generateBinaryExpr(name, new BooleanLiteralExpr(false), Operator.EQUALS));
             });
         allVarNames.stream()
             .forEach(name -> {
-                this.expressions.add(this.replaceWithBinaryExpr(name, new NullLiteralExpr(), Operator.EQUALS));
-                this.expressions.add(this.replaceWithBinaryExpr(name, new NullLiteralExpr(), Operator.NOT_EQUALS));
+                this.expressions.add(this.generateBinaryExpr(name, new NullLiteralExpr(), Operator.EQUALS));
+                this.expressions.add(this.generateBinaryExpr(name, new NullLiteralExpr(), Operator.NOT_EQUALS));
             });
         this.expressions.add(new BooleanLiteralExpr(true));
     }
 
     /**
-     * BinaryExprで置換 
-     * @param exprToReplace 置換される元のExpression
+     * BinaryExprを生成 
      * @param leftExprName BinarExprの左辺の変数名
      * @param rightExpr BinarExprの右辺の変数名
      * @param operator BinaryExprの演算子
-     * @return 置換後のBinaryExpr
+     * @return 生成されたのBinaryExpr
      */
-    private BinaryExpr replaceWithBinaryExpr(String leftExprName, Expression rightExpr, Operator operator){
+    private BinaryExpr generateBinaryExpr(String leftExprName, Expression rightExpr, Operator operator){
         final BinaryExpr newBinaryExpr = new BinaryExpr(new NameExpr(leftExprName), rightExpr, operator);
         return newBinaryExpr;
     }
