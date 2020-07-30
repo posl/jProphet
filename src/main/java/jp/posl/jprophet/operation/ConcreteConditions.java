@@ -2,7 +2,6 @@ package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.Parameter;
@@ -14,7 +13,6 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 
-import jp.posl.jprophet.NodeUtility;
 
 /**
  * 穴あきの条件式を元に具体的な条件式を生成するクラス
@@ -27,10 +25,10 @@ public class ConcreteConditions {
      * 
      * @param abstCondition 条件式を生成したい箇所のExpressionノード
      */
-	public ConcreteConditions(Expression abstCondition, List<VariableDeclarator> vars, List<Parameter> parameters) {
+	public ConcreteConditions(List<VariableDeclarator> vars, List<Parameter> parameters) {
         final List<String> booleanVarNames = this.collectBooleanNames(vars, parameters);
         final List<String> allVarNames = this.collectNames(vars, parameters);
-        this.generateExpressions(abstCondition, booleanVarNames, allVarNames);
+        this.generateExpressions(booleanVarNames, allVarNames);
     }
 
     /**
@@ -102,25 +100,17 @@ public class ConcreteConditions {
      * @param booleanVarNames Boolen変数名
      * @param allVarNames 全ての変数名
      */
-    private void generateExpressions(Expression abstCondition, List<String> booleanVarNames, List<String> allVarNames) {
+    private void generateExpressions(List<String> booleanVarNames, List<String> allVarNames) {
         booleanVarNames.stream()
             .forEach(name -> {
-                this.replaceWithBinaryExpr(abstCondition, name, new BooleanLiteralExpr(true), Operator.EQUALS)
-                    .ifPresent(this.expressions::add);
-
-                this.replaceWithBinaryExpr(abstCondition, name, new BooleanLiteralExpr(false), Operator.EQUALS)
-                    .ifPresent(this.expressions::add);
+                this.expressions.add(this.replaceWithBinaryExpr(name, new BooleanLiteralExpr(true), Operator.EQUALS));
+                this.expressions.add(this.replaceWithBinaryExpr(name, new BooleanLiteralExpr(false), Operator.EQUALS));
             });
         allVarNames.stream()
             .forEach(name -> {
-                this.replaceWithBinaryExpr(abstCondition, name, new NullLiteralExpr(), Operator.EQUALS)
-                    .ifPresent(this.expressions::add);
-
-                this.replaceWithBinaryExpr(abstCondition, name, new NullLiteralExpr(), Operator.NOT_EQUALS)
-                    .ifPresent(this.expressions::add);
+                this.expressions.add(this.replaceWithBinaryExpr(name, new NullLiteralExpr(), Operator.EQUALS));
+                this.expressions.add(this.replaceWithBinaryExpr(name, new NullLiteralExpr(), Operator.NOT_EQUALS));
             });
-        //this.replaceWithExpr(abstCondition, new BooleanLiteralExpr(true))
-        //    .ifPresent(this.expressions::add);
         this.expressions.add(new BooleanLiteralExpr(true));
     }
 
@@ -132,24 +122,9 @@ public class ConcreteConditions {
      * @param operator BinaryExprの演算子
      * @return 置換後のBinaryExpr
      */
-    private Optional<BinaryExpr> replaceWithBinaryExpr(Expression exprToReplace, String leftExprName, Expression rightExpr, Operator operator){
+    private BinaryExpr replaceWithBinaryExpr(String leftExprName, Expression rightExpr, Operator operator){
         final BinaryExpr newBinaryExpr = new BinaryExpr(new NameExpr(leftExprName), rightExpr, operator);
-        //return this.replaceWithExpr(exprToReplace, newBinaryExpr)
-        //    .map(expr -> (BinaryExpr)expr);
-        return Optional.of(newBinaryExpr);
-    }
-
-    /**
-     * Expressionを置換 
-     * @param exprToReplace 置換される元のExpression
-     * @param exprToReplaceWith 新しいExpression
-     * @return 置換後の新しいExpression
-     */
-    private Optional<Expression> replaceWithExpr(Expression exprToReplace, Expression exprToReplaceWith){
-        //TODO:deepCopyByReparseがfindCompilationUnitするからエラー
-        final Expression newCondition = (Expression)NodeUtility.deepCopyByReparse(exprToReplace);
-        return NodeUtility.replaceNode(exprToReplaceWith, newCondition)
-            .map(expr -> (Expression)expr);
+        return newBinaryExpr;
     }
 
 }

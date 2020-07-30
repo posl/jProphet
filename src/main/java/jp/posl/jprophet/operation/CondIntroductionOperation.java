@@ -16,6 +16,7 @@ import com.github.javaparser.ast.stmt.Statement;
 
 import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.patch.DiffWithType;
+import jp.posl.jprophet.patch.DiffWithType.ModifyType;
 
 
 /**
@@ -35,20 +36,19 @@ public class CondIntroductionOperation implements AstOperation{
         vars.addAll(collector.collectLocalVarsDeclared(targetNode));
         final List<Parameter> parameters = collector.collectParameters(targetNode);
 
-        final String abstractConditionName = "ABST_HOLE";
         final Statement thenStmt = (Statement)NodeUtility.deepCopyByReparse(targetNode); 
-        IfStmt newIfStmt;
-        try {
-            newIfStmt =  (IfStmt)JavaParser.parseStatement((new IfStmt(new MethodCallExpr(abstractConditionName), thenStmt, null)).toString());
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-        final IfStmt replacedIfStmt = (IfStmt)NodeUtility.replaceNode(newIfStmt, targetNode).orElseThrow();
-        final Expression abstCondition = replacedIfStmt.getCondition();
 
-        final ConcreteConditions concreteConditions = new ConcreteConditions(abstCondition, vars, parameters);
-        final List<CompilationUnit> candidates = concreteConditions.getCompilationUnits();
-        //return candidates;
-        return new ArrayList<DiffWithType>();
+        final List<DiffWithType> diffWithTypes = new ArrayList<DiffWithType>();
+
+        final ConcreteConditions concreteConditions = new ConcreteConditions(vars, parameters);
+        concreteConditions.getExpressions()
+            .forEach(expr -> {
+                try {
+                    IfStmt newIfStmt =  (IfStmt)JavaParser.parseStatement((new IfStmt(expr, thenStmt, null)).toString());
+                    diffWithTypes.add(new DiffWithType(ModifyType.CHANGE, targetNode, newIfStmt));
+                } catch (Exception e) {
+                }
+            });
+        return diffWithTypes;
     }
 }
