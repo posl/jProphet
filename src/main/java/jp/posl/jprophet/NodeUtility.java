@@ -406,6 +406,7 @@ public final class NodeUtility {
             sb.append(current.getText());
             current = current.getNextToken().orElseThrow();
         }
+        sb.append(current.getText());
         return sb.toString();
     }
 
@@ -427,6 +428,24 @@ public final class NodeUtility {
         }
         return Optional.of(parsedNode);
     }
+
+
+    public static Optional<Node> parseNodeWithPointer(Node targetNode, Node descendantNode) {
+        Node parsedNode;
+        if (targetNode instanceof Statement){
+            parsedNode = JavaParser.parseStatement(targetNode.toString());
+        }else if (targetNode instanceof Expression){
+            parsedNode = JavaParser.parseExpression(targetNode.toString());
+        }else{
+            return Optional.empty();
+        }
+        List<Node> nodes = NodeUtility.getAllDescendantNodes(parsedNode);
+        Node newNode = nodes.stream().filter(n -> {
+            return n.equals(descendantNode) && n.getRange().equals(descendantNode.getRange());
+        }).findFirst().orElseThrow();
+        return Optional.of(newNode);
+    }
+
 
     /**
      * インデントの調節をする

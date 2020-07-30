@@ -467,4 +467,13 @@ public class NodeUtilityTest {
         assertThat(newNode.getComment().isPresent()).isFalse();
     }
 
+    @Test public void testParseNodeWithPointer() {
+        Statement statement = nodeList.get(1);
+        Statement parsedStatement = (Statement)NodeUtility.initTokenRange(statement).get();
+        Node descendantNode = parsedStatement.getChildNodes().get(0).getChildNodes().get(0);
+        Node newDescendantNode = NodeUtility.parseNodeWithPointer(parsedStatement, descendantNode).get();
+        Node newRootNode = newDescendantNode.findRootNode();
+        assertThat(NodeUtility.lexicalPreservingPrint(newRootNode)).isEqualTo("la = \"hoge\";");
+    }
+
 }
