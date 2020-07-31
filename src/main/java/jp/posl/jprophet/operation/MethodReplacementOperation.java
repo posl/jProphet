@@ -32,9 +32,17 @@ public class MethodReplacementOperation implements AstOperation {
             .filter(name -> !targetMethodCallExpr.getNameAsString().equals(name))
             .collect(Collectors.toList());
 
-        final List<MethodCallExpr> exprWithReplacedMethodName = this.replaceMethodName(targetMethodCallExpr, methodNameCandidates);
+        final List<Expression> varList = new ArrayList<Expression>();
+        final List<DiffWithType> diffWithTypes = new ArrayList<DIffWithType>();
 
-        final List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
+
+
+
+        
+        
+
+        //final List<DiffWithType> diffWithTypes = this.replaceMethodName(targetMethodCallExpr, methodNameCandidates);
+
         //exprWithReplacedMethodName.stream()
         //    .forEach(methodCallExpr -> methodCallExpr.findCompilationUnit()
         //    .ifPresent(candidates::add));
@@ -43,7 +51,7 @@ public class MethodReplacementOperation implements AstOperation {
         //    .forEach(candidates::add);
 
         //return candidates;
-        return new ArrayList<DiffWithType>();
+        return diffWithTypes;
     }
 
     /**
@@ -63,16 +71,11 @@ public class MethodReplacementOperation implements AstOperation {
      * @param methodNames 新しいメソッド名のリスト
      * @return 置換後のMethodCallExprのリスト
      */
-    private List<MethodCallExpr> replaceMethodName(MethodCallExpr targetExpr, List<String> methodNames) {
-        final List<MethodCallExpr> methodCallExprWithReplacedMethodName = new ArrayList<MethodCallExpr>();
-        methodNames.stream()
+    private List<DiffWithType> replaceMethodName(MethodCallExpr targetExpr, List<String> methodNames) {
+        List<DiffWithType> diffWithTypes = methodNames.stream()
             .map(name -> new MethodCallExpr(new ThisExpr(), name, targetExpr.getArguments()))
-            .forEach(methodCallExpr -> {
-                final Node copiedTargetExpr = NodeUtility.deepCopyByReparse(targetExpr);
-                NodeUtility.replaceNode(methodCallExpr, copiedTargetExpr)
-                    .map(node -> (MethodCallExpr)node)
-                    .ifPresent(methodCallExprWithReplacedMethodName::add);
-            });
-        return methodCallExprWithReplacedMethodName;
-    }
+            .map(expr -> new DiffWithType(DiffWithType.ModifyType.CHANGE, targetExpr, expr))
+            .collect(Collectors.toList());
+        return diffWithTypes;
+
 }

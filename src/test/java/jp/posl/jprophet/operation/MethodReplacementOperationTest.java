@@ -3,6 +3,7 @@ package jp.posl.jprophet.operation;
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.patch.DiffWithType;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
@@ -18,7 +19,6 @@ public class MethodReplacementOperationTest {
     /**
      * メソッドと引数を置換する機能のテスト
      */
-    /*
     @Test public void testForMethodReplace(){
         final String beforeTargetStatement = new StringBuilder().append("")
             .append("public class A {\n")
@@ -63,14 +63,13 @@ public class MethodReplacementOperationTest {
         final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
         final List<String> actualSources = new ArrayList<String>();
         for(Node node : nodes){
-            final List<CompilationUnit> cUnits = new MethodReplacementOperation().exec(node);
-            for (CompilationUnit cUnit : cUnits){
-                LexicalPreservingPrinter.setup(cUnit);
-                actualSources.add(LexicalPreservingPrinter.print(cUnit));
+            final List<DiffWithType> cUnits = new MethodReplacementOperation().exec(node);
+            for (DiffWithType cUnit : cUnits){
+                //LexicalPreservingPrinter.setup(cUnit);
+                actualSources.add(cUnit.getTargetNodeAfterFix().toString());
             }
         }
         assertThat(actualSources).containsOnlyElementsOf(expectedSources);
         return;
     }
-    */
 }
