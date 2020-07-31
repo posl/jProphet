@@ -446,6 +446,93 @@ public final class NodeUtility {
         return Optional.of(newNode);
     }
 
+    public static Optional<Node> replaceNodeWithoutCompilationUnit(Node targetNode, Node nodeToReplaceWith) {
+        Node nodeWithTokenToReplaceWith;
+        try {
+            nodeWithTokenToReplaceWith = NodeUtility.initTokenRange(nodeToReplaceWith).orElseThrow();
+        } catch (NoSuchElementException e) {
+            return Optional.empty();
+        }
+
+        Node rootNode = targetNode.findRootNode();
+
+        JavaToken beginTokenOfTarget = targetNode.getTokenRange().orElseThrow().getBegin();
+        JavaToken tokenToReplaceWith = nodeWithTokenToReplaceWith.getTokenRange().orElseThrow().getBegin();
+        final JavaToken endTokenOfReplace = nodeWithTokenToReplaceWith.getTokenRange().orElseThrow().getEnd();
+        JavaToken endTokenOfTarget = targetNode.getTokenRange().orElseThrow().getEnd();
+
+        // コメントが後ろに付いているノードに対して置換範囲のTokenをコメントの部分まで広げる
+        // よってコメントごと置換されるのでコメントは消える
+        if (targetNode.getComment().isPresent()) {
+            endTokenOfTarget = targetNode.getComment().get().getTokenRange().orElseThrow().getEnd();
+            Range range = endTokenOfTarget.getRange().orElseThrow();
+            Range newRange = new Range(new Position(range.begin.line, range.end.column + 1), new Position(range.begin.line, range.end.column + 1));
+            JavaToken endTokenOfCopiedTarget = targetNode.getComment().get().getTokenRange().orElseThrow().getEnd();
+            endTokenOfCopiedTarget.insertAfter(new JavaToken(newRange, JavaToken.Kind.UNIX_EOL.getKind(), "\n", null, null));
+        }
+
+        final Range beginRangeOfTarget = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
+
+        while (true){
+            beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, tokenToReplaceWith.getKind(), tokenToReplaceWith.getText(), null, null));
+            if (tokenToReplaceWith.getRange().equals(endTokenOfReplace.getRange())) break;
+
+            //複数行置換する時のインデントの調整
+            if (tokenToReplaceWith.getKind() == JavaToken.Kind.UNIX_EOL.getKind())
+                NodeUtility.adjustmentIndent(targetNode, beginTokenOfTarget, beginRangeOfTarget);
+            
+            tokenToReplaceWith = tokenToReplaceWith.getNextToken().orElseThrow();
+        }
+
+        JavaToken tokenToDelete = beginTokenOfTarget;
+
+        while (true){
+            if (beginTokenOfTarget.getRange().equals(endTokenOfTarget.getRange())){
+                beginTokenOfTarget.deleteToken();
+                break;
+            }
+            if (tokenToDelete.getRange().equals(endTokenOfTarget.getRange())){
+                tokenToDelete.deleteToken();
+                beginTokenOfTarget.deleteToken();
+                break;
+            }
+            tokenToDelete.deleteToken();
+            tokenToDelete = beginTokenOfTarget.getNextToken().orElseThrow();
+        }
+
+        JavaToken begin = beginTokenOfTarget.getPreviousToken().orElseThrow();
+        JavaToken end = beginTokenOfTarget;
+        while (true) {
+            if (!begin.getPreviousToken().isPresent())
+                break;
+            begin = begin.getPreviousToken().orElseThrow();
+        }
+        while (true) {
+            if (!end.getNextToken().isPresent())
+                break;
+            end = end.getNextToken().orElseThrow();
+        }
+        
+        JavaToken current = begin;
+        StringBuilder sb = new StringBuilder();
+        while(!current.equals(end)) {
+            sb.append(current.getText());
+            current = current.getNextToken().orElseThrow();
+        }
+        sb.append(current.getText());
+        String source = sb.toString();
+
+        Node parsedNode;
+        if (rootNode instanceof Statement){
+            parsedNode = JavaParser.parseStatement(source);
+        }else if (rootNode instanceof Expression){
+            parsedNode = JavaParser.parseExpression(source);
+        }else{
+            return Optional.empty();
+        }
+        return Optional.of(parsedNode);
+    }
+
 
     /**
      * インデントの調節をする
