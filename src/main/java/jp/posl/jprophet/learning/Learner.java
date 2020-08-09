@@ -100,12 +100,16 @@ public class Learner {
             fixedCu = JavaParser.parse(fixedCu.toString());
             
             final List<Node> allNodesForPatchGeneration = this.getAllPatchedNodes(originalCu.findRootNode(), fixedCu.findRootNode());
-            final List<Patch> allGeneratedPatches = allNodesForPatchGeneration.stream()
+
+            // ランダムな10個のパッチを使用
+            Collections.shuffle(allNodesForPatchGeneration);
+            final List<Patch> generatedPatches = allNodesForPatchGeneration.stream()
                 .flatMap(node -> patchGenerator.applyTemplate(node, config.getOperations()).stream())
                 .map(result -> result.getCompilationUnit())
                 .map(cu -> new DefaultPatch(patch.getOriginalCompilationUnit(), cu))
+                .limit(10)
                 .collect(Collectors.toList());
-            final List<FeatureVector> vectorsOfGeneratedPatches = allGeneratedPatches.stream()
+            final List<FeatureVector> vectorsOfGeneratedPatches = generatedPatches.stream()
                 .map(extractor::extract)
                 .collect(Collectors.toList());
             trainingCases.add(new TrainingCase(extractor.extract(patch), vectorsOfGeneratedPatches));

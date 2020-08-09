@@ -16,7 +16,7 @@ print("-------------------------------------")
 jpro = g.get_repo('posl/jProphet')
 commitDicts = []
 commits = jpro.get_commits()
-for commit in commits:
+for commit in commits[0:500]:
     message: str = commit.commit.message
     if 'fix' in message or 'Fix' in message:
         if 'Merge pull' not in message and 'Merge branch' not in message: 

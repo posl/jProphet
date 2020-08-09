@@ -82,10 +82,10 @@ if __name__ == '__main__':
     cases = json.load(json_open)
     caseNps = np.empty(0)
     for case in cases:
+        if len(case['generated']) == 0:
+            continue
         caseNp = {}
         caseNp['correct'] = np.asarray(case['correct'])
-        if len(case['generated']) == 0:
-            break
         caseNp['all'] = np.empty([0, len(case['generated'][0])])
         caseNp['all'] = np.append(caseNp['all'], [caseNp['correct']], axis=0)
         for generatedVector in case['generated']:
