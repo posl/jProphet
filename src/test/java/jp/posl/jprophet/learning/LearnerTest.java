@@ -20,7 +20,7 @@ public class LearnerTest {
             new VariableReplacementOperation(),
             new CopyReplaceOperation()
         );
-        final TrainingConfig config = new TrainingConfig(dirPath, originalDirName, fixedDirName, operations);
+        final TrainingConfig config = new TrainingConfig(dirPath, originalDirName, fixedDirName, null, operations);
         final Learner learner = new Learner();
         final List<TrainingCase> cases = learner.generateTrainingCase(config);
         return;

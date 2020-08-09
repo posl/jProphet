@@ -9,7 +9,8 @@ import jp.posl.jprophet.operation.*;
 
 public class TrainingCaseVectorWriterTest {
     @Test public void test() {
-        final String dirPath = "src/test/resources/testTrainingCases";
+        final String dirPath = "result/cases";
+        // final String dirPath = "src/test/resources/testTrainingCases02";
         final String originalDirName = "original";
         final String fixedDirName = "fixed";
         final String outputPath = "result/feature-vector.json";
