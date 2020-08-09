@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseProblemException;
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 
 import difflib.Delta;
@@ -69,7 +72,11 @@ public class Learner {
                 final Path fixedFilePath = pathesInFixedDir.get(0);
                 final String originalSourceCode = String.join("\n", Files.readAllLines(originalFilePath));
                 final String fixedSourceCode = String.join("\n", Files.readAllLines(fixedFilePath));
-                patches.add(new DefaultPatch(originalSourceCode, fixedSourceCode));
+                try {
+                    patches.add(new DefaultPatch(originalSourceCode, fixedSourceCode));
+                } catch (ParseProblemException e) {
+                    continue;
+                }
             } catch (IOException e) {
                 System.err.println(e.getMessage());
                 e.printStackTrace();
@@ -80,10 +87,19 @@ public class Learner {
         final PatchCandidateGenerator patchGenerator = new PatchCandidateGenerator();
         final List<TrainingCase> trainingCases = new ArrayList<TrainingCase>();
         for (Patch patch : patches) {
-            final Node originalRootNode = patch.getOriginalCompilationUnit().findRootNode();
-            final Node fixedRootNode = patch.getCompilationUnit().findRootNode();
+            CompilationUnit originalCu = patch.getOriginalCompilationUnit();
+            CompilationUnit fixedCu = patch.getCompilationUnit();
+            // コメントの削除
+            // コード変形後にコメントとノードが合体するとequal判定の結果が変わり，
+            // 挿入したノードの検索が不可能になる
+            NodeUtility.getAllNodesInDepthFirstOrder(originalCu.findRootNode()).stream()
+                .forEach(n-> n.removeComment());
+            NodeUtility.getAllNodesInDepthFirstOrder(fixedCu.findRootNode()).stream()
+                .forEach(n-> n.removeComment());
+            originalCu = JavaParser.parse(originalCu.toString());
+            fixedCu = JavaParser.parse(fixedCu.toString());
             
-            final List<Node> allNodesForPatchGeneration = this.getAllPatchedNodes(originalRootNode, fixedRootNode);
+            final List<Node> allNodesForPatchGeneration = this.getAllPatchedNodes(originalCu.findRootNode(), fixedCu.findRootNode());
             final List<Patch> allGeneratedPatches = allNodesForPatchGeneration.stream()
                 .flatMap(node -> patchGenerator.applyTemplate(node, config.getOperations()).stream())
                 .map(result -> result.getCompilationUnit())
@@ -104,7 +120,7 @@ public class Learner {
         final List<Node> targetNodes = new ArrayList<Node>();
         for (Delta<String> delta : deltas) {
             final int diffPosition = delta.getOriginal().getPosition(); 
-            if (diffPosition > allOriginalNodes.size()) {
+            if (diffPosition >= allOriginalNodes.size()) {
                 continue;        
             }
             targetNodes.add(allOriginalNodes.get(diffPosition));

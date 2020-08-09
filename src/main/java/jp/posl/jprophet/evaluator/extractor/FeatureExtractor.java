@@ -134,8 +134,13 @@ public class FeatureExtractor {
                     final boolean bothIsField = !originalVarIsNotField && !fixedVarIsNotField;
                     if(bothIsField) return true;
                     if(!bothIsField) {
-                        final String methodNameWhereOriginalVarWasDeclared = originalVarDec.findParent(MethodDeclaration.class).orElseThrow().getNameAsString();
-                        final String methodNameWhereFixedlVarWasDeclared = fixedVarDec.findParent(MethodDeclaration.class).orElseThrow().getNameAsString();
+                        final Optional<MethodDeclaration> methodWhereOriginalVarWasDeclared = originalVarDec.findParent(MethodDeclaration.class);
+                        final Optional<MethodDeclaration> methodWhereFixedVarWasDeclared = fixedVarDec.findParent(MethodDeclaration.class);
+                        if (!methodWhereOriginalVarWasDeclared.isPresent() || !methodWhereFixedVarWasDeclared.isPresent()) {
+                            return false;
+                        }
+                        final String methodNameWhereOriginalVarWasDeclared = methodWhereOriginalVarWasDeclared.orElseThrow().getNameAsString();
+                        final String methodNameWhereFixedlVarWasDeclared = methodWhereFixedVarWasDeclared.orElseThrow().getNameAsString();
                         if(methodNameWhereOriginalVarWasDeclared.equals(methodNameWhereFixedlVarWasDeclared)) {
                             return true;
                         }
