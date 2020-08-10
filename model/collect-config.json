@@ -1,5 +1,5 @@
 {
     "token": "Please write your GitHub personal access token.",
     "maxGenSize": 10,
-    "outputPath": "result/cases"
+    "outputPath": "result/patches"
 }
