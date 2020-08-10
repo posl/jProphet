@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 
@@ -19,63 +20,65 @@ import jp.posl.jprophet.patch.DiffWithType;
 public class MethodReplacementOperation implements AstOperation {
     /**
      * <h4>メソッドの置換操作及び置換後に引数の置換を行い修正パッチ候補を生成する</h4>
-     * <p>MethodCallExprをtargetNodeとして受け取った場合に置換が行われる</p>
+     * <p>
+     * MethodCallExprをtargetNodeとして受け取った場合に置換が行われる
+     * </p>
+     * 
      * @return 生成された修正後のCompilationUnitのリスト
      */
     public List<DiffWithType> exec(Node targetNode) {
-        if (!(targetNode instanceof MethodCallExpr)) return new ArrayList<>(); 
+        if (!(targetNode instanceof MethodCallExpr))
+            return new ArrayList<>();
         final MethodCallExpr targetMethodCallExpr = (MethodCallExpr) targetNode;
         final boolean hasScopeOfThis = targetMethodCallExpr.getScope().map(s -> s instanceof ThisExpr).orElse(true);
-        if(!hasScopeOfThis) return new ArrayList<>();
+        if (!hasScopeOfThis)
+            return new ArrayList<>();
 
         final List<String> methodNameCandidates = this.collectMethodNames(targetNode).stream()
-            .filter(name -> !targetMethodCallExpr.getNameAsString().equals(name))
-            .collect(Collectors.toList());
+                .filter(name -> !targetMethodCallExpr.getNameAsString().equals(name)).collect(Collectors.toList());
 
         final List<Expression> varList = new ArrayList<Expression>();
-        final List<DiffWithType> diffWithTypes = new ArrayList<DIffWithType>();
+        final List<DiffWithType> diffWithTypes = new ArrayList<DiffWithType>();
 
+        // final List<DiffWithType> diffWithTypes =
+        // this.replaceMethodName(targetMethodCallExpr, methodNameCandidates);
 
+        // exprWithReplacedMethodName.stream()
+        // .forEach(methodCallExpr -> methodCallExpr.findCompilationUnit()
+        // .ifPresent(candidates::add));
+        // exprWithReplacedMethodName.stream()
+        // .flatMap(methodCallExpr -> new
+        // VariableReplacementOperation().exec(methodCallExpr).stream())
+        // .forEach(candidates::add);
 
-
-        
-        
-
-        //final List<DiffWithType> diffWithTypes = this.replaceMethodName(targetMethodCallExpr, methodNameCandidates);
-
-        //exprWithReplacedMethodName.stream()
-        //    .forEach(methodCallExpr -> methodCallExpr.findCompilationUnit()
-        //    .ifPresent(candidates::add));
-        //exprWithReplacedMethodName.stream()
-        //    .flatMap(methodCallExpr -> new VariableReplacementOperation().exec(methodCallExpr).stream())
-        //    .forEach(candidates::add);
-
-        //return candidates;
+        // return candidates;
         return diffWithTypes;
     }
 
     /**
      * ノードが存在するクラス内のメソッドの名前を集める
+     * 
      * @param node 対象ノード
      * @return メソッド名のリスト
      */
     private List<String> collectMethodNames(Node node) {
-        return node.findRootNode().findAll(MethodDeclaration.class).stream()
-            .map(m -> m.getNameAsString())
-            .collect(Collectors.toList());
+        return node.findRootNode().findAll(MethodDeclaration.class).stream().map(m -> m.getNameAsString())
+                .collect(Collectors.toList());
     }
 
     /**
-     * メソッド名を置換する 
-     * @param targetExpr 置換対象のMethodCallExpr
+     * メソッド名を置換する
+     * 
+     * @param targetExpr  置換対象のMethodCallExpr
      * @param methodNames 新しいメソッド名のリスト
      * @return 置換後のMethodCallExprのリスト
      */
     private List<DiffWithType> replaceMethodName(MethodCallExpr targetExpr, List<String> methodNames) {
         List<DiffWithType> diffWithTypes = methodNames.stream()
-            .map(name -> new MethodCallExpr(new ThisExpr(), name, targetExpr.getArguments()))
-            .map(expr -> new DiffWithType(DiffWithType.ModifyType.CHANGE, targetExpr, expr))
-            .collect(Collectors.toList());
+                .map(name -> new MethodCallExpr(new ThisExpr(), name, targetExpr.getArguments()))
+                .map(expr -> new DiffWithType(DiffWithType.ModifyType.CHANGE, targetExpr, expr))
+                .collect(Collectors.toList());
         return diffWithTypes;
+    }
 
 }
