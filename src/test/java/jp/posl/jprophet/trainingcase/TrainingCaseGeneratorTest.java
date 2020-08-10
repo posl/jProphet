@@ -1,4 +1,4 @@
-package jp.posl.jprophet.learning;
+package jp.posl.jprophet.trainingcase;
 
 import java.util.List;
 
@@ -6,8 +6,8 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import jp.posl.jprophet.learning.TrainingCaseGenerator.TrainingCase;
 import jp.posl.jprophet.operation.*;
+import jp.posl.jprophet.trainingcase.TrainingCaseGenerator.TrainingCase;
 
 public class TrainingCaseGeneratorTest {
     /**
@@ -27,7 +27,7 @@ public class TrainingCaseGeneratorTest {
         );
         final TrainingCaseConfig config = new TrainingCaseConfig(pathesDirPath, originalDirName, fixedDirName, null, operations);
         final TrainingCaseGenerator generator = new TrainingCaseGenerator();
-        final List<TrainingCase> cases = generator.generateTrainingCase(config);
+        final List<TrainingCase> cases = generator.generate(config);
         assertThat(cases.size()).isEqualTo(4);
         return;
     }

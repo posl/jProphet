@@ -1,4 +1,4 @@
-package jp.posl.jprophet.learning;
+package jp.posl.jprophet.trainingcase;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import jp.posl.jprophet.learning.TrainingCaseGenerator.TrainingCase;
+import jp.posl.jprophet.trainingcase.TrainingCaseGenerator.TrainingCase;
 import jp.posl.jprophet.operation.*;
 
 public class TrainingCaseExporterTest {
@@ -30,7 +30,7 @@ public class TrainingCaseExporterTest {
                 outputPathName, operations);
         final TrainingCaseExporter exporter = new TrainingCaseExporter();
         final TrainingCaseGenerator learner = new TrainingCaseGenerator();
-        final List<TrainingCase> cases = learner.generateTrainingCase(config);
+        final List<TrainingCase> cases = learner.generate(config);
         final Path outputPath = Paths.get(outputPathName);
         try {
             if(Files.exists(outputPath)) {
