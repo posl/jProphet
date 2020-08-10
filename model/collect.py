@@ -2,69 +2,72 @@ from github import Github
 import requests
 import re
 import os
+import json
+import random
 
-token = 'b994d276624b9069ddf6bc190618fc4cdcc0d648'
+def collectCommits(token):
+    g = Github(token)
+    repoNames = []
+    with open('model/repoNames.txt', mode='r') as f:
+        repoNames = list(map(lambda name: name.rstrip('\n'), f.readlines()))
+    print(f'repos: {repoNames}')
 
-g = Github(token)
+    fixCommits = []
+    for repoName in repoNames:
+        repo = g.get_repo(repoName)
+        commits = repo.get_commits()
+        for commit in commits:
+            message: str = commit.commit.message
+            isFixCommit = 'fix' in message or 'Fix' in message
+            isNotMergeCommit = 'Merge pull' not in message and 'Merge branch' not in message
+            if isFixCommit and isNotMergeCommit:
+                print(commit.sha)
+                fixCommit = {"repoName": repoName, "sha": commit.sha, "files": []}
+                for file in commit.files:
+                    print(file.raw_url)
+                    print(file.filename)
+                    for i in range(commits.totalCount):
+                        if commits[i].sha == commit.sha:
+                            prevCommit = commits[i + 1]
+                            prevFileUrl = f'https://github.com/{repoName}/raw/{prevCommit.sha}/{file.filename}'
+                            fixCommit["files"].append({"filename": file.filename, "fixed_url": file.raw_url, "original_url": prevFileUrl})
+                            break
+                fixCommits.append(fixCommit)
+    return fixCommits
 
-# for repo in g.get_user().get_repos():
-#     # print(repo.name)
-#     if repo.name == 'jProphet':
-#         print(repo.full_name)
+def export(fixCommits, genSize, outputPath):
+    random.shuffle(fixCommits)
 
-print("-------------------------------------")
-jpro = g.get_repo('posl/jProphet')
-commitDicts = []
-commits = jpro.get_commits()
-for commit in commits[0:500]:
-    message: str = commit.commit.message
-    if 'fix' in message or 'Fix' in message:
-        if 'Merge pull' not in message and 'Merge branch' not in message: 
-            print(commit.sha)
-            commitDict = {"sha": commit.sha, "files": []}
-            # print(message)
-            for file in commit.files:
-                print(file.raw_url)
-                print(file.filename)
-                for i in range(commits.totalCount):
-                    if commits[i].sha == commit.sha:
-                        prevCommit = commits[i + 1]
-                        prevFileUrl: str = "https://github.com/posl/jProphet/raw/" + str(prevCommit.sha) + "/" + str(file.filename);
-                        commitDict["files"].append({"filename": file.filename, "fixed_url": file.raw_url, "original_url": prevFileUrl})
-                        break
+    for fixCommit in fixCommits[0:genSize]:
+        for fileDict in fixCommit['files']:
+            originalUrl = fileDict['original_url']
+            fixedUrl = fileDict['fixed_url']
+            try:
+                originalFileString = requests.get(originalUrl).text
+                fixedFileString = requests.get(fixedUrl).text
 
-            commitDicts.append(commitDict)
-print(commitDicts)
+                pattern = '.+\/(.+\.java)$'
+                result = re.match(pattern, fileDict['filename'])
+                if result:
+                    fileName = result.group(1)
+                    originalDirPath = f'{outputPath}/{fixCommit["repoName"].replace("/", "_")}-{fixCommit["sha"][0:5]}-{fileName}/original/'
+                    fixedDirPath    = f'{outputPath}/{fixCommit["repoName"].replace("/", "_")}-{fixCommit["sha"][0:5]}-{fileName}/fixed/'
+                    originalPath = originalDirPath + fileName
+                    fixedPath    = fixedDirPath + fileName
+                    os.makedirs(originalDirPath, exist_ok=True)
+                    os.makedirs(fixedDirPath, exist_ok=True)
+                    with open(originalPath, mode='w') as f:
+                        f.write(originalFileString)
+                    with open(fixedPath, mode='w') as f:
+                        f.write(fixedFileString)
+            except requests.exceptions.RequestException as err:
+                print(err)
 
-for commitDict in commitDicts:
-    for fileDict in commitDict['files']:
-        originalUrl = fileDict['original_url']
-        fixedUrl = fileDict['fixed_url']
-        try:
-            originalFileString = requests.get(originalUrl).text
-            fixedFileString = requests.get(fixedUrl).text
-
-            pattern = '.+\/(.+\.java)$'
-            result = re.match(pattern, fileDict['filename'])
-            if result:
-                fileName = result.group(1)
-                originalDirPath = "result/cases/" + commitDict['sha'][0:5] + fileName + "/original/"
-                fixedDirPath = "result/cases/" + commitDict['sha'][0:5] + fileName + "/fixed/"
-                originalPath = originalDirPath + fileName
-                fixedPath = fixedDirPath + fileName
-                os.makedirs(originalDirPath, exist_ok=True)
-                os.makedirs(fixedDirPath, exist_ok=True)
-                with open(originalPath, mode='w') as f:
-                    f.write(originalFileString)
-                with open(fixedPath, mode='w') as f:
-                    f.write(fixedFileString)
-        except requests.exceptions.RequestException as err:
-            print(err)
-
-
-
-# repos = g.search_repositories("Java", sort='stars', order='desc')
-# for repo in repos[0: 1]:
-#     print("name: " + str(repo.name))
-#     for comment in repo.get_comments()[0:3]:
-#         print(comment.body)
+if __name__ == '__main__':
+    json_open = open('model/collect-config.json', 'r')
+    config = json.load(json_open)
+    token = config['token']
+    genSize = config['maxGenSize']
+    outputPath = config['outputPath']
+    fixCommits = collectCommits(token)
+    export(fixCommits, genSize, outputPath)
