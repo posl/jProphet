@@ -68,7 +68,7 @@ public class DefaultPatchCandidate implements Patch, PatchCandidate {
      * {@inheritDoc}
      */
     @Override
-    public CompilationUnit getCompilationUnit(){
+    public CompilationUnit getFixedCompilationUnit(){
         return this.fixedCompilationUnit;
     }
 

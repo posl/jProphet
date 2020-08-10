@@ -28,7 +28,7 @@ public interface PatchCandidate {
      * 修正されたファイルのCompilationUnitを返す
      * @return 修正されたファイルのCompilationUnit
      */
-    public CompilationUnit getCompilationUnit();
+    public CompilationUnit getFixedCompilationUnit();
 
     /**
      * 修正前のファイルのCompilationUnitを返す

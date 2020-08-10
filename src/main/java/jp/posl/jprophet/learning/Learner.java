@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
@@ -21,7 +20,7 @@ import jp.posl.jprophet.PatchCandidateGenerator;
 import jp.posl.jprophet.evaluator.AstDiff;
 import jp.posl.jprophet.evaluator.extractor.FeatureExtractor;
 import jp.posl.jprophet.evaluator.extractor.FeatureVector;
-import jp.posl.jprophet.patch.DefaultPatch;
+import jp.posl.jprophet.patch.LearningPatch;
 import jp.posl.jprophet.patch.Patch;
 
 public class Learner {
@@ -64,16 +63,16 @@ public class Learner {
                     continue;
                 }
                 final List<Path> pathesInOriginalDir = Files.list(originalDirPath.orElseThrow()).collect(Collectors.toList());
-                final List<Path> pathesInFixedDir = Files.list(fixedDirPath.orElseThrow()).collect(Collectors.toList());
+                final List<Path> pathesInFixedDir    = Files.list(fixedDirPath.orElseThrow()).collect(Collectors.toList());
                 if (!(pathesInOriginalDir.size() == 1) || !(pathesInFixedDir.size() == 1)) {
                     continue;
                 }
                 final Path originalFilePath = pathesInOriginalDir.get(0);
-                final Path fixedFilePath = pathesInFixedDir.get(0);
+                final Path fixedFilePath    = pathesInFixedDir.get(0);
                 final String originalSourceCode = String.join("\n", Files.readAllLines(originalFilePath));
-                final String fixedSourceCode = String.join("\n", Files.readAllLines(fixedFilePath));
+                final String fixedSourceCode    = String.join("\n", Files.readAllLines(fixedFilePath));
                 try {
-                    patches.add(new DefaultPatch(originalSourceCode, fixedSourceCode));
+                    patches.add(new LearningPatch(originalSourceCode, fixedSourceCode));
                 } catch (ParseProblemException e) {
                     continue;
                 }
@@ -88,25 +87,16 @@ public class Learner {
         final List<TrainingCase> trainingCases = new ArrayList<TrainingCase>();
         for (Patch patch : patches) {
             CompilationUnit originalCu = patch.getOriginalCompilationUnit();
-            CompilationUnit fixedCu = patch.getCompilationUnit();
-            // コメントの削除
-            // コード変形後にコメントとノードが合体するとequal判定の結果が変わり，
-            // 挿入したノードの検索が不可能になる
-            NodeUtility.getAllNodesInDepthFirstOrder(originalCu.findRootNode()).stream()
-                .forEach(n-> n.removeComment());
-            NodeUtility.getAllNodesInDepthFirstOrder(fixedCu.findRootNode()).stream()
-                .forEach(n-> n.removeComment());
-            originalCu = JavaParser.parse(originalCu.toString());
-            fixedCu = JavaParser.parse(fixedCu.toString());
+            CompilationUnit fixedCu = patch.getFixedCompilationUnit();
             
             final List<Node> allNodesForPatchGeneration = this.getAllPatchedNodes(originalCu.findRootNode(), fixedCu.findRootNode());
 
-            // ランダムな10個のパッチを使用
+            // ランダムな10個のパッチを使用 メモリオーバーの問題があるため暫定処置
             Collections.shuffle(allNodesForPatchGeneration);
             final List<Patch> generatedPatches = allNodesForPatchGeneration.stream()
                 .flatMap(node -> patchGenerator.applyTemplate(node, config.getOperations()).stream())
                 .map(result -> result.getCompilationUnit())
-                .map(cu -> new DefaultPatch(patch.getOriginalCompilationUnit(), cu))
+                .map(cu -> new LearningPatch(patch.getOriginalCompilationUnit(), cu))
                 .limit(10)
                 .collect(Collectors.toList());
             final List<FeatureVector> vectorsOfGeneratedPatches = generatedPatches.stream()

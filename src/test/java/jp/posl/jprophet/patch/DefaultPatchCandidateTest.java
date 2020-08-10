@@ -75,7 +75,7 @@ public class DefaultPatchCandidateTest {
      * getCompilationUnitのテスト
      */
     @Test public void testForGetCompilationUnit() {
-        CompilationUnit actualCompilationUnit = this.patchCandidate.getCompilationUnit();
+        CompilationUnit actualCompilationUnit = this.patchCandidate.getFixedCompilationUnit();
         CompilationUnit expectedCompilationUnit = this.newFixedCompilationUnit;
         assertThat(actualCompilationUnit).isEqualTo(expectedCompilationUnit);
     }

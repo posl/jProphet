@@ -39,7 +39,7 @@ public class FeatureExtractor {
      */
     public FeatureVector extract(Patch patch) {
         final Node originalRoot = patch.getOriginalCompilationUnit().findRootNode();
-        final Node fixedRoot = patch.getCompilationUnit().findRootNode();
+        final Node fixedRoot = patch.getFixedCompilationUnit().findRootNode();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalRoot, fixedRoot);
         final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
