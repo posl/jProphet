@@ -15,6 +15,7 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 
 public class VariableReplacer {
 
@@ -44,11 +45,11 @@ public class VariableReplacer {
         List<Node> replacedNodes = new ArrayList<Node>();
 
         replacedNodes.addAll(this.replaceAssignExpr(targetNode, varNames, constructVar));
-        // replacedNodes.addAll(this.replaceArgs(targetNode, varNames, constructVar));
+        replacedNodes.addAll(this.replaceArgs(targetNode, varNames, constructVar));
         // replacedNodes.addAll(this.replaceNameExprInIfCondition(targetNode, varNames,
         // constructVar));
-        // replacedNodes.addAll(this.replaceVarInReturnStmt(targetNode, varNames,
-        // constructVar));
+        replacedNodes.addAll(this.replaceVarInReturnStmt(targetNode, varNames,
+            constructVar));
 
         return replacedNodes;
     }
@@ -90,21 +91,30 @@ public class VariableReplacer {
      * @param constructExpr 置換後の変数のASTノードを生成するラムダ式
      * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    /*
-     * private List<DiffWithType> replaceArgs(Node targetNode, List<String>
-     * varNames, Function<String, Expression> constructExpr) { List<DiffWithType>
-     * candidates = new ArrayList<DiffWithType>();
-     * 
-     * if (targetNode instanceof MethodCallExpr) { List<Expression> args =
-     * ((MethodCallExpr) targetNode).getArguments(); for (String varName : varNames)
-     * { for (Expression arg : args) { if (arg.toString().equals(varName)) {
-     * continue; } // NodeUtility.replaceNode(constructExpr.apply(varName), arg) //
-     * .flatMap(n -> n.findCompilationUnit()) // .ifPresent(candidates::add);
-     * DiffWithType candidate = new DiffWithType(DiffWithType.ModifyType.CHANGE,
-     * arg, constructExpr.apply(varName)); candidates.add(candidate); } } } return
-     * candidates; }
-     * 
-     * /** if文の条件式の変数を置換する
+    
+    private List<Node> replaceArgs(Node targetNode, List<String>
+        varNames, Function<String, Expression> constructExpr) {
+        List<Node> replacedNodes = new ArrayList<Node>();
+    
+        if (targetNode instanceof MethodCallExpr) {
+            final MethodCallExpr copiedNode = (MethodCallExpr)NodeUtility.initTokenRange((MethodCallExpr)targetNode.clone()).orElseThrow();
+            List<Expression> args = copiedNode.getArguments();
+            for (String varName : varNames) {
+                for (Expression arg : args) {
+                    if (arg.toString().equals(varName)) {
+                        continue;
+                    } 
+                    final Node copiedArg = NodeUtility.parseNodeWithPointer(targetNode, arg).orElseThrow();
+                    //final Expression copyedArg = (Expression)NodeUtility.initTokenRange((Expression)targetNode.clone()).orElseThrow();
+                    // NodeUtility.replaceNode(constructExpr.apply(varName), arg) 
+                    //.flatMap(n -> n.findCompilationUnit()) // .ifPresent(candidates::add);
+                }   
+            }
+        }
+        return replacedNodes;
+    }
+    
+    /** if文の条件式の変数を置換する
      * 
      * @param targetNode 置換対象
      * 
@@ -139,19 +149,24 @@ public class VariableReplacer {
      * 
      * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    /*
-     * private List<DiffWithType> replaceVarInReturnStmt(Node targetNode,
-     * List<String> varNames, Function<String, Expression> constructExpr) {
-     * List<DiffWithType> candidates = new ArrayList<DiffWithType>();
-     * 
-     * if (targetNode instanceof ReturnStmt) { ((ReturnStmt)
-     * targetNode).getExpression().ifPresent(var -> { for (String varName :
-     * varNames) { if (var.toString().equals(varName)) { continue; } //
-     * NodeUtility.replaceNode(constructExpr.apply(varName), var) // .flatMap(n ->
-     * n.findCompilationUnit()) // .ifPresent(candidates::add); DiffWithType
-     * candidate = new DiffWithType(DiffWithType.ModifyType.CHANGE, var,
-     * constructExpr.apply(varName)); candidates.add(candidate); } }); } return
-     * candidates; }
-     */
+    
+    private List<Node> replaceVarInReturnStmt(Node targetNode,
+        List<String> varNames, Function<String, Expression> constructExpr) {
+        List<Node> replacedNodes = new ArrayList<Node>();
+    
+        if (targetNode instanceof ReturnStmt) { 
+            final ReturnStmt copiedNode = (ReturnStmt)NodeUtility.initTokenRange((ReturnStmt)targetNode.clone()).orElseThrow();
+            copiedNode.getExpression().ifPresent(var -> {
+                for (String varName : varNames) {
+                    if (var.toString().equals(varName)) { continue; } 
+                    final Node copiedVar = NodeUtility.parseNodeWithPointer(targetNode, var).orElseThrow();
+                    NodeUtility.replaceNodeWithoutCompilationUnit(copiedVar, constructExpr.apply(varName))
+                        .ifPresent(replacedNodes::add);
+                }
+            }); 
+        } 
+        return replacedNodes;
+    }
+     
 
 }
