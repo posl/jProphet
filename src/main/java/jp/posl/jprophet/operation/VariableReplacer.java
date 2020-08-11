@@ -105,9 +105,8 @@ public class VariableReplacer {
                         continue;
                     } 
                     final Node copiedArg = NodeUtility.parseNodeWithPointer(targetNode, arg).orElseThrow();
-                    //final Expression copyedArg = (Expression)NodeUtility.initTokenRange((Expression)targetNode.clone()).orElseThrow();
-                    // NodeUtility.replaceNode(constructExpr.apply(varName), arg) 
-                    //.flatMap(n -> n.findCompilationUnit()) // .ifPresent(candidates::add);
+                    NodeUtility.replaceNodeWithoutCompilationUnit(copiedArg, constructExpr.apply(varName)) 
+                        .ifPresent(replacedNodes::add);
                 }   
             }
         }

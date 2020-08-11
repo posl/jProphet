@@ -61,9 +61,9 @@ public class VariableReplacerTest {
             .append("}\n")
             .toString();
         final List<String> expectedStatements = List.of(
-            "return this.fa;",
-            "return la;",
-            "return pa;");
+            "ma(this.fa)",
+            "ma(la)",
+            "ma(pa)");
         final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
         final List<Node> replacedNodes = new ArrayList<Node>();
         for(Node node : nodes){
