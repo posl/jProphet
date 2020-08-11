@@ -22,24 +22,24 @@ public class TrainingCaseExporterTest {
         final String pathesDirPath = "src/test/resources/testPatches";
         final String originalDirName = "original";
         final String fixedDirName = "fixed";
-        final String outputPathName = "result/feature-vector.json";
+        final String exportPathName = "result/feature-vector.json";
         final List<AstOperation> operations = List.of(new CondRefinementOperation(), new CondIntroductionOperation(),
                 new CtrlFlowIntroductionOperation(), new InsertInitOperation(), new VariableReplacementOperation(),
                 new CopyReplaceOperation());
         final TrainingCaseConfig config = new TrainingCaseConfig(pathesDirPath, originalDirName, fixedDirName,
-                outputPathName, operations);
+                exportPathName, operations);
         final TrainingCaseExporter exporter = new TrainingCaseExporter();
         final TrainingCaseGenerator learner = new TrainingCaseGenerator();
         final List<TrainingCase> cases = learner.generate(config);
-        final Path outputPath = Paths.get(outputPathName);
+        final Path outputPath = Paths.get(exportPathName);
         try {
             if(Files.exists(outputPath)) {
-                FileUtils.forceDelete(new File(outputPathName));
+                FileUtils.forceDelete(new File(exportPathName));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        exporter.export(config, cases);
+        exporter.export(exportPathName, cases);
 
         assertThat(Files.exists(outputPath)).isTrue();
     }

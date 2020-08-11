@@ -14,7 +14,13 @@ import org.apache.commons.io.FileUtils;
 import jp.posl.jprophet.trainingcase.TrainingCaseGenerator.TrainingCase;
 
 
+/**
+ * トレーニングケースの出力を行うクラス
+ */
 public class TrainingCaseExporter {
+    /**
+     * Gsonを用いてJson形式に変換するためのTrainingCaseの表現クラス
+     */
     static class TrainingCaseForJson {
         final private List<Integer> correct;
         final private List<List<Integer>> generated;
@@ -25,7 +31,12 @@ public class TrainingCaseExporter {
         }
     }
 
-    public void export(TrainingCaseConfig config, List<TrainingCase> cases) {
+    /**
+     * トレーニングケースをjsonファイルとして出力する 
+     * @param exportPathName 出力先パス
+     * @param cases トレーニングケースのリスト
+     */
+    public void export(String exportPathName, List<TrainingCase> cases) {
         final List<TrainingCaseForJson> trainingCasesForJson = new ArrayList<>();
         for (TrainingCase trainingCase : cases) {
             final List<Integer> collectVector = trainingCase.vectorOfCorrectPatch.get().stream().map(bit -> bit ? 1 : 0)
@@ -38,12 +49,11 @@ public class TrainingCaseExporter {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String json = gson.toJson(trainingCasesForJson);
         try {
-            FileUtils.write(new File(config.getOutputPath()), json, "utf-8");
+            FileUtils.write(new File(exportPathName), json, "utf-8");
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
             System.exit(-1);
         }
-        return;
     }
 } 
