@@ -46,8 +46,8 @@ public class VariableReplacer {
 
         replacedNodes.addAll(this.replaceAssignExpr(targetNode, varNames, constructVar));
         replacedNodes.addAll(this.replaceArgs(targetNode, varNames, constructVar));
-        // replacedNodes.addAll(this.replaceNameExprInIfCondition(targetNode, varNames,
-        // constructVar));
+        replacedNodes.addAll(this.replaceNameExprInIfCondition(targetNode, varNames,
+            constructVar));
         replacedNodes.addAll(this.replaceVarInReturnStmt(targetNode, varNames,
             constructVar));
 
@@ -123,22 +123,28 @@ public class VariableReplacer {
      * 
      * @return 置換によって生成された修正後のCompilationUnitのリスト
      */
-    /*
-     * private List<DiffWithType> replaceNameExprInIfCondition(Node targetNode,
-     * List<String> varNames, Function<String, Expression> constructExpr) {
-     * List<DiffWithType> candidates = new ArrayList<DiffWithType>();
-     * 
-     * if (targetNode instanceof IfStmt) { Expression condition = ((IfStmt)
-     * targetNode).getCondition(); List<NameExpr> varsInCondition =
-     * condition.findAll(NameExpr.class); for (NameExpr var : varsInCondition) { for
-     * (String varName : varNames) { if (var.toString().equals(varName)) { continue;
-     * } // NodeUtility.replaceNode(constructExpr.apply(varName), var) // .flatMap(n
-     * -> n.findCompilationUnit()) // .ifPresent(candidates::add); DiffWithType
-     * candidate = new DiffWithType(DiffWithType.ModifyType.CHANGE, var,
-     * constructExpr.apply(varName)); candidates.add(candidate); } } } return
-     * candidates; }
-     * 
-     * /** returnされる変数を置換する
+    
+    private List<Node> replaceNameExprInIfCondition(Node targetNode,
+        List<String> varNames, Function<String, Expression> constructExpr) {
+        List<Node> replacedNodes = new ArrayList<Node>();
+    
+        if (targetNode instanceof IfStmt) { 
+            Expression condition = ((IfStmt)targetNode).getCondition();
+            final Expression copiedCondition = (Expression)NodeUtility.initTokenRange(condition.clone()).orElseThrow();
+            List<NameExpr> varsInCondition = copiedCondition.findAll(NameExpr.class); 
+            for (NameExpr var : varsInCondition) { 
+                for(String varName : varNames) { 
+                    if (var.toString().equals(varName)) { continue;} 
+                    final Node copiedVar = NodeUtility.parseNodeWithPointer(condition, var).orElseThrow();
+                    NodeUtility.replaceNodeWithoutCompilationUnit(copiedVar, constructExpr.apply(varName)) 
+                        .ifPresent(replacedNodes::add);
+                } 
+            } 
+        } 
+        return replacedNodes;
+    }
+    
+    /** returnされる変数を置換する
      * 
      * @param targetNode 置換対象
      * 
