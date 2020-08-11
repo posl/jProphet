@@ -74,8 +74,8 @@ public class VariableReplacer {
                 if (originalAssignedValueName.equals(varName)) {
                     continue;
                 }
-                final AssignExpr copyedNode = (AssignExpr)NodeUtility.initTokenRange((AssignExpr)targetNode.clone()).orElseThrow();
-                NodeUtility.replaceNodeWithoutCompilationUnit(copyedNode.getValue(), 
+                final AssignExpr copiedNode = (AssignExpr)NodeUtility.initTokenRange((AssignExpr)targetNode.clone()).orElseThrow();
+                NodeUtility.replaceNodeWithoutCompilationUnit(copiedNode.getValue(), 
                     constructExpr.apply(varName))
                     .ifPresent(replacedNodes::add);
             }

@@ -24,62 +24,39 @@ public class VariableReplacementOperationTest{
      * 引数を変数に置換する機能のテスト
      */
     @Test public void testForArgumentReplace(){
-        final String beforeTargetStatement = new StringBuilder().append("")
+        final String targetSource = new StringBuilder().append("")
             .append("public class A {\n")
             .append("    private String fa = \"a\";\n")
             .append("    private String fb = \"a\";\n")
             .append("    private void ma(String pa, String pb) {\n")
             .append("        String la = \"b\";\n")
-            .toString();
-        final String targetStatement = 
-                    "        this.mb(\"hoge\", \"fuga\");\n";
-        final String afterTargetStatement = new StringBuilder().append("")
+            .append("        this.mb(\"hoge\", \"fuga\");\n")
             .append("    }\n")
             .append("    private void mb(String a, String b) {\n")
             .append("    }\n")
             .append("}\n")
             .toString();
 
-        final String targetSource = new StringBuilder().append("")
-            .append(beforeTargetStatement)
-            .append(targetStatement)
-            .append(afterTargetStatement)
-            .toString();
-
-        final List<String> expectedTargetSources = new ArrayList<String>();
-        expectedTargetSources.add("        this.mb(this.fa, \"fuga\");\n");
-        expectedTargetSources.add("        this.mb(\"hoge\", this.fa);\n");
-        expectedTargetSources.add("        this.mb(this.fb, \"fuga\");\n");
-        expectedTargetSources.add("        this.mb(\"hoge\", this.fb);\n");
-        expectedTargetSources.add("        this.mb(la, \"fuga\");\n");
-        expectedTargetSources.add("        this.mb(\"hoge\", la);\n");
-        expectedTargetSources.add("        this.mb(pa, \"fuga\");\n");
-        expectedTargetSources.add("        this.mb(\"hoge\", pa);\n");
-        expectedTargetSources.add("        this.mb(pb, \"fuga\");\n");
-        expectedTargetSources.add("        this.mb(\"hoge\", pb);\n");
-
-        final List<String> expectedSources = expectedTargetSources.stream()
-            .map(str -> {
-                return new StringBuilder().append("")
-                    .append(beforeTargetStatement)
-                    .append(str)
-                    .append(afterTargetStatement)
-                    .toString();
-            })
-            .collect(Collectors.toList());
+        final List<String> expectedTargetNodeAfterFix = new ArrayList<String>();
+        expectedTargetNodeAfterFix.add("this.mb(this.fa, \"fuga\")");
+        expectedTargetNodeAfterFix.add("this.mb(\"hoge\", this.fa)");
+        expectedTargetNodeAfterFix.add("this.mb(this.fb, \"fuga\")");
+        expectedTargetNodeAfterFix.add("this.mb(\"hoge\", this.fb)");
+        expectedTargetNodeAfterFix.add("this.mb(la, \"fuga\")");
+        expectedTargetNodeAfterFix.add("this.mb(\"hoge\", la)");
+        expectedTargetNodeAfterFix.add("this.mb(pa, \"fuga\")");
+        expectedTargetNodeAfterFix.add("this.mb(\"hoge\", pa)");
+        expectedTargetNodeAfterFix.add("this.mb(pb, \"fuga\")");
+        expectedTargetNodeAfterFix.add("this.mb(\"hoge\", pb)");
 
         final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        final List<String> candidateSources = new ArrayList<String>();
+        final List<String> actualTargetNodeAfterFix = new ArrayList<String>();
         for(Node node : nodes){
             final VariableReplacementOperation vr = new VariableReplacementOperation();
-            final List<DiffWithType> cUnits = vr.exec(node);
-            for (DiffWithType cUnit : cUnits){
-                //LexicalPreservingPrinter.setup(cUnit);
-                //candidateSources.add(LexicalPreservingPrinter.print(cUnit));
-                candidateSources.add(cUnit.getTargetNodeAfterFix().toString());
-            }
+            final List<DiffWithType> results = vr.exec(node);
+            actualTargetNodeAfterFix.addAll(results.stream().map(result -> result.getTargetNodeAfterFix().toString()).collect(Collectors.toList()));
         }
-        assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
+        assertThat(actualTargetNodeAfterFix).containsOnlyElementsOf(expectedTargetNodeAfterFix);
         return;
     }
 
