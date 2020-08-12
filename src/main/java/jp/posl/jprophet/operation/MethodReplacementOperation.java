@@ -4,14 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 
-import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.patch.DiffWithType;
 import jp.posl.jprophet.patch.DiffWithType.ModifyType;
 
