@@ -13,6 +13,8 @@ import com.github.javaparser.ast.expr.ThisExpr;
 
 import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.patch.DiffWithType;
+import jp.posl.jprophet.patch.DiffWithType.ModifyType;
+
 
 /**
  * 対象ステートメント中の変数を別のもので置き換える操作を行う
@@ -37,21 +39,16 @@ public class MethodReplacementOperation implements AstOperation {
         final List<String> methodNameCandidates = this.collectMethodNames(targetNode).stream()
                 .filter(name -> !targetMethodCallExpr.getNameAsString().equals(name)).collect(Collectors.toList());
 
-        final List<Expression> varList = new ArrayList<Expression>();
-        final List<DiffWithType> diffWithTypes = new ArrayList<DiffWithType>();
 
-        // final List<DiffWithType> diffWithTypes =
-        // this.replaceMethodName(targetMethodCallExpr, methodNameCandidates);
+        final List<Node> replacedMethods =
+            this.replaceMethodName(targetMethodCallExpr, methodNameCandidates);
 
-        // exprWithReplacedMethodName.stream()
-        // .forEach(methodCallExpr -> methodCallExpr.findCompilationUnit()
-        // .ifPresent(candidates::add));
-        // exprWithReplacedMethodName.stream()
-        // .flatMap(methodCallExpr -> new
-        // VariableReplacementOperation().exec(methodCallExpr).stream())
-        // .forEach(candidates::add);
+        final List<Node> replacedArgmentsMethods = replaceArgments(replacedMethods, targetNode);
 
-        // return candidates;
+        final List<DiffWithType> diffWithTypes = replacedArgmentsMethods.stream()
+            .map(node -> new DiffWithType(ModifyType.CHANGE, targetNode, node))
+            .collect(Collectors.toList());
+            
         return diffWithTypes;
     }
 
@@ -73,12 +70,30 @@ public class MethodReplacementOperation implements AstOperation {
      * @param methodNames 新しいメソッド名のリスト
      * @return 置換後のMethodCallExprのリスト
      */
-    private List<DiffWithType> replaceMethodName(MethodCallExpr targetExpr, List<String> methodNames) {
-        List<DiffWithType> diffWithTypes = methodNames.stream()
+    private List<Node> replaceMethodName(MethodCallExpr targetExpr, List<String> methodNames) {
+        List<Node> replacedMethods = methodNames.stream()
                 .map(name -> new MethodCallExpr(new ThisExpr(), name, targetExpr.getArguments()))
-                .map(expr -> new DiffWithType(DiffWithType.ModifyType.CHANGE, targetExpr, expr))
                 .collect(Collectors.toList());
-        return diffWithTypes;
+        return replacedMethods;
+    }
+
+    private List<Node> replaceArgments(List<Node> targetMethods, Node scope) {
+        final DeclarationCollector collector = new DeclarationCollector();
+        final List<String> fieldNames = collector.collectFileds(scope)
+            .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
+        final List<String> localVarNames = collector.collectLocalVarsDeclared(scope)
+            .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
+        final List<String> parameterNames = collector.collectParameters(scope)
+            .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
+
+        VariableReplacer replacer = new VariableReplacer();
+
+        final List<Node> replacedArgmentsMethods = new ArrayList<Node>();
+        replacedArgmentsMethods.addAll(targetMethods);
+        targetMethods.stream()
+            .map(node -> replacer.replaceAllVariables(node, fieldNames, localVarNames, parameterNames))
+            .forEach(replacedNodes -> replacedArgmentsMethods.addAll(replacedNodes));
+            return replacedArgmentsMethods;
     }
 
 }

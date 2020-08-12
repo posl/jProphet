@@ -37,26 +37,26 @@ public class VariableReplacementOperationTest{
             .append("}\n")
             .toString();
 
-        final List<String> expectedTargetNodeAfterFix = new ArrayList<String>();
-        expectedTargetNodeAfterFix.add("this.mb(this.fa, \"fuga\")");
-        expectedTargetNodeAfterFix.add("this.mb(\"hoge\", this.fa)");
-        expectedTargetNodeAfterFix.add("this.mb(this.fb, \"fuga\")");
-        expectedTargetNodeAfterFix.add("this.mb(\"hoge\", this.fb)");
-        expectedTargetNodeAfterFix.add("this.mb(la, \"fuga\")");
-        expectedTargetNodeAfterFix.add("this.mb(\"hoge\", la)");
-        expectedTargetNodeAfterFix.add("this.mb(pa, \"fuga\")");
-        expectedTargetNodeAfterFix.add("this.mb(\"hoge\", pa)");
-        expectedTargetNodeAfterFix.add("this.mb(pb, \"fuga\")");
-        expectedTargetNodeAfterFix.add("this.mb(\"hoge\", pb)");
+        final List<String> expectedSources = new ArrayList<String>();
+        expectedSources.add("this.mb(this.fa, \"fuga\")");
+        expectedSources.add("this.mb(\"hoge\", this.fa)");
+        expectedSources.add("this.mb(this.fb, \"fuga\")");
+        expectedSources.add("this.mb(\"hoge\", this.fb)");
+        expectedSources.add("this.mb(la, \"fuga\")");
+        expectedSources.add("this.mb(\"hoge\", la)");
+        expectedSources.add("this.mb(pa, \"fuga\")");
+        expectedSources.add("this.mb(\"hoge\", pa)");
+        expectedSources.add("this.mb(pb, \"fuga\")");
+        expectedSources.add("this.mb(\"hoge\", pb)");
 
         final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        final List<String> actualTargetNodeAfterFix = new ArrayList<String>();
+        final List<String> actualSources = new ArrayList<String>();
         for(Node node : nodes){
             final VariableReplacementOperation vr = new VariableReplacementOperation();
             final List<DiffWithType> results = vr.exec(node);
-            actualTargetNodeAfterFix.addAll(results.stream().map(result -> result.getTargetNodeAfterFix().toString()).collect(Collectors.toList()));
+            actualSources.addAll(results.stream().map(result -> result.getTargetNodeAfterFix().toString()).collect(Collectors.toList()));
         }
-        assertThat(actualTargetNodeAfterFix).containsOnlyElementsOf(expectedTargetNodeAfterFix);
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
         return;
     }
 

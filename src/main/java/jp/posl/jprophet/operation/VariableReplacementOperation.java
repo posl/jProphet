@@ -1,26 +1,12 @@
 package jp.posl.jprophet.operation;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.AssignExpr;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
 
 import jp.posl.jprophet.patch.DiffWithType;
 import jp.posl.jprophet.patch.DiffWithType.ModifyType;
-
-import com.github.javaparser.ast.expr.SimpleName;
-import com.github.javaparser.ast.expr.ThisExpr;
-import com.github.javaparser.ast.stmt.IfStmt;
-import com.github.javaparser.ast.stmt.ReturnStmt;
 
 /**
  * 対象ステートメント中の変数を別のもので置き換える操作を行う
@@ -48,7 +34,7 @@ public class VariableReplacementOperation implements AstOperation {
             .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
         final List<String> parameterNames = collector.collectParameters(targetNode)
             .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
-            
+
         final VariableReplacer replacer = new VariableReplacer();
         final List<Node> replacedNodes = replacer.replaceAllVariables(targetNode, fieldNames, localVarNames, parameterNames);
         List<DiffWithType> candidates = replacedNodes.stream()
