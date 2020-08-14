@@ -44,7 +44,6 @@ public class MethodReplacementOperationTest {
         for(Node node : nodes){
             final List<DiffWithType> results = new MethodReplacementOperation().exec(node);
             for (DiffWithType result : results){
-                System.out.println(result.getTargetNodeAfterFix().toString());
                 actualSources.add(result.getTargetNodeAfterFix().toString());
             }
         }

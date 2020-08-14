@@ -3,6 +3,7 @@ package jp.posl.jprophet.operation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.AssignExpr;
@@ -14,6 +15,7 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.ThisExpr;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 
@@ -30,6 +32,18 @@ public class VariableReplacer {
         replacedNodes.addAll(this.replaceVariables(targetNode, constructVar, localVarNames));
         replacedNodes.addAll(this.replaceVariables(targetNode, constructVar, parameterNames));
         return replacedNodes;
+    }
+
+    public List<Node> replaceAllVariablesForStatement(Node targetNode, List<String> fieldNames, List<String> localVarNames,
+    List<String> parameterNames) {
+        if(targetNode instanceof ExpressionStmt) {
+            final List<Node> replacedNodes = replaceAllVariables(((ExpressionStmt)targetNode).getExpression(), fieldNames, localVarNames, parameterNames);
+            return replacedNodes.stream().map(expr -> new ExpressionStmt((Expression)expr)).collect(Collectors.toList());
+        }
+        else {
+            final List<Node> replacedNodes = replaceAllVariables(targetNode, fieldNames, localVarNames, parameterNames);
+            return replacedNodes;
+        }
     }
 
     /**

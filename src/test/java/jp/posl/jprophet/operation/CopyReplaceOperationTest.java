@@ -3,6 +3,7 @@ package jp.posl.jprophet.operation;
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.patch.DiffWithType;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
@@ -21,72 +22,47 @@ public class CopyReplaceOperationTest{
      * copiedStatementが置換でき,targetStatementの前にコピペされているかテスト
      */
 
-     /*
+    
     @Test public void testForStatementCopy(){
         
-        final String beforeCopiedStatement = new StringBuilder().append("")
+        final String targetSource = new StringBuilder().append("")
             .append("public class A {\n")
             .append("    private String fa = \"a\";\n")
             .append("    private String fb = \"a\";\n")
             .append("    private void ma(String pa, String pb) {\n")
             .append("        String la = \"b\";\n")
-            .toString();
-        
-        final String statementToBeCopied = 
-            "        this.mb(\"hoge\", \"fuga\");\n";
-
-        final String targetStatement = 
-            "        la = \"d\";\n";
-
-        final String afterTargetStatement = new StringBuilder().append("")
+            .append("        this.mb(\"hoge\", \"fuga\");\n")
+            .append("        la = \"d\";\n")
             .append("    }\n")
             .append("    private void mb(String a, String b) {\n")
             .append("    }\n")
             .append("}\n")
             .toString();
 
-        final String targetSource = new StringBuilder().append("")
-            .append(beforeCopiedStatement)
-            .append(statementToBeCopied)
-            .append(targetStatement)
-            .append(afterTargetStatement)
-            .toString();
 
-        final List<String> expectedTargetSources = new ArrayList<String>();
-        expectedTargetSources.add("        this.mb(this.fa, \"fuga\");\n");
-        expectedTargetSources.add("        this.mb(\"hoge\", this.fa);\n");
-        expectedTargetSources.add("        this.mb(this.fb, \"fuga\");\n");
-        expectedTargetSources.add("        this.mb(\"hoge\", this.fb);\n");
-        expectedTargetSources.add("        this.mb(la, \"fuga\");\n");
-        expectedTargetSources.add("        this.mb(\"hoge\", la);\n");
-        expectedTargetSources.add("        this.mb(pa, \"fuga\");\n");
-        expectedTargetSources.add("        this.mb(\"hoge\", pa);\n");
-        expectedTargetSources.add("        this.mb(pb, \"fuga\");\n");
-        expectedTargetSources.add("        this.mb(\"hoge\", pb);\n");
-
-        final List<String> expectedSources = expectedTargetSources.stream()
-            .map(str -> {
-                return new StringBuilder().append("")
-                    .append(beforeCopiedStatement)
-                    .append(statementToBeCopied)
-                    .append(str)
-                    .append(targetStatement)
-                    .append(afterTargetStatement)
-                    .toString();
-            })
-            .collect(Collectors.toList());
+        final List<String> expectedSources = new ArrayList<String>();
+        expectedSources.add("this.mb(this.fa, \"fuga\");");
+        expectedSources.add("this.mb(\"hoge\", this.fa);");
+        expectedSources.add("this.mb(this.fb, \"fuga\");");
+        expectedSources.add("this.mb(\"hoge\", this.fb);");
+        expectedSources.add("this.mb(la, \"fuga\");");
+        expectedSources.add("this.mb(\"hoge\", la);");
+        expectedSources.add("this.mb(pa, \"fuga\");");
+        expectedSources.add("this.mb(\"hoge\", pa);");
+        expectedSources.add("this.mb(pb, \"fuga\");");
+        expectedSources.add("this.mb(\"hoge\", pb);");
 
         final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        final List<String> candidateSources = new ArrayList<String>();
+        final List<String> actualSources = new ArrayList<String>();
         for(Node node : nodes){
             final CopyReplaceOperation cr = new CopyReplaceOperation();
-            final List<CompilationUnit> cUnits = cr.exec(node);
-            for (CompilationUnit cUnit : cUnits){
-                LexicalPreservingPrinter.setup(cUnit);
-                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
+            final List<DiffWithType> results = cr.exec(node);
+            for (DiffWithType result : results){
+                System.out.println(result.getTargetNodeAfterFix().toString());
+                actualSources.add(result.getTargetNodeAfterFix().toString());
             }
         }
-        assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
         return;
     }
 
