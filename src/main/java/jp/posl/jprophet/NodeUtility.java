@@ -493,7 +493,6 @@ public final class NodeUtility {
             }
             if (tokenToDelete.getRange().equals(endTokenOfTarget.getRange())){
                 tokenToDelete.deleteToken();
-                beginTokenOfTarget.deleteToken();
                 break;
             }
             tokenToDelete.deleteToken();
