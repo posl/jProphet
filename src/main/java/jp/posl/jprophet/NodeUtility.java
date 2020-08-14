@@ -497,7 +497,7 @@ public final class NodeUtility {
                 break;
             }
             tokenToDelete.deleteToken();
-            tokenToDelete = beginTokenOfTarget.getNextToken().orElseThrow();
+            tokenToDelete = tokenToDelete.getNextToken().orElseThrow();
         }
 
         JavaToken begin = beginTokenOfTarget.getPreviousToken().orElseThrow();
