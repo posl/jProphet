@@ -5,7 +5,15 @@ import os
 import json
 import random
 
-def collectCommits(token):
+def collectFixCommits(token):
+    """GitHubのリポジトリから修正コミットの情報を収集する
+
+    Args:
+        token (str): GitHubのパーソナルアクセストークン
+
+    Returns:
+        dict: 修正コミットの情報（sha, ファイルURLなど）
+    """
     g = Github(token)
     repoNames = []
     with open('model/repoNames.txt', mode='r') as f:
@@ -35,7 +43,15 @@ def collectCommits(token):
                 fixCommits.append(fixCommit)
     return fixCommits
 
-def export(fixCommits, genSize, outputPath):
+def export(fixCommits, genSize, exportPath):
+    """修正コミットの修正前後のファイルを出力する
+
+    Args:
+        fixCommits (list of dict): 修正コミットのリスト
+        genSize (int): 出力する修正パッチの数の上限(対象コミットからランダムに選定)
+        exportPath (str): 出力先パス
+    """
+    # シャッフルして先頭からgenSize分だけ出力
     random.shuffle(fixCommits)
 
     for fixCommit in fixCommits[0:genSize]:
@@ -47,11 +63,11 @@ def export(fixCommits, genSize, outputPath):
                 fixedFileString = requests.get(fixedUrl).text
 
                 pattern = '.+\/(.+\.java)$'
-                result = re.match(pattern, fileDict['filename'])
-                if result:
-                    fileName = result.group(1)
-                    originalDirPath = f'{outputPath}/{fixCommit["repoName"].replace("/", "_")}-{fixCommit["sha"][0:5]}-{fileName}/original/'
-                    fixedDirPath    = f'{outputPath}/{fixCommit["repoName"].replace("/", "_")}-{fixCommit["sha"][0:5]}-{fileName}/fixed/'
+                isJavaFile = re.match(pattern, fileDict['filename'])
+                if isJavaFile:
+                    fileName = isJavaFile.group(1)
+                    originalDirPath = f'{exportPath}/{fixCommit["repoName"].replace("/", "_")}-{fixCommit["sha"][0:5]}-{fileName}/original/'
+                    fixedDirPath    = f'{exportPath}/{fixCommit["repoName"].replace("/", "_")}-{fixCommit["sha"][0:5]}-{fileName}/fixed/'
                     originalPath = originalDirPath + fileName
                     fixedPath    = fixedDirPath + fileName
                     os.makedirs(originalDirPath, exist_ok=True)
@@ -69,5 +85,5 @@ if __name__ == '__main__':
     token = config['token']
     genSize = config['maxGenSize']
     outputPath = config['outputPath']
-    fixCommits = collectCommits(token)
+    fixCommits = collectFixCommits(token)
     export(fixCommits, genSize, outputPath)
