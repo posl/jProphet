@@ -18,8 +18,6 @@ public class CondRefinementOperationTest{
     /**
      * 条件文が置換されているかテスト
      */
-
-    /*
     @Test public void testForConditionReplacement(){
 
         final String beforeTargetStatement = new StringBuilder().append("")
@@ -48,40 +46,20 @@ public class CondRefinementOperationTest{
 
 
         final List<String> expectedTargetSources = new ArrayList<String>();
-        expectedTargetSources.add("        if ((method1() && method2()) || (fa == null)) {\n");
-        expectedTargetSources.add("        if ((method1() && method2()) || (fa != null)) {\n");
-        expectedTargetSources.add("        if ((method1() && method2()) || (lb == null)) {\n");
-        expectedTargetSources.add("        if ((method1() && method2()) || (lb != null)) {\n");
-        expectedTargetSources.add("        if ((method1() && method2()) || (true)) {\n");
-        expectedTargetSources.add("        if ((method1() && method2()) && !(fa == null)) {\n");
-        expectedTargetSources.add("        if ((method1() && method2()) && !(fa != null)) {\n");
-        expectedTargetSources.add("        if ((method1() && method2()) && !(lb == null)) {\n");
-        expectedTargetSources.add("        if ((method1() && method2()) && !(lb != null)) {\n");
-        expectedTargetSources.add("        if ((method1() && method2()) && !(true)) {\n");
+        expectedTargetSources.add("(method1() && method2()) || (fa == null)");
+        expectedTargetSources.add("(method1() && method2()) || (fa != null)");
+        expectedTargetSources.add("(method1() && method2()) || (lb == null)");
+        expectedTargetSources.add("(method1() && method2()) || (lb != null)");
+        expectedTargetSources.add("(method1() && method2()) || (true)");
+        expectedTargetSources.add("(method1() && method2()) && !(fa == null)");
+        expectedTargetSources.add("(method1() && method2()) && !(fa != null)");
+        expectedTargetSources.add("(method1() && method2()) && !(lb == null)");
+        expectedTargetSources.add("(method1() && method2()) && !(lb != null)");
+        expectedTargetSources.add("(method1() && method2()) && !(true)");
 
+        new OperaionTest().test(targetSource, expectedTargetSources, new CondRefinementOperation());
 
-        final List<String> expectedSources = expectedTargetSources.stream()
-            .map(str -> {
-                return new StringBuilder().append("")
-                    .append(beforeTargetStatement)
-                    .append(str)
-                    .append(afterTargetStatement)
-                    .toString();
-            })
-            .collect(Collectors.toList());
-
-        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        final List<String> candidateSources = new ArrayList<String>();
-        for(Node node : nodes){
-            final CondRefinementOperation cr = new CondRefinementOperation();
-            final List<CompilationUnit> cUnits = cr.exec(node);
-            for (CompilationUnit cUnit : cUnits){
-                LexicalPreservingPrinter.setup(cUnit);
-                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
-            }
-        }
-        assertThat(candidateSources).containsOnlyElementsOf(expectedSources);
         return;
     }
-    */
+
 }
