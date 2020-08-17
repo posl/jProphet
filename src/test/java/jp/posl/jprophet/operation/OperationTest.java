@@ -11,7 +11,7 @@ import com.github.javaparser.ast.Node;
 import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.patch.DiffWithType;
 
-public class OperaionTest {
+public class OperationTest {
     
     public void test(String targetSource, List<String> expectedSources, AstOperation operation) {
         final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
