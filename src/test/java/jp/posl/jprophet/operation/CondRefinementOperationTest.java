@@ -2,17 +2,8 @@ package jp.posl.jprophet.operation;
 
 import org.junit.Test;
 
-import jp.posl.jprophet.NodeUtility;
-
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
-
-import static org.assertj.core.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CondRefinementOperationTest{
     /**

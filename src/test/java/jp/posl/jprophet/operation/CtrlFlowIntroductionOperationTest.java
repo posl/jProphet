@@ -3,13 +3,7 @@ package jp.posl.jprophet.operation;
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.patch.DiffWithType;
-
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
-
-import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -189,9 +183,8 @@ public class CtrlFlowIntroductionOperationTest {
             .toString();
 
             final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-            final List<String> actualSources = new ArrayList<String>();
             for(Node node : nodes){
-                final List<DiffWithType> results = new CtrlFlowIntroductionOperation().exec(node);
+                new CtrlFlowIntroductionOperation().exec(node);
             }
         
         return;

@@ -2,20 +2,14 @@ package jp.posl.jprophet.operation;
 
 import org.junit.Test;
 
-import jp.posl.jprophet.NodeUtility;
-import com.github.javaparser.ast.Node;
-import static org.assertj.core.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class CondIntroductionOperationTest {
     /**
-     * returnをするifブロックが挿入されているかテスト
+     * ifブロックが挿入されているかテスト
      */
-    
     @Test public void test(){
         final String targetSource = new StringBuilder().append("")
             .append("public class A {\n\n")

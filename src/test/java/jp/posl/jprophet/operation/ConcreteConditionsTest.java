@@ -15,6 +15,9 @@ import static org.assertj.core.api.Assertions.*;
 
 public class ConcreteConditionsTest {
 
+    /**
+     * 条件式が正しく生成されているかのテスト
+     */
     @Test public void test() {
         String targetSource = new StringBuilder().append("")
             .append("public class A {\n\n") 
