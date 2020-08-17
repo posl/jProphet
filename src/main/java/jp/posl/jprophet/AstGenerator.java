@@ -17,8 +17,17 @@ import com.github.javaparser.ast.Node;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.project.FileLocator;
 
+/**
+ * ASTを生成する
+ */
 public class AstGenerator {
     
+    /**
+     * 疑惑値が0より大きい行が１行でも存在するファイル(クラス)を全てASTに変換する
+     * @param suspiciousenesses 疑惑値のリスト
+     * @param fileLocators ファイル情報のリスト
+     * @return ファイル情報とCompilationUnitのMap
+     */
     public Map<FileLocator,CompilationUnit> exec(List<Suspiciousness> suspiciousenesses, List<FileLocator> fileLocators) {
         Map<FileLocator, CompilationUnit> fileLocatorMap = new HashMap<FileLocator, CompilationUnit>();
         List<String> excutedSourceFqn = suspiciousenesses.stream()

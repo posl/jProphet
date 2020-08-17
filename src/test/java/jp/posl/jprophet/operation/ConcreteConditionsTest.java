@@ -1,16 +1,12 @@
 package jp.posl.jprophet.operation;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.stmt.IfStmt;
 
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
@@ -32,10 +28,7 @@ public class ConcreteConditionsTest {
             .append("}\n")
             .toString();
 
-        final IfStmt targetIfStmt = JavaParser.parse(targetSource).findFirst(IfStmt.class).get();
-        final Expression abstCondition = targetIfStmt.getCondition();
         final CompilationUnit cu = JavaParser.parse(targetSource);
-        
         final List<VariableDeclarator> varDeclarations = cu.findAll(VariableDeclarator.class);
         final List<Parameter> parameters = cu.findAll(Parameter.class);
 

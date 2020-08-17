@@ -429,7 +429,13 @@ public final class NodeUtility {
         return Optional.of(parsedNode);
     }
 
-
+    /**
+     * CompilationUnitを持たないノードの子ノードの情報を保持したままパースを行う
+     * 返り値はdescendantNodeの方になるため，findRootNode()などでtargetNodeを取得する
+     * @param targetNode 対象ノード
+     * @param descendantNode 対象ノードの子ノード
+     * @return パース後のtargetNodeを根に持つdescendantNode
+     */
     public static Optional<Node> parseNodeWithPointer(Node targetNode, Node descendantNode) {
         Node parsedNode;
         if (targetNode instanceof Statement){
@@ -446,6 +452,13 @@ public final class NodeUtility {
         return Optional.of(newNode);
     }
 
+    /**
+     * CompilationUnitを持たない単体のノードを置換する
+     * CompilationUnitを持たない単体のノードの子ノードを置換する際に利用する
+     * @param targetNode 置換されるノード
+     * @param nodeToReplaceWith 置換するノード
+     * @return 置換後のノード
+     */
     public static Optional<Node> replaceNodeWithoutCompilationUnit(Node targetNode, Node nodeToReplaceWith) {
         Node nodeWithTokenToReplaceWith;
         try {
