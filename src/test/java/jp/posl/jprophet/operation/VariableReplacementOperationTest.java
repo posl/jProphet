@@ -2,13 +2,9 @@ package jp.posl.jprophet.operation;
 
 import org.junit.Test;
 
-import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.patch.DiffWithType;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.javaparser.ast.Node;
 import static org.assertj.core.api.Assertions.*;
 
 
@@ -45,7 +41,8 @@ public class VariableReplacementOperationTest{
         expectedSources.add("this.mb(\"hoge\", pb)");
 
         OperationTest operationTest = new OperationTest();
-        operationTest.test(targetSource, expectedSources, new VariableReplacementOperation());
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new VariableReplacementOperation());
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
     }
 
     /**
@@ -70,7 +67,8 @@ public class VariableReplacementOperationTest{
         expectedSources.add("la = pa");
 
         OperationTest operationTest = new OperationTest();
-        operationTest.test(targetSource, expectedSources, new VariableReplacementOperation());
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new VariableReplacementOperation());
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
     }
 
     /**
@@ -81,143 +79,77 @@ public class VariableReplacementOperationTest{
         .append("import java.util.List;\n")
         .toString();
 
-        final List<Node> nodes = NodeUtility.getAllNodesFromCode(sourceThatHasNothingToReplace);
-        final List<DiffWithType> candidates = new ArrayList<DiffWithType>();
-        for(Node node : nodes){
-            final VariableReplacementOperation vr = new VariableReplacementOperation();
-            candidates.addAll(vr.exec(node));
-        }
-
-        assertThat(candidates.size()).isZero();
+        OperationTest operationTest = new OperationTest();
+        final List<String> actualSources = operationTest.applyOperation(sourceThatHasNothingToReplace, new VariableReplacementOperation());
+        assertThat(actualSources.size()).isZero();
         return;
     }
 
     /**
      * 生成した修正パッチ候補に元のステートメントと同じものが含まれていないことをテスト
      */
-    /*
     @Test public void testThatCandidatesDoesNotContainOriginalInAssignExpr(){
-        final String targetStatement = 
-                "        la = lb;\n"; 
 
-        final String source = new StringBuilder().append("")
+        final String targetSource = new StringBuilder().append("")
         .append("public class A {\n")
         .append("    private void ma() {\n")
         .append("        String la = \"a\";\n")
         .append("        String lb = \"b\";\n")
-        .append(targetStatement)
+        .append("        la = lb;\n")
         .append("    }\n")
         .append("}\n")
         .toString();
 
-        final String expectedTargetStatement = 
-                "        la = lb;\n"; 
-        final String expectedSource = new StringBuilder().append("")
-        .append("public class A {\n")
-        .append("    private void ma() {\n")
-        .append("        String la = \"a\";\n")
-        .append("        String lb = \"b\";\n")
-        .append(expectedTargetStatement) 
-        .append("    }\n")
-        .append("}\n")
-        .toString();
+        final String expectedSource = "la = lb"; 
 
-        final List<Node> nodes = NodeUtility.getAllNodesFromCode(source);
-        final List<String> candidateSources = new ArrayList<String>();
-        for(Node node : nodes){
-            final VariableReplacementOperation vr = new VariableReplacementOperation();
-            final List<CompilationUnit> cUnits = vr.exec(node);
-            for (CompilationUnit cUnit : cUnits){
-                LexicalPreservingPrinter.setup(cUnit);
-                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
-            }
-        }
-
-        assertThat(candidateSources).doesNotContain(expectedSource);
+        OperationTest operationTest = new OperationTest();
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new VariableReplacementOperation());
+        assertThat(actualSources).doesNotContain(expectedSource);
         return;
     }
 
     /**
      * 変化のない置換が行われていないかテスト
      */
-    /*
     @Test public void testThatCandidatesDoesNotContainOriginalInArgs(){
-        final String targetStatement = 
-                "        hoge(la);\n"; 
 
-        final String source = new StringBuilder().append("")
+        final String targetSource = new StringBuilder().append("")
         .append("public class A {\n")
         .append("   private void ma() {\n")
         .append("       String la = \"a\";\n")
         .append("       String lb = \"b\";\n")
-        .append(targetStatement)
+        .append("       hoge(la);\n")
         .append("   }\n")
         .append("}\n")
         .toString();
 
-        final String targetStatementAsRepairUnitToString = "hoge(la)"; 
+        final String expectedSource = "hoge(la)"; 
 
-        final List<Node> nodes = NodeUtility.getAllNodesFromCode(source);
-        final List<String> candidateSources = new ArrayList<String>();
-        for(Node node : nodes){
-            final VariableReplacementOperation vr = new VariableReplacementOperation();
-            final List<CompilationUnit> cUnits = vr.exec(node);
-            for (CompilationUnit cUnit : cUnits){
-                LexicalPreservingPrinter.setup(cUnit);
-                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
-            }
-        }
-
-        assertThat(candidateSources).doesNotContain(targetStatementAsRepairUnitToString);
-        return;
+        OperationTest operationTest = new OperationTest();
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new VariableReplacementOperation());
+        assertThat(actualSources).doesNotContain(expectedSource);
     }
 
     /**
      * 置換先候補について基本型に対応しているかテスト  
      * 基本型に対応していないバグがあったので追加
      */
-    /*
     @Test public void testForCollectPrimitiveType(){
-        final String targetStatement = 
-                "        hoge(0);\n"; 
 
-        final String beforeTargetStatement = new StringBuilder().append("")
+        final String targetSource = new StringBuilder().append("")
             .append("public class A {\n")
             .append("    private void ma() {\n")
             .append("        int la = 1;\n")
-            .toString();
-
-        final String afterTargetStatement = new StringBuilder().append("")
+            .append("        hoge(0);\n")
             .append("    }\n")
             .append("}\n")
             .toString();
 
-        final String targetSource = new StringBuilder().append("")
-            .append(beforeTargetStatement)
-            .append(targetStatement)
-            .append(afterTargetStatement)
-            .toString();
+        final String expectedSource = "hoge(la)";
 
-
-        final String expectedSource = new StringBuilder().append("")
-            .append(beforeTargetStatement)
-            .append("        hoge(la);\n")
-            .append(afterTargetStatement)
-            .toString();
-
-        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        final List<String> candidateSources = new ArrayList<String>();
-        for(Node node : nodes){
-            final VariableReplacementOperation vr = new VariableReplacementOperation();
-            final List<CompilationUnit> cUnits = vr.exec(node);
-            for (CompilationUnit cUnit : cUnits){
-                LexicalPreservingPrinter.setup(cUnit);
-                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
-            }
-        }
-
-        assertThat(candidateSources).contains(expectedSource);
-        return;
+        OperationTest operationTest = new OperationTest();
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new VariableReplacementOperation());
+        assertThat(actualSources).contains(expectedSource);
     }
 
     /**
@@ -245,7 +177,8 @@ public class VariableReplacementOperationTest{
         expectedSources.add("la == pa");
 
         OperationTest operationTest = new OperationTest();
-        operationTest.test(targetSource, expectedSources, new VariableReplacementOperation());
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new VariableReplacementOperation());
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
     }
 
     /**
@@ -270,7 +203,8 @@ public class VariableReplacementOperationTest{
         expectedSources.add("pa");
 
         OperationTest operationTest = new OperationTest();
-        operationTest.test(targetSource, expectedSources, new VariableReplacementOperation());
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new VariableReplacementOperation());
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
     }
 
     /**
@@ -294,6 +228,7 @@ public class VariableReplacementOperationTest{
         expectedSources.add("return pa;");
 
         OperationTest operationTest = new OperationTest();
-        operationTest.test(targetSource, expectedSources, new VariableReplacementOperation());
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new VariableReplacementOperation());
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
     }
 }

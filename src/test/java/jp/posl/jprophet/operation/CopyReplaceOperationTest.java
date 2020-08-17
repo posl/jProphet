@@ -46,7 +46,8 @@ public class CopyReplaceOperationTest{
         expectedSources.add("this.mb(\"hoge\", pb);");
 
         OperationTest operationTest = new OperationTest();
-        operationTest.test(targetSource, expectedSources, new CopyReplaceOperation());
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new CopyReplaceOperation());
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
     }
 
     /**
@@ -75,26 +76,21 @@ public class CopyReplaceOperationTest{
         expectedSources.add("la = pa;");
 
         OperationTest operationTest = new OperationTest();
-        operationTest.test(targetSource, expectedSources, new CopyReplaceOperation());
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new CopyReplaceOperation());
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
     }
 
     /**
      * クラス外のステートメントに対して正常に動作するかテスト
      */
-    /*
     @Test public void testForWhenThereIsNoCopy(){
         final String sourceThatHasNothingToReplace = new StringBuilder().append("")
         .append("import java.util.List;\n")
         .toString();
 
-        List<Node> nodes = NodeUtility.getAllNodesFromCode(sourceThatHasNothingToReplace);
-        List<Node> candidates = new ArrayList<Node>();
-        for(Node node : nodes){
-            CopyReplaceOperation cr = new CopyReplaceOperation();
-            candidates.addAll(cr.exec(node));
-        }
-
-        assertThat(candidates.size()).isZero();
+        OperationTest operationTest = new OperationTest();
+        final List<String> actualSources = operationTest.applyOperation(sourceThatHasNothingToReplace, new CopyReplaceOperation());
+        assertThat(actualSources.size()).isZero();
         return;
     }
 
@@ -142,6 +138,7 @@ public class CopyReplaceOperationTest{
         assertThat(candidateSources).doesNotContain(expectedSource);
         return;
     }
+    */
 
     /**
      * 少し複雑なコードで動作するかどうかテスト
@@ -171,7 +168,7 @@ public class CopyReplaceOperationTest{
             .toString();
 
         OperationTest operationTest = new OperationTest();
-        //operationTest.test(targetSource, new ArrayList<String>(), new CopyReplaceOperation());
+        operationTest.applyOperation(targetSource, new CopyReplaceOperation());
     }
 
     /**
@@ -205,6 +202,6 @@ public class CopyReplaceOperationTest{
             .toString();
 
         OperationTest operationTest = new OperationTest();
-        //operationTest.test(targetSource, new ArrayList<String>(), new CopyReplaceOperation());
+        operationTest.applyOperation(targetSource, new CopyReplaceOperation());
     }
 }

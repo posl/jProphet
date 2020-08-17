@@ -2,14 +2,8 @@ package jp.posl.jprophet.operation;
 
 import org.junit.Test;
 
-import jp.posl.jprophet.NodeUtility;
-import jp.posl.jprophet.patch.DiffWithType;
-
-import com.github.javaparser.ast.Node;
-
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MethodReplacementOperationTest {
@@ -39,15 +33,8 @@ public class MethodReplacementOperationTest {
                     "this.mc(\"hoge\", this.fa)"
         );
 
-        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        final List<String> actualSources = new ArrayList<String>();
-        for(Node node : nodes){
-            final List<DiffWithType> results = new MethodReplacementOperation().exec(node);
-            for (DiffWithType result : results){
-                actualSources.add(result.getTargetNodeAfterFix().toString());
-            }
-        }
+        OperationTest operationTest = new OperationTest();
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new MethodReplacementOperation());
         assertThat(actualSources).containsOnlyElementsOf(expectedSources);
-        return;
     }
 }
