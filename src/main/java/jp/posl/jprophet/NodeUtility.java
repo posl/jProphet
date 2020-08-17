@@ -440,6 +440,7 @@ public final class NodeUtility {
             return Optional.empty();
         }
         List<Node> nodes = NodeUtility.getAllDescendantNodes(parsedNode);
+        nodes.add(parsedNode);
         Node newNode = nodes.stream().filter(n -> {
             return n.equals(descendantNode) && n.getRange().equals(descendantNode.getRange());
         }).findFirst().orElseThrow();
