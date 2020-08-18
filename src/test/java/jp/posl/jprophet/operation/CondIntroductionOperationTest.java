@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.*;
 
 public class CondIntroductionOperationTest {
     /**
@@ -59,9 +60,9 @@ public class CondIntroductionOperationTest {
             .toString()
         );
 
-        new OperaionTest().test(targetSource, expectedSources, new CondIntroductionOperation());
-        
-        return;
+        OperationTest operationTest = new OperationTest();
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new CondIntroductionOperation());
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
     }
     
 }

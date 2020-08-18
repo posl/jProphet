@@ -2,12 +2,10 @@ package jp.posl.jprophet.operation;
 
 import org.junit.Test;
 
-import jp.posl.jprophet.NodeUtility;
-import com.github.javaparser.ast.Node;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.*;
 
 public class CtrlFlowIntroductionOperationTest {
     /**
@@ -56,9 +54,9 @@ public class CtrlFlowIntroductionOperationTest {
             .toString()
         );
 
-        new OperaionTest().test(targetSource, expectedSources, new CtrlFlowIntroductionOperation());
-
-        return;
+        OperationTest operationTest = new OperationTest();
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new CtrlFlowIntroductionOperation());
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
     }
 
     /**
@@ -113,9 +111,9 @@ public class CtrlFlowIntroductionOperationTest {
             .toString()
         );
 
-        new OperaionTest().test(targetSource, expectedSources, new CtrlFlowIntroductionOperation());
-        
-        return;
+        OperationTest operationTest = new OperationTest();
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new CtrlFlowIntroductionOperation());
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
     }
 
     /**
@@ -146,9 +144,9 @@ public class CtrlFlowIntroductionOperationTest {
             .toString()
         );
 
-        new OperaionTest().test(targetSource, expectedSources, new CtrlFlowIntroductionOperation());
-
-        return;
+        OperationTest operationTest = new OperationTest();
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new CtrlFlowIntroductionOperation());
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
     }
 
     /**
@@ -182,11 +180,8 @@ public class CtrlFlowIntroductionOperationTest {
             .append("}\n")
             .toString();
 
-            final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-            for(Node node : nodes){
-                new CtrlFlowIntroductionOperation().exec(node);
-            }
-        
-        return;
+
+        OperationTest operationTest = new OperationTest();
+        operationTest.applyOperation(targetSource, new CtrlFlowIntroductionOperation());
     }
 }

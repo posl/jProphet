@@ -5,6 +5,8 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.*;
+
 public class CondRefinementOperationTest{
     /**
      * 条件文が置換されているかテスト
@@ -48,7 +50,9 @@ public class CondRefinementOperationTest{
         expectedTargetSources.add("(method1() && method2()) && !(lb != null)");
         expectedTargetSources.add("(method1() && method2()) && !(true)");
 
-        new OperaionTest().test(targetSource, expectedTargetSources, new CondRefinementOperation());
+        OperationTest operationTest = new OperationTest();
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new CondRefinementOperation());
+        assertThat(actualSources).containsOnlyElementsOf(expectedTargetSources);
 
         return;
     }
