@@ -8,7 +8,7 @@ public class FizzBuzz {
             return "Buzz";
         if(i % 3 == 0)
             return "Fizz";
-        return String.valueOf(0); // bug here
+        return String.valueOf(0);
     }
 
     public static void main(String[] args) {

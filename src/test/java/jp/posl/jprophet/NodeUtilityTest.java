@@ -468,6 +468,9 @@ public class NodeUtilityTest {
         assertThat(newNode.getComment().isPresent()).isFalse();
     }
 
+    /**
+     * parseNodeWithPointerのテスト
+     */
     @Test public void testParseNodeWithPointer() {
         Statement statement = nodeList.get(1);
         Statement parsedStatement = (Statement)NodeUtility.initTokenRange(statement).get();
@@ -477,6 +480,9 @@ public class NodeUtilityTest {
         assertThat(NodeUtility.lexicalPreservingPrint(newRootNode)).isEqualTo("la = \"hoge\";");
     }
 
+    /**
+     * replaceWithoutCompilationUnitのテスト
+     */
     @Test public void testReplaceWithoutCompilationUnit() {
         Statement statement = nodeList.get(1);
         Statement parsedStatement = (Statement)NodeUtility.initTokenRange(statement).get();

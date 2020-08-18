@@ -22,8 +22,8 @@ public class ConcreteConditions {
 
     /**
      * 参照可能な変数から以下の複数の条件式を生成する</br>
-     * 
-     * @param abstCondition 条件式を生成したい箇所のExpressionノード
+     * @param vars 変数のリスト
+     * @param parameters パラメータのリスト
      */
 	public ConcreteConditions(List<VariableDeclarator> vars, List<Parameter> parameters) {
         final List<String> booleanVarNames = this.collectBooleanNames(vars, parameters);
