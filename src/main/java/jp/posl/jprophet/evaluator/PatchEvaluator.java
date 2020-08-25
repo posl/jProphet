@@ -39,6 +39,13 @@ public class PatchEvaluator {
         }
     }
 
+    /**
+     * パッチ候補をProphetの学習モデルとフォルトローカリゼーション（FL）により算出された疑惑値を用いてランク付けしソートする
+     * @param candidates パッチ候補のリスト
+     * @param suspiciousnessList FLの疑惑値のリスト
+     * @param config 修正の設定
+     * @return ソート済みのパッチ候補リスト
+     */
     public List<PatchCandidate> sort(List<PatchCandidate> candidates, List<Suspiciousness> suspiciousnessList, RepairConfiguration config) {
         if(config.getParameterPath().isPresent()) {
             final String parameterPath = config.getParameterPath().orElseThrow();
@@ -53,7 +60,7 @@ public class PatchEvaluator {
                     .collect(Collectors.toList());
                 final List<PatchCandidate> sortedPatchCandidates = candidates.stream()
                     .sorted(Comparator.comparingDouble(candidate ->
-                        this.calculateScore(candidate, suspiciousnessList, parameter)))
+                        this.calculateScore(candidate, this.getSuspiciousnessValueFromPatch(patchCandidate, suspiciousnessList), parameter)))
                     .collect(Collectors.toList());
                 return sortedPatchCandidates;
             } catch (IOException | IllegalFormatException e) {
@@ -71,8 +78,14 @@ public class PatchEvaluator {
         }
     }
 
-    private double calculateScore(PatchCandidate patchCandidate, List<Suspiciousness> suspiciousnessList, List<Double> parameter) {
-        final double suspiciousness = this.getSuspiciousnessValueFromPatch(patchCandidate, suspiciousnessList);
+    /**
+     * Prophetの学習アルゴリズムに基づいてパッチのスコアを計算する
+     * @param patchCandidate パッチ候補
+     * @param suspiciousness FL疑惑値
+     * @param parameter 学習済みパラメータ
+     * @return スコア
+     */
+    private double calculateScore(PatchCandidate patchCandidate, double suspiciousness, List<Double> parameter) {
         final double beta = 0.02;
         final double A = Math.pow((1 - beta), suspiciousness);
         final FeatureExtractor extractor = new FeatureExtractor();

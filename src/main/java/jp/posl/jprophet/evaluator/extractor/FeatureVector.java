@@ -11,7 +11,7 @@ import jp.posl.jprophet.evaluator.extractor.ModKinds.ModKind;
 import jp.posl.jprophet.evaluator.extractor.VariableCharacteristics.VarChar;
 
 /**
- * パッチの特徴ベクトルを表現するクラス
+ * パッチの特徴ベクトルを二値ベクトルとして表現するクラス
  */
 public class FeatureVector {
     final List<Boolean> modKindVector;
@@ -30,8 +30,8 @@ public class FeatureVector {
     }
 
     /**
-     * バイナリベクトルとして取得
-     * @return ベクトル
+     * 二値ベクトルの1をtrue，0をfalseとしたBooleanのリストとして取得
+     * @return Booleanリスト
      */
     public List<Boolean> asBooleanList() {
         List<Boolean> vector = new ArrayList<>();
@@ -41,6 +41,10 @@ public class FeatureVector {
         return vector;
     }
 
+    /**
+     * 二値ベクトルの1を整数1，0を整数0としたIntegerのリストとして取得
+     * @return 整数リスト
+     */
     public List<Integer> asIntegerList() {
         List<Integer> vec = this.asBooleanList().stream()
             .map(bit -> bit ? 1 : 0)
@@ -48,6 +52,10 @@ public class FeatureVector {
         return vec;
     }
 
+    /**
+     * 二値ベクトルの1を実数1.0，0を実数0.0としたDoubleのリストとして取得
+     * @return 実数リスト
+     */
     public List<Double> asDoubleList() {
         List<Double> vec = this.asBooleanList().stream()
             .map(bit -> bit ? 1.0 : 0.0)
