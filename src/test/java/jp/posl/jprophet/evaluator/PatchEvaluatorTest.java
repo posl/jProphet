@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.fl.Suspiciousness;
-import jp.posl.jprophet.patch.DefaultPatchCandidate;
+import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.patch.PatchCandidate;
 
 public class PatchEvaluatorTest {
@@ -21,13 +21,13 @@ public class PatchEvaluatorTest {
      */
     @Test public void testIfSortedBySuspiciousness(){
         final List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
-        final PatchCandidate candidate1 = mock(DefaultPatchCandidate.class);
+        final PatchCandidate candidate1 = mock(PatchCandidate.class);
         when(candidate1.getLineNumber()).thenReturn(Optional.of(1));
         when(candidate1.getFqn()).thenReturn("a");
-        final PatchCandidate candidate2 = mock(DefaultPatchCandidate.class);
+        final PatchCandidate candidate2 = mock(PatchCandidate.class);
         when(candidate2.getLineNumber()).thenReturn(Optional.of(2));
         when(candidate2.getFqn()).thenReturn("b");
-        final PatchCandidate candidate3 = mock(DefaultPatchCandidate.class);
+        final PatchCandidate candidate3 = mock(PatchCandidate.class);
         when(candidate3.getLineNumber()).thenReturn(Optional.of(3));
         when(candidate3.getFqn()).thenReturn("c");
 

@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.evaluator.extractor.FeatureExtractor;
 import jp.posl.jprophet.fl.Suspiciousness;
-import jp.posl.jprophet.patch.DefaultPatchCandidate;
+import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.patch.PatchCandidate;
 
 /**
@@ -60,7 +60,7 @@ public class PatchEvaluator {
                     .collect(Collectors.toList());
                 final List<PatchCandidate> sortedPatchCandidates = candidates.stream()
                     .sorted(Comparator.comparingDouble(candidate ->
-                        this.calculateScore(candidate, this.getSuspiciousnessValueFromPatch(patchCandidate, suspiciousnessList), parameter)))
+                        this.calculateScore(candidate, this.getSuspiciousnessValueFromPatch(candidate, suspiciousnessList), parameter)))
                     .collect(Collectors.toList());
                 return sortedPatchCandidates;
             } catch (IOException | IllegalFormatException e) {
@@ -89,7 +89,7 @@ public class PatchEvaluator {
         final double beta = 0.02;
         final double A = Math.pow((1 - beta), suspiciousness);
         final FeatureExtractor extractor = new FeatureExtractor();
-        final List<Double> vec = extractor.extract((DefaultPatchCandidate)patchCandidate).asDoubleList();
+        final List<Double> vec = extractor.extract((PatchCandidate)patchCandidate).asDoubleList();
         if (vec.size() != parameter.size()) {
             throw new IllegalArgumentException();
         }
