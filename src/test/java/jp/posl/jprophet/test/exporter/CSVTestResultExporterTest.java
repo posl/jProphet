@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import jp.posl.jprophet.patch.PatchCandidate;
-import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.spotbugs.SpotBugsWarning;
 import jp.posl.jprophet.test.result.SpotBugsTestResult;
 import jp.posl.jprophet.test.result.TestResult;

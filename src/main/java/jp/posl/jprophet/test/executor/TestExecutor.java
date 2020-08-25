@@ -1,7 +1,5 @@
 package jp.posl.jprophet.test.executor;
 
-import java.util.List;
-
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.test.result.TestExecutorResult;
 

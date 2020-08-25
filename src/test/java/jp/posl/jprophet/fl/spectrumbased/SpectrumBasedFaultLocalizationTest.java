@@ -3,7 +3,6 @@ package jp.posl.jprophet.fl.spectrumbased;
 import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.fl.Suspiciousness;
-import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Jaccard;
 

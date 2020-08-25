@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import jp.posl.jprophet.patch.PatchCandidate;
-import jp.posl.jprophet.test.result.TestResult;
 
 
 /**

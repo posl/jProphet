@@ -17,7 +17,6 @@ import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.evaluator.extractor.FeatureExtractor;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.patch.PatchCandidate;
-import jp.posl.jprophet.patch.PatchCandidate;
 
 /**
  * 疑惑値などに応じてパッチを評価する

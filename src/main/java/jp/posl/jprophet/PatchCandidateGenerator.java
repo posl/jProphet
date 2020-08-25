@@ -16,7 +16,6 @@ import com.github.javaparser.ast.Node;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.operation.AstOperation;
 import jp.posl.jprophet.patch.PatchCandidate;
-import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.project.FileLocator;
 import jp.posl.jprophet.project.Project;
 
