@@ -34,6 +34,7 @@ public class PatchedProjectGeneratorTest{
     private String resultDir;
     private RepairConfiguration config;
     private PatchedProjectGenerator patchedProjectGenerator;
+    private String parameterPath;
 
     @Before public void setUp(){
         this.projectPath = "src/test/resources/testGradleProject01";
@@ -54,7 +55,8 @@ public class PatchedProjectGeneratorTest{
         );
         this.buildDir = "./temp/";
         this.resultDir = "./result/";
-        this.config = new RepairConfiguration(this.buildDir, this.resultDir, new GradleProject(this.projectPath));
+        this.parameterPath = "parameters/para.csv";
+        this.config = new RepairConfiguration(this.buildDir, this.resultDir, new GradleProject(this.projectPath), this.parameterPath);
         this.patchedProjectGenerator = new PatchedProjectGenerator(this.config);
         CompilationUnit compilationUnit;
         try {

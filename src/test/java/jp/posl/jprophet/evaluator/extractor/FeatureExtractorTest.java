@@ -46,8 +46,8 @@ public class FeatureExtractorTest {
 
         final Patch patchCandidate = new DefaultPatchCandidate(originalNodes.get(0), revisedNodes.get(0).findCompilationUnit().get(), "", "", MethodReplacementOperation.class, 0);
         final FeatureExtractor extractor = new FeatureExtractor();
-        FeatureVector featureVector = extractor.extract(patchCandidate);
-        List<Boolean> binaryVector = featureVector.get();
+        final FeatureVector featureVector = extractor.extract(patchCandidate);
+        final List<Boolean> binaryVector = featureVector.asBooleanList();
         final FeatureVector expectedVector = new FeatureVector();
         final ModKind modType = ModKind.INSERT_STMT;
         expectedVector.add(modType);
@@ -74,7 +74,7 @@ public class FeatureExtractorTest {
         expectedVector.add(StatementPos.TARGET, VarChar.IN_ASSIGN_STMT, VarChar.PARAMETER);
         expectedVector.add(StatementPos.TARGET, VarChar.IN_ASSIGN_STMT, VarChar.LOCAL);
         expectedVector.add(StatementPos.TARGET, VarChar.IN_ASSIGN_STMT, VarChar.NUM);
-        assertThat(expectedVector.get()).containsExactlyElementsOf(binaryVector);
+        assertThat(expectedVector.asBooleanList()).containsExactlyElementsOf(binaryVector);
     }
 
     /**
@@ -109,8 +109,8 @@ public class FeatureExtractorTest {
 
         final Patch patchCandidate = new DefaultPatchCandidate(originalNodes.get(0), revisedNodes.get(0).findCompilationUnit().get(), "", "", MethodReplacementOperation.class, 0);
         final FeatureExtractor extractor = new FeatureExtractor();
-        FeatureVector featureVector = extractor.extract(patchCandidate);
-        List<Boolean> binaryVector = featureVector.get();
+        final FeatureVector featureVector = extractor.extract(patchCandidate);
+        final List<Boolean> binaryVector = featureVector.asBooleanList();
         final FeatureVector expectedVector = new FeatureVector();
 
         final ModKind modType1 = ModKind.INSERT_STMT;
@@ -186,6 +186,6 @@ public class FeatureExtractorTest {
         expectedVector.add(StatementPos.TARGET, VarChar.IN_ASSIGN_STMT, VarChar.LOCAL);
         expectedVector.add(StatementPos.TARGET, VarChar.IN_ASSIGN_STMT, VarChar.NUM);
 
-        assertThat(expectedVector.get()).containsExactlyElementsOf(binaryVector);
+        assertThat(expectedVector.asBooleanList()).containsExactlyElementsOf(binaryVector);
     }
 }

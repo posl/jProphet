@@ -36,6 +36,7 @@ public class SpotBugsIntegrationTest {
 
     private final String buildDir = "./tmp/"; 
     private final String resultDir = "./result/"; 
+    private final String parameterPath = "parameters/para.csv";
     private List<AstOperation> operations;
 
     /**
@@ -82,7 +83,7 @@ public class SpotBugsIntegrationTest {
      */
     private void runjProphet(String projectPath) {
         final Project                  project                  = new GradleProject(projectPath);
-        final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
+        final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project, parameterPath);
         final FaultLocalization        faultLocalization        = new SpotBugsBasedFaultLocalization(config);
         final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
         final PatchEvaluator           patchEvaluator           = new PatchEvaluator();

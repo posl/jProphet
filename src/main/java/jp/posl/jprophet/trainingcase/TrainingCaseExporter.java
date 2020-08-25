@@ -39,10 +39,9 @@ public class TrainingCaseExporter {
     public void export(String exportPathName, List<TrainingCase> cases) {
         final List<TrainingCaseForJson> trainingCasesForJson = new ArrayList<>();
         for (TrainingCase trainingCase : cases) {
-            final List<Integer> collectVector = trainingCase.vectorOfCorrectPatch.get().stream().map(bit -> bit ? 1 : 0)
-                    .collect(Collectors.toList());
+            final List<Integer> collectVector = trainingCase.vectorOfCorrectPatch.asIntegerList();
             final List<List<Integer>> generatedVector = trainingCase.vectorsOfGeneratedPatch.stream()
-                    .map(vector -> vector.get().stream().map(bit -> bit ? 1 : 0).collect(Collectors.toList()))
+                    .map(vector -> vector.asIntegerList())
                     .collect(Collectors.toList());
             trainingCasesForJson.add(new TrainingCaseForJson(collectVector, generatedVector));
         }

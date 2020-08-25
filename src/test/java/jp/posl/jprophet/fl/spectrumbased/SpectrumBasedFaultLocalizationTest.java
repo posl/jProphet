@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class SpectrumBasedFaultLocalizationTest{
     // 入力として用意するテスト用のプロジェクト
     final private String projectPath = "src/test/resources/testFLProject";
-    final private RepairConfiguration config = new RepairConfiguration("FLtmp", null, new GradleProject(projectPath));
+    final private RepairConfiguration config = new RepairConfiguration("FLtmp", null, new GradleProject(projectPath), null);
     private Coefficient coefficient = new Jaccard();
 
     /**

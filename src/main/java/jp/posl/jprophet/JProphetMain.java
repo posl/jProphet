@@ -30,12 +30,13 @@ public class JProphetMain {
     public static void main(String[] args) {
         final String buildDir = "./tmp/"; 
         final String resultDir = "./result/"; 
+        final String parameterPath = "parameters/para.csv";
         String projectPath = "src/test/resources/FizzBuzz01";
         if(args.length > 0){
             projectPath = args[0];
         }
         final Project                  project                  = new GradleProject(projectPath);
-        final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
+        final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project, parameterPath);
         final Coefficient              coefficient              = new Jaccard();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
         final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
@@ -83,10 +84,10 @@ public class JProphetMain {
         final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations, suspiciousenesses);
         
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
-        patchEvaluator.descendingSortBySuspiciousness(patchCandidates, suspiciousenesses);
+        final List<PatchCandidate> sortedCandidates = patchEvaluator.sort(patchCandidates, suspiciousenesses, config);
         
         // 修正パッチ候補ごとにテスト実行
-        for(PatchCandidate patchCandidate: patchCandidates) {
+        for(PatchCandidate patchCandidate: sortedCandidates) {
             Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
             final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
             testResultStore.addTestResults(result.getTestResults(), patchCandidate);

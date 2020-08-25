@@ -3,6 +3,7 @@ package jp.posl.jprophet.evaluator.extractor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jp.posl.jprophet.evaluator.extractor.FeatureExtractor.StatementPos;
 import jp.posl.jprophet.evaluator.extractor.StatementKindExtractor.StatementKind;
@@ -32,12 +33,26 @@ public class FeatureVector {
      * バイナリベクトルとして取得
      * @return ベクトル
      */
-    public List<Boolean> get() {
+    public List<Boolean> asBooleanList() {
         List<Boolean> vector = new ArrayList<>();
         vector.addAll(this.modKindVector);
         vector.addAll(this.modFeatureVector);
         vector.addAll(this.varFeatureVector);
         return vector;
+    }
+
+    public List<Integer> asIntegerList() {
+        List<Integer> vec = this.asBooleanList().stream()
+            .map(bit -> bit ? 1 : 0)
+            .collect(Collectors.toList());
+        return vec;
+    }
+
+    public List<Double> asDoubleList() {
+        List<Double> vec = this.asBooleanList().stream()
+            .map(bit -> bit ? 1.0 : 0.0)
+            .collect(Collectors.toList());
+        return vec;
     }
 
     /**

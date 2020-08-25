@@ -1,12 +1,22 @@
 package jp.posl.jprophet.evaluator;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import jp.posl.jprophet.RepairConfiguration;
+import jp.posl.jprophet.evaluator.extractor.FeatureExtractor;
 import jp.posl.jprophet.fl.Suspiciousness;
+import jp.posl.jprophet.patch.DefaultPatchCandidate;
 import jp.posl.jprophet.patch.PatchCandidate;
 
 /**
@@ -14,44 +24,71 @@ import jp.posl.jprophet.patch.PatchCandidate;
  * 今後機械学習機能を組み込んだ場合，それらの結果も考慮したソートなどを行う
  */
 public class PatchEvaluator {
-    /**
-     * 修正パッチ候補リストを各修正パッチ候補が
-     * 変更した行の疑惑値に応じて降順ソートする
-     * TODO: ASTノードがカバーする範囲の先頭の行番号に応じた処理を行っているので
-     * TODO: 今後patchCandidate.getLineNumber()が範囲を返すようになったら
-     * TODO: それに応じた処理にしなくてはならない 
-     * 
-     * @param patchCandidates ソートしたいパッチ候補リスト
-     * @param suspiciousnessList ソートに利用する疑惑値のリスト
-     */
-    public void descendingSortBySuspiciousness(List<PatchCandidate> patchCandidates, List<Suspiciousness> suspiciousnessList){
-        PatchEvaluator that = this;
-        Collections.sort(patchCandidates, new Comparator<PatchCandidate>() {
-            /**
-             * @{inheritDoc}
-             */
-            @Override
-            public int compare(PatchCandidate a, PatchCandidate b) {
-                final double suspiciousnessValueOfA;
-                final double suspiciousnessValueOfB;
-                try {
-                    suspiciousnessValueOfA = that.getSuspiciousnessValueFromPatch(a, suspiciousnessList); 
-                    suspiciousnessValueOfB = that.getSuspiciousnessValueFromPatch(b, suspiciousnessList); 
-                } catch (NoSuchElementException e) {
-                    return 0;
-                }
-
-                final double diff = suspiciousnessValueOfB - suspiciousnessValueOfA;
-                if(diff > 0){
-                    return 1;
-                }
-                else {
-                    return -1;
-                }
-            }
-
-        });
+    static class PatchWithScore {
+        final private PatchCandidate patch;
+        final private double score;
+        public PatchWithScore(PatchCandidate patch, double score) {
+            this.patch = patch;
+            this.score = score;
+        }
+        public PatchCandidate getPatch() {
+            return this.patch;
+        }
+        public double getScore() {
+            return this.score;
+        }
     }
+
+    public List<PatchCandidate> sort(List<PatchCandidate> candidates, List<Suspiciousness> suspiciousnessList, RepairConfiguration config) {
+        if(config.getParameterPath().isPresent()) {
+            final String parameterPath = config.getParameterPath().orElseThrow();
+            try {
+                final List<String> lines = Files.readAllLines(Paths.get(parameterPath), StandardCharsets.UTF_8);
+                if (lines.size() != 1) {
+                    System.exit(-1);
+                }
+                final List<Double> parameter = Arrays.asList(lines.get(0).split(",")).stream()
+                    .map(String::trim)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+                final List<PatchCandidate> sortedPatchCandidates = candidates.stream()
+                    .sorted(Comparator.comparingDouble(candidate ->
+                        this.calculateScore(candidate, suspiciousnessList, parameter)))
+                    .collect(Collectors.toList());
+                return sortedPatchCandidates;
+            } catch (IOException | IllegalFormatException e) {
+                e.printStackTrace();
+                System.exit(-1);
+                return Collections.emptyList();
+            }
+        }
+        else {
+            final List<PatchCandidate> sortedPatchCandidates = candidates.stream()
+                .sorted(Comparator.comparingDouble(candidate -> this.getSuspiciousnessValueFromPatch(candidate, suspiciousnessList)))
+                .collect(Collectors.toList());
+            Collections.reverse(sortedPatchCandidates);
+            return sortedPatchCandidates;
+        }
+    }
+
+    private double calculateScore(PatchCandidate patchCandidate, List<Suspiciousness> suspiciousnessList, List<Double> parameter) {
+        final double suspiciousness = this.getSuspiciousnessValueFromPatch(patchCandidate, suspiciousnessList);
+        final double beta = 0.02;
+        final double A = Math.pow((1 - beta), suspiciousness);
+        final FeatureExtractor extractor = new FeatureExtractor();
+        final List<Double> vec = extractor.extract((DefaultPatchCandidate)patchCandidate).asDoubleList();
+        if (vec.size() != parameter.size()) {
+            throw new IllegalArgumentException();
+        }
+        double sum = 0;
+        for (int i = 0; i < vec.size(); i++) {
+            sum += vec.get(i) * parameter.get(i);
+        }
+        final double B = Math.exp(sum);
+        
+        return A * B;
+    }
+
     /**
      * パッチ候補の修正対象のステートメントの疑惑値を取得 
      * @param  patch 修正パッチ候補
@@ -81,4 +118,5 @@ public class PatchEvaluator {
         }
         return Optional.empty();
     }
+
 }

@@ -17,7 +17,7 @@ import jp.posl.jprophet.fl.manualspecification.strategy.*;
 public class ManualSpecificationTest{
     // 入力として用意するテスト用のプロジェクト
     final private String projectPath = "src/test/resources/testFLProject";
-    final private RepairConfiguration config = new RepairConfiguration("BStmp", null, new GradleProject(this.projectPath));
+    final private RepairConfiguration config = new RepairConfiguration("BStmp", null, new GradleProject(this.projectPath), null);
     private List<SpecificationStrategy> specificationStrategyList = new ArrayList<SpecificationStrategy>();
 
 

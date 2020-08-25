@@ -31,11 +31,11 @@ public class UnitTestExecutorTest {
     public void setUpProject() {
         this.buildDir = new File("./tmp/");
         this.correctProject = new GradleProject("src/test/resources/testGradleProject01");
-        this.correctConfig = new RepairConfiguration(buildDir.getPath(), null, correctProject);
+        this.correctConfig = new RepairConfiguration(buildDir.getPath(), null, correctProject, null);
         this.errorProject = new GradleProject("src/test/resources/testGradleProject02");
-        this.errorConfig = new RepairConfiguration(buildDir.getPath(), null, errorProject);
+        this.errorConfig = new RepairConfiguration(buildDir.getPath(), null, errorProject, null);
         this.loopProject = new GradleProject("src/test/resources/testGradleProject03");
-        this.loopConfig = new RepairConfiguration(buildDir.getPath(), null, loopProject);
+        this.loopConfig = new RepairConfiguration(buildDir.getPath(), null, loopProject, null);
         this.testExecutor = new UnitTestExecutor();
     }
 
