@@ -178,9 +178,9 @@ public class VariableReplacer {
             copiedNode.getExpression().ifPresent(var -> {
                 for (String varName : varNames) {
                     if (var.toString().equals(varName)) { continue; } 
-                    final Node copiedVar = NodeUtility.parseNodeWithPointer(targetNode, var).orElseThrow();
-                    NodeUtility.replaceNodeWithoutCompilationUnit(copiedVar, constructExpr.apply(varName))
-                        .ifPresent(replacedNodes::add);
+                    NodeUtility.parseNodeWithPointer(targetNode, var)
+                        .ifPresent(cpv -> NodeUtility.replaceNodeWithoutCompilationUnit(cpv, constructExpr.apply(varName))
+                            .ifPresent(replacedNodes::add));
                 }
             }); 
         } 

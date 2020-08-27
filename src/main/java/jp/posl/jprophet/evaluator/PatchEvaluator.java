@@ -44,8 +44,9 @@ public class PatchEvaluator {
                 final double diff = suspiciousnessValueOfB - suspiciousnessValueOfA;
                 if(diff > 0){
                     return 1;
-                }
-                else {
+                } else if(diff < 0){
+                    return 0;
+                } else {
                     return -1;
                 }
             }
