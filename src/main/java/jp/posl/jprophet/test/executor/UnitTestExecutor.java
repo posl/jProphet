@@ -3,6 +3,7 @@ package jp.posl.jprophet.test.executor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ArrayList;
 import org.junit.runner.JUnitCore;
 
@@ -11,6 +12,7 @@ import jp.posl.jprophet.test.result.TestExecutorResult;
 import jp.posl.jprophet.test.result.UnitTestResult;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
+import jp.posl.jprophet.fl.spectrumbased.ExecutionTest;
 import jp.posl.jprophet.fl.spectrumbased.coverage.MemoryClassLoader;
 
 import java.io.File;
@@ -52,6 +54,40 @@ public class UnitTestExecutor implements TestExecutor {
             if(builder.build(config)) {
                 getClassLoader(config.getBuildPath());
                 testClasses = loadTestClass(config.getTargetProject());
+                final boolean result = runAllTestClass(testClasses);
+                return new TestExecutorResult(result, List.of(new UnitTestResult(result)));
+            } else {
+                return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
+            }
+        }
+        catch (MalformedURLException | ClassNotFoundException e) {
+            System.err.println(e.getMessage());
+            return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
+        }
+    }
+
+    public TestExecutorResult exec(RepairConfiguration config, List<ExecutionTest> executionTests, String sourceFqn)  {
+        try {
+            if (builder.build(config)){
+                getClassLoader(config.getBuildPath());
+                //testClasses = loadTestClass(config.getTargetProject());
+                testClasses = new ArrayList<Class<?>>();
+                Optional<ExecutionTest> et = executionTests.stream()
+                    .filter(e -> e.getSourceName().equals(sourceFqn))
+                    .findAny();
+                
+                if(et.isPresent()){
+                    for (String fqn : et.get().getTestNames()) {
+                        testClasses.add(loader.loadClass(fqn));
+                    }
+                }
+                
+                /*
+                final JUnitCore junitCore = new JUnitCore();
+                Result tr = junitCore.run(testClasses.toArray(new Class<?>[testClasses.size()]));
+                final boolean result = true;
+                */
+
                 final boolean result = runAllTestClass(testClasses);
                 return new TestExecutorResult(result, List.of(new UnitTestResult(result)));
             } else {

@@ -91,7 +91,8 @@ public class JProphetMain {
         // 修正パッチ候補ごとにテスト実行
         for(PatchCandidate patchCandidate: patchCandidates) {
             Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
-            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
+            //final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
+            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), faultLocalization.getExecutionTests(), patchCandidate.getFqn());
             testResultStore.addTestResults(result.getTestResults(), patchCandidate);
             if(result.canEndRepair()) {
                 testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
