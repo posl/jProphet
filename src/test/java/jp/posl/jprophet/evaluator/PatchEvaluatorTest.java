@@ -8,8 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+
 import org.junit.Test;
 
+import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.patch.PatchCandidate;
@@ -49,7 +54,55 @@ public class PatchEvaluatorTest {
     }
 
     @Test public void test() {
-        
+        final String originalSource = new StringBuilder().append("")
+            .append("public class A {\n") 
+            .append("    private void ma() {\n")
+            .append("       return;\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+        final String fixedSource1 = new StringBuilder().append("")
+            .append("public class A {\n") 
+            .append("    private void ma() {\n")
+            .append("       hoge();\n")
+            .append("       return;\n")
+            .append("    }\n")
+            .append("}\n").toString();
+        final String fixedSource2 = new StringBuilder().append("")
+            .append("public class A {\n") 
+            .append("    private void ma() {\n")
+            .append("       if (true)\n")
+            .append("           return;\n")
+            .append("    }\n")
+            .append("}\n").toString();
+        final String fixedSource3 = new StringBuilder().append("")
+            .append("public class A {\n") 
+            .append("    private void ma() {\n")
+            .append("       hoge();\n")
+            .append("       return;\n")
+            .append("    }\n")
+            .append("}\n").toString();
+        final Node targetNodeBeforeFix = NodeUtility.getAllNodesFromCode(originalSource).get(6);
+        final CompilationUnit fixedCu1 = JavaParser.parse(fixedSource1);
+        final CompilationUnit fixedCu2 = JavaParser.parse(fixedSource2);
+        final CompilationUnit fixedCu3 = JavaParser.parse(fixedSource3);
+        final List<PatchCandidate> candidates = List.of(
+            new PatchCandidate(targetNodeBeforeFix, fixedCu1, null, "a", null, 0),
+            new PatchCandidate(targetNodeBeforeFix, fixedCu2, null, "b", null, 0),
+            new PatchCandidate(targetNodeBeforeFix, fixedCu3, null, "c", null, 0)
+        );
+        final List<Suspiciousness> suspiciousenesses = List.of(
+            new Suspiciousness("a", 3, 1),
+            new Suspiciousness("b", 3, 0.1),
+            new Suspiciousness("c", 3, 0.5)
+        );
+        final RepairConfiguration config = new RepairConfiguration(null, null, null, "parameters/para.csv");
+        final PatchEvaluator evaluator = new PatchEvaluator();
+        final List<PatchCandidate> sortedPatches = evaluator.sort(candidates, suspiciousenesses, config);
+
+        assertThat(sortedPatches.get(0).getFqn()).contains("b");
+        assertThat(sortedPatches.get(1).getFqn()).contains("c");
+        assertThat(sortedPatches.get(2).getFqn()).contains("a");
     }
 }
 

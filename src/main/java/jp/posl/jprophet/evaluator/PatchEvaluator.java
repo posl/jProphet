@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,18 +24,22 @@ import jp.posl.jprophet.patch.PatchCandidate;
  * 今後機械学習機能を組み込んだ場合，それらの結果も考慮したソートなどを行う
  */
 public class PatchEvaluator {
-    static class PatchWithScore {
+    /** 
+     * パッチ候補とFLによる疑惑値の大きい順の順位を合わせたクラス
+     * 疑惑値と学習パラメータによって算出されるスコアによるパッチ候補のソートに用いる
+    */
+    static class PatchWithFLRank {
         final private PatchCandidate patch;
-        final private double score;
-        public PatchWithScore(PatchCandidate patch, double score) {
+        final private int rank;
+        public PatchWithFLRank(PatchCandidate patch, int rank) {
             this.patch = patch;
-            this.score = score;
+            this.rank = rank;
         }
         public PatchCandidate getPatch() {
             return this.patch;
         }
-        public double getScore() {
-            return this.score;
+        public int getRank() {
+            return this.rank;
         }
     }
 
@@ -57,9 +62,19 @@ public class PatchEvaluator {
                     .map(String::trim)
                     .map(Double::parseDouble)
                     .collect(Collectors.toList());
-                final List<PatchCandidate> sortedPatchCandidates = candidates.stream()
-                    .sorted(Comparator.comparingDouble(candidate ->
-                        this.calculateScore(candidate, this.getSuspiciousnessValueFromPatch(candidate, suspiciousnessList), parameter)))
+                final List<PatchCandidate> candidatesSortedBySuspiciousness = candidates.stream()
+                    .sorted(Comparator.comparingDouble(candidate -> this.getSuspiciousnessValueFromPatch((PatchCandidate)candidate, suspiciousnessList)).reversed())
+                    .collect(Collectors.toList());
+                final List<PatchWithFLRank> candidatesWithFLRank = new ArrayList<PatchWithFLRank>();
+                for (int rank = 1; rank <= candidatesSortedBySuspiciousness.size(); rank++) {
+                    final PatchCandidate candidate = candidatesSortedBySuspiciousness.get(rank - 1);
+                    candidatesWithFLRank.add(new PatchWithFLRank(candidate, rank));
+                }
+                final List<PatchCandidate> sortedPatchCandidates = candidatesWithFLRank.stream()
+                    .sorted(Comparator.comparingDouble(candidateWithFLRank -> {
+                        return this.calculateScore(candidateWithFLRank.getPatch(), candidateWithFLRank.getRank(), parameter);
+                    }))
+                    .map(candidateWithFLRank -> candidateWithFLRank.getPatch())
                     .collect(Collectors.toList());
                 return sortedPatchCandidates;
             } catch (IOException | IllegalFormatException e) {
@@ -84,9 +99,9 @@ public class PatchEvaluator {
      * @param parameter 学習済みパラメータ
      * @return スコア
      */
-    private double calculateScore(PatchCandidate patchCandidate, double suspiciousness, List<Double> parameter) {
+    private double calculateScore(PatchCandidate patchCandidate, int suspiciousnessRank, List<Double> parameter) {
         final double beta = 0.02;
-        final double A = Math.pow((1 - beta), suspiciousness);
+        final double A = Math.pow((1 - beta), suspiciousnessRank);
         final FeatureExtractor extractor = new FeatureExtractor();
         final List<Double> vec = extractor.extract((PatchCandidate)patchCandidate).asDoubleList();
         if (vec.size() != parameter.size()) {
@@ -108,11 +123,17 @@ public class PatchEvaluator {
      * @throws NoSuchElementException NodeのRangeが取れなかった場合と
      *         疑惑値リストに対応する疑惑値が存在しない場合に発生
      */
-    private double getSuspiciousnessValueFromPatch(PatchCandidate patch, List<Suspiciousness> suspiciousnessList) throws NoSuchElementException{
-        final int lineNumber = patch.getLineNumber().orElseThrow();
+    private double getSuspiciousnessValueFromPatch(PatchCandidate patch, List<Suspiciousness> suspiciousnessList) throws NoSuchElementException {
+        final Optional<Integer> lineNumber = patch.getLineNumber();
+        if(!lineNumber.isPresent()) {
+            throw new NoSuchElementException("Line number not found in " + patch.getFqn()); 
+        }
         final String fqn = patch.getFqn();
-        final Suspiciousness suspiciousness = this.findSuspiciousness(suspiciousnessList, lineNumber, fqn).orElseThrow();
-        return suspiciousness.getValue();
+        final Optional<Suspiciousness> suspiciousness = this.findSuspiciousness(suspiciousnessList, lineNumber.orElseThrow(), fqn);
+        if (!suspiciousness.isPresent()) {
+            throw new NoSuchElementException("Target suspiciousness not found. \n fqn:" + fqn + ", line number: " + lineNumber.orElseThrow());
+        }
+        return suspiciousness.orElseThrow().getValue();
     }
 
     /**
