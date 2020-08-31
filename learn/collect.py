@@ -16,7 +16,7 @@ def collectFixCommits(token):
     """
     g = Github(token)
     repoNames = []
-    with open('learn/repo-names.txt', mode='r') as f:
+    with open('repo-names.txt', mode='r') as f:
         repoNames = list(map(lambda name: name.rstrip('\n'), f.readlines()))
     print(f'repos: {repoNames}')
 
@@ -80,7 +80,7 @@ def export(fixCommits, genSize, exportPath):
                 print(err)
 
 if __name__ == '__main__':
-    json_open = open('learn/collect-config.json', 'r')
+    json_open = open('collect-config.json', 'r')
     config = json.load(json_open)
     token = config['token']
     genSize = config['maxGenSize']

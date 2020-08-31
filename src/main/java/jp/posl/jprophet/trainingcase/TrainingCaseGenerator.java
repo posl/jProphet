@@ -28,7 +28,7 @@ public class TrainingCaseGenerator {
     /**
      * 一つのトレーニングケースを表現するクラス
      */
-    static class TrainingCase {
+    public static class TrainingCase {
         final public FeatureVector vectorOfCorrectPatch;
         final public List<FeatureVector> vectorsOfGeneratedPatch;
 

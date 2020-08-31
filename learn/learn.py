@@ -75,7 +75,7 @@ def exportAsCsv(res):
     Args:
         res (ndarray): 学習済みパラメータ
     """
-    with open('result/para.csv', 'w') as f:
+    with open('../result/para.csv', 'w') as f:
         writer = csv.writer(f)
         writer.writerow(res)
     return
@@ -114,7 +114,7 @@ def f(parameter):
     return sum / size * 0.85
 
 if __name__ == '__main__':
-    json_open = open('result/feature-vector.json', 'r')
+    json_open = open('../result/feature-vector.json', 'r')
     cases = json.load(json_open)
     caseNps = np.empty(0)
     for case in cases:
