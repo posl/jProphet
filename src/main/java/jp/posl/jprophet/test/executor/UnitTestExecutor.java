@@ -22,7 +22,6 @@ public class UnitTestExecutor implements TestExecutor {
 
     private ProjectBuilder builder;
     private MemoryClassLoader loader;
-    private List<Class<?>> testClasses;
     //ほとんどの関数がProjectConfigurationを引数にしているためメンバとして保持してもいい気はするが、
     //そうするとメイン関数を変更する事になるのでとりあえず後回し
     
@@ -50,7 +49,7 @@ public class UnitTestExecutor implements TestExecutor {
         try {
             builder.build(config);
             getClassLoader(config.getBuildPath());
-            testClasses = loadTestClass(config.getTargetProject());
+            final List<Class<?>> testClasses = loadTestClass(config.getTargetProject());
             final boolean result = runAllTestClass(testClasses);
             return new TestExecutorResult(result, List.of(new UnitTestResult(result)));
         }
@@ -66,7 +65,7 @@ public class UnitTestExecutor implements TestExecutor {
      * 
      * @param project 対象プロジェクト
      */
-    private void getClassLoader(String buildPath) throws MalformedURLException {
+    public void getClassLoader(String buildPath) throws MalformedURLException {
         File file = new File(buildPath);
         loader = new MemoryClassLoader(new URL[] { file.toURI().toURL() });
     }
@@ -78,7 +77,7 @@ public class UnitTestExecutor implements TestExecutor {
      * @param project 対象プロジェクト
      * @return テストクラスのリスト
      */
-    private List<Class<?>> loadTestClass(Project project) throws ClassNotFoundException {
+    public List<Class<?>> loadTestClass(Project project) throws ClassNotFoundException {
         List<Class<?>> classes = new ArrayList<Class<?>>();
         final String testFolderPath = project.getRootPath() + gradleTestPath;
         for (String source : project.getTestFilePaths()) {
@@ -95,9 +94,9 @@ public class UnitTestExecutor implements TestExecutor {
      * @param classes テストクラスのリスト
      * @return 全てのテスト実行が通ったかどうか
      */
-    private boolean runAllTestClass(List<Class<?>> classes){
+    public boolean runAllTestClass(List<Class<?>> classes){
         final JUnitCore junitCore = new JUnitCore();
-        for (Class<?> testClass : testClasses){
+        for (Class<?> testClass : classes){
 
             //タイムアウト処理
             TestThread testThread = new TestThread(junitCore, testClass);
