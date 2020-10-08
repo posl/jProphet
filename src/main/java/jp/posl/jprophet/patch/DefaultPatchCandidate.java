@@ -76,6 +76,15 @@ public class DefaultPatchCandidate implements PatchCandidate {
      * {@inheritDoc}
      */
     @Override
+    public CompilationUnit getOriginalCompilationUnit(){
+        return this.targetNodeBeforeFix.findCompilationUnit().orElseThrow();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Optional<Integer> getLineNumber() {
         try {
             Range range = this.targetNodeBeforeFix.getRange().orElseThrow();        

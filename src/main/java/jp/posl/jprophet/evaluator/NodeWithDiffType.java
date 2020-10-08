@@ -103,9 +103,9 @@ public class NodeWithDiffType {
      * 差分情報を元に連続する変更されたコードの位置を特定する 
      * @return プログラムチャンクのリスト
      */
-    public List<ProgramChank> identifyModifiedProgramChanks() {
+    public List<ProgramChunk> identifyModifiedProgramChunks() {
         final List<NodeWithDiffType> nodesWithDiffType = this.getAllNodeInSourceCodeOrder();
-        final List<ProgramChank> chanks = new ArrayList<ProgramChank>();
+        final List<ProgramChunk> chunks = new ArrayList<ProgramChunk>();
         int beginLine = 0;
         int previousLine = 0;
         boolean counting = false;
@@ -123,15 +123,15 @@ public class NodeWithDiffType {
                 counting = true;
             }
             if(counting && node.getDiffType() == TYPE.SAME && line != previousLine) {;
-                chanks.add(new ProgramChank(beginLine, previousLine));
+                chunks.add(new ProgramChunk(beginLine, previousLine));
                 counting = false;
             }
             previousLine = line;
         }
         if(counting) {
-            chanks.add(new ProgramChank(beginLine, previousLine));
+            chunks.add(new ProgramChunk(beginLine, previousLine));
         }
-        return chanks;
+        return chunks;
     }
 
     /**

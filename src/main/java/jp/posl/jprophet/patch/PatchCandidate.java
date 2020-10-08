@@ -31,6 +31,12 @@ public interface PatchCandidate {
     public CompilationUnit getCompilationUnit();
 
     /**
+     * 修正前のファイルのCompilationUnitを返す
+     * @return 修正前のファイルのCompilationUnit
+     */
+    public CompilationUnit getOriginalCompilationUnit();
+
+    /**
      * 修正対象のステートメントのソースファイル全体における行番号を返す 
      * NodeからRangeが取れなかった場合Optional.emptyが返る
      * TODO: 一つの行番号ではなく何行目から何行目のような範囲を返した方がいいかもしれない
