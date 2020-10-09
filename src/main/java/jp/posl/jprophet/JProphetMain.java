@@ -42,7 +42,7 @@ public class JProphetMain {
         if(args.length > 0){
             if (args[0].contains("-t")) {
                 final JProphetMain jprophet = new JProphetMain();
-                jprophet.genTestcase();
+                jprophet.genTrainingCase();
                 return;
             }
             else {
@@ -118,7 +118,7 @@ public class JProphetMain {
      * 修正パッチから特徴抽出を行い，特徴ベクトルを出力する
      * 学習時に利用されるモード
      */
-    public void genTestcase() {
+    public void genTrainingCase() {
         final String pathesDirPath = "result/patches";
         final String originalDirName = "original";
         final String fixedDirName = "fixed";
