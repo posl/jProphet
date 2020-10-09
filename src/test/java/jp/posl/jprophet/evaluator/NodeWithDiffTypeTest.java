@@ -74,9 +74,9 @@ public class NodeWithDiffTypeTest {
     }
 
     /**
-     * {@code identifyModifiedProgramChanks}メソッドが複数のチャンクを特定できるかテスト
+     * {@code identifyModifiedProgramChunks}メソッドが複数のチャンクを特定できるかテスト
      */
-    @Test public void testIdendityModifiedProgramChanks() {
+    @Test public void testIdendityModifiedProgramChunks() {
         final String originalSource = new StringBuilder().append("")
             .append("public class A {\n")
             .append("   public void a() {\n")
@@ -104,7 +104,7 @@ public class NodeWithDiffTypeTest {
 
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalNodes.get(0), revisedNodes.get(0));
-        final List<ProgramChank> chanks = nodeWithDiffType.identifyModifiedProgramChanks();
-        assertThat(chanks).containsOnlyElementsOf(List.of(new ProgramChank(2, 2), new ProgramChank(4, 6)));
+        final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
+        assertThat(chunks).containsOnlyElementsOf(List.of(new ProgramChunk(2, 2), new ProgramChunk(4, 6)));
     }
 }

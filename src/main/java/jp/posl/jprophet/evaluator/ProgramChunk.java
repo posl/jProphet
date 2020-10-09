@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * 連続するコードの塊を行数を元に表現するクラス
  */
-public class ProgramChank {
+public class ProgramChunk {
     final private int begin;
     final private int end;
 
@@ -15,7 +15,7 @@ public class ProgramChank {
      * @param end チャンクの末尾行番号
      * @throws IllegalArgumentException 行数が負の数の場合
      */
-    public ProgramChank(int begin, int end) {
+    public ProgramChunk(int begin, int end) {
         if(begin < 1 || end < 1) {
             throw new IllegalArgumentException("Must be greater than zero.");
         }
@@ -49,12 +49,12 @@ public class ProgramChank {
             return true;
         }
 
-        if(!(obj instanceof ProgramChank)) {
+        if(!(obj instanceof ProgramChunk)) {
             return false;
         }
 
-        final ProgramChank chank = (ProgramChank)obj;
-        if(chank.getBegin() == this.begin && chank.getEnd() == this.end) {
+        final ProgramChunk chunk = (ProgramChunk)obj;
+        if(chunk.getBegin() == this.begin && chunk.getEnd() == this.end) {
             return true;
         }
         return false;

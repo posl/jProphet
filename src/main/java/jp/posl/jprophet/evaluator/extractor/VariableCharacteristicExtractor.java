@@ -1,4 +1,4 @@
-package jp.posl.jprophet.evaluator;
+package jp.posl.jprophet.evaluator.extractor;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,50 +22,38 @@ import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.PrimitiveType.Primitive;
 
+import jp.posl.jprophet.evaluator.extractor.VariableCharacteristics.VarChar;
 import jp.posl.jprophet.operation.DeclarationCollector;;
 
 /**
- * 修正パッチの変数の特徴抽出を行うクラス
+ * 修正パッチの変数の特性抽出を行うクラス
  */
-public class VariableFeatureExtractor {
+public class VariableCharacteristicExtractor {
     /**
-     * 参照されている変数の特徴を抽出する
+     * 参照されている変数の特性を抽出する
      * @param variable 変数のノード
-     * @return 変数の特徴
+     * @return 変数の特性
      */
-    public VariableFeature extract(NameExpr variable) {
-        final VariableFeature feature = new VariableFeature();
+    public VariableCharacteristics extract(NameExpr variable) {
+        final VariableCharacteristics varChars = new VariableCharacteristics();
         findDeclarator(variable).ifPresent((declarator) -> {
-            this.extractScopeFeature(declarator);
+            varChars.add(this.extractCharsOfScope(declarator));
             declarator.findFirst(Type.class).ifPresent((type) -> {
-                this.extractTypeFeature(type);
+                varChars.add(this.extractCharsOfType(type));
             });
         });
-        feature.add(this.extractContextFeature(variable));
-        feature.add(this.extractOperationFeature(variable));
-        return feature;
+        varChars.add(this.extractCharsOfContext(variable));
+        varChars.add(this.extractCharsOfOperation(variable));
+        return varChars;
     }
     
-    /**
-     * 宣言時の変数の特徴を抽出する
-     * @param declarator 変数の宣言ノード
-     * @return 変数の特徴
-     */
-    public VariableFeature extract(VariableDeclarator declarator) {
-        final VariableFeature feature = new VariableFeature();
-        feature.add(this.extractScopeFeature(declarator));
-        final Type type = declarator.findFirst(Type.class).get();
-        feature.add(this.extractTypeFeature(type));
-        feature.add(this.extractContextFeature(declarator));
-        return feature;
-    }
 
     /**
      * 変数の宣言ノードを探索する
      * @param variable 宣言ノードを探索したい変数のノード
      * @return 宣言ノード，存在しない場合empty()を返す
      */
-    private Optional<Node> findDeclarator(NameExpr variable) {
+    public Optional<Node> findDeclarator(NameExpr variable) {
         final DeclarationCollector collector = new DeclarationCollector();
 
         final Optional<VariableDeclarator> localVarDeclarator = collector.collectLocalVarsDeclared(variable).stream()
@@ -79,7 +67,7 @@ public class VariableFeatureExtractor {
             .findFirst();
         if(parameter.isPresent()) {
             return Optional.of((Node)parameter.get());
-        };
+        }
         final Optional<VariableDeclarator> fieldDeclarator = collector.collectFileds(variable).stream()
             .filter(field -> field.getName().equals(variable.getName()))
             .findFirst();
@@ -93,103 +81,115 @@ public class VariableFeatureExtractor {
     /**
      * 型情報を抽出する  
      * @param type 型ノード
-     * @return 変数の型の特徴
+     * @return 変数の型の特性
      */
-    private VariableFeature extractTypeFeature(Type type) {
-        final VariableFeature feature = new VariableFeature();
+    private VariableCharacteristics extractCharsOfType(Type type) {
+        final VariableCharacteristics chars = new VariableCharacteristics();
         if(type instanceof PrimitiveType) {
             final PrimitiveType primitive = (PrimitiveType) type;
             if(primitive.getType() == Primitive.BOOLEAN) {
-                feature.boolType = true;
+                chars.add(VarChar.BOOLEAN);
             }
             if(primitive.getType() == Primitive.INT || primitive.getType() == Primitive.DOUBLE ||
                     primitive.getType() == Primitive.LONG || primitive.getType() == Primitive.SHORT ||
                     primitive.getType() == Primitive.FLOAT) {
-                feature.numType = true;
+                chars.add(VarChar.NUM);
             }
         }
         if(type instanceof ClassOrInterfaceType) {
-            feature.objectType = true;
+            chars.add(VarChar.OBJECT);
             final ClassOrInterfaceType classOrInterface = (ClassOrInterfaceType) type;
             if(classOrInterface.getNameAsString().equals("String")) {
-                feature.stringType = true;
+                chars.add(VarChar.STRING);
             }
         }
-        return feature;
+        return chars;
     }
 
     /**
-     * 変数がif文やループなど構文上においてどこに位置するかという特徴
+     * 変数がif文やループなど構文上においてどこに位置するかという特性
      * @param variable 変数ノード
-     * @return 変数の特徴
+     * @return 変数の特性
      */
-    private VariableFeature extractContextFeature(Node variable) {
-        final VariableFeature feature = new VariableFeature();
+    private VariableCharacteristics extractCharsOfContext(Node variable) {
+        final VariableCharacteristics chars = new VariableCharacteristics();
         if (variable.findParent(IfStmt.class).isPresent()) {
-            feature.ifStmt = true;
+            chars.add(VarChar.IN_IF_STMT);
             final Expression condition = variable.findParent(IfStmt.class).get().getCondition();
             if(condition.equals(variable)) {
-                feature.condition = true;
+                chars.add(VarChar.IN_CONDITION);
             }
         }
         final boolean inForStmt = variable.findParent(ForStmt.class).isPresent();
         final boolean inForeachStmt = variable.findParent(ForeachStmt.class).isPresent();
         final boolean inWhileStmt = variable.findParent(WhileStmt.class).isPresent();
         if (inForStmt || inForeachStmt || inWhileStmt) {
-            feature.loop = true;
+            chars.add(VarChar.IN_LOOP);
         }
-        feature.parameter = variable.findParent(MethodCallExpr.class).isPresent();
-        feature.assign    = variable.findParent(AssignExpr.class).isPresent();
-        return feature;
+        if (variable.findParent(MethodCallExpr.class).isPresent()) {
+            chars.add(VarChar.PARAMETER);   
+        }
+        if (variable.findParent(AssignExpr.class).isPresent()) {
+            chars.add(VarChar.IN_ASSIGN_STMT);   
+        }
+        return chars;
     }
 
     /**
-     * 変数の被演算子としての特徴を抽出
+     * 変数の被演算子としての特性を抽出
      * @param variable 変数ノード
-     * @return 変数の特徴
+     * @return 変数の特性
      */
-    private VariableFeature extractOperationFeature(Node variable) {
-        final VariableFeature feature = new VariableFeature();
+    private VariableCharacteristics extractCharsOfOperation(Node variable) {
+        final VariableCharacteristics chars = new VariableCharacteristics();
         if(variable.findParent(BinaryExpr.class).isPresent()) {
             final BinaryExpr binaryExpr = variable.findParent(BinaryExpr.class).get();
             final List<String> commutativeOpRepresentations = List.of("+", "*", "==", "!=", "||", "&&");
-            feature.commutativeOp = commutativeOpRepresentations.stream()
+            final boolean isCommutativeOperand = commutativeOpRepresentations.stream()
                 .anyMatch(op -> binaryExpr.getOperator().asString().equals(op));
-
+            if (isCommutativeOperand) {
+                chars.add(VarChar.COMMUTATIVE_OPERAND);
+            }
             final List<String> noncommutativeOpRepresentations = List.of("-", "/", "%", "<", ">", "<=", ">=");
-            feature.noncommutativeOpL = noncommutativeOpRepresentations.stream()
+            final boolean isLeftNoncommutativeOperand = noncommutativeOpRepresentations.stream()
                 .anyMatch(op -> binaryExpr.getOperator().asString().equals(op) && binaryExpr.getLeft().containsWithin(variable));
-            feature.noncommutativeOpR = noncommutativeOpRepresentations.stream()
+            if (isLeftNoncommutativeOperand) {
+                chars.add(VarChar.NONCOMMUTATIVE_OPERAND_LEFT);
+            }
+            final boolean isRightNoncommutativeOperand = noncommutativeOpRepresentations.stream()
                 .anyMatch(op -> binaryExpr.getOperator().asString().equals(op) && binaryExpr.getRight().containsWithin(variable));
+            if (isRightNoncommutativeOperand) {
+                chars.add(VarChar.NONCOMMUTATIVE_OPERAND_RIGHT);
+            }
         }
         if(variable.findParent(UnaryExpr.class).isPresent()) {
-            feature.unaryOp = true;
+                chars.add(VarChar.UNARY_OPERAND);
         }
-        return feature;
+        return chars;
     }
 
     /**
      * 宣言ノードを元に変数のスコープを特定
      * @param declarator
-     * @return 変数の特徴
+     * @return 変数の特性
      */
-    private VariableFeature extractScopeFeature(Node declarator) {
-        final VariableFeature feature = new VariableFeature();
+    private VariableCharacteristics extractCharsOfScope(Node declarator) {
+        final VariableCharacteristics chars = new VariableCharacteristics();
         if (declarator.findParent(MethodDeclaration.class).isPresent()) {
             if (declarator instanceof Parameter) {
-                feature.argument = true;
+                chars.add(VarChar.ARGUMENT);
             }
             else {
-                feature.local = true;
+                chars.add(VarChar.LOCAL);
             }
         }
         else {
-            feature.field = true;
+            chars.add(VarChar.FIELD);
         }
 
         if (declarator.getParentNode().get().toString().startsWith("final")) {
-            feature.constant = true;
+            chars.add(VarChar.CONSTANT);
         }
-        return feature;
+        return chars;
     }
 }
