@@ -3,12 +3,10 @@ package jp.posl.jprophet.operation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
 import com.github.javaparser.Range;
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.Statement;
@@ -16,7 +14,6 @@ import com.github.javaparser.ast.stmt.SwitchEntryStmt;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
-import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.patch.DiffWithType;
 import jp.posl.jprophet.patch.DiffWithType.ModifyType;
 
