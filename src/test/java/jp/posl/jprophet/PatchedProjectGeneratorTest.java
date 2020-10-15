@@ -6,7 +6,9 @@ import org.junit.Test;
 
 import jp.posl.jprophet.operation.AstOperation;
 import jp.posl.jprophet.patch.DefaultPatchCandidate;
+import jp.posl.jprophet.patch.DiffWithType;
 import jp.posl.jprophet.patch.PatchCandidate;
+import jp.posl.jprophet.patch.DiffWithType.ModifyType;
 import jp.posl.jprophet.project.GradleProject;
 
 import static org.assertj.core.api.Assertions.*;
@@ -19,14 +21,14 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.JavaToken;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
 
 import org.apache.commons.io.FileUtils;
 
 public class PatchedProjectGeneratorTest{
-    /*
     private String projectPath;
     private String targetFilePath;
     private String targetFileFqn;
@@ -66,11 +68,9 @@ public class PatchedProjectGeneratorTest{
             fail(e.getMessage());
             return;
         }
-        Node targetNodeBeforeFix = compilationUnit.findRootNode().getChildNodes().get(1).getChildNodes().get(1);
-        Node node = NodeUtility.deepCopyByReparse(targetNodeBeforeFix);
-        node.getTokenRange().orElseThrow().getBegin().replaceToken(new JavaToken(node.getTokenRange().orElseThrow().getBegin().getRange().get(), JavaToken.Kind.PRIVATE.getKind(), "private", null, null));
-        CompilationUnit cu = NodeUtility.reparseCompilationUnit(node.findCompilationUnit().get()).orElseThrow();
-        PatchCandidate patchCandidate = new DefaultPatchCandidate(targetNodeBeforeFix, cu, this.targetFilePath, this.targetFileFqn, AstOperation.class, 1);
+        Node targetNodeBeforeFix = compilationUnit.findRootNode().getChildNodes().get(1).getChildNodes().get(1).getChildNodes().get(2).getChildNodes().get(0);
+        Node targetNodeAfterFix = NodeUtility.initTokenRange(new ExpressionStmt(new MethodCallExpr("hoge"))).get();
+        PatchCandidate patchCandidate = new DefaultPatchCandidate(new DiffWithType(ModifyType.INSERT, targetNodeBeforeFix, targetNodeAfterFix), this.targetFilePath, this.targetFileFqn, AstOperation.class, 1);
         this.patchedProjectGenerator.applyPatch(patchCandidate);
        
     }
@@ -80,7 +80,6 @@ public class PatchedProjectGeneratorTest{
      * ファイルが全て生成されているかテスト
      * パッチが適用されているかは見ない
      */
-    /*
     @Test public void testIfFilesIsGenerated(){
         for(String projectFilePath: this.projectFilePaths){
             assertThat(Files.exists(Paths.get(this.resultDir + projectFilePath))).isTrue();
@@ -90,7 +89,6 @@ public class PatchedProjectGeneratorTest{
     /**
      * 生成されたプロジェクトにてパッチが適用されているかテスト
      */
-    /*
     @Test public void testIfGeneratedProjectIsPatched(){
         List<String> lines;
         try {
@@ -101,8 +99,8 @@ public class PatchedProjectGeneratorTest{
             return;
         }
 
-        final int modifiedLineNumber = 6;
-        assertThat(lines.get(modifiedLineNumber)).contains("private");
+        final int modifiedLineNumber = 7;
+        assertThat(lines.get(modifiedLineNumber)).contains("hoge();");
     }
 
 
@@ -115,5 +113,4 @@ public class PatchedProjectGeneratorTest{
             e.printStackTrace();
         }
     }
-    */
 }
