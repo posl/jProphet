@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,26 +19,58 @@ import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.patch.PatchCandidate;
 
 /**
+ * 
  * 疑惑値などに応じてパッチを評価する
  * 今後機械学習機能を組み込んだ場合，それらの結果も考慮したソートなどを行う
  */
 public class PatchEvaluator {
     /** 
-     * パッチ候補とFLによる疑惑値の大きい順の順位を合わせたクラス
+     * パッチ候補，FLによる疑惑値，疑惑値による順位，スコアの四つを合わせたクラス
      * 疑惑値と学習パラメータによって算出されるスコアによるパッチ候補のソートに用いる
     */
-    static class PatchWithFLRank {
+    static class PatchForEval {
         final private PatchCandidate patch;
-        final private int rank;
-        public PatchWithFLRank(PatchCandidate patch, int rank) {
+        final private double suspiciousness;
+        private Integer rank;
+        private Double score;
+        public PatchForEval(PatchCandidate patch, double suspiciousness, int rank, double score) {
             this.patch = patch;
+            this.suspiciousness = suspiciousness;
             this.rank = rank;
+            this.score = score;
+        }
+        public PatchForEval(PatchCandidate patch, double suspiciousness) {
+            this.patch = patch;
+            this.suspiciousness = suspiciousness;
+            this.rank = null;
+            this.score = null;
         }
         public PatchCandidate getPatch() {
             return this.patch;
         }
-        public int getRank() {
-            return this.rank;
+        public double getSuspiciousness() {
+            return this.suspiciousness;
+        }
+        public Optional<Integer> getRank() {
+            if (this.rank == null) {
+                return Optional.empty();
+            }
+            return Optional.of(this.rank);
+        }
+        public Optional<Double> getScore() {
+            if (this.score == null) {
+                return Optional.empty();
+            }
+            return Optional.of(this.score);
+        }
+        public void setRank(int rank) {
+            if (rank < 0) {
+                throw new IllegalArgumentException();
+            }
+            this.rank = rank;
+        }
+        public void setScore(double score) {
+            this.score = score;
         }
     }
 
@@ -62,21 +93,25 @@ public class PatchEvaluator {
                     .map(String::trim)
                     .map(Double::parseDouble)
                     .collect(Collectors.toList());
-                final List<PatchCandidate> candidatesSortedBySuspiciousness = candidates.stream()
-                    .sorted(Comparator.comparingDouble(candidate -> this.getSuspiciousnessValueFromPatch((PatchCandidate)candidate, suspiciousnessList)).reversed())
+                final List<PatchForEval> candidatesForEvalSortedBySuspiciousness = candidates.stream()
+                    .map(candidate -> new PatchForEval(candidate, this.getSuspiciousnessValueFromPatch((PatchCandidate)candidate, suspiciousnessList)))
+                    .sorted(Comparator.comparingDouble(candidateWithFLRank -> ((PatchForEval)candidateWithFLRank).getSuspiciousness()).reversed())
                     .collect(Collectors.toList());
-                final List<PatchWithFLRank> candidatesWithFLRank = new ArrayList<PatchWithFLRank>();
-                for (int rank = 1; rank <= candidatesSortedBySuspiciousness.size(); rank++) {
-                    final PatchCandidate candidate = candidatesSortedBySuspiciousness.get(rank - 1);
-                    candidatesWithFLRank.add(new PatchWithFLRank(candidate, rank));
+                for (int i = 0, rank = 1; i < candidatesForEvalSortedBySuspiciousness.size(); i++) {
+                    final PatchForEval candidate = candidatesForEvalSortedBySuspiciousness.get(i);
+                    candidate.setRank(rank);
+                    candidate.setScore(this.calculateScore(candidate.getPatch(), rank, parameter));
+                    if (i != candidatesForEvalSortedBySuspiciousness.size() - 1) {
+                        if (candidate.getSuspiciousness() > candidatesForEvalSortedBySuspiciousness.get(i + 1).getSuspiciousness()) {
+                            rank++;
+                        }
+                    }
                 }
-                final List<PatchCandidate> sortedPatchCandidates = candidatesWithFLRank.stream()
-                    .sorted(Comparator.comparingDouble(candidateWithFLRank -> {
-                        return this.calculateScore(candidateWithFLRank.getPatch(), candidateWithFLRank.getRank(), parameter);
-                    }))
+                final List<PatchCandidate> candidatesSortedByScore = candidatesForEvalSortedBySuspiciousness.stream()
+                    .sorted(Comparator.comparingDouble(candidateWithFLRank -> ((PatchForEval)candidateWithFLRank).getScore().orElseThrow()).reversed())
                     .map(candidateWithFLRank -> candidateWithFLRank.getPatch())
                     .collect(Collectors.toList());
-                return sortedPatchCandidates;
+                return candidatesSortedByScore;
             } catch (IOException | IllegalFormatException e) {
                 e.printStackTrace();
                 System.exit(-1);
@@ -112,7 +147,6 @@ public class PatchEvaluator {
             sum += vec.get(i) * parameter.get(i);
         }
         final double B = Math.exp(sum);
-        
         return A * B;
     }
 
@@ -126,7 +160,7 @@ public class PatchEvaluator {
     private double getSuspiciousnessValueFromPatch(PatchCandidate patch, List<Suspiciousness> suspiciousnessList) throws NoSuchElementException {
         final Optional<Integer> lineNumber = patch.getLineNumber();
         if(!lineNumber.isPresent()) {
-            throw new NoSuchElementException("Line number not found in " + patch.getFqn()); 
+            throw new NoSuchElementException("Line number not found in " + patch.getFqn());
         }
         final String fqn = patch.getFqn();
         final Optional<Suspiciousness> suspiciousness = this.findSuspiciousness(suspiciousnessList, lineNumber.orElseThrow(), fqn);

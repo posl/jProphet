@@ -23,7 +23,7 @@ public class PatchEvaluatorTest {
     /**
      * 学習済みパラメータを用いない場合
      */
-    @Test public void testIfSortedBySuspiciousness(){
+    @Test public void testWhenSortedBySuspiciousness(){
         final List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
         final PatchCandidate candidate1 = mock(PatchCandidate.class);
         when(candidate1.getLineNumber()).thenReturn(Optional.of(1));
@@ -53,7 +53,10 @@ public class PatchEvaluatorTest {
         assertThat(sortedCandidates.get(2)).isEqualTo(candidate2);
     }
 
-    @Test public void test() {
+    /**
+     * 学習済みパラメータを用いる場合
+     */
+    @Test public void testWhenSortedByScore() {
         final String originalSource = new StringBuilder().append("")
             .append("public class A {\n") 
             .append("    private void ma() {\n")
@@ -93,16 +96,16 @@ public class PatchEvaluatorTest {
         );
         final List<Suspiciousness> suspiciousenesses = List.of(
             new Suspiciousness("a", 3, 1),
-            new Suspiciousness("b", 3, 0.1),
-            new Suspiciousness("c", 3, 0.5)
+            new Suspiciousness("b", 3, 0.5),
+            new Suspiciousness("c", 3, 0.1)
         );
         final RepairConfiguration config = new RepairConfiguration(null, null, null, "parameters/para.csv");
         final PatchEvaluator evaluator = new PatchEvaluator();
         final List<PatchCandidate> sortedPatches = evaluator.sort(candidates, suspiciousenesses, config);
 
-        assertThat(sortedPatches.get(0).getFqn()).contains("b");
+        assertThat(sortedPatches.get(0).getFqn()).contains("a");
         assertThat(sortedPatches.get(1).getFqn()).contains("c");
-        assertThat(sortedPatches.get(2).getFqn()).contains("a");
+        assertThat(sortedPatches.get(2).getFqn()).contains("b");
     }
 }
 
