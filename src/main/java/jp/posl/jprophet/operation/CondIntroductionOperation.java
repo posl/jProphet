@@ -1,7 +1,9 @@
 package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -34,8 +36,11 @@ public class CondIntroductionOperation implements AstOperation{
         } catch (Exception e) {
             return new ArrayList<>();
         }
-        final IfStmt replacedIfStmt = (IfStmt)NodeUtility.replaceNode(newIfStmt, targetNode).orElseThrow();
-        final Expression abstCondition = replacedIfStmt.getCondition();
+        final Optional<Node> replacedIfStmt = NodeUtility.replaceNode(newIfStmt, targetNode);
+        if(!replacedIfStmt.isPresent()) {
+            return Collections.emptyList();
+        }
+        final Expression abstCondition = ((IfStmt)replacedIfStmt.orElseThrow()).getCondition();
 
         final ConcreteConditions concreteConditions = new ConcreteConditions(abstCondition);
         final List<CompilationUnit> candidates = concreteConditions.getCompilationUnits();

@@ -17,7 +17,7 @@ import org.junit.Test;
 import jp.posl.jprophet.operation.VariableReplacementOperation;
 
 
-public class DefaultPatchCandidateTest {
+public class PatchCandidateTest {
     private PatchCandidate patchCandidate;
     private String filePath = "src/test/resources/test01.java";
     private CompilationUnit compilationUnit;
@@ -41,7 +41,7 @@ public class DefaultPatchCandidateTest {
         fixedNode.getTokenRange().orElseThrow().getBegin().replaceToken(new JavaToken(node.getTokenRange().orElseThrow().getBegin().getRange().get(), JavaToken.Kind.PRIVATE.getKind(), "private", null, null));
         LexicalPreservingPrinter.setup(fixedCompilationUnit);
         this.newFixedCompilationUnit = JavaParser.parse(LexicalPreservingPrinter.print(fixedCompilationUnit));
-        this.patchCandidate = new DefaultPatchCandidate(node, this.newFixedCompilationUnit, filePath, fqn, VariableReplacementOperation.class, 1);
+        this.patchCandidate = new PatchCandidate(node, this.newFixedCompilationUnit, filePath, fqn, VariableReplacementOperation.class, 1);
     }
 
     /**
@@ -75,7 +75,7 @@ public class DefaultPatchCandidateTest {
      * getCompilationUnitのテスト
      */
     @Test public void testForGetCompilationUnit() {
-        CompilationUnit actualCompilationUnit = this.patchCandidate.getCompilationUnit();
+        CompilationUnit actualCompilationUnit = this.patchCandidate.getFixedCompilationUnit();
         CompilationUnit expectedCompilationUnit = this.newFixedCompilationUnit;
         assertThat(actualCompilationUnit).isEqualTo(expectedCompilationUnit);
     }

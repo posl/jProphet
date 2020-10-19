@@ -55,9 +55,9 @@ public class FeatureVectorTest {
                 if (i == j) {
                     continue;
                 }
-                final List<Boolean> originalBinaryVector = vectors.get(i).get();
+                final List<Boolean> originalBinaryVector = vectors.get(i).asBooleanList();
                 final int originalIndex = originalBinaryVector.indexOf(true);
-                final List<Boolean> fixedBinaryVector = vectors.get(j).get();
+                final List<Boolean> fixedBinaryVector = vectors.get(j).asBooleanList();
                 final int fixedIndex = fixedBinaryVector.indexOf(true);
                 assertThat(originalIndex).isNotEqualTo(fixedIndex);
             }

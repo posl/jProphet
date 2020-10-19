@@ -27,7 +27,7 @@ public class StatementStatusTest{
 
     @Before public void setup(){
         this.projectPath = "src/test/resources/testFLProject";
-        this.config = new RepairConfiguration("./LStmp/", null, new GradleProject(this.projectPath));
+        this.config = new RepairConfiguration("./LStmp/", null, new GradleProject(this.projectPath), null);
         this.sourceClassFilePaths.add("testFLProject.Forstatement");
         this.sourceClassFilePaths.add("testFLProject.Ifstatement");
         this.sourceClassFilePaths.add("testFLProject.App");

@@ -16,7 +16,6 @@ import com.github.javaparser.ast.Node;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.operation.AstOperation;
 import jp.posl.jprophet.patch.PatchCandidate;
-import jp.posl.jprophet.patch.DefaultPatchCandidate;
 import jp.posl.jprophet.project.FileLocator;
 import jp.posl.jprophet.project.Project;
 
@@ -44,7 +43,7 @@ public class PatchCandidateGenerator{
                     if (!findZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
                         final List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
                         for(AppliedOperationResult result : appliedOperationResults){
-                            candidates.add(new DefaultPatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
+                            candidates.add(new PatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
                             patchCandidateID += 1;
                         }
                     }
@@ -94,7 +93,7 @@ public class PatchCandidateGenerator{
      * @param repairUnits テンプレートを適用するASTノードのリスト
      * @return テンプレートが適用された修正候補のリスト
      */
-    private List<AppliedOperationResult> applyTemplate(Node node, List<AstOperation> operations) {
+    public List<AppliedOperationResult> applyTemplate(Node node, List<AstOperation> operations) {
         List<AppliedOperationResult> appliedOperationResults = new ArrayList<AppliedOperationResult>();
 
         operations.stream()

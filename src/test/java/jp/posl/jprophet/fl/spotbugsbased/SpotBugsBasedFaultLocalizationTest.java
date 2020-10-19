@@ -22,7 +22,7 @@ public class SpotBugsBasedFaultLocalizationTest {
      */
     @Test
     public void testForExec() {
-        final RepairConfiguration config = new RepairConfiguration("./tmp/SBtmp", null, new GradleProject("src/test/resources/testSBProject01"));
+        final RepairConfiguration config = new RepairConfiguration("./tmp/SBtmp", null, new GradleProject("src/test/resources/testSBProject01"), null);
         final SpotBugsBasedFaultLocalization fl = new SpotBugsBasedFaultLocalization(config);
         final List<Suspiciousness> suspiciousnessList = fl.exec();
 
