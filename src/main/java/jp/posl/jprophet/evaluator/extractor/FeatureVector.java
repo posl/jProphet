@@ -3,6 +3,7 @@ package jp.posl.jprophet.evaluator.extractor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jp.posl.jprophet.evaluator.extractor.FeatureExtractor.StatementPos;
 import jp.posl.jprophet.evaluator.extractor.StatementKindExtractor.StatementKind;
@@ -10,7 +11,7 @@ import jp.posl.jprophet.evaluator.extractor.ModKinds.ModKind;
 import jp.posl.jprophet.evaluator.extractor.VariableCharacteristics.VarChar;
 
 /**
- * パッチの特徴ベクトルを表現するクラス
+ * パッチの特徴ベクトルを二値ベクトルとして表現するクラス
  */
 public class FeatureVector {
     final List<Boolean> modKindVector;
@@ -29,15 +30,37 @@ public class FeatureVector {
     }
 
     /**
-     * バイナリベクトルとして取得
-     * @return ベクトル
+     * 二値ベクトルの1をtrue，0をfalseとしたBooleanのリストとして取得
+     * @return Booleanリスト
      */
-    public List<Boolean> get() {
+    public List<Boolean> asBooleanList() {
         List<Boolean> vector = new ArrayList<>();
         vector.addAll(this.modKindVector);
         vector.addAll(this.modFeatureVector);
         vector.addAll(this.varFeatureVector);
         return vector;
+    }
+
+    /**
+     * 二値ベクトルの1を整数1，0を整数0としたIntegerのリストとして取得
+     * @return 整数リスト
+     */
+    public List<Integer> asIntegerList() {
+        List<Integer> vec = this.asBooleanList().stream()
+            .map(bit -> bit ? 1 : 0)
+            .collect(Collectors.toList());
+        return vec;
+    }
+
+    /**
+     * 二値ベクトルの1を実数1.0，0を実数0.0としたDoubleのリストとして取得
+     * @return 実数リスト
+     */
+    public List<Double> asDoubleList() {
+        List<Double> vec = this.asBooleanList().stream()
+            .map(bit -> bit ? 1.0 : 0.0)
+            .collect(Collectors.toList());
+        return vec;
     }
 
     /**
@@ -123,5 +146,28 @@ public class FeatureVector {
 
         final int index = stmtPosOrdinal + (numOfStmtPosTypes * originalVarTypeOrdinal) + (numOfStmtPosTypes * numOfVarTypes * fixedVarTypeOrdinal);
         return index;
+    }
+
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("MK: ");
+        for (int i = 0; i < this.modKindVector.size(); i++) {
+            if (this.modKindVector.get(i) == true) {
+                sb.append(i).append(", ");
+            }
+        }
+        sb.append(" MF: ");
+        for (int i = 0; i < this.modFeatureVector.size(); i++) {
+            if (this.modFeatureVector.get(i) == true) {
+                sb.append(i).append(", ");
+            }
+        }
+        sb.append(" VF: ");
+        for (int i = 0; i < this.varFeatureVector.size(); i++) {
+            if (this.varFeatureVector.get(i) == true) {
+                sb.append(i).append(", ");
+            }
+        }
+        return sb.toString();
     }
 }

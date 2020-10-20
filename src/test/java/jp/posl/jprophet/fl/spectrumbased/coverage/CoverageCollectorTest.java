@@ -33,7 +33,7 @@ public class CoverageCollectorTest{
 
     @Before public void setup(){
         this.projectPath = "src/test/resources/testFLProject";
-        this.config = new RepairConfiguration("./TEtmp/", null, new GradleProject(this.projectPath));
+        this.config = new RepairConfiguration("./TEtmp/", null, new GradleProject(this.projectPath), null);
         this.SourceClassFilePaths.add("testFLProject.Forstatement");
         this.SourceClassFilePaths.add("testFLProject.Ifstatement");
         this.SourceClassFilePaths.add("testFLProject.App");
@@ -49,7 +49,7 @@ public class CoverageCollectorTest{
         projectBuilder.build(config);
 
         this.loopProjectPath = "src/test/resources/testGradleProject03";
-        this.loopConfig = new RepairConfiguration("./looptmp/", null, new GradleProject(this.loopProjectPath));
+        this.loopConfig = new RepairConfiguration("./looptmp/", null, new GradleProject(this.loopProjectPath), null);
         this.loopSourceClassFilePaths.add("testGradleProject02.App");
         this.loopSourceClassFilePaths.add("testGradleProject02.App2");
         this.loopTestClassFilePaths.add("testGradleProject02.App2Test");

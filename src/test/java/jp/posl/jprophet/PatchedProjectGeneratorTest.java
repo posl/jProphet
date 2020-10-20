@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import jp.posl.jprophet.operation.AstOperation;
-import jp.posl.jprophet.patch.DefaultPatchCandidate;
 import jp.posl.jprophet.patch.DiffWithType;
 import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.patch.DiffWithType.ModifyType;
@@ -37,6 +36,7 @@ public class PatchedProjectGeneratorTest{
     private String resultDir;
     private RepairConfiguration config;
     private PatchedProjectGenerator patchedProjectGenerator;
+    private String parameterPath;
 
     @Before public void setUp(){
         this.projectPath = "src/test/resources/testGradleProject01";
@@ -57,7 +57,8 @@ public class PatchedProjectGeneratorTest{
         );
         this.buildDir = "./temp/";
         this.resultDir = "./result/";
-        this.config = new RepairConfiguration(this.buildDir, this.resultDir, new GradleProject(this.projectPath));
+        this.parameterPath = "parameters/para.csv";
+        this.config = new RepairConfiguration(this.buildDir, this.resultDir, new GradleProject(this.projectPath), this.parameterPath);
         this.patchedProjectGenerator = new PatchedProjectGenerator(this.config);
         CompilationUnit compilationUnit;
         try {
@@ -70,7 +71,7 @@ public class PatchedProjectGeneratorTest{
         }
         Node targetNodeBeforeFix = compilationUnit.findRootNode().getChildNodes().get(1).getChildNodes().get(1).getChildNodes().get(2).getChildNodes().get(0);
         Node targetNodeAfterFix = NodeUtility.initTokenRange(new ExpressionStmt(new MethodCallExpr("hoge"))).get();
-        PatchCandidate patchCandidate = new DefaultPatchCandidate(new DiffWithType(ModifyType.INSERT, targetNodeBeforeFix, targetNodeAfterFix), this.targetFilePath, this.targetFileFqn, AstOperation.class, 1);
+        PatchCandidate patchCandidate = new PatchCandidate(new DiffWithType(ModifyType.INSERT, targetNodeBeforeFix, targetNodeAfterFix), this.targetFilePath, this.targetFileFqn, AstOperation.class, 1);
         this.patchedProjectGenerator.applyPatch(patchCandidate);
        
     }

@@ -21,7 +21,7 @@ public class SpotBugsExecutorTest {
     public void testForExec() {
         final String resultFileName = "result";
         SpotBugsExecutor executor = new SpotBugsExecutor();
-        final RepairConfiguration config = new RepairConfiguration("./tmp/SBout", null, new GradleProject("src/test/resources/testSBProject01"));
+        final RepairConfiguration config = new RepairConfiguration("./tmp/SBout", null, new GradleProject("src/test/resources/testSBProject01"), null);
         executor.exec(config, resultFileName);
         assertThat(new File(SpotBugsExecutor.getResultFilePath(resultFileName)).exists()).isTrue();
         try {

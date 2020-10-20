@@ -18,7 +18,7 @@ import jp.posl.jprophet.evaluator.ProgramChunk;
 import jp.posl.jprophet.evaluator.extractor.StatementKindExtractor.StatementKind;
 import jp.posl.jprophet.evaluator.extractor.ModKinds.ModKind;
 import jp.posl.jprophet.evaluator.extractor.VariableCharacteristics.VarChar;
-import jp.posl.jprophet.patch.PatchCandidate;
+import jp.posl.jprophet.patch.Patch;
 
 public class FeatureExtractor {
 
@@ -37,9 +37,9 @@ public class FeatureExtractor {
      * @param patch 特徴抽出を行うパッチ
      * @return 特徴ベクトル
      */
-    public FeatureVector extract(PatchCandidate patch) {
+    public FeatureVector extract(Patch patch) {
         final Node originalRoot = patch.getOriginalCompilationUnit().findRootNode();
-        final Node fixedRoot = patch.getCompilationUnit().findRootNode();
+        final Node fixedRoot = patch.getFixedCompilationUnit().findRootNode();
         final AstDiff diff = new AstDiff();
         final NodeWithDiffType nodeWithDiffType = diff.createRevisedAstWithDiffType(originalRoot, fixedRoot);
         final List<ProgramChunk> chunks = nodeWithDiffType.identifyModifiedProgramChunks();
@@ -134,8 +134,13 @@ public class FeatureExtractor {
                     final boolean bothIsField = !originalVarIsNotField && !fixedVarIsNotField;
                     if(bothIsField) return true;
                     if(!bothIsField) {
-                        final String methodNameWhereOriginalVarWasDeclared = originalVarDec.findParent(MethodDeclaration.class).orElseThrow().getNameAsString();
-                        final String methodNameWhereFixedlVarWasDeclared = fixedVarDec.findParent(MethodDeclaration.class).orElseThrow().getNameAsString();
+                        final Optional<MethodDeclaration> methodWhereOriginalVarWasDeclared = originalVarDec.findParent(MethodDeclaration.class);
+                        final Optional<MethodDeclaration> methodWhereFixedVarWasDeclared = fixedVarDec.findParent(MethodDeclaration.class);
+                        if (!methodWhereOriginalVarWasDeclared.isPresent() || !methodWhereFixedVarWasDeclared.isPresent()) {
+                            return false;
+                        }
+                        final String methodNameWhereOriginalVarWasDeclared = methodWhereOriginalVarWasDeclared.orElseThrow().getNameAsString();
+                        final String methodNameWhereFixedlVarWasDeclared = methodWhereFixedVarWasDeclared.orElseThrow().getNameAsString();
                         if(methodNameWhereOriginalVarWasDeclared.equals(methodNameWhereFixedlVarWasDeclared)) {
                             return true;
                         }

@@ -3,7 +3,6 @@ package jp.posl.jprophet.fl.spectrumbased;
 import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.fl.Suspiciousness;
-import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Jaccard;
 
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 public class SpectrumBasedFaultLocalizationTest{
     // 入力として用意するテスト用のプロジェクト
     final private String projectPath = "src/test/resources/testFLProject";
-    final private RepairConfiguration config = new RepairConfiguration("FLtmp", null, new GradleProject(projectPath));
+    final private RepairConfiguration config = new RepairConfiguration("FLtmp", null, new GradleProject(projectPath), null);
     private Coefficient coefficient = new Jaccard();
 
     /**

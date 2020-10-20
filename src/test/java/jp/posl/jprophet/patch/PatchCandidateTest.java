@@ -22,8 +22,7 @@ import jp.posl.jprophet.operation.VariableReplacementOperation;
 import jp.posl.jprophet.patch.DiffWithType.ModifyType;
 
 
-public class DefaultPatchCandidateTest {
-    
+public class PatchCandidateTest {
     private PatchCandidate patchCandidate;
     private String filePath = "src/test/resources/test01.java";
     private CompilationUnit compilationUnit;
@@ -53,7 +52,7 @@ public class DefaultPatchCandidateTest {
         fixedCompilationUnit = JavaParser.parse(fixedSource);
         
         DiffWithType diffWithType = new DiffWithType(ModifyType.CHANGE, node, fixedNode);
-        this.patchCandidate = new DefaultPatchCandidate(diffWithType, filePath, fqn, VariableReplacementOperation.class, 1);
+        this.patchCandidate = new PatchCandidate(diffWithType, filePath, fqn, VariableReplacementOperation.class, 1);
     }
 
     /**
@@ -91,21 +90,18 @@ public class DefaultPatchCandidateTest {
      */
     
     @Test public void testForGetCompilationUnit() {
-        CompilationUnit actualCompilationUnit = this.patchCandidate.getCompilationUnit();
+        CompilationUnit actualCompilationUnit = this.patchCandidate.getFixedCompilationUnit();
         CompilationUnit expectedCompilationUnit = this.fixedCompilationUnit;
         assertThat(actualCompilationUnit).isEqualTo(expectedCompilationUnit);
     }
-
     @Test public void testForGetAppliedOperation() {
         String actualAppliedOperation = this.patchCandidate.getAppliedOperation();
         String expectedAppliedOperation = this.operation;
         assertThat(actualAppliedOperation).isEqualTo(expectedAppliedOperation);
     }
-
     /**
      * toStringのテスト
      */
-    
     @Test public void testForToString() {
         String diff = this.patchCandidate.toString();
         String expectedDiff = new StringBuilder().append("")
