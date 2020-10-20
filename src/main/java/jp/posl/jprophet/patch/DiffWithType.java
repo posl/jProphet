@@ -16,7 +16,10 @@ public class DiffWithType { //TODO: クラス名改善の余地あり
     private Node targetNodeAfterFix;
 
     /**
-     * コンストラクタ
+     * 修正のタイプと修正前後のノードを持つクラス
+     * @param modifyType 修正のタイプ
+     * @param targetNodeBeforeFix 修正前のノードで，rootノードはcompilationunit
+     * @param targetNodeAfterFix 修正部分のノードで，親ノードを持たない
      */
     public DiffWithType(ModifyType modifyType, Node targetNodeBeforeFix, Node targetNodeAfterFix) {
         this.modifyType = modifyType;

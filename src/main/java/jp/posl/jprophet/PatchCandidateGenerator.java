@@ -21,9 +21,9 @@ public class PatchCandidateGenerator{
     /**
      * バグのあるソースコード群から修正パッチ候補を生成する 
      * 
-     * @param project 修正パッチ候補を生成する対象のプロジェクト 
      * @param operations 適応するテンプレート
      * @param suspiciousnesses flで得られた疑惑値のリスト
+     * @param fileLocatorMap fileLocatorとそれに対応したcompilationunitのマップ
      * @return 条件式が抽象化された修正パッチ候補のリスト
      */
     public List<PatchCandidate> exec(List<AstOperation> operations, List<Suspiciousness> suspiciousnesses, Map<FileLocator, CompilationUnit> fileLocatorMap){
@@ -80,7 +80,8 @@ public class PatchCandidateGenerator{
     /**
      * ASTノードに対して修正テンプレートを適用し，修正候補群を生成する．
      * 
-     * @param repairUnits テンプレートを適用するASTノードのリスト
+     * @param node 対象ノード
+     * @param operations 使用するオペレーション
      * @return テンプレートが適用された修正候補のリスト
      */
     public List<AppliedOperationResult> applyTemplate(Node node, List<AstOperation> operations) {
