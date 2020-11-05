@@ -67,16 +67,20 @@ public class CoverageCollector {
         //対象ソースコードをinstrumentしたものの定義をmemoryClassLoaderに追加(ロードはしない)
         for (String sourceFQN : sourceFQNs) {
             InputStream is = this.getTargetClassInputStream(sourceFQN);
-            byte[] bytes = IOUtils.toByteArray(is);
-            byte[] instrumentedBytes = jacocoInstrumenter.instrument(bytes, "");
-            this.memoryClassLoader.addDefinition(sourceFQN, instrumentedBytes);
+            if (is != null) {
+                byte[] bytes = IOUtils.toByteArray(is);
+                byte[] instrumentedBytes = jacocoInstrumenter.instrument(bytes, "");
+                this.memoryClassLoader.addDefinition(sourceFQN, instrumentedBytes);
+            }
         }
 
         //対象テストコードの定義をmemoryClassLoaderに追加(ロードはしない)
         for (String testFQN : testFQNs) {
             InputStream is = this.getTargetClassInputStream(testFQN);
-            byte[] bytes = IOUtils.toByteArray(is);
-            this.memoryClassLoader.addDefinition(testFQN, bytes);
+            if (is != null) {
+                byte[] bytes = IOUtils.toByteArray(is);
+                this.memoryClassLoader.addDefinition(testFQN, bytes);
+            }
         }
 
         final List<Class<?>> junitClasses = loadAllClasses(testFQNs);
@@ -145,6 +149,7 @@ public class CoverageCollector {
 
         final public TestResults testResults;
         private boolean wasFailed;
+        private boolean hasMassage = true; 
 
         /**
          * constructor
@@ -166,6 +171,9 @@ public class CoverageCollector {
         @Override
         public void testFailure(Failure failure) {
             wasFailed = true;
+            if (failure.getException().getMessage() == null) {
+                this.hasMassage = false;
+            }
         }
 
         @Override
@@ -238,7 +246,9 @@ public class CoverageCollector {
                 .collect(Collectors.toList());
 
             final TestResult testResult = new TestResult(testMethodFQN, wasFailed, coverages);
-            testResults.add(testResult);
+            if (hasMassage && !description.getMethodName().equals("initializationError")) {
+                testResults.add(testResult);
+            }
         }
     }
 
