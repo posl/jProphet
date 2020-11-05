@@ -33,7 +33,7 @@ public class SuspiciousnessCollectorTest{
 
     @Before public void setup(){
         this.projectPath = "src/test/resources/testFLProject";
-        this.config = new RepairConfiguration("./SCtmp/", null, new GradleProject(this.projectPath));
+        this.config = new RepairConfiguration("./SCtmp/", null, new GradleProject(this.projectPath), null);
         this.SourceClassFilePaths.add("testFLProject.Forstatement");
         this.SourceClassFilePaths.add("testFLProject.Ifstatement");
         this.SourceClassFilePaths.add("testFLProject.App");

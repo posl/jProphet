@@ -29,9 +29,9 @@ public class SpotBugsTestExecutorTest {
     @Before
     public void setUpProject() {
         final File buildDir = new File("./tmp/");
-        this.beforeConfig = new RepairConfiguration(buildDir.getPath(), null, new GradleProject("src/test/resources/testSBProject01"));
-        this.afterConfig01 = new RepairConfiguration(buildDir.getPath(), null, new GradleProject("src/test/resources/testSBProject01_fixedOne"));
-        this.afterConfig02 = new RepairConfiguration(buildDir.getPath(), null, new GradleProject("src/test/resources/testSBProject01_fixedAll"));
+        this.beforeConfig = new RepairConfiguration(buildDir.getPath(), null, new GradleProject("src/test/resources/testSBProject01"), null);
+        this.afterConfig01 = new RepairConfiguration(buildDir.getPath(), null, new GradleProject("src/test/resources/testSBProject01_fixedOne"), null);
+        this.afterConfig02 = new RepairConfiguration(buildDir.getPath(), null, new GradleProject("src/test/resources/testSBProject01_fixedAll"), null);
     }
 
 
