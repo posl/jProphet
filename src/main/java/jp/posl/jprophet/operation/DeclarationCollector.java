@@ -74,5 +74,5 @@ public class DeclarationCollector {
         }
         final List<Parameter> parameters = methodNode.findAll(Parameter.class);
         return parameters;
-	}
+    }
 }

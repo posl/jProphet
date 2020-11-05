@@ -8,10 +8,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
+import com.github.javaparser.ast.CompilationUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import jp.posl.jprophet.project.FileLocator;
 import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
@@ -66,9 +70,9 @@ public class JProphetMain {
 
         final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(
             new CondRefinementOperation(),
-            new CondIntroductionOperation(), 
-            new CtrlFlowIntroductionOperation(), 
-            new InsertInitOperation(), 
+            new CondIntroductionOperation(),
+            new CtrlFlowIntroductionOperation(),
+            new MethodReplacementOperation(),
             new VariableReplacementOperation(),
             new CopyReplaceOperation()
         ));
@@ -93,9 +97,12 @@ public class JProphetMain {
             ) {
         // フォルトローカライゼーション
         final List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
+
+        final Map<FileLocator, CompilationUnit> targetCuMap = new AstGenerator().exec(suspiciousenesses, config.getTargetProject().getSrcFileLocators());
+        
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
-        final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(config.getTargetProject(), operations, suspiciousenesses);
+        final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(operations, suspiciousenesses, targetCuMap);
         
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
         final List<PatchCandidate> sortedCandidates = patchEvaluator.sort(patchCandidates, suspiciousenesses, config);

@@ -5,21 +5,21 @@ import java.util.Optional;
 
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
 
+import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.operation.AstOperation;
+import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 
 
 /**
  * 実際にプログラムの生成が可能なパッチ候補の実装クラス
  */
 public class PatchCandidate implements Patch {
-    private final Node targetNodeBeforeFix;
-    private final CompilationUnit fixedCompilationUnit;
     private final String fixedFilePath;
     private final String fixedFileFqn;
     private Class<? extends AstOperation> operation;
     private final int id;
+    private final OperationDiff operationDiff;
 
     /**
      * 以下の引数の情報を元にパッチ候補を生成 
@@ -29,10 +29,8 @@ public class PatchCandidate implements Patch {
      * @param fixedFileFQN 修正されたファイルのFQN
      * @param operation 適用されたオペレータのクラス
      */
-    public PatchCandidate(Node targetNodeBeforeFix, CompilationUnit fixedCompilationUnit, 
-                                 String fixedFilePath, String fixedFileFQN, Class<? extends AstOperation> operation, int id) {
-        this.targetNodeBeforeFix = targetNodeBeforeFix;
-        this.fixedCompilationUnit = fixedCompilationUnit;
+    public PatchCandidate(OperationDiff operationDiff, String fixedFilePath, String fixedFileFQN, Class<? extends AstOperation> operation, int id) {
+        this.operationDiff = operationDiff;
         this.fixedFilePath = fixedFilePath;
         this.fixedFileFqn = fixedFileFQN;
         this.operation = operation;
@@ -69,7 +67,12 @@ public class PatchCandidate implements Patch {
      */
     @Override
     public CompilationUnit getFixedCompilationUnit(){
-        return this.fixedCompilationUnit;
+        if (this.operationDiff.getModifyType().equals(ModifyType.INSERT)) {
+            return NodeUtility.insertNodeWithNewLine(this.operationDiff.getTargetNodeAfterFix(), this.operationDiff.getTargetNodeBeforeFix()).get().findCompilationUnit().get();
+        } else if (this.operationDiff.getModifyType().equals(ModifyType.CHANGE)) {
+            return NodeUtility.replaceNode(this.operationDiff.getTargetNodeAfterFix(), this.operationDiff.getTargetNodeBeforeFix()).get().findCompilationUnit().get();
+        }
+        return this.operationDiff.getTargetNodeBeforeFix().findCompilationUnit().get(); 
     }
 
     /**
@@ -77,7 +80,7 @@ public class PatchCandidate implements Patch {
      * @return 修正前のファイルのCompilationUnit
      */
     public CompilationUnit getOriginalCompilationUnit(){
-        return this.targetNodeBeforeFix.findCompilationUnit().orElseThrow();
+        return this.operationDiff.getTargetNodeBeforeFix().findCompilationUnit().orElseThrow();
     }
 
     /**
@@ -89,7 +92,7 @@ public class PatchCandidate implements Patch {
      */
     public Optional<Integer> getLineNumber() {
         try {
-            Range range = this.targetNodeBeforeFix.getRange().orElseThrow();        
+            Range range = this.operationDiff.getTargetNodeBeforeFix().getRange().orElseThrow();        
             return Optional.of(range.begin.line);
         } catch (NoSuchElementException e) {
             System.err.println(e.getMessage());
@@ -119,7 +122,7 @@ public class PatchCandidate implements Patch {
             .append("\n")
             .append("used operation  : " + this.operation.getSimpleName())
             .append("\n\n")
-            .append(new RepairDiff(this.targetNodeBeforeFix, fixedCompilationUnit).toString())
+            .append(new RepairDiff(this.operationDiff.getTargetNodeBeforeFix(), this.getFixedCompilationUnit()).toString())
             .toString();
     }
 }

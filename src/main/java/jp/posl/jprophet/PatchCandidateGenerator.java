@@ -1,11 +1,8 @@
 package jp.posl.jprophet;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,41 +13,34 @@ import com.github.javaparser.ast.Node;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.operation.AstOperation;
 import jp.posl.jprophet.patch.PatchCandidate;
+import jp.posl.jprophet.patch.OperationDiff;
 import jp.posl.jprophet.project.FileLocator;
-import jp.posl.jprophet.project.Project;
 
 
 public class PatchCandidateGenerator{
     /**
      * バグのあるソースコード群から修正パッチ候補を生成する 
      * 
-     * @param project 修正パッチ候補を生成する対象のプロジェクト 
      * @param operations 適応するテンプレート
      * @param suspiciousnesses flで得られた疑惑値のリスト
+     * @param fileLocatorMap fileLocatorとそれに対応したcompilationunitのマップ
      * @return 条件式が抽象化された修正パッチ候補のリスト
      */
-    public List<PatchCandidate> exec(Project project, List<AstOperation> operations, List<Suspiciousness> suspiciousnesses){
-        final List<FileLocator> fileLocators = project.getSrcFileLocators();                
+    public List<PatchCandidate> exec(List<AstOperation> operations, List<Suspiciousness> suspiciousnesses, Map<FileLocator, CompilationUnit> fileLocatorMap){
         List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
         int patchCandidateID = 1;
-        for(FileLocator fileLocator : fileLocators){
-            try {
-                final List<String> lines = Files.readAllLines(Paths.get(fileLocator.getPath()), StandardCharsets.UTF_8);
-                final String sourceCode = String.join("\n", lines);
-                final List<Node> targetNodes = NodeUtility.getAllNodesFromCode(sourceCode);
-                for(Node targetNode : targetNodes){
-                    //疑惑値0のtargetNodeはパッチを生成しない
-                    if (!findZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
-                        final List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
-                        for(AppliedOperationResult result : appliedOperationResults){
-                            candidates.add(new PatchCandidate(targetNode, result.getCompilationUnit(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
-                            patchCandidateID += 1;
-                        }
+        for(Map.Entry<FileLocator, CompilationUnit> entry : fileLocatorMap.entrySet()){
+            final FileLocator fileLocator = entry.getKey();
+            final List<Node> targetNodes = NodeUtility.getAllDescendantNodes(entry.getValue());
+            for(Node targetNode : targetNodes){
+                //疑惑値0のtargetNodeはパッチを生成しない
+                if (!findZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
+                    final List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
+                    for(AppliedOperationResult result : appliedOperationResults){
+                        candidates.add(new PatchCandidate(result.getOperationDiff(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
+                        patchCandidateID += 1;
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                break;
             }
         }
 
@@ -90,7 +80,8 @@ public class PatchCandidateGenerator{
     /**
      * ASTノードに対して修正テンプレートを適用し，修正候補群を生成する．
      * 
-     * @param repairUnits テンプレートを適用するASTノードのリスト
+     * @param node 対象ノード
+     * @param operations 使用するオペレーション
      * @return テンプレートが適用された修正候補のリスト
      */
     public List<AppliedOperationResult> applyTemplate(Node node, List<AstOperation> operations) {
@@ -105,19 +96,19 @@ public class PatchCandidateGenerator{
 
 
     public class AppliedOperationResult {
-        private final CompilationUnit compilationUnit;
+        private final OperationDiff operationDiff;
         private final Class<? extends AstOperation> operation;
 
-        public AppliedOperationResult(CompilationUnit compilationUnit, Class<? extends AstOperation> operation) {
-            this.compilationUnit = compilationUnit;
+        public AppliedOperationResult(OperationDiff operationDiff, Class<? extends AstOperation> operation) {
+            this.operationDiff = operationDiff;
             this.operation = operation;
         }
 
         /**
-         * @return the compilationUnit
+         * @return the operationDiff
          */
-        public CompilationUnit getCompilationUnit() {
-            return compilationUnit;
+        public OperationDiff getOperationDiff() {
+            return operationDiff;
         }
 
         /**

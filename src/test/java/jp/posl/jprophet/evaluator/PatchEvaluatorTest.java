@@ -11,13 +11,16 @@ import java.util.Optional;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.stmt.Statement;
 
 import org.junit.Test;
 
 import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.fl.Suspiciousness;
+import jp.posl.jprophet.patch.OperationDiff;
 import jp.posl.jprophet.patch.PatchCandidate;
+import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 
 public class PatchEvaluatorTest {
     /**
@@ -64,6 +67,7 @@ public class PatchEvaluatorTest {
             .append("    }\n")
             .append("}\n")
             .toString();
+        /*
         final String fixedSource1 = new StringBuilder().append("")
             .append("public class A {\n") 
             .append("    private void ma() {\n")
@@ -85,14 +89,20 @@ public class PatchEvaluatorTest {
             .append("       return;\n")
             .append("    }\n")
             .append("}\n").toString();
+        */
         final Node targetNodeBeforeFix = NodeUtility.getAllNodesFromCode(originalSource).get(6);
-        final CompilationUnit fixedCu1 = JavaParser.parse(fixedSource1);
-        final CompilationUnit fixedCu2 = JavaParser.parse(fixedSource2);
-        final CompilationUnit fixedCu3 = JavaParser.parse(fixedSource3);
+        final Statement targetNodeAfterFix1 = JavaParser.parseStatement("hoge();");
+        final String fixSource2 = new StringBuilder().append("")
+            .append("if (true)\n")
+            .append("    return;")
+            .toString();
+        final Statement targetNodeAfterFix2 = JavaParser.parseStatement(fixSource2);
+        final Statement targetNodeAfterFix3 = JavaParser.parseStatement("hoge();");
+        
         final List<PatchCandidate> candidates = List.of(
-            new PatchCandidate(targetNodeBeforeFix, fixedCu1, null, "a", null, 0),
-            new PatchCandidate(targetNodeBeforeFix, fixedCu2, null, "b", null, 0),
-            new PatchCandidate(targetNodeBeforeFix, fixedCu3, null, "c", null, 0)
+            new PatchCandidate(new OperationDiff(ModifyType.INSERT, targetNodeBeforeFix, targetNodeAfterFix1), null, "a", null, 0),
+            new PatchCandidate(new OperationDiff(ModifyType.CHANGE, targetNodeBeforeFix, targetNodeAfterFix2), null, "b", null, 0),
+            new PatchCandidate(new OperationDiff(ModifyType.INSERT, targetNodeBeforeFix, targetNodeAfterFix3), null, "c", null, 0)
         );
         final List<Suspiciousness> suspiciousenesses = List.of(
             new Suspiciousness("a", 3, 1),
@@ -106,6 +116,7 @@ public class PatchEvaluatorTest {
         assertThat(sortedPatches.get(0).getFqn()).contains("a");
         assertThat(sortedPatches.get(1).getFqn()).contains("c");
         assertThat(sortedPatches.get(2).getFqn()).contains("b");
+        
     }
 }
 
