@@ -27,14 +27,28 @@ public class OperationDiff { //TODO: クラス名改善の余地あり
         this.targetNodeAfterFix = targetNodeAfterFix;
     }
 
+    /**
+     * 修正のタイプを返す
+     * @return 修正のタイプ
+     */
     public ModifyType getModifyType() {
         return this.modifyType;
     }
 
+    /**
+     * 修正前の対象ノードを返す
+     * rootノードはCompilatioUnit
+     * @return 修正前の対象ノード
+     */
     public Node getTargetNodeBeforeFix() {
         return this.targetNodeBeforeFix;
     }
 
+    /**
+     * 修正後の対象ノードを返す
+     * 親ノードは持たない
+     * @return 修正後の対象ノード
+     */
     public Node getTargetNodeAfterFix() {
         return this.targetNodeAfterFix;
     }
