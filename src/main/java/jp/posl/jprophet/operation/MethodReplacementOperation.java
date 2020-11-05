@@ -9,8 +9,8 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 
-import jp.posl.jprophet.patch.DiffWithType;
-import jp.posl.jprophet.patch.DiffWithType.ModifyType;
+import jp.posl.jprophet.patch.OperationDiff;
+import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 
 
 /**
@@ -25,7 +25,7 @@ public class MethodReplacementOperation implements AstOperation {
      * 
      * @return 生成された修正後のCompilationUnitのリスト
      */
-    public List<DiffWithType> exec(Node targetNode) {
+    public List<OperationDiff> exec(Node targetNode) {
         if (!(targetNode instanceof MethodCallExpr))
             return new ArrayList<>();
         final MethodCallExpr targetMethodCallExpr = (MethodCallExpr) targetNode;
@@ -42,11 +42,11 @@ public class MethodReplacementOperation implements AstOperation {
 
         final List<Node> replacedArgmentsMethods = replaceArgments(replacedMethods, targetNode);
 
-        final List<DiffWithType> diffWithTypes = replacedArgmentsMethods.stream()
-            .map(node -> new DiffWithType(ModifyType.CHANGE, targetNode, node))
+        final List<OperationDiff> operationDiffs = replacedArgmentsMethods.stream()
+            .map(node -> new OperationDiff(ModifyType.CHANGE, targetNode, node))
             .collect(Collectors.toList());
             
-        return diffWithTypes;
+        return operationDiffs;
     }
 
     /**

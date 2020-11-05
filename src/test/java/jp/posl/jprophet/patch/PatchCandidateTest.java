@@ -19,7 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import jp.posl.jprophet.operation.VariableReplacementOperation;
-import jp.posl.jprophet.patch.DiffWithType.ModifyType;
+import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 
 
 public class PatchCandidateTest {
@@ -51,8 +51,8 @@ public class PatchCandidateTest {
             .toString();
         fixedCompilationUnit = JavaParser.parse(fixedSource);
         
-        DiffWithType diffWithType = new DiffWithType(ModifyType.CHANGE, node, fixedNode);
-        this.patchCandidate = new PatchCandidate(diffWithType, filePath, fqn, VariableReplacementOperation.class, 1);
+        OperationDiff operationDiff = new OperationDiff(ModifyType.CHANGE, node, fixedNode);
+        this.patchCandidate = new PatchCandidate(operationDiff, filePath, fqn, VariableReplacementOperation.class, 1);
     }
 
     /**

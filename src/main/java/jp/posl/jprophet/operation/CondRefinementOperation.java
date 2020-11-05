@@ -13,8 +13,8 @@ import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 import com.github.javaparser.ast.stmt.IfStmt;
 
-import jp.posl.jprophet.patch.DiffWithType;
-import jp.posl.jprophet.patch.DiffWithType.ModifyType;
+import jp.posl.jprophet.patch.OperationDiff;
+import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 
 
 /**
@@ -25,8 +25,8 @@ public class CondRefinementOperation implements AstOperation{
     /**
      * {@inheritDoc}
      */
-    public List<DiffWithType> exec(Node targetNode){
-        if (!(targetNode instanceof IfStmt)) return new ArrayList<DiffWithType>();
+    public List<OperationDiff> exec(Node targetNode){
+        if (!(targetNode instanceof IfStmt)) return new ArrayList<OperationDiff>();
 
         final DeclarationCollector collector = new DeclarationCollector();
         final List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
@@ -38,17 +38,17 @@ public class CondRefinementOperation implements AstOperation{
         final Expression condition = (Expression)copiedNode.getCondition();
 
         final List<Expression> conditions = new ConcreteConditions(vars, parameters).getExpressions();
-        final List<DiffWithType> diffWithTypes = new ArrayList<DiffWithType>();
+        final List<OperationDiff> operationDiffs = new ArrayList<OperationDiff>();
 
         conditions.stream()
             .map(expr -> this.replaceWithBinaryExprWithAbst(condition, new EnclosedExpr(expr), Operator.OR))
-            .forEach(expr -> diffWithTypes.add(new DiffWithType(ModifyType.CHANGE, ((IfStmt)targetNode).getCondition(), expr)));
+            .forEach(expr -> operationDiffs.add(new OperationDiff(ModifyType.CHANGE, ((IfStmt)targetNode).getCondition(), expr)));
         
         conditions.stream()
             .map(expr -> this.replaceWithBinaryExprWithAbst(condition, new UnaryExpr(new EnclosedExpr(expr), UnaryExpr.Operator.LOGICAL_COMPLEMENT), Operator.AND))
-            .forEach(expr -> diffWithTypes.add(new DiffWithType(ModifyType.CHANGE, ((IfStmt)targetNode).getCondition(), expr)));
+            .forEach(expr -> operationDiffs.add(new OperationDiff(ModifyType.CHANGE, ((IfStmt)targetNode).getCondition(), expr)));
 
-        return diffWithTypes;
+        return operationDiffs;
 
     }
 

@@ -14,8 +14,8 @@ import com.github.javaparser.ast.stmt.SwitchEntryStmt;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
-import jp.posl.jprophet.patch.DiffWithType;
-import jp.posl.jprophet.patch.DiffWithType.ModifyType;
+import jp.posl.jprophet.patch.OperationDiff;
+import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 
 /**
  * 対象ステートメントの以前に現れているステートメントを，
@@ -27,9 +27,9 @@ public class CopyReplaceOperation implements AstOperation{
      * {@inheritDoc}
      */
     @Override
-    public List<DiffWithType> exec(Node targetNode){
+    public List<OperationDiff> exec(Node targetNode){
         if (!(targetNode instanceof Statement) || targetNode instanceof BlockStmt || targetNode instanceof SwitchEntryStmt) {
-            return new ArrayList<DiffWithType>();
+            return new ArrayList<OperationDiff>();
         }
         //修正対象のステートメントの属するメソッドノードを取得
         //メソッド内のステートメント(修正対象のステートメントより前のもの)を収集
@@ -37,10 +37,10 @@ public class CopyReplaceOperation implements AstOperation{
         final List<Node> replacedVarStatements = copyAndPasteReplacedStatementToBeforeTarget(statements, targetNode);
         
         //修正対象のステートメントの直前に,収集したステートメントのNodeを追加
-        final List<DiffWithType> diffWithTypes = replacedVarStatements.stream()
-            .map(node -> new DiffWithType(ModifyType.INSERT, targetNode, node))
+        final List<OperationDiff> operationDiffs = replacedVarStatements.stream()
+            .map(node -> new OperationDiff(ModifyType.INSERT, targetNode, node))
             .collect(Collectors.toList());
-        return diffWithTypes;
+        return operationDiffs;
     }
 
     /**

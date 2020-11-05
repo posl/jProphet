@@ -15,8 +15,8 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.WhileStmt;
 
-import jp.posl.jprophet.patch.DiffWithType;
-import jp.posl.jprophet.patch.DiffWithType.ModifyType;
+import jp.posl.jprophet.patch.OperationDiff;
+import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 
 
 /**
@@ -34,7 +34,7 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
      * {@inheritDoc}
      */
     @Override
-    public List<DiffWithType> exec(Node targetNode){
+    public List<OperationDiff> exec(Node targetNode){
         if(!(targetNode instanceof Statement)) return new ArrayList<>();
         if(targetNode instanceof BlockStmt) return new ArrayList<>();
 
@@ -46,18 +46,18 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
 
         final List<Expression> conditions = new ConcreteConditions(vars, parameters).getExpressions();
 
-        final List<DiffWithType> diffWithTypes = new ArrayList<DiffWithType>();
+        final List<OperationDiff> operationDiffs = new ArrayList<OperationDiff>();
         conditions.stream()
             .map(c -> new IfStmt(c, new ReturnStmt(), null))
-            .forEach(stmt -> diffWithTypes.add(new DiffWithType(ModifyType.INSERT, targetNode, stmt)));
+            .forEach(stmt -> operationDiffs.add(new OperationDiff(ModifyType.INSERT, targetNode, stmt)));
 
         if(targetNode.findParent(ForStmt.class).isPresent() || targetNode.findParent(WhileStmt.class).isPresent()) {
             conditions.stream()
                 .map(c -> new IfStmt(c, new BreakStmt((SimpleName) null), null))
-                .forEach(stmt -> diffWithTypes.add(new DiffWithType(ModifyType.INSERT, targetNode, stmt)));
+                .forEach(stmt -> operationDiffs.add(new OperationDiff(ModifyType.INSERT, targetNode, stmt)));
         }
 
-        return diffWithTypes;
+        return operationDiffs;
     }
 
 }

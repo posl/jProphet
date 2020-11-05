@@ -5,9 +5,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import jp.posl.jprophet.operation.AstOperation;
-import jp.posl.jprophet.patch.DiffWithType;
+import jp.posl.jprophet.patch.OperationDiff;
 import jp.posl.jprophet.patch.PatchCandidate;
-import jp.posl.jprophet.patch.DiffWithType.ModifyType;
+import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 import jp.posl.jprophet.project.GradleProject;
 
 import static org.assertj.core.api.Assertions.*;
@@ -71,7 +71,7 @@ public class PatchedProjectGeneratorTest{
         }
         Node targetNodeBeforeFix = compilationUnit.findRootNode().getChildNodes().get(1).getChildNodes().get(1).getChildNodes().get(2).getChildNodes().get(0);
         Node targetNodeAfterFix = NodeUtility.initTokenRange(new ExpressionStmt(new MethodCallExpr("hoge"))).get();
-        PatchCandidate patchCandidate = new PatchCandidate(new DiffWithType(ModifyType.INSERT, targetNodeBeforeFix, targetNodeAfterFix), this.targetFilePath, this.targetFileFqn, AstOperation.class, 1);
+        PatchCandidate patchCandidate = new PatchCandidate(new OperationDiff(ModifyType.INSERT, targetNodeBeforeFix, targetNodeAfterFix), this.targetFilePath, this.targetFileFqn, AstOperation.class, 1);
         this.patchedProjectGenerator.applyPatch(patchCandidate);
        
     }

@@ -13,8 +13,8 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
-import jp.posl.jprophet.patch.DiffWithType;
-import jp.posl.jprophet.patch.DiffWithType.ModifyType;
+import jp.posl.jprophet.patch.OperationDiff;
+import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 
 
 /**
@@ -24,7 +24,7 @@ public class CondIntroductionOperation implements AstOperation{
     /**
      * {@inheritDoc}
      */
-    public List<DiffWithType> exec(Node targetNode){
+    public List<OperationDiff> exec(Node targetNode){
         if(!(targetNode instanceof Statement)) return new ArrayList<>();
         if(targetNode instanceof BlockStmt) return new ArrayList<>();
 
@@ -36,17 +36,17 @@ public class CondIntroductionOperation implements AstOperation{
 
         final Statement thenStmt = (Statement)targetNode.clone();
 
-        final List<DiffWithType> diffWithTypes = new ArrayList<DiffWithType>();
+        final List<OperationDiff> operationDiffs = new ArrayList<OperationDiff>();
 
         final ConcreteConditions concreteConditions = new ConcreteConditions(vars, parameters);
         concreteConditions.getExpressions()
             .forEach(expr -> {
                 try {
                     IfStmt newIfStmt =  (IfStmt)JavaParser.parseStatement((new IfStmt(expr, thenStmt, null)).toString());
-                    diffWithTypes.add(new DiffWithType(ModifyType.CHANGE, targetNode, newIfStmt));
+                    operationDiffs.add(new OperationDiff(ModifyType.CHANGE, targetNode, newIfStmt));
                 } catch (Exception e) {
                 }
             });
-        return diffWithTypes;
+        return operationDiffs;
     }
 }

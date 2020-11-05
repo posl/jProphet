@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.github.javaparser.ast.Node;
 
-import jp.posl.jprophet.patch.DiffWithType;
+import jp.posl.jprophet.patch.OperationDiff;
 
 
 public interface AstOperation{
@@ -14,5 +14,5 @@ public interface AstOperation{
      * @param targetNode 対象ステートメントを表すノード
      * @return パッチ適用によるNodeの差分情報
      */
-    public List<DiffWithType> exec(Node targetNode);
+    public List<OperationDiff> exec(Node targetNode);
 }

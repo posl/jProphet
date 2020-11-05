@@ -13,7 +13,7 @@ import com.github.javaparser.ast.Node;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.operation.AstOperation;
 import jp.posl.jprophet.patch.PatchCandidate;
-import jp.posl.jprophet.patch.DiffWithType;
+import jp.posl.jprophet.patch.OperationDiff;
 import jp.posl.jprophet.project.FileLocator;
 
 
@@ -37,7 +37,7 @@ public class PatchCandidateGenerator{
                 if (!findZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
                     final List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
                     for(AppliedOperationResult result : appliedOperationResults){
-                        candidates.add(new PatchCandidate(result.getDiffWithType(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
+                        candidates.add(new PatchCandidate(result.getOperationDiff(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
                         patchCandidateID += 1;
                     }
                 }
@@ -96,19 +96,19 @@ public class PatchCandidateGenerator{
 
 
     public class AppliedOperationResult {
-        private final DiffWithType diffWithType;
+        private final OperationDiff operationDiff;
         private final Class<? extends AstOperation> operation;
 
-        public AppliedOperationResult(DiffWithType diffWithType, Class<? extends AstOperation> operation) {
-            this.diffWithType = diffWithType;
+        public AppliedOperationResult(OperationDiff operationDiff, Class<? extends AstOperation> operation) {
+            this.operationDiff = operationDiff;
             this.operation = operation;
         }
 
         /**
-         * @return the diffWithType
+         * @return the operationDiff
          */
-        public DiffWithType getDiffWithType() {
-            return diffWithType;
+        public OperationDiff getOperationDiff() {
+            return operationDiff;
         }
 
         /**

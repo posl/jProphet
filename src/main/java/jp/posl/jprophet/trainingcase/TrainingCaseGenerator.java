@@ -63,7 +63,7 @@ public class TrainingCaseGenerator {
             Collections.shuffle(allNodesForPatchGeneration);
             final List<Patch> generatedPatches = allNodesForPatchGeneration.stream()
                 .flatMap(node -> patchGenerator.applyTemplate(node, config.getOperations()).stream())
-                .map(result -> result.getDiffWithType().getTargetNodeBeforeFix().findCompilationUnit().orElseThrow())
+                .map(result -> result.getOperationDiff().getTargetNodeBeforeFix().findCompilationUnit().orElseThrow())
                 .map(cu -> new LearningPatch(patch.getOriginalCompilationUnit(), cu))
                 .limit(10)
                 .collect(Collectors.toList());

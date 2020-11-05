@@ -4,9 +4,9 @@ import org.junit.Test;
 
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.operation.AstOperation;
-import jp.posl.jprophet.patch.DiffWithType;
+import jp.posl.jprophet.patch.OperationDiff;
 import jp.posl.jprophet.patch.PatchCandidate;
-import jp.posl.jprophet.patch.DiffWithType.ModifyType;
+import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 import jp.posl.jprophet.project.FileLocator;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,8 +40,8 @@ public class PatchCandidateGeneratorTest {
         // 必ず一つのRepairUnitを返すAstOperationの匿名クラスを実装してGeneratorに注入
         AstOperation stubOperation = new AstOperation(){
             @Override
-            public List<DiffWithType> exec(Node targetNode) {
-                return List.of(new DiffWithType (ModifyType.NONE, targetNode, targetNode)); 
+            public List<OperationDiff> exec(Node targetNode) {
+                return List.of(new OperationDiff (ModifyType.NONE, targetNode, targetNode)); 
             }
         };
 
@@ -81,8 +81,8 @@ public class PatchCandidateGeneratorTest {
         // 必ず一つのRepairUnitを返すAstOperationの匿名クラスを実装してGeneratorに注入
         AstOperation stubOperation = new AstOperation(){
             @Override
-            public List<DiffWithType> exec(Node targetNode) {
-                return List.of(new DiffWithType (ModifyType.NONE, targetNode, targetNode)); 
+            public List<OperationDiff> exec(Node targetNode) {
+                return List.of(new OperationDiff (ModifyType.NONE, targetNode, targetNode)); 
             }
         };
 

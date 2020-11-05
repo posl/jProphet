@@ -98,11 +98,11 @@ public class JProphetMain {
         // フォルトローカライゼーション
         final List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
 
-        final Map<FileLocator, CompilationUnit> fileLocatorMap = new AstGenerator().exec(suspiciousenesses, config.getTargetProject().getSrcFileLocators());
+        final Map<FileLocator, CompilationUnit> targetCuMap = new AstGenerator().exec(suspiciousenesses, config.getTargetProject().getSrcFileLocators());
         
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
-        final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(operations, suspiciousenesses, fileLocatorMap);
+        final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(operations, suspiciousenesses, targetCuMap);
         
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
         final List<PatchCandidate> sortedCandidates = patchEvaluator.sort(patchCandidates, suspiciousenesses, config);

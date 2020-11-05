@@ -18,9 +18,9 @@ import org.junit.Test;
 import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.fl.Suspiciousness;
-import jp.posl.jprophet.patch.DiffWithType;
+import jp.posl.jprophet.patch.OperationDiff;
 import jp.posl.jprophet.patch.PatchCandidate;
-import jp.posl.jprophet.patch.DiffWithType.ModifyType;
+import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 
 public class PatchEvaluatorTest {
     /**
@@ -100,9 +100,9 @@ public class PatchEvaluatorTest {
         final Statement targetNodeAfterFix3 = JavaParser.parseStatement("hoge();");
         
         final List<PatchCandidate> candidates = List.of(
-            new PatchCandidate(new DiffWithType(ModifyType.INSERT, targetNodeBeforeFix, targetNodeAfterFix1), null, "a", null, 0),
-            new PatchCandidate(new DiffWithType(ModifyType.CHANGE, targetNodeBeforeFix, targetNodeAfterFix2), null, "b", null, 0),
-            new PatchCandidate(new DiffWithType(ModifyType.INSERT, targetNodeBeforeFix, targetNodeAfterFix3), null, "c", null, 0)
+            new PatchCandidate(new OperationDiff(ModifyType.INSERT, targetNodeBeforeFix, targetNodeAfterFix1), null, "a", null, 0),
+            new PatchCandidate(new OperationDiff(ModifyType.CHANGE, targetNodeBeforeFix, targetNodeAfterFix2), null, "b", null, 0),
+            new PatchCandidate(new OperationDiff(ModifyType.INSERT, targetNodeBeforeFix, targetNodeAfterFix3), null, "c", null, 0)
         );
         final List<Suspiciousness> suspiciousenesses = List.of(
             new Suspiciousness("a", 3, 1),
