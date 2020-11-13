@@ -168,7 +168,32 @@ public final class NodeUtility {
      * @param targetNode 挿入するノードの後ろのノード
      * @return 挿入したノード
      */
-    public static Optional<Node> insertNodeWithNewLine(Node nodeToInsert, Node targetNode){
+    public static Optional<CompilationUnit> insertNodeWithNewLine(Node nodeToInsert, Node targetNode){
+        Optional<CompilationUnit> cu = targetNode.findCompilationUnit();
+        if (cu.isPresent()) {
+            String [] lines = NodeUtility.lexicalPreservingPrint(cu.get()).split("\n");
+            StringBuilder sb = new StringBuilder();
+            int beginLine = targetNode.getRange().get().begin.line;
+            int beginColumn = targetNode.getRange().get().begin.column;
+            for (int i = 0; i < lines.length; i++) {
+                if (i == beginLine - 1) {
+                    for (int j = 1; j < beginColumn; j++) {
+                        sb.append(" ");
+                    }
+                    sb.append(NodeUtility.lexicalPreservingPrint(nodeToInsert));
+                    sb.append("\n");
+                }
+                sb.append(lines[i]);
+                sb.append("\n");
+            }
+            //int beginColumn = targetNode.getRange().get().begin.column;
+            //int endColumn = targetNode.getRange().get().end.column;
+            String source = sb.toString();
+            return Optional.of(JavaParser.parse(source));
+        }
+        return Optional.empty();
+        
+        /*
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
         Node nodeWithTokenToInsert;
         try {
@@ -209,6 +234,7 @@ public final class NodeUtility {
         final CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
         return NodeUtility.reparseCompilationUnit(compilationUnit)
             .map(cu -> findNodeInCompilationUnitByBeginRange(cu, nodeWithTokenToInsert, beginRangeOfTarget));
+        */
     }
 
     /**
