@@ -36,8 +36,8 @@ public class MavenProject implements Project {
         Path testDir;
         
         try {
-            srcDir =  Paths.get(rootPath + "/src/main");
-            testDir = Paths.get(rootPath + "/src/test");
+            srcDir =  Paths.get(rootPath + "/src/main/java");
+            testDir = Paths.get(rootPath + "/src/test/java");
 
             List<File> srcFileList = Files.walk(srcDir)
                 .map(path -> path.toFile())
