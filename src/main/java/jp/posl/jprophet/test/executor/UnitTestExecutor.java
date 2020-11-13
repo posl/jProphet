@@ -66,35 +66,19 @@ public class UnitTestExecutor implements TestExecutor {
         }
     }
 
-    public TestExecutorResult exec(RepairConfiguration config, List<ExecutionTest> executionTests, String sourceFqn)  {
+    @Override
+    public TestExecutorResult exec(RepairConfiguration config, List<ExecutionTest> executionTests)  {
         try {
             if (builder.build(config)){
                 getClassLoader(config.getBuildPath());
-                //testClasses = loadTestClass(config.getTargetProject());
                 testClasses = new ArrayList<Class<?>>();
-                Optional<ExecutionTest> et = executionTests.stream()
-                    .filter(e -> e.getSourceName().equals(sourceFqn))
-                    .findAny();
-                
-                if(et.isPresent()){
-                    for (String fqn : et.get().getTestNames()) {
-                        testClasses.add(loader.loadClass(fqn));
-                    }
-                }
-                
-                /*
-                final JUnitCore junitCore = new JUnitCore();
-                Result tr = junitCore.run(testClasses.toArray(new Class<?>[testClasses.size()]));
-                final boolean result = true;
-                */
-
                 final boolean result = runAllTestClass(testClasses);
                 return new TestExecutorResult(result, List.of(new UnitTestResult(result)));
             } else {
                 return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
             }
         }
-        catch (MalformedURLException | ClassNotFoundException e) {
+        catch (MalformedURLException e) {
             System.err.println(e.getMessage());
             return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
         }

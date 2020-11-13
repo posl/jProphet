@@ -19,8 +19,13 @@ public interface TestExecutor {
      */
     public TestExecutorResult exec(RepairConfiguration config);
 
-    default public TestExecutorResult exec(RepairConfiguration config, List<ExecutionTest> executionTests, String sourceFqn){
+    /**
+     * 実行するテストを選んで検証を行う
+     * @param config 対象プロジェクトのconfig
+     * @param executionTests 実行するテスト
+     * @return テスト結果のリスト
+     */
+    default public TestExecutorResult exec(RepairConfiguration config, List<ExecutionTest> executionTests) {
         return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
-    }
-
+    };
 } 
