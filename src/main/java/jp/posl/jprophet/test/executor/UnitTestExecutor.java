@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import org.junit.runner.JUnitCore;
 
@@ -72,13 +73,22 @@ public class UnitTestExecutor implements TestExecutor {
             if (builder.build(config)){
                 getClassLoader(config.getBuildPath());
                 testClasses = new ArrayList<Class<?>>();
+                List<String> testFqns = executionTests.stream()
+                    .flatMap(et -> et.getTestNames().stream())
+                    .distinct()
+                    .collect(Collectors.toList());
+
+                for (String testFqn : testFqns) {
+                    testClasses.add(loader.loadClass(testFqn));
+                }
+
                 final boolean result = runAllTestClass(testClasses);
                 return new TestExecutorResult(result, List.of(new UnitTestResult(result)));
             } else {
                 return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
             }
         }
-        catch (MalformedURLException e) {
+        catch (MalformedURLException | ClassNotFoundException e) {
             System.err.println(e.getMessage());
             return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
         }
