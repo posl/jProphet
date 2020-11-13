@@ -86,9 +86,9 @@ public class VariableReplacerTest {
             .append("}\n")
             .toString();
         final List<String> expectedExpressions = List.of(
-            "this.fa == \"b\"",
-            "la == \"b\"",
-            "pa == \"b\"");
+            "if (this.fa == \"b\")\n    return;",
+            "if (la == \"b\")\n    return;",
+            "if (pa == \"b\")\n    return;");
         final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
         final List<Node> replacedNodes = new ArrayList<Node>();
         for(Node node : nodes){
