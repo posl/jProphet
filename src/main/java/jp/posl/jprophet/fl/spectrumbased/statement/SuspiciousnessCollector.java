@@ -46,19 +46,10 @@ public class SuspiciousnessCollector {
             List<Coverage> failedCoverages = new ArrayList<Coverage>();     
 
             List<String> testNames = testResults.getTestResults().stream()
-                .filter(t -> {
-                    if (t.getCoverages().stream().filter(c -> c.getName().equals(sourceFqn)).findFirst().isPresent()){
-                        return true;
-                    } else {
-                        return false;
-                    }
-                })
+                .filter(t -> t.getCoverages().stream().filter(c -> c.getName().equals(sourceFqn)).findFirst().isPresent())
                 .map(t -> t.getMethodName().substring(0,  t.getMethodName().lastIndexOf(".")))
+                .distinct()
                 .collect(Collectors.toList());
-
-            Set<String> set = new HashSet<>(testNames);
-            testNames.clear();
-            testNames.addAll(set);
 
             executionTests.add(new ExecutionTest(sourceFqn, testNames));
 
