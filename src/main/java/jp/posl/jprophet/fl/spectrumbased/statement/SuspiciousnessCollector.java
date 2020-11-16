@@ -1,18 +1,15 @@
 package jp.posl.jprophet.fl.spectrumbased.statement;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
 import jp.posl.jprophet.fl.spectrumbased.coverage.Coverage;
-import jp.posl.jprophet.fl.spectrumbased.coverage.TestResult;
 import jp.posl.jprophet.fl.spectrumbased.coverage.TestResults;
 import jp.posl.jprophet.fl.spectrumbased.coverage.Coverage.Status;
 import jp.posl.jprophet.fl.Suspiciousness;
-import jp.posl.jprophet.fl.spectrumbased.ExecutionTest;
+import jp.posl.jprophet.fl.spectrumbased.TestCase;
 
 /**
  * ステートメント(行)ごとの疑惑値の計算
@@ -23,7 +20,7 @@ public class SuspiciousnessCollector {
     final private List<String> sourceFqns;
     final private TestResults testResults;
     final private Coefficient coefficient;
-    private List<ExecutionTest> executionTests = new ArrayList<ExecutionTest>();
+    private List<TestCase> testsToBeExecuted = new ArrayList<TestCase>();
 
     /**
      * テスト結果(カバレッジ情報を含む)から,全てのテスト対象ファイルの各行ごとの疑惑値を計算
@@ -51,7 +48,7 @@ public class SuspiciousnessCollector {
                 .distinct()
                 .collect(Collectors.toList());
 
-            executionTests.add(new ExecutionTest(sourceFqn, testNames));
+            testsToBeExecuted.add(new TestCase(sourceFqn, testNames));
 
             testResults.getFailedTestResults().stream()
                 .map(t -> t.getCoverages()
@@ -81,8 +78,8 @@ public class SuspiciousnessCollector {
         }
     }
 
-    public List<ExecutionTest> getExecutionTests() {
-        return this.executionTests;
+    public List<TestCase> getExecutedTests() {
+        return this.testsToBeExecuted;
     }
 
     /**

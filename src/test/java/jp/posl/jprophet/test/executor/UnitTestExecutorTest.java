@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import jp.posl.jprophet.RepairConfiguration;
-import jp.posl.jprophet.fl.spectrumbased.ExecutionTest;
+import jp.posl.jprophet.fl.spectrumbased.TestCase;
 import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;
 
@@ -82,11 +82,11 @@ public class UnitTestExecutorTest {
      * 実行するテストを指定して成功したかどうかテスト
      */
     @Test
-    public void testForExecuteWithExecutionTest() {
+    public void testForExecuteWithTestCase() {
 
-        List<ExecutionTest> executionTests = new ArrayList<ExecutionTest>();
-        executionTests.add(new ExecutionTest("source", Arrays.asList("testGradleProject01.App2Test", "testGradleProject01.AppTest")));
-        executionTests.add(new ExecutionTest("source2", Arrays.asList("testGradleProject01.App2Test", "testGradleProject01.AppTest")));
+        List<TestCase> executionTests = new ArrayList<TestCase>();
+        executionTests.add(new TestCase("source", Arrays.asList("testGradleProject01.App2Test", "testGradleProject01.AppTest")));
+        executionTests.add(new TestCase("source2", Arrays.asList("testGradleProject01.App2Test", "testGradleProject01.AppTest")));
         boolean isSuccess01 = this.testExecutor.exec(correctConfig, executionTests).canEndRepair();
         assertThat(isSuccess01).isTrue();
         try {
@@ -96,9 +96,9 @@ public class UnitTestExecutorTest {
             e.printStackTrace();
         }
 
-        List<ExecutionTest> executionTests2 = new ArrayList<ExecutionTest>();
-        executionTests2.add(new ExecutionTest("source", Arrays.asList("testGradleProject01.App2Test")));
-        executionTests2.add(new ExecutionTest("source2", Arrays.asList("testGradleProject01.App2Test")));
+        List<TestCase> executionTests2 = new ArrayList<TestCase>();
+        executionTests2.add(new TestCase("source", Arrays.asList("testGradleProject01.App2Test")));
+        executionTests2.add(new TestCase("source2", Arrays.asList("testGradleProject01.App2Test")));
         boolean isSuccess02 = this.testExecutor.exec(correctConfig, executionTests2).canEndRepair();
         assertThat(isSuccess02).isTrue();
         try {

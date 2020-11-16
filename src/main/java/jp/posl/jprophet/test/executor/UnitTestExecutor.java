@@ -13,7 +13,7 @@ import jp.posl.jprophet.test.result.TestExecutorResult;
 import jp.posl.jprophet.test.result.UnitTestResult;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
-import jp.posl.jprophet.fl.spectrumbased.ExecutionTest;
+import jp.posl.jprophet.fl.spectrumbased.TestCase;
 import jp.posl.jprophet.fl.spectrumbased.coverage.MemoryClassLoader;
 
 import java.io.File;
@@ -68,7 +68,7 @@ public class UnitTestExecutor implements TestExecutor {
     }
 
     @Override
-    public TestExecutorResult exec(RepairConfiguration config, List<ExecutionTest> executionTests)  {
+    public TestExecutorResult exec(RepairConfiguration config, List<TestCase> executionTests)  {
         try {
             if (builder.build(config)){
                 getClassLoader(config.getBuildPath());

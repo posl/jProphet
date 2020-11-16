@@ -2,11 +2,11 @@ package jp.posl.jprophet.fl.spectrumbased;
 
 import java.util.List;
 
-public class ExecutionTest {
+public class TestCase {
     private String sourceName;
     private List<String> testNames;
 
-    public ExecutionTest(String sourceName, List<String> testNames) {
+    public TestCase(String sourceName, List<String> testNames) {
         this.sourceName = sourceName;
         this.testNames = testNames;
     }

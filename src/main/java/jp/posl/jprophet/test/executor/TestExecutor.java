@@ -3,7 +3,7 @@ package jp.posl.jprophet.test.executor;
 import java.util.List;
 
 import jp.posl.jprophet.RepairConfiguration;
-import jp.posl.jprophet.fl.spectrumbased.ExecutionTest;
+import jp.posl.jprophet.fl.spectrumbased.TestCase;
 import jp.posl.jprophet.test.result.TestExecutorResult;
 import jp.posl.jprophet.test.result.UnitTestResult;
 
@@ -25,7 +25,7 @@ public interface TestExecutor {
      * @param executionTests 実行するテスト
      * @return テスト結果のリスト
      */
-    default public TestExecutorResult exec(RepairConfiguration config, List<ExecutionTest> executionTests) {
+    default public TestExecutorResult exec(RepairConfiguration config, List<TestCase> testsToBeExecuted) {
         return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
     };
 } 
