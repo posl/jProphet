@@ -175,13 +175,22 @@ public final class NodeUtility {
             StringBuilder sb = new StringBuilder();
             int beginLine = targetNode.getRange().get().begin.line;
             int beginColumn = targetNode.getRange().get().begin.column;
+            StringBuilder indentSB = new StringBuilder();
             for (int i = 0; i < lines.length; i++) {
                 if (i == beginLine - 1) {
                     for (int j = 1; j < beginColumn; j++) {
-                        sb.append(" ");
+                        indentSB.append(" ");
                     }
-                    sb.append(NodeUtility.lexicalPreservingPrint(nodeToInsert));
-                    sb.append("\n");
+                    Optional<Node> copiedNodeToInsert = NodeUtility.initTokenRange(nodeToInsert);
+                    if (copiedNodeToInsert.isPresent()) {
+                        String [] insertedSources = NodeUtility.lexicalPreservingPrint(copiedNodeToInsert.get()).split("\n");
+                        for (int k = 0; k < insertedSources.length; k++) {
+                            sb.append(indentSB.toString() + insertedSources[k]);
+                            sb.append("\n");
+                        }
+                    } else {
+                        return Optional.empty();
+                    }
                 }
                 sb.append(lines[i]);
                 sb.append("\n");
@@ -289,6 +298,58 @@ public final class NodeUtility {
      * @return 置換後のASTノード
      */
     public static Optional<Node> replaceNode(Node nodeToReplaceWith, Node targetNode) {
+        Optional<CompilationUnit> cu = targetNode.findCompilationUnit();
+        if (cu.isPresent()) {
+            String [] lines = NodeUtility.lexicalPreservingPrint(cu.get()).split("\n");
+            for (int i = 0; i < lines.length; i++) {
+                lines[i] = lines[i] + "\n";
+            }
+            StringBuilder sb = new StringBuilder();
+            int beginLine = targetNode.getRange().get().begin.line;
+            int endLine = targetNode.getRange().get().end.line;
+            int beginColumn = targetNode.getRange().get().begin.column;
+            int endColumn = targetNode.getRange().get().end.column;
+            StringBuilder indentSB = new StringBuilder();
+            for (int i = 0; i < lines.length; i++) {
+                if (i >= beginLine - 1 && i <= endLine - 1) {
+                    for (int j = 0; j < lines[i].length(); j++) {
+                        if (i == beginLine - 1 && j < beginColumn - 1) {
+                            sb.append(lines[i].charAt(j));
+                            if (lines[i].charAt(j) == ' ')
+                                indentSB.append(" ");
+                        }
+                        if (i == beginLine - 1 && j == beginColumn - 1) {
+                            Optional<Node> copiedNodeToReplaceWith = NodeUtility.initTokenRange(nodeToReplaceWith);
+                            if (copiedNodeToReplaceWith.isPresent()) {
+                                String [] insertedSources = NodeUtility.lexicalPreservingPrint(copiedNodeToReplaceWith.get()).split("\n");
+                                if (insertedSources.length == 1) {
+                                    sb.append(insertedSources[0]);
+                                } else {
+                                    sb.append(insertedSources[0]);
+                                    sb.append("\n");
+                                    for (int k = 1; k < insertedSources.length - 1; k++) {
+                                        sb.append(indentSB.toString() + insertedSources[k]);
+                                        sb.append("\n");
+                                    }
+                                    sb.append(indentSB.toString() + insertedSources[insertedSources.length - 1]);
+                                }
+                            }
+                        }
+                        if (i == endLine - 1 && j > endColumn - 1) {
+                            sb.append(lines[i].charAt(j));
+                        }
+                    }
+                } else {
+                    sb.append(lines[i]);
+                }
+            }
+            //int beginColumn = targetNode.getRange().get().begin.column;
+            //int endColumn = targetNode.getRange().get().end.column;
+            String source = sb.toString();
+            return Optional.of(JavaParser.parse(source));
+        }
+        return Optional.empty();
+        /*
         Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
         Node nodeWithTokenToReplaceWith;
         try {
@@ -344,7 +405,7 @@ public final class NodeUtility {
         final CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
         return NodeUtility.reparseCompilationUnit(compilationUnit)
             .map(cu -> NodeUtility.findNodeInCompilationUnitByBeginRange(cu, nodeWithTokenToReplaceWith, beginRangeOfTarget));
-        
+        */
     }
 
     /**

@@ -425,7 +425,7 @@ public class NodeUtilityTest {
         final String expectedSource = new StringBuilder().append("")
             .append("public class A {\n\n")
             .append("    private void ma() {\n")
-            .append("        methodCall();\n")
+            .append("        methodCall(); // comment\n")
             .append("    }\n")
             .append("}\n")
             .toString();
