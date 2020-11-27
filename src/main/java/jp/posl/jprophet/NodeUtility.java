@@ -195,55 +195,10 @@ public final class NodeUtility {
                 sb.append(lines[i]);
                 sb.append("\n");
             }
-            //int beginColumn = targetNode.getRange().get().begin.column;
-            //int endColumn = targetNode.getRange().get().end.column;
             String source = sb.toString();
             return Optional.of(JavaParser.parse(source));
         }
         return Optional.empty();
-        
-        /*
-        Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
-        Node nodeWithTokenToInsert;
-        try {
-            nodeWithTokenToInsert = NodeUtility.initTokenRange(nodeToInsert).orElseThrow();
-        } catch (NoSuchElementException e){
-            return Optional.empty();
-        }
-
-        JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
-        JavaToken tokenToInsert = nodeWithTokenToInsert.getTokenRange().orElseThrow().getBegin();
-        final JavaToken endTokenOfInsert = nodeWithTokenToInsert.getTokenRange().orElseThrow().getEnd();
-        final JavaToken originalBeginTokenOfTarget = targetNode.getTokenRange().orElseThrow().getBegin();
-
-        final Range beginRangeOfTarget = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
-
-        while (true){
-            beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, tokenToInsert.getKind(), tokenToInsert.getText(), null, null));
-            if (tokenToInsert.getRange().equals(endTokenOfInsert.getRange())) break;
-
-            //複数行を挿入する時のインデントの調節
-            if (tokenToInsert.getKind() == JavaToken.Kind.UNIX_EOL.getKind())
-                NodeUtility.adjustmentIndent(targetNode, beginTokenOfTarget, beginRangeOfTarget);
-            
-            tokenToInsert = tokenToInsert.getNextToken().orElseThrow();
-        }
-
-        tokenToInsert = targetNode.getTokenRange().orElseThrow().getBegin();
-
-        while (!tokenToInsert.getText().equals("\n")){
-            tokenToInsert = tokenToInsert.getPreviousToken().orElseThrow();
-        }
-
-        while (!tokenToInsert.getRange().equals(originalBeginTokenOfTarget.getRange())){
-            beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, tokenToInsert.getKind(), tokenToInsert.getText(), null, null));   
-            tokenToInsert = tokenToInsert.getNextToken().orElseThrow();
-        }
-        
-        final CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
-        return NodeUtility.reparseCompilationUnit(compilationUnit)
-            .map(cu -> findNodeInCompilationUnitByBeginRange(cu, nodeWithTokenToInsert, beginRangeOfTarget));
-        */
     }
 
     /**
@@ -343,69 +298,10 @@ public final class NodeUtility {
                     sb.append(lines[i]);
                 }
             }
-            //int beginColumn = targetNode.getRange().get().begin.column;
-            //int endColumn = targetNode.getRange().get().end.column;
             String source = sb.toString();
             return Optional.of(JavaParser.parse(source));
         }
         return Optional.empty();
-        /*
-        Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
-        Node nodeWithTokenToReplaceWith;
-        try {
-            nodeWithTokenToReplaceWith = NodeUtility.initTokenRange(nodeToReplaceWith).orElseThrow();
-        } catch (NoSuchElementException e) {
-            return Optional.empty();
-        }
-
-        JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
-        JavaToken tokenToReplaceWith = nodeWithTokenToReplaceWith.getTokenRange().orElseThrow().getBegin();
-        final JavaToken endTokenOfReplace = nodeWithTokenToReplaceWith.getTokenRange().orElseThrow().getEnd();
-        JavaToken endTokenOfTarget = targetNode.getTokenRange().orElseThrow().getEnd();
-
-        // コメントが後ろに付いているノードに対して置換範囲のTokenをコメントの部分まで広げる
-        // よってコメントごと置換されるのでコメントは消える
-        if (targetNode.getComment().isPresent()) {
-            endTokenOfTarget = targetNode.getComment().get().getTokenRange().orElseThrow().getEnd();
-            Range range = endTokenOfTarget.getRange().orElseThrow();
-            Range newRange = new Range(new Position(range.begin.line, range.end.column + 1), new Position(range.begin.line, range.end.column + 1));
-            JavaToken endTokenOfCopiedTarget = copiedTargetNode.getComment().get().getTokenRange().orElseThrow().getEnd();
-            endTokenOfCopiedTarget.insertAfter(new JavaToken(newRange, JavaToken.Kind.UNIX_EOL.getKind(), "\n", null, null));
-        }
-
-        final Range beginRangeOfTarget = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
-
-        while (true){
-            beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, tokenToReplaceWith.getKind(), tokenToReplaceWith.getText(), null, null));
-            if (tokenToReplaceWith.getRange().equals(endTokenOfReplace.getRange())) break;
-
-            //複数行置換する時のインデントの調整
-            if (tokenToReplaceWith.getKind() == JavaToken.Kind.UNIX_EOL.getKind())
-                NodeUtility.adjustmentIndent(targetNode, beginTokenOfTarget, beginRangeOfTarget);
-            
-            tokenToReplaceWith = tokenToReplaceWith.getNextToken().orElseThrow();
-        }
-
-        JavaToken tokenToDelete = beginTokenOfTarget.getNextToken().orElseThrow();
-
-        while (true){
-            if (beginTokenOfTarget.getRange().equals(endTokenOfTarget.getRange())){
-                beginTokenOfTarget.deleteToken();
-                break;
-            }
-            if (tokenToDelete.getRange().equals(endTokenOfTarget.getRange())){
-                tokenToDelete.deleteToken();
-                beginTokenOfTarget.deleteToken();
-                break;
-            }
-            tokenToDelete.deleteToken();
-            tokenToDelete = beginTokenOfTarget.getNextToken().orElseThrow();
-        }
-
-        final CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
-        return NodeUtility.reparseCompilationUnit(compilationUnit)
-            .map(cu -> NodeUtility.findNodeInCompilationUnitByBeginRange(cu, nodeWithTokenToReplaceWith, beginRangeOfTarget));
-        */
     }
 
     /**
