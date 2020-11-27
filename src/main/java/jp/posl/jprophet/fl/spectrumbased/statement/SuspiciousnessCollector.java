@@ -9,7 +9,6 @@ import jp.posl.jprophet.fl.spectrumbased.coverage.Coverage;
 import jp.posl.jprophet.fl.spectrumbased.coverage.TestResults;
 import jp.posl.jprophet.fl.spectrumbased.coverage.Coverage.Status;
 import jp.posl.jprophet.fl.Suspiciousness;
-import jp.posl.jprophet.fl.spectrumbased.TestCase;
 
 /**
  * ステートメント(行)ごとの疑惑値の計算
@@ -20,7 +19,6 @@ public class SuspiciousnessCollector {
     final private List<String> sourceFqns;
     final private TestResults testResults;
     final private Coefficient coefficient;
-    private List<TestCase> testsToBeExecuted = new ArrayList<TestCase>();
 
     /**
      * テスト結果(カバレッジ情報を含む)から,全てのテスト対象ファイルの各行ごとの疑惑値を計算
@@ -41,14 +39,6 @@ public class SuspiciousnessCollector {
 
         for (String sourceFqn : sourceFqns){
             List<Coverage> failedCoverages = new ArrayList<Coverage>();     
-
-            List<String> testNames = testResults.getTestResults().stream()
-                .filter(t -> t.getCoverages().stream().filter(c -> c.getName().equals(sourceFqn)).findFirst().isPresent())
-                .map(t -> t.getMethodName().substring(0,  t.getMethodName().lastIndexOf(".")))
-                .distinct()
-                .collect(Collectors.toList());
-
-            testsToBeExecuted.add(new TestCase(sourceFqn, testNames));
 
             testResults.getFailedTestResults().stream()
                 .map(t -> t.getCoverages()
@@ -76,10 +66,6 @@ public class SuspiciousnessCollector {
                 this.suspiciousnesses.add(calculateSuspiciousnessOfLine(sourceFqn, failedCoverages, successedCoverages, i));
             }
         }
-    }
-
-    public List<TestCase> getExecutedTests() {
-        return this.testsToBeExecuted;
     }
 
     /**
