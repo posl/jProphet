@@ -23,6 +23,8 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
+import jp.posl.jprophet.RepairConfiguration;
+import jp.posl.jprophet.fl.spectrumbased.TestCase;
 import jp.posl.jprophet.test.executor.TestThread;
 
 /**
@@ -106,6 +108,30 @@ public class CoverageCollector {
         }
         
         return testResults;
+    }
+    
+    /**
+     * 正しく動くテストのみを厳選する
+     * @param config 対象プロジェクトのconfig
+     * @return 厳選したテストケース
+     */
+    public List<TestCase> getTestCases(RepairConfiguration config) {
+        try {
+            TestResults testResults = this.exec(config.getTargetProject().getSrcFileFqns() , config.getTargetProject().getTestFileFqns());
+            List<TestCase> testsToBeExecuted = new ArrayList<TestCase>();
+            for (String sourceFqn : config.getTargetProject().getSrcFileFqns()) {
+                List<String> testNames = testResults.getTestResults().stream()
+                    .filter(t -> t.getCoverages().stream().filter(c -> c.getName().equals(sourceFqn)).findFirst().isPresent())
+                    .map(t -> t.getMethodName().substring(0,  t.getMethodName().lastIndexOf(".")))
+                    .distinct()
+                    .collect(Collectors.toList());
+
+                testsToBeExecuted.add(new TestCase(sourceFqn, testNames));
+            }
+            return testsToBeExecuted;
+        } catch (Exception e) {
+            return new ArrayList<TestCase>();
+        }
     }
 
     /**
