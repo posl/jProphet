@@ -1,9 +1,11 @@
 package jp.posl.jprophet;
 
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.stmt.Statement;
-import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.JavaToken;
 import com.github.javaparser.ParseProblemException;
@@ -11,12 +13,9 @@ import com.github.javaparser.Position;
 import com.github.javaparser.Range;
 import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.CompilationUnit;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.stmt.Statement;
 
 
 public final class NodeUtility {
@@ -100,8 +99,7 @@ public final class NodeUtility {
     public static Node deepCopyByReparse(Node node) {
         CompilationUnit compilationUnit = node.findCompilationUnit().orElseThrow();
 
-        LexicalPreservingPrinter.setup(compilationUnit);
-        String source = LexicalPreservingPrinter.print(compilationUnit);
+        String source = lexicalPreservingPrint(compilationUnit);
         CompilationUnit newCu = JavaParser.parse(source);
         List<Node> nodes = NodeUtility.getAllDescendantNodes(newCu);
         Node newNode = nodes.stream().filter(n -> {
@@ -385,13 +383,31 @@ public final class NodeUtility {
      * @return パースし直したcompilationUnit
      */
     public static Optional<CompilationUnit> reparseCompilationUnit(CompilationUnit compilationUnit){
-        LexicalPreservingPrinter.setup(compilationUnit);
-        String source = LexicalPreservingPrinter.print(compilationUnit);
+        String source = lexicalPreservingPrint(compilationUnit);
         try {
             return Optional.of(JavaParser.parse(source));
         } catch (ParseProblemException e){
             return Optional.empty();
         }
+    }
+
+    /**
+     * 簡易版のlexicalPreservingPrinter
+     * Tokenを元にソースコードを生成する
+     * @param node ノード
+     * @return ソースコード
+     */
+    public static String lexicalPreservingPrint(Node node){
+        final JavaToken begin = node.getTokenRange().orElseThrow().getBegin();
+        final JavaToken end = node.getTokenRange().orElseThrow().getEnd();
+        JavaToken current = begin;
+        StringBuilder sb = new StringBuilder();
+        while(!current.equals(end)) {
+            sb.append(current.getText());
+            current = current.getNextToken().orElseThrow();
+        }
+        sb.append(current.getText());
+        return sb.toString();
     }
 
     /**
@@ -412,6 +428,124 @@ public final class NodeUtility {
         }
         return Optional.of(parsedNode);
     }
+
+    /**
+     * CompilationUnitを持たないノードの子ノードの情報を保持したままパースを行う
+     * 返り値はdescendantNodeの方になるため，findRootNode()などでtargetNodeを取得する
+     * @param targetNode 対象ノード
+     * @param descendantNode 対象ノードの子ノード
+     * @return パース後のtargetNodeを根に持つdescendantNode
+     */
+    public static Optional<Node> parseNodeWithPointer(Node targetNode, Node descendantNode) {
+        Node parsedNode;
+        if (targetNode instanceof Statement){
+            parsedNode = JavaParser.parseStatement(targetNode.toString());
+        }else if (targetNode instanceof Expression){
+            parsedNode = JavaParser.parseExpression(targetNode.toString());
+        }else{
+            return Optional.empty();
+        }
+        List<Node> nodes = NodeUtility.getAllDescendantNodes(parsedNode);
+        nodes.add(parsedNode);
+        Optional<Node> newNode = nodes.stream().filter(n -> {
+            return n.equals(descendantNode) && n.getRange().equals(descendantNode.getRange());
+        }).findFirst();
+        return newNode;
+    }
+
+    /**
+     * CompilationUnitを持たない単体のノードを置換する
+     * CompilationUnitを持たない単体のノードの子ノードを置換する際に利用する
+     * @param targetNode 置換されるノード
+     * @param nodeToReplaceWith 置換するノード
+     * @return 置換後のノード
+     */
+    public static Optional<Node> replaceNodeWithoutCompilationUnit(Node targetNode, Node nodeToReplaceWith) {
+        Node nodeWithTokenToReplaceWith;
+        try {
+            nodeWithTokenToReplaceWith = NodeUtility.initTokenRange(nodeToReplaceWith).orElseThrow();
+        } catch (NoSuchElementException e) {
+            return Optional.empty();
+        }
+
+        Node rootNode = targetNode.findRootNode();
+
+        JavaToken beginTokenOfTarget = targetNode.getTokenRange().orElseThrow().getBegin();
+        JavaToken tokenToReplaceWith = nodeWithTokenToReplaceWith.getTokenRange().orElseThrow().getBegin();
+        final JavaToken endTokenOfReplace = nodeWithTokenToReplaceWith.getTokenRange().orElseThrow().getEnd();
+        JavaToken endTokenOfTarget = targetNode.getTokenRange().orElseThrow().getEnd();
+
+        // コメントが後ろに付いているノードに対して置換範囲のTokenをコメントの部分まで広げる
+        // よってコメントごと置換されるのでコメントは消える
+        if (targetNode.getComment().isPresent()) {
+            endTokenOfTarget = targetNode.getComment().get().getTokenRange().orElseThrow().getEnd();
+            Range range = endTokenOfTarget.getRange().orElseThrow();
+            Range newRange = new Range(new Position(range.begin.line, range.end.column + 1), new Position(range.begin.line, range.end.column + 1));
+            JavaToken endTokenOfCopiedTarget = targetNode.getComment().get().getTokenRange().orElseThrow().getEnd();
+            endTokenOfCopiedTarget.insertAfter(new JavaToken(newRange, JavaToken.Kind.UNIX_EOL.getKind(), "\n", null, null));
+        }
+
+        final Range beginRangeOfTarget = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
+
+        while (true){
+            beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, tokenToReplaceWith.getKind(), tokenToReplaceWith.getText(), null, null));
+            if (tokenToReplaceWith.getRange().equals(endTokenOfReplace.getRange())) break;
+
+            //複数行置換する時のインデントの調整
+            if (tokenToReplaceWith.getKind() == JavaToken.Kind.UNIX_EOL.getKind())
+                NodeUtility.adjustmentIndent(targetNode, beginTokenOfTarget, beginRangeOfTarget);
+            
+            tokenToReplaceWith = tokenToReplaceWith.getNextToken().orElseThrow();
+        }
+
+        JavaToken tokenToDelete = beginTokenOfTarget;
+
+        while (true){
+            if (beginTokenOfTarget.getRange().equals(endTokenOfTarget.getRange())){
+                beginTokenOfTarget.deleteToken();
+                break;
+            }
+            if (tokenToDelete.getRange().equals(endTokenOfTarget.getRange())){
+                tokenToDelete.deleteToken();
+                break;
+            }
+            tokenToDelete.deleteToken();
+            tokenToDelete = tokenToDelete.getNextToken().orElseThrow();
+        }
+
+        JavaToken begin = beginTokenOfTarget.getPreviousToken().orElseThrow();
+        JavaToken end = beginTokenOfTarget;
+        while (true) {
+            if (!begin.getPreviousToken().isPresent())
+                break;
+            begin = begin.getPreviousToken().orElseThrow();
+        }
+        while (true) {
+            if (!end.getNextToken().isPresent())
+                break;
+            end = end.getNextToken().orElseThrow();
+        }
+        
+        JavaToken current = begin;
+        StringBuilder sb = new StringBuilder();
+        while(!current.equals(end)) {
+            sb.append(current.getText());
+            current = current.getNextToken().orElseThrow();
+        }
+        sb.append(current.getText());
+        String source = sb.toString();
+
+        Node parsedNode;
+        if (rootNode instanceof Statement){
+            parsedNode = JavaParser.parseStatement(source);
+        }else if (rootNode instanceof Expression){
+            parsedNode = JavaParser.parseExpression(source);
+        }else{
+            return Optional.empty();
+        }
+        return Optional.of(parsedNode);
+    }
+
 
     /**
      * インデントの調節をする

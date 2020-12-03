@@ -2,19 +2,19 @@ package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 import com.github.javaparser.ast.stmt.IfStmt;
 
-import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.patch.OperationDiff;
+import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 
 
 /**
@@ -25,21 +25,31 @@ public class CondRefinementOperation implements AstOperation{
     /**
      * {@inheritDoc}
      */
-    public List<CompilationUnit> exec(Node node){
-        if (!(node instanceof IfStmt)) return new ArrayList<CompilationUnit>();
+    public List<OperationDiff> exec(Node targetNode){
+        if (!(targetNode instanceof IfStmt)) return new ArrayList<OperationDiff>();
 
-        final List<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
-        final Expression condition = (Expression)NodeUtility.deepCopyByReparse(((IfStmt)node).getCondition());
-        final String abstractConditionName = "ABST_HOLE";
+        final DeclarationCollector collector = new DeclarationCollector();
+        final List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+        vars.addAll(collector.collectFileds(targetNode));
+        vars.addAll(collector.collectLocalVarsDeclared(targetNode));
+        final List<Parameter> parameters = collector.collectParameters(targetNode);
 
-        this.replaceWithBinaryExprWithAbst(condition, new EnclosedExpr (new MethodCallExpr(abstractConditionName)), Operator.OR)
-            .map(expr -> new ConcreteConditions(((EnclosedExpr)expr.getRight()).getInner()).getCompilationUnits())
-            .ifPresent(compilationUnits::addAll);
-        this.replaceWithBinaryExprWithAbst(condition, new UnaryExpr (new EnclosedExpr (new MethodCallExpr(abstractConditionName)), UnaryExpr.Operator.LOGICAL_COMPLEMENT), Operator.AND)
-            .map(expr -> new ConcreteConditions(((EnclosedExpr)((UnaryExpr)expr.getRight()).getExpression()).getInner()).getCompilationUnits())
-            .ifPresent(compilationUnits::addAll);
-            
-        return compilationUnits;
+        final IfStmt copiedNode = (IfStmt)targetNode.clone();
+        final Expression condition = (Expression)copiedNode.getCondition();
+
+        final List<Expression> conditions = new ConcreteConditions(vars, parameters).getExpressions();
+        final List<OperationDiff> operationDiffs = new ArrayList<OperationDiff>();
+
+        conditions.stream()
+            .map(expr -> this.replaceWithBinaryExprWithAbst(condition, new EnclosedExpr(expr), Operator.OR))
+            .forEach(expr -> operationDiffs.add(new OperationDiff(ModifyType.CHANGE, ((IfStmt)targetNode).getCondition(), expr)));
+        
+        conditions.stream()
+            .map(expr -> this.replaceWithBinaryExprWithAbst(condition, new UnaryExpr(new EnclosedExpr(expr), UnaryExpr.Operator.LOGICAL_COMPLEMENT), Operator.AND))
+            .forEach(expr -> operationDiffs.add(new OperationDiff(ModifyType.CHANGE, ((IfStmt)targetNode).getCondition(), expr)));
+
+        return operationDiffs;
+
     }
 
     /**
@@ -50,12 +60,11 @@ public class CondRefinementOperation implements AstOperation{
      * @param operator 比較演算子
      * @return
      */
-    private Optional<BinaryExpr> replaceWithBinaryExprWithAbst(Expression expression, Expression rightExpr, Operator operator){
-        final Expression condition = (Expression)NodeUtility.deepCopyByReparse(expression);
-        final Expression leftExpr = new EnclosedExpr ((Expression)NodeUtility.deepCopyByReparse(expression));
+    private BinaryExpr replaceWithBinaryExprWithAbst(Expression expression, Expression rightExpr, Operator operator){
+        final Expression condition = expression.clone();
+        final Expression leftExpr = new EnclosedExpr (condition);
         final BinaryExpr newBinaryExpr = new BinaryExpr(leftExpr, rightExpr, operator);
 
-        return NodeUtility.replaceNode(newBinaryExpr, condition)
-            .map(expr -> (BinaryExpr)expr);
+        return newBinaryExpr;
     }
 } 

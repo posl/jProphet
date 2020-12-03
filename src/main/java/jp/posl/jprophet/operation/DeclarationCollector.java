@@ -51,7 +51,10 @@ public class DeclarationCollector {
             return new ArrayList<VariableDeclarator>();
         }
         final List<VariableDeclarator> localVars = methodNode.findAll(VariableDeclarator.class).stream()
-            .filter(v -> v.getBegin().orElseThrow().line < scope.getBegin().orElseThrow().line)
+            .filter(v -> {
+                if (!v.getBegin().isPresent() || !scope.getBegin().isPresent()) return false;
+                return v.getBegin().orElseThrow().line < scope.getBegin().orElseThrow().line;
+            })
             .collect(Collectors.toList());
 		return localVars;
 	}
@@ -71,5 +74,5 @@ public class DeclarationCollector {
         }
         final List<Parameter> parameters = methodNode.findAll(Parameter.class);
         return parameters;
-	}
+    }
 }

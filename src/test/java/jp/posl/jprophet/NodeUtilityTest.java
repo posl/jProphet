@@ -19,6 +19,7 @@ import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 
@@ -465,6 +466,31 @@ public class NodeUtilityTest {
         Node targetNode = nodes.get(6);
         Node newNode = NodeUtility.initTokenRange(targetNode).get();
         assertThat(newNode.getComment().isPresent()).isFalse();
+    }
+
+    /**
+     * parseNodeWithPointerのテスト
+     */
+    @Test public void testParseNodeWithPointer() {
+        Statement statement = nodeList.get(1);
+        Statement parsedStatement = (Statement)NodeUtility.initTokenRange(statement).get();
+        Node descendantNode = parsedStatement.getChildNodes().get(0).getChildNodes().get(0);
+        Node newDescendantNode = NodeUtility.parseNodeWithPointer(parsedStatement, descendantNode).get();
+        Node newRootNode = newDescendantNode.findRootNode();
+        assertThat(NodeUtility.lexicalPreservingPrint(newRootNode)).isEqualTo("la = \"hoge\";");
+    }
+
+    /**
+     * replaceWithoutCompilationUnitのテスト
+     */
+    @Test public void testReplaceWithoutCompilationUnit() {
+        Statement statement = nodeList.get(1);
+        Statement parsedStatement = (Statement)NodeUtility.initTokenRange(statement).get();
+        Node descendantNode = parsedStatement.getChildNodes().get(0).getChildNodes().get(0);
+        Node newDescendantNode = NodeUtility.parseNodeWithPointer(parsedStatement, descendantNode).get();
+        Node expr = new NameExpr("xx");
+        Node replacedNode = NodeUtility.replaceNodeWithoutCompilationUnit(newDescendantNode, expr).get();
+        assertThat(NodeUtility.lexicalPreservingPrint(replacedNode)).isEqualTo("xx = \"hoge\";");
     }
 
 }

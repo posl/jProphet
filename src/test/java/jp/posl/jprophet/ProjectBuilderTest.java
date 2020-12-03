@@ -22,8 +22,8 @@ public class ProjectBuilderTest {
      */
     @Before public void setUpProject(){
         this.buildDir = new File("./tmp/");
-        this.gradleConfig = new RepairConfiguration(buildDir.getPath(), null, new GradleProject("src/test/resources/testGradleProject01"));
-        this.mavenConfig = new RepairConfiguration(buildDir.getPath(), null, new MavenProject("src/test/resources/testMavenProject01"));
+        this.gradleConfig = new RepairConfiguration(buildDir.getPath(), null, new GradleProject("src/test/resources/testGradleProject01"), null);
+        this.mavenConfig = new RepairConfiguration(buildDir.getPath(), null, new MavenProject("src/test/resources/testMavenProject01"), null);
         this.builder = new ProjectBuilder();
     }
 

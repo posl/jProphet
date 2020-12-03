@@ -58,8 +58,9 @@ public class JProphetMainTest {
         ));
         final String buildDir = "./tmp/";
         final String resultDir = "./result/";
+        final String parameterPath = "parameters/para.csv";
         final Project                  project                  = new MavenProject("src/test/resources/MavenFizzBuzz01");
-        final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project);
+        final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project, parameterPath);
         final Coefficient              coefficient              = new Jaccard();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
         final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();

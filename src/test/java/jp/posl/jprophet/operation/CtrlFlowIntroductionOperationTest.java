@@ -2,17 +2,10 @@ package jp.posl.jprophet.operation;
 
 import org.junit.Test;
 
-import jp.posl.jprophet.NodeUtility;
-
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
-
-import static org.assertj.core.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.*;
 
 public class CtrlFlowIntroductionOperationTest {
     /**
@@ -32,44 +25,38 @@ public class CtrlFlowIntroductionOperationTest {
         final List<String> expectedSources = new ArrayList<String>();
 
         expectedSources.add(new StringBuilder().append("")
-            .append("public class A {\n") //toString(PrettyPrinter)での出力ではクラス宣言の先頭行の後に空行が入る仕様 
-            .append("    private String fa = \"a\";\n") //ここも
-            .append("    private void ma() {\n")
-            .append("        if (true)\n")
-            .append("            return;\n")
-            .append("        String la = \"b\";\n")
-            .append("        fa = \"b\";\n")
-            .append("    }\n")
-            .append("}\n")
+            .append("if (true)\n")
+            .append("    return;")
             .toString()
         );
 
         expectedSources.add(new StringBuilder().append("")
-            .append("public class A {\n")
-            .append("    private String fa = \"a\";\n")
-            .append("    private void ma() {\n")
-            .append("        String la = \"b\";\n")
-            .append("        if (true)\n")
-            .append("            return;\n")
-            .append("        fa = \"b\";\n")
-            .append("    }\n")
-            .append("}\n")
+            .append("if (fa == null)\n")
+            .append("    return;")
             .toString()
         );
 
+        expectedSources.add(new StringBuilder().append("")
+            .append("if (fa != null)\n")
+            .append("    return;")
+            .toString()
+        );
 
-        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        final List<String> candidateSources = new ArrayList<String>();
-        for(Node node : nodes){
-            final CtrlFlowIntroductionOperation cfo = new CtrlFlowIntroductionOperation();
-            final List<CompilationUnit> cUnits = cfo.exec(node);
-            for (CompilationUnit cUnit : cUnits){
-                LexicalPreservingPrinter.setup(cUnit);
-                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
-            }
-        }
-        assertThat(candidateSources).containsAll(expectedSources);
-        return;
+        expectedSources.add(new StringBuilder().append("")
+            .append("if (la == null)\n")
+            .append("    return;")
+            .toString()
+        );
+
+        expectedSources.add(new StringBuilder().append("")
+            .append("if (la != null)\n")
+            .append("    return;")
+            .toString()
+        );
+
+        OperationTest operationTest = new OperationTest();
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new CtrlFlowIntroductionOperation());
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
     }
 
     /**
@@ -89,41 +76,44 @@ public class CtrlFlowIntroductionOperationTest {
         final List<String> expectedSources = new ArrayList<String>();
 
         expectedSources.add(new StringBuilder().append("")
-            .append("public class A {\n")
-            .append("    private void ma() {\n")
-            .append("        for (int i = 0; i < 10; i++) {\n")
-            .append("            if (true)\n")
-            .append("                break;\n")
-            .append("            String la = \"b\";\n")
-            .append("        }\n")
-            .append("    }\n")
-            .append("}\n")
-            .toString());
+            .append("if (true)\n")
+            .append("    return;")
+            .toString()
+        );
 
         expectedSources.add(new StringBuilder().append("")
-            .append("public class A {\n")
-            .append("    private void ma() {\n")
-            .append("        for (int i = 0; i < 10; i++) {\n")
-            .append("            if (true)\n")
-            .append("                return;\n")
-            .append("            String la = \"b\";\n")
-            .append("        }\n")
-            .append("    }\n")
-            .append("}\n")
-            .toString());
+            .append("if (i == null)\n")
+            .append("    return;")
+            .toString()
+        );
 
-        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        final List<String> candidateSources = new ArrayList<String>();
-        for(Node node : nodes) {
-            final CtrlFlowIntroductionOperation cfo = new CtrlFlowIntroductionOperation();
-            final List<CompilationUnit> cUnits = cfo.exec(node);
-            for (CompilationUnit cUnit : cUnits){
-                LexicalPreservingPrinter.setup(cUnit);
-                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
-            }
-        }
-        assertThat(candidateSources).containsAll(expectedSources);
-        return;
+        expectedSources.add(new StringBuilder().append("")
+            .append("if (i != null)\n")
+            .append("    return;")
+            .toString()
+        );
+
+        expectedSources.add(new StringBuilder().append("")
+            .append("if (true)\n")
+            .append("    break;")
+            .toString()
+        );
+
+        expectedSources.add(new StringBuilder().append("")
+            .append("if (i == null)\n")
+            .append("    break;")
+            .toString()
+        );
+
+        expectedSources.add(new StringBuilder().append("")
+            .append("if (i != null)\n")
+            .append("    break;")
+            .toString()
+        );
+
+        OperationTest operationTest = new OperationTest();
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new CtrlFlowIntroductionOperation());
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
     }
 
     /**
@@ -143,41 +133,20 @@ public class CtrlFlowIntroductionOperationTest {
         final List<String> expectedSources = new ArrayList<String>();
 
         expectedSources.add(new StringBuilder().append("")
-            .append("public class A {\n")
-            .append("    private void ma() {\n")
-            .append("        while (true) {\n")
-            .append("            if (true)\n")
-            .append("                break;\n")
-            .append("            String la = \"b\";\n")
-            .append("        }\n")
-            .append("    }\n")
-            .append("}\n")
-            .toString());
+            .append("if (true)\n")
+            .append("    return;")
+            .toString()
+        );
 
         expectedSources.add(new StringBuilder().append("")
-            .append("public class A {\n")
-            .append("    private void ma() {\n")
-            .append("        while (true) {\n")
-            .append("            if (true)\n")
-            .append("                return;\n")
-            .append("            String la = \"b\";\n")
-            .append("        }\n")
-            .append("    }\n")
-            .append("}\n")
-            .toString());
+            .append("if (true)\n")
+            .append("    break;")
+            .toString()
+        );
 
-        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        final List<String> candidateSources = new ArrayList<String>();
-        for(Node node : nodes) {
-            final CtrlFlowIntroductionOperation cfo = new CtrlFlowIntroductionOperation();
-            final List<CompilationUnit> cUnits = cfo.exec(node);
-            for (CompilationUnit cUnit : cUnits){
-                LexicalPreservingPrinter.setup(cUnit);
-                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
-            }
-        }
-        assertThat(candidateSources).containsAll(expectedSources);
-        return;
+        OperationTest operationTest = new OperationTest();
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new CtrlFlowIntroductionOperation());
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
     }
 
     /**
@@ -211,16 +180,8 @@ public class CtrlFlowIntroductionOperationTest {
             .append("}\n")
             .toString();
 
-        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
-        final List<String> candidateSources = new ArrayList<String>();
-        for(Node node : nodes){
-            final CtrlFlowIntroductionOperation cfo = new CtrlFlowIntroductionOperation();
-            final List<CompilationUnit> cUnits = cfo.exec(node);
-            for (CompilationUnit cUnit : cUnits){
-                LexicalPreservingPrinter.setup(cUnit);
-                candidateSources.add(LexicalPreservingPrinter.print(cUnit));
-            }
-        }
-        return;
+
+        OperationTest operationTest = new OperationTest();
+        operationTest.applyOperation(targetSource, new CtrlFlowIntroductionOperation());
     }
 }

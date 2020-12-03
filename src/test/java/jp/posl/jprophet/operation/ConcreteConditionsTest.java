@@ -4,8 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.VariableDeclarator;
 
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
@@ -13,6 +14,10 @@ import static org.assertj.core.api.Assertions.*;
 
 
 public class ConcreteConditionsTest {
+
+    /**
+     * 条件式が正しく生成されているかのテスト
+     */
     @Test public void test() {
         String targetSource = new StringBuilder().append("")
             .append("public class A {\n\n") 
@@ -26,55 +31,28 @@ public class ConcreteConditionsTest {
             .append("}\n")
             .toString();
 
-        final IfStmt targetIfStmt = JavaParser.parse(targetSource).findFirst(IfStmt.class).get();
-        final Expression abstCondition = targetIfStmt.getCondition();
+        final CompilationUnit cu = JavaParser.parse(targetSource);
+        final List<VariableDeclarator> varDeclarations = cu.findAll(VariableDeclarator.class);
+        final List<Parameter> parameters = cu.findAll(Parameter.class);
 
-        final ConcreteConditions concreteConditions = new ConcreteConditions(abstCondition);
-        final List<Expression> actualCondExpressions = concreteConditions.getExpressions();
+        final ConcreteConditions concreteConditions = new ConcreteConditions(varDeclarations, parameters);
 
-        final String expectedSourceBeforeTarget = new StringBuilder().append("")
-            .append("public class A {\n\n") 
-            .append("    boolean fieldBoolVarA;\n\n")
-            .append("    private void methodA() {\n")
-            .append("        boolean localBoolVarA;\n\n")
-            .append("        Object localObjectA;\n\n")
-            .toString();
+        final List<String> expectedCondExpressions = List.of(
+                    "fieldBoolVarA == true",
+                    "fieldBoolVarA == false",
+                    "localBoolVarA == true",
+                    "localBoolVarA == false",
+                    "localObjectA == null",
+                    "localObjectA != null",
+                    "fieldBoolVarA == null",
+                    "fieldBoolVarA != null",
+                    "localBoolVarA == null",
+                    "localBoolVarA != null",
+                    "true"
+        ); 
 
-        final List<String> expectedTargetSources = List.of(
-                    "        if (fieldBoolVarA == true)\n",
-                    "        if (fieldBoolVarA == false)\n",
-                    "        if (localBoolVarA == true)\n",
-                    "        if (localBoolVarA == false)\n",
-                    "        if (localObjectA == null)\n",
-                    "        if (localObjectA != null)\n",
-                    "        if (fieldBoolVarA == null)\n",
-                    "        if (fieldBoolVarA != null)\n",
-                    "        if (localBoolVarA == null)\n",
-                    "        if (localBoolVarA != null)\n",
-                    "        if (true)\n"
-        );
-
-        final String expectedSourceAfterTarget = new StringBuilder().append("")
-            .append("            return;\n")
-            .append("    }\n")
-            .append("}\n")
-            .toString();
-        
-        final List<IfStmt> expectedIfStmts = expectedTargetSources.stream()
-            .map(s -> { 
-                return new StringBuilder()
-                    .append(expectedSourceBeforeTarget)
-                    .append(s)
-                    .append(expectedSourceAfterTarget)
-                    .toString();
-            })
-            .map(s -> { 
-                return JavaParser.parse(s).findFirst(IfStmt.class).get();
-            })
-            .collect(Collectors.toList());
-
-        final List<Expression> expectedCondExpressions = expectedIfStmts.stream()
-            .map(s -> s.getCondition())
+        List<String> actualCondExpressions = concreteConditions.getExpressions().stream()
+            .map(expr -> expr.toString())
             .collect(Collectors.toList());
 
         assertThat(actualCondExpressions).containsOnlyElementsOf(expectedCondExpressions);

@@ -13,6 +13,8 @@ import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
 
+import org.apache.commons.io.FileUtils;
+
 import jp.posl.jprophet.project.Project;
 
 import javax.tools.JavaFileObject;
@@ -46,6 +48,10 @@ public class ProjectBuilder {
         final List<String> compilationOptions = new ArrayList<>();
         compilationOptions.add("-d");
         compilationOptions.add(config.getBuildPath());
+        compilationOptions.add("-source");
+        compilationOptions.add("1.8");
+        compilationOptions.add("-target");
+        compilationOptions.add("1.8");
         compilationOptions.add("-encoding");
         compilationOptions.add("UTF-8");
         compilationOptions.add("-classpath");
@@ -75,6 +81,20 @@ public class ProjectBuilder {
             e.printStackTrace();
         }
 
+        //resources内のファイルをbuildPath直下にコピペする
+        try {
+            File mainResourcesDir = new File(project.getRootPath() + "/src/main/resources");
+            File testResourcesDir = new File(project.getRootPath() + "/src/test/resources");
+            if (mainResourcesDir.listFiles() != null) {
+                FileUtils.copyDirectory(mainResourcesDir,new File(config.getBuildPath()));
+            }
+            if (testResourcesDir.listFiles() != null) {
+                FileUtils.copyDirectory(testResourcesDir,new File(config.getBuildPath()));
+            }
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+    
         return isSuccess;
     }
 

@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import java.util.Optional;
 
 import com.github.javaparser.Range;
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.Statement;
@@ -15,7 +14,8 @@ import com.github.javaparser.ast.stmt.SwitchEntryStmt;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
-import jp.posl.jprophet.NodeUtility;
+import jp.posl.jprophet.patch.OperationDiff;
+import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 
 /**
  * 対象ステートメントの以前に現れているステートメントを，
@@ -27,18 +27,20 @@ public class CopyReplaceOperation implements AstOperation{
      * {@inheritDoc}
      */
     @Override
-    public List<CompilationUnit> exec(Node targetNode){
-        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
-        if (targetNode instanceof Statement && !(targetNode instanceof BlockStmt)  && !(targetNode instanceof SwitchEntryStmt)){
-            //修正対象のステートメントの属するメソッドノードを取得
-            //メソッド内のステートメント(修正対象のステートメントより前のもの)を収集
-            List<Statement> statements = collectLocalStatementsBeforeTarget((Statement)targetNode);
-            for (Statement statement : statements){
-                candidates.addAll(copyAndPasteReplacedStatementToBeforeTarget(statement, targetNode));
-            }
+    public List<OperationDiff> exec(Node targetNode){
+        if (!(targetNode instanceof Statement) || targetNode instanceof BlockStmt || targetNode instanceof SwitchEntryStmt) {
+            return new ArrayList<OperationDiff>();
         }
+        //修正対象のステートメントの属するメソッドノードを取得
+        //メソッド内のステートメント(修正対象のステートメントより前のもの)を収集
+        final List<Statement> statements = collectLocalStatementsBeforeTarget((Statement)targetNode);
+        final List<Node> replacedVarStatements = copyAndPasteReplacedStatementToBeforeTarget(statements, targetNode);
+        
         //修正対象のステートメントの直前に,収集したステートメントのNodeを追加
-        return candidates;
+        final List<OperationDiff> operationDiffs = replacedVarStatements.stream()
+            .map(node -> new OperationDiff(ModifyType.INSERT, targetNode, node))
+            .collect(Collectors.toList());
+        return operationDiffs;
     }
 
     /**
@@ -75,19 +77,23 @@ public class CopyReplaceOperation implements AstOperation{
      * @param targetNode コピペ先の次の行のノード
      * @return compilationUnitのリスト
      */
-    private List<CompilationUnit> copyAndPasteReplacedStatementToBeforeTarget(Statement statement, Node targetNode){
-        List<CompilationUnit> candidates = new ArrayList<CompilationUnit>();
-        List<Node> copiedNodeDescendants = new ArrayList<Node>();
-        NodeUtility.insertNodeWithNewLine(statement, targetNode)
-            .map(NodeUtility::getAllDescendantNodes)
-            .ifPresent(copiedNodeDescendants::addAll);
-        
-        for (Node descendant : copiedNodeDescendants){
-            VariableReplacementOperation vr = new VariableReplacementOperation();
-            List<CompilationUnit> copiedNodeList = vr.exec(descendant);
-            candidates.addAll(copiedNodeList);
-        }
-        return candidates;
+    private List<Node> copyAndPasteReplacedStatementToBeforeTarget(List<Statement> statements, Node scope){
+        final DeclarationCollector collector = new DeclarationCollector();
+        final List<String> fieldNames = collector.collectFileds(scope)
+            .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
+        final List<String> localVarNames = collector.collectLocalVarsDeclared(scope)
+            .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
+        final List<String> parameterNames = collector.collectParameters(scope)
+            .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
+
+        VariableReplacer replacer = new VariableReplacer();
+
+        final List<Node> replacedVarStatements = new ArrayList<Node>();
+        statements.stream()
+            .map(statement -> replacer.replaceAllVariablesForStatement(statement, fieldNames, localVarNames, parameterNames))
+            .forEach(replacedNodes -> replacedVarStatements.addAll(replacedNodes));
+
+        return replacedVarStatements;
     }
 
     /**

@@ -14,8 +14,9 @@ public class ProjectFactoryTest{
         final String buildDir = "./tmp/"; 
         final String resultDir = "./result/"; 
         final String projectPath = "src/test/resources/FizzBuzz01";
+        final String parameterPath = "parameters/para.csv";
         final Project project = new GradleProject(projectPath);
-        final RepairConfiguration config = new RepairConfiguration(buildDir, resultDir, project);
+        final RepairConfiguration config = new RepairConfiguration(buildDir, resultDir, project, parameterPath);
         final ProjectFactory projectFactory = new ProjectFactory();
 
         final Project newProject = projectFactory.create(config, projectPath);
@@ -29,8 +30,9 @@ public class ProjectFactoryTest{
         final String buildDir = "./tmp/"; 
         final String resultDir = "./result/"; 
         final String projectPath = "src/test/resources/MavenFizzBuzz01";
+        final String parameterPath = "parameters/para.csv";
         final Project project = new MavenProject(projectPath);
-        final RepairConfiguration config = new RepairConfiguration(buildDir, resultDir, project);
+        final RepairConfiguration config = new RepairConfiguration(buildDir, resultDir, project, parameterPath);
         final ProjectFactory projectFactory = new ProjectFactory();
 
         final Project newProject = projectFactory.create(config, projectPath);
