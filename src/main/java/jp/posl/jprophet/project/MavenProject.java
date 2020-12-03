@@ -36,8 +36,8 @@ public class MavenProject implements Project {
         Path testDir;
         
         try {
-            srcDir =  Paths.get(rootPath + "/src/main");
-            testDir = Paths.get(rootPath + "/src/test");
+            srcDir =  Paths.get(rootPath + "/src/main/java");
+            testDir = Paths.get(rootPath + "/src/test/java");
 
             List<File> srcFileList = Files.walk(srcDir)
                 .map(path -> path.toFile())
@@ -211,6 +211,7 @@ public class MavenProject implements Project {
         try {
             final MavenXpp3Reader reader = new MavenXpp3Reader();
             final Model model = reader.read(Files.newBufferedReader(pomFilePath));
+            
             final Path repositoryPath = Paths.get(rootPath)
               .resolve("src")
               .resolve("main")

@@ -1,8 +1,11 @@
 package jp.posl.jprophet;
 
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.stmt.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.JavaToken;
 import com.github.javaparser.ParseProblemException;
@@ -10,12 +13,9 @@ import com.github.javaparser.Position;
 import com.github.javaparser.Range;
 import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.CompilationUnit;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.stmt.Statement;
 
 
 public final class NodeUtility {
@@ -447,10 +447,10 @@ public final class NodeUtility {
         }
         List<Node> nodes = NodeUtility.getAllDescendantNodes(parsedNode);
         nodes.add(parsedNode);
-        Node newNode = nodes.stream().filter(n -> {
+        Optional<Node> newNode = nodes.stream().filter(n -> {
             return n.equals(descendantNode) && n.getRange().equals(descendantNode.getRange());
-        }).findFirst().orElseThrow();
-        return Optional.of(newNode);
+        }).findFirst();
+        return newNode;
     }
 
     /**

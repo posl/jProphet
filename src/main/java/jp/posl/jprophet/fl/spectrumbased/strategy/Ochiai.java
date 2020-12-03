@@ -1,20 +1,16 @@
 package jp.posl.jprophet.fl.spectrumbased.strategy;
 
-import jp.posl.jprophet.fl.spectrumbased.statement.StatementStatus;
-
 public class Ochiai implements Coefficient {
 
     /**
      * Ochiaiで疑惑値算出
-     * @param statementStatus
-     * @param numberOfSuccessedTests
-     * @param numberOfFailedTests
      */
-    public double calculate(StatementStatus statementStatus, int numberOfSuccessedTests, int numberOfFailedTests) {
+    public double calculate(int numberOfFailedTestsCoveringStatement, int numberOfFailedTestsNotCoveringStatement, int numberOfSuccessedTestsCoveringStatement, int numberOfSuccessedTestsNotCoveringStatement) {
         final double suspiciousenesses;
-        final double ncf = (double)statementStatus.getNumberOfFailedTestsCoveringStatement();
-        final double ncs = (double)statementStatus.getNumberOfSuccessedTestsCoveringStatement();
-        final double nf = (double)numberOfFailedTests;
+
+        final double ncf = (double)numberOfFailedTestsCoveringStatement;
+        final double ncs = (double)numberOfSuccessedTestsCoveringStatement;
+        final double nf = (double)(numberOfFailedTestsCoveringStatement + numberOfFailedTestsNotCoveringStatement);
 
         if (Math.sqrt(nf * (ncf + ncs)) == 0){
             suspiciousenesses = 0;

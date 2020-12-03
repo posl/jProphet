@@ -8,8 +8,10 @@ import java.util.stream.Collectors;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.commons.io.IOUtils;
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
+import org.jacoco.core.data.ExecutionData;
 import org.jacoco.core.data.ExecutionDataStore;
 import org.jacoco.core.data.SessionInfoStore;
 import org.jacoco.core.instr.Instrumenter;
@@ -62,13 +64,32 @@ public class CoverageCollector {
     public TestResults exec(final List<String> sourceFQNs, final List<String> testFQNs) throws Exception {
         final TestResults testResults = new TestResults();
 
-        loadInstrumentedClasses(sourceFQNs);
-        final List<Class<?>> junitClasses = loadInstrumentedClasses(testFQNs);
+        //対象ソースコードをinstrumentしたものの定義をmemoryClassLoaderに追加(ロードはしない)
+        for (String sourceFQN : sourceFQNs) {
+            InputStream is = this.getTargetClassInputStream(sourceFQN);
+            if (is != null) {
+                byte[] bytes = IOUtils.toByteArray(is);
+                byte[] instrumentedBytes = jacocoInstrumenter.instrument(bytes, "");
+                this.memoryClassLoader.addDefinition(sourceFQN, instrumentedBytes);
+            }
+        }
 
-        //final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
+        //対象テストコードの定義をmemoryClassLoaderに追加(ロードはしない)
+        for (String testFQN : testFQNs) {
+            InputStream is = this.getTargetClassInputStream(testFQN);
+            if (is != null) {
+                byte[] bytes = IOUtils.toByteArray(is);
+                this.memoryClassLoader.addDefinition(testFQN, bytes);
+            }
+        }
+
+        final List<Class<?>> junitClasses = loadAllClasses(testFQNs);
+
+        jacocoRuntime.startup(jacocoRuntimeData);
+        
         for (Class<?> junitClass : junitClasses) {
             final JUnitCore junitCore = new JUnitCore();
-            final CoverageMeasurementListener listener = new CoverageMeasurementListener(sourceFQNs, testResults);
+            final CoverageMeasurementListener listener = new CoverageMeasurementListener(testResults);
             junitCore.addListener(listener);
             
             //タイムアウト処理
@@ -83,48 +104,24 @@ public class CoverageCollector {
                 System.exit(-1);
             }
         }
-
+        
         return testResults;
     }
 
     /**
-     * jacoco計測のためのクラス書き換えを行い，その書き換え結果をクラスロードする．
-     * 
-     * @param fqns 書き換え対象（計測対象）クラスのFQNs
-     * @return 書き換えたクラスオブジェクトs
-     * @throws Exception
-     */
-    private List<Class<?>> loadInstrumentedClasses(List<String> fqns) throws Exception {
-        List<Class<?>> loadedClasses = new ArrayList<>();
+    * 全クラスを定義内からロードしてクラスオブジェクトの集合を返す．
+    *
+    * @param memoryClassLoader クラスローダー
+    * @param fqns 取り出すクラスのfqn
+    * @return クラスオブジェクトの集合
+    * @throws ClassNotFoundException
+    */
+    private List<Class<?>> loadAllClasses(final List<String> fqns) throws ClassNotFoundException {
+        final List<Class<?>> classes = new ArrayList<>();
         for (final String fqn : fqns) {
-            final byte[] instrumentedData = instrument(fqn);
-            loadedClasses.add(loadClass(fqn, instrumentedData));
+            classes.add(memoryClassLoader.loadClass(fqn)); // 例外が出るので非stream処理
         }
-        return loadedClasses;
-    }
-
-    /**
-     * jacoco計測のためのクラス書き換えを行う．
-     * 
-     * @param fqn 書き換え対象（計測対象）クラスのFQNs
-     * @return 書き換えた
-     * @throws Exception
-     */
-    private byte[] instrument(final String fqn) throws Exception {
-        return this.jacocoInstrumenter.instrument(getTargetClassInputStream(fqn), fqn);
-    }
-
-    /**
-     * MemoryClassLoaderを使ったクラスのロード．
-     * 
-     * @param fqn
-     * @param bytes
-     * @return
-     * @throws ClassNotFoundException
-     */
-    private Class<?> loadClass(final String fqn, final byte[] bytes) throws ClassNotFoundException {
-        this.memoryClassLoader.addDefinition(fqn, bytes);
-        return this.memoryClassLoader.loadClass(fqn); // force load instrumented class.
+        return classes;
     }
 
     /**
@@ -135,7 +132,6 @@ public class CoverageCollector {
      */
     private InputStream getTargetClassInputStream(final String fqn) {
         final String resource = fqn.replace('.', '/') + ".class";
-        //return getClass().getResourceAsStream(resource);
         InputStream is = this.memoryClassLoader.getResourceAsStream(resource);
         return is;
     }
@@ -150,10 +146,10 @@ public class CoverageCollector {
      *
      */
     class CoverageMeasurementListener extends RunListener {
-        private final Description FAILED = Description.createTestDescription("failed", "failed");
 
-        final private List<String> measuredClasses;
         final public TestResults testResults;
+        private boolean wasFailed;
+        private boolean hasErrorMassage = true; 
 
         /**
          * constructor
@@ -162,21 +158,22 @@ public class CoverageCollector {
          * @param storedTestResults テスト実行結果の保存先
          * @throws Exception
          */
-        public CoverageMeasurementListener(List<String> measuredFQNs, TestResults storedTestResults)
-                throws Exception {
-            jacocoRuntime.startup(jacocoRuntimeData);
+        public CoverageMeasurementListener(TestResults storedTestResults) {
             this.testResults = storedTestResults;
-            this.measuredClasses = measuredFQNs;
         }
 
         @Override
         public void testStarted(Description description) {
             resetJacocoRuntimeData();
+            wasFailed = false;
         }
 
         @Override
         public void testFailure(Failure failure) {
-            noteTestExecutionFail(failure);
+            wasFailed = true;
+            if (failure.getException().getMessage() == null) {
+                this.hasErrorMassage = false;
+            }
         }
 
         @Override
@@ -189,23 +186,6 @@ public class CoverageCollector {
          */
         private void resetJacocoRuntimeData() {
             jacocoRuntimeData.reset();
-        }
-
-        /**
-         * Failureオブジェクトの持つDescriptionに，当該テストがfailしたことをメモする．
-         * @param failure
-         */
-        private void noteTestExecutionFail(Failure failure) {
-            failure.getDescription().addChild(FAILED);
-        }
-
-        /**
-         * Descriptionから当該テストがfailしたかどうかを返す．
-         * @param description
-         * @return テストがfailしたかどうか
-         */
-        private boolean isFailed(Description description) {
-            return description.getChildren().contains(FAILED);
         }
 
         /**
@@ -239,11 +219,17 @@ public class CoverageCollector {
             final ExecutionDataStore executionData = new ExecutionDataStore();
             final SessionInfoStore sessionInfo = new SessionInfoStore();
             jacocoRuntimeData.collect(executionData, sessionInfo, false);
-            jacocoRuntime.shutdown();
 
             final Analyzer analyzer = new Analyzer(executionData, coverageBuilder);
-            for (final String measuredClass : measuredClasses) {
-                analyzer.analyzeClass(getTargetClassInputStream(measuredClass), measuredClass);
+
+            for (final ExecutionData data : executionData.getContents()){
+                if (!data.hasHits()){
+                    continue;
+                }
+
+                final String strFqn = data.getName().replace("/", ".");
+                final byte[] bytecode = IOUtils.toByteArray(getTargetClassInputStream(strFqn));
+                analyzer.analyzeClass(bytecode, strFqn);
             }
         }
 
@@ -256,12 +242,13 @@ public class CoverageCollector {
         private void addJacocoCoverageToTestResults(final CoverageBuilder coverageBuilder,
             final Description description) {
             final String testMethodFQN = getTestMethodName(description);
-            final boolean isFailed = isFailed(description);
             List<Coverage> coverages = coverageBuilder.getClasses().stream().map(c -> new Coverage(c))
                 .collect(Collectors.toList());
 
-            final TestResult testResult = new TestResult(testMethodFQN, isFailed, coverages);
-            testResults.add(testResult);
+            final TestResult testResult = new TestResult(testMethodFQN, wasFailed, coverages);
+            if (hasErrorMassage && !description.getMethodName().equals("initializationError")) {
+                testResults.add(testResult);
+            }
         }
     }
 

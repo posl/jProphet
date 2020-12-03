@@ -52,7 +52,7 @@ public class SuspiciousnessCollectorTest{
      * SuspiciousnessCalculatorが動作しているかどうかのテスト
      */
     
-     @Test public void testForSuspiciousnessCalculator(){
+    @Test public void testForSuspiciousnessCalculator(){
 
         CoverageCollector coverageCollector = new CoverageCollector("SCtmp");
 
@@ -63,7 +63,7 @@ public class SuspiciousnessCollectorTest{
             e.printStackTrace();
         }
 
-        SuspiciousnessCollector suspiciousnessCollector = new SuspiciousnessCollector(testResults, coefficient);
+        SuspiciousnessCollector suspiciousnessCollector = new SuspiciousnessCollector(testResults, SourceClassFilePaths, coefficient);
         suspiciousnessCollector.exec();
         List<Suspiciousness> suspiciousnesses = suspiciousnessCollector.getSuspiciousnesses();
 

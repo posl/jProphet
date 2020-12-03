@@ -2,6 +2,7 @@ package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -130,9 +131,11 @@ public class VariableReplacer {
                     if (arg.toString().equals(varName)) {
                         continue;
                     } 
-                    final Node copiedArg = NodeUtility.parseNodeWithPointer(targetNode, arg).orElseThrow();
-                    NodeUtility.replaceNodeWithoutCompilationUnit(copiedArg, constructExpr.apply(varName)) 
-                        .ifPresent(replacedNodes::add);
+                    final Optional<Node> copiedArg = NodeUtility.parseNodeWithPointer(targetNode, arg);
+                    copiedArg.ifPresent(
+                        a -> NodeUtility.replaceNodeWithoutCompilationUnit(a, constructExpr.apply(varName)) 
+                            .ifPresent(replacedNodes::add)
+                    ); 
                 }   
             }
         }
@@ -151,13 +154,12 @@ public class VariableReplacer {
         List<Node> replacedNodes = new ArrayList<Node>();
     
         if (targetNode instanceof IfStmt) { 
-            Expression condition = ((IfStmt)targetNode).getCondition();
-            final Expression copiedCondition = (Expression)NodeUtility.initTokenRange(condition.clone()).orElseThrow();
-            List<NameExpr> varsInCondition = copiedCondition.findAll(NameExpr.class); 
+            final IfStmt copiedIfStmt = (IfStmt)NodeUtility.initTokenRange(targetNode.clone()).orElseThrow();
+            List<NameExpr> varsInCondition = copiedIfStmt.getCondition().findAll(NameExpr.class); 
             for (NameExpr var : varsInCondition) { 
                 for(String varName : varNames) { 
                     if (var.toString().equals(varName)) { continue;} 
-                    final Node copiedVar = NodeUtility.parseNodeWithPointer(condition, var).orElseThrow();
+                    final Node copiedVar = NodeUtility.parseNodeWithPointer(copiedIfStmt, var).orElseThrow();
                     NodeUtility.replaceNodeWithoutCompilationUnit(copiedVar, constructExpr.apply(varName)) 
                         .ifPresent(replacedNodes::add);
                 } 

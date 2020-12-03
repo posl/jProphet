@@ -22,6 +22,7 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
     List<String> sourceClassFileFqns = new ArrayList<String>();
     List<String> testClassFileFqns = new ArrayList<String>();
     Coefficient coefficient;
+    List<TestCase> testsToBeExecuted = new ArrayList<>();
 
     /**
      * ソースファイルとテストファイルをビルドして,ビルドされたクラスのFQDNを取得
@@ -48,14 +49,20 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
 
         try {
             testResults = coverageCollector.exec(sourceClassFileFqns, testClassFileFqns);
-            SuspiciousnessCollector suspiciousnessCollector = new SuspiciousnessCollector(testResults, coefficient);
+            SuspiciousnessCollector suspiciousnessCollector = new SuspiciousnessCollector(testResults, this.sourceClassFileFqns, coefficient);
             suspiciousnessCollector.exec();
             suspiciousnesses = suspiciousnessCollector.getSuspiciousnesses();
+            this.testsToBeExecuted = suspiciousnessCollector.getExecutedTests();
         } catch (Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
             System.exit(-1);
         }
         return suspiciousnesses;
+    }
+
+    @Override
+    public List<TestCase> getExecutedTests() {
+        return this.testsToBeExecuted;
     }
 }

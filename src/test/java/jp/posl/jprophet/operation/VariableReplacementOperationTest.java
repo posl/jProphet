@@ -169,12 +169,12 @@ public class VariableReplacementOperationTest{
             .toString();
 
         final List<String> expectedSources = new ArrayList<String>();
-        expectedSources.add("lb == lb");
-        expectedSources.add("this.fa == lb");
-        expectedSources.add("pa == lb");
-        expectedSources.add("la == la");
-        expectedSources.add("la == this.fa");
-        expectedSources.add("la == pa");
+        expectedSources.add("if (lb == lb)\n    return;");
+        expectedSources.add("if (this.fa == lb)\n    return;");
+        expectedSources.add("if (pa == lb)\n    return;");
+        expectedSources.add("if (la == la)\n    return;");
+        expectedSources.add("if (la == this.fa)\n    return;");
+        expectedSources.add("if (la == pa)\n    return;");
 
         OperationTest operationTest = new OperationTest();
         final List<String> actualSources = operationTest.applyOperation(targetSource, new VariableReplacementOperation());
@@ -198,9 +198,9 @@ public class VariableReplacementOperationTest{
             .toString();
 
         final List<String> expectedSources = new ArrayList<String>();
-        expectedSources.add("lb");
-        expectedSources.add("this.fa");
-        expectedSources.add("pa");
+        expectedSources.add("if (lb)\n    return;");
+        expectedSources.add("if (this.fa)\n    return;");
+        expectedSources.add("if (pa)\n    return;");
 
         OperationTest operationTest = new OperationTest();
         final List<String> actualSources = operationTest.applyOperation(targetSource, new VariableReplacementOperation());

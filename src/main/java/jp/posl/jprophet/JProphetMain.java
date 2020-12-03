@@ -17,6 +17,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import jp.posl.jprophet.project.FileLocator;
 import jp.posl.jprophet.project.GradleProject;
+import jp.posl.jprophet.project.MavenProject;
 import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
 import jp.posl.jprophet.evaluator.PatchEvaluator;
@@ -74,7 +75,8 @@ public class JProphetMain {
             new CtrlFlowIntroductionOperation(),
             new MethodReplacementOperation(),
             new VariableReplacementOperation(),
-            new CopyReplaceOperation()
+            new CopyReplaceOperation(),
+            new MethodReplacementOperation()
         ));
 
 
@@ -110,7 +112,8 @@ public class JProphetMain {
         // 修正パッチ候補ごとにテスト実行
         for(PatchCandidate patchCandidate: sortedCandidates) {
             Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
-            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
+            //final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
+            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), faultLocalization.getExecutedTests());
             testResultStore.addTestResults(result.getTestResults(), patchCandidate);
             if(result.canEndRepair()) {
                 testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
