@@ -26,6 +26,7 @@ public class UnitTestExecutor implements TestExecutor {
 
     private ProjectBuilder builder;
     private MemoryClassLoader loader;
+    private List<Class<?>> testClasses;
     //ほとんどの関数がProjectConfigurationを引数にしているためメンバとして保持してもいい気はするが、
     //そうするとメイン関数を変更する事になるのでとりあえず後回し
     
@@ -130,7 +131,7 @@ public class UnitTestExecutor implements TestExecutor {
      */
     public boolean runAllTestClass(List<Class<?>> classes){
         final JUnitCore junitCore = new JUnitCore();
-        for (Class<?> testClass : classes){
+        for (Class<?> testClass : testClasses){
 
             //タイムアウト処理
             TestThread testThread = new TestThread(junitCore, testClass);

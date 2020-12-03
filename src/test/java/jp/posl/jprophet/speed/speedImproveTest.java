@@ -20,7 +20,6 @@ import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.Project;
-import jp.posl.jprophet.test.executor.MemoryClassLoader;
 import jp.posl.jprophet.test.executor.TestExecutor;
 import jp.posl.jprophet.test.executor.UnitTestExecutor;
 
