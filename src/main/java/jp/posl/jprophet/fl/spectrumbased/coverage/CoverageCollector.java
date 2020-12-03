@@ -149,7 +149,7 @@ public class CoverageCollector {
 
         final public TestResults testResults;
         private boolean wasFailed;
-        private boolean hasMassage = true; 
+        private boolean hasErrorMassage = true; 
 
         /**
          * constructor
@@ -172,7 +172,7 @@ public class CoverageCollector {
         public void testFailure(Failure failure) {
             wasFailed = true;
             if (failure.getException().getMessage() == null) {
-                this.hasMassage = false;
+                this.hasErrorMassage = false;
             }
         }
 
@@ -246,7 +246,7 @@ public class CoverageCollector {
                 .collect(Collectors.toList());
 
             final TestResult testResult = new TestResult(testMethodFQN, wasFailed, coverages);
-            if (hasMassage && !description.getMethodName().equals("initializationError")) {
+            if (hasErrorMassage && !description.getMethodName().equals("initializationError")) {
                 testResults.add(testResult);
             }
         }

@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import org.junit.runner.JUnitCore;
 
@@ -12,7 +13,7 @@ import jp.posl.jprophet.test.result.TestExecutorResult;
 import jp.posl.jprophet.test.result.UnitTestResult;
 import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
-import jp.posl.jprophet.fl.spectrumbased.ExecutionTest;
+import jp.posl.jprophet.fl.spectrumbased.TestCase;
 import jp.posl.jprophet.fl.spectrumbased.coverage.MemoryClassLoader;
 
 import java.io.File;
@@ -67,18 +68,27 @@ public class UnitTestExecutor implements TestExecutor {
     }
 
     @Override
-    public TestExecutorResult exec(RepairConfiguration config, List<ExecutionTest> executionTests)  {
+    public TestExecutorResult exec(RepairConfiguration config, List<TestCase> executionTests)  {
         try {
             if (builder.build(config)){
                 getClassLoader(config.getBuildPath());
                 testClasses = new ArrayList<Class<?>>();
+                List<String> testFqns = executionTests.stream()
+                    .flatMap(et -> et.getTestNames().stream())
+                    .distinct()
+                    .collect(Collectors.toList());
+
+                for (String testFqn : testFqns) {
+                    testClasses.add(loader.loadClass(testFqn));
+                }
+
                 final boolean result = runAllTestClass(testClasses);
                 return new TestExecutorResult(result, List.of(new UnitTestResult(result)));
             } else {
                 return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
             }
         }
-        catch (MalformedURLException e) {
+        catch (MalformedURLException | ClassNotFoundException e) {
             System.err.println(e.getMessage());
             return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
         }

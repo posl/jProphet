@@ -113,7 +113,7 @@ public class JProphetMain {
         for(PatchCandidate patchCandidate: sortedCandidates) {
             Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
             //final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
-            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), faultLocalization.getExecutionTests());
+            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), faultLocalization.getExecutedTests());
             testResultStore.addTestResults(result.getTestResults(), patchCandidate);
             if(result.canEndRepair()) {
                 testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
