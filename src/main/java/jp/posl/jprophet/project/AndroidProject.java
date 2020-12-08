@@ -27,8 +27,8 @@ public class AndroidProject implements Project{
         Path testDir;
         
         try {
-            srcDir =  Paths.get(rootPath + "/src/main");
-            testDir = Paths.get(rootPath + "/src/test");
+            srcDir =  Paths.get(rootPath + "app/src/main");
+            testDir = Paths.get(rootPath + "app/src/test");
 
             List<File> srcFileList = Files.walk(srcDir)
                 .map(path -> path.toFile())

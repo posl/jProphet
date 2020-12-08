@@ -2,6 +2,7 @@ package jp.posl.jprophet.project;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -120,6 +121,8 @@ public class GradleProject implements Project{
      */
     @Override
     public List<String> getClassPaths() {
+        final Path settingFilePath = Paths.get(this.rootPath + "/" + "build.gradle");
+        extractDependencyPaths(settingFilePath);
         return this.classPaths;
     }
 
@@ -177,6 +180,28 @@ public class GradleProject implements Project{
         final String gradleTestPath = "/src/test/java/";
         final String testDirPath = this.rootPath + gradleTestPath;
         return filePath.replace(testDirPath, "").replace("/", ".").replace(".java", "");
+    }
+
+    private List<Path> extractDependencyPaths(final Path settingFilePath) {
+        try {
+            List<String> lines = Files.readAllLines(settingFilePath, StandardCharsets.UTF_8);
+            List<Path> dependenciesPaths = new ArrayList<Path>();
+            boolean isFoundStartLine = false;
+            for (String line : lines) {
+                String[] tokens = line.trim().split("\\s+");
+                if(!isFoundStartLine && tokens[0].equals("dependencies")) isFoundStartLine = true;
+                if(isFoundStartLine && tokens[0].equals("}")) isFoundStartLine = false;
+                if(!isFoundStartLine) continue;
+                if(!tokens[0].equals("implementation") && !tokens[0].equals("testImplementation")) continue;
+                
+            }
+
+        } 
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return new ArrayList<Path>();
     }
 }
 
