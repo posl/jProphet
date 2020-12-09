@@ -103,6 +103,6 @@ public class GradleProjectTest{
     @Test public void testForClasspaths(){
         List<String> expectedClassPaths = List.of("src/main/resources/junit-4.11.jar");
         assertThat(this.project.getClassPaths()).containsOnlyElementsOf(expectedClassPaths);
-        this.project.getClassPaths();
+        for(String str : this.project.getClassPaths()) System.out.println(str);
     }
 }

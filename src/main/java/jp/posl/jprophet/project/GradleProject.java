@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -123,7 +124,9 @@ public class GradleProject implements Project{
     public List<String> getClassPaths() {
         final Path settingFilePath = Paths.get(this.rootPath + "/" + "build.gradle");
         extractDependencyPaths(settingFilePath);
-        return this.classPaths;
+        return extractDependencyPaths(settingFilePath).stream()
+            .map(p -> p.toString())
+            .collect(Collectors.toList());
     }
 
     /**
@@ -183,25 +186,50 @@ public class GradleProject implements Project{
     }
 
     private List<Path> extractDependencyPaths(final Path settingFilePath) {
+        List<Path> paths = new ArrayList<Path>();
         try {
             List<String> lines = Files.readAllLines(settingFilePath, StandardCharsets.UTF_8);
-            List<Path> dependenciesPaths = new ArrayList<Path>();
             boolean isFoundStartLine = false;
             for (String line : lines) {
                 String[] tokens = line.trim().split("\\s+");
                 if(!isFoundStartLine && tokens[0].equals("dependencies")) isFoundStartLine = true;
                 if(isFoundStartLine && tokens[0].equals("}")) isFoundStartLine = false;
                 if(!isFoundStartLine) continue;
-                if(!tokens[0].equals("implementation") && !tokens[0].equals("testImplementation")) continue;
-                
-            }
+                if(!tokens[0].equals("implementation")) continue;
 
+                String dependencyStr = tokens[1];
+                String[] words = dependencyStr.replaceAll("[\'\"]", "").split(":");
+                
+                final String userHome = System.getProperty("user.home");
+                final Path repositoryPath = Paths.get(userHome)
+                    .resolve(".m2")
+                    .resolve("repository");
+                Path dependencyPath = repositoryPath;
+                for(int i = 0; i < words.length; i++) {
+                    if(i == 0) {
+                        String[] domains = words[i].split("\\.");
+                        for(String domain : domains) dependencyPath = dependencyPath.resolve(domain); 
+                    }
+                    else dependencyPath = dependencyPath.resolve(words[i]);
+                    System.out.println(dependencyPath);
+                }
+                
+                Files.find(dependencyPath, Integer.MAX_VALUE, (p, attr) -> p.toString()
+                    .endsWith(".jar"))
+                    .forEach(paths::add);
+        
+                Files.find(dependencyPath, Integer.MAX_VALUE, (p, attr) -> p.toString()
+                    .endsWith(".pom"))
+                    .map(this::extractDependencyPaths)
+                    .flatMap(Collection::stream)
+                    .forEach(paths::add);
+            }
         } 
         catch (IOException e) {
             e.printStackTrace();
         }
 
-        return new ArrayList<Path>();
+        return paths;
     }
 }
 
