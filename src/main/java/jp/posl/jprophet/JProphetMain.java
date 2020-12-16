@@ -126,12 +126,15 @@ public class JProphetMain {
         for(PatchCandidate patchCandidate: sortedCandidates) {
             Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
 
+            /*
             List<TestCase> tcs = testCases.stream()
                     .filter(e -> e.getSourceName().equals(patchCandidate.getFqn()))
                     .collect(Collectors.toList());
+            */
             
             //final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
-            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), tcs);
+            //final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), tcs);
+            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), testCases);
             testResultStore.addTestResults(result.getTestResults(), patchCandidate);
             testedPatch++;
             System.out.println("tested patch num : " + testedPatch + " / " + patchCandidates.size());
