@@ -125,8 +125,13 @@ public class JProphetMain {
         // 修正パッチ候補ごとにテスト実行
         for(PatchCandidate patchCandidate: sortedCandidates) {
             Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
+
+            List<TestCase> tcs = testCases.stream()
+                    .filter(e -> e.getSourceName().equals(patchCandidate.getFqn()))
+                    .collect(Collectors.toList());
+            
             //final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
-            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), testCases);
+            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), tcs);
             testResultStore.addTestResults(result.getTestResults(), patchCandidate);
             testedPatch++;
             System.out.println("tested patch num : " + testedPatch + " / " + patchCandidates.size());
