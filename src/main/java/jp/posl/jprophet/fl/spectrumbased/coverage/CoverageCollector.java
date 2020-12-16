@@ -272,7 +272,7 @@ public class CoverageCollector {
                 .collect(Collectors.toList());
 
             final TestResult testResult = new TestResult(testMethodFQN, wasFailed, coverages);
-            if (hasErrorMassage && !description.getMethodName().equals("initializationError")) {
+            if (coverages.size() > 0 && hasErrorMassage && !description.getMethodName().equals("initializationError")) {
                 testResults.add(testResult);
             }
         }
