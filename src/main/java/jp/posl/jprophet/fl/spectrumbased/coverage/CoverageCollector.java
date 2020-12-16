@@ -122,7 +122,8 @@ public class CoverageCollector {
             for (String sourceFqn : config.getTargetProject().getSrcFileFqns()) {
                 List<String> testNames = testResults.getTestResults().stream()
                     .filter(t -> t.getCoverages().stream().filter(c -> c.getName().equals(sourceFqn)).findFirst().isPresent())
-                    .map(t -> t.getMethodName().substring(0,  t.getMethodName().lastIndexOf(".")))
+                    //.map(t -> t.getMethodName().substring(0,  t.getMethodName().lastIndexOf(".")))
+                    .map(t -> t.getMethodName())
                     .distinct()
                     .collect(Collectors.toList());
 

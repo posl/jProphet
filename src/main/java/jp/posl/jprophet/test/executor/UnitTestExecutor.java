@@ -77,18 +77,19 @@ public class UnitTestExecutor implements TestExecutor {
                     .flatMap(et -> et.getTestNames().stream())
                     .distinct()
                     .collect(Collectors.toList());
-
+                /*
                 for (String testFqn : testFqns) {
                     testClasses.add(loader.loadClass(testFqn));
                 }
-
                 final boolean result = runAllTestClass(testClasses);
+                */
+                final boolean result = runAllTestCases(testFqns);
                 return new TestExecutorResult(result, List.of(new UnitTestResult(result)));
             } else {
                 return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
             }
         }
-        catch (MalformedURLException | ClassNotFoundException e) {
+        catch (MalformedURLException  e) {
             System.err.println(e.getMessage());
             return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
         }
@@ -135,6 +136,39 @@ public class UnitTestExecutor implements TestExecutor {
 
             //タイムアウト処理
             TestThread testThread = new TestThread(junitCore, testClass);
+            testThread.start();
+            try {
+                //waitTime ms 経過でスキップ
+                testThread.join(waitTime);
+            } catch (InterruptedException e) {
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+                System.exit(-1);
+            }
+            final boolean isSuccess = ((TestThread) testThread).getIsSuccess();
+            if(!isSuccess) return false;
+        }
+        return true;
+    }
+    /**
+     * プロジェクトのテストクラスをJunitで実行し、全て通るか判定
+     * 
+     * @param classes テストクラスのリスト
+     * @return 全てのテスト実行が通ったかどうか
+     */
+    private boolean runAllTestCases(List<String> testFqns) {
+        final JUnitCore junitCore = new JUnitCore();
+        for (String testFqn : testFqns) {
+            String fileFqn = testFqn.substring(0, testFqn.lastIndexOf("."));
+            String methodName = testFqn.substring(testFqn.lastIndexOf(".") + 1, testFqn.length());
+            Class<?> testClass;
+            try {
+                testClass = loader.loadClass(fileFqn);
+            } catch (Exception e) {
+                continue;
+            }
+            //タイムアウト処理
+            TestThread testThread = new TestThread(junitCore, testClass, methodName);
             testThread.start();
             try {
                 //waitTime ms 経過でスキップ
