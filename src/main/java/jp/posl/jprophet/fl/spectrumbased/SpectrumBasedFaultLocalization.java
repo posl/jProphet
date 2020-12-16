@@ -2,6 +2,7 @@ package jp.posl.jprophet.fl.spectrumbased;
 
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.fl.spectrumbased.coverage.CoverageCollector;
+import jp.posl.jprophet.fl.spectrumbased.coverage.TestResult;
 import jp.posl.jprophet.fl.spectrumbased.coverage.TestResults;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
 import jp.posl.jprophet.fl.FaultLocalization;
@@ -9,6 +10,7 @@ import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.spectrumbased.statement.SuspiciousnessCollector;
 import jp.posl.jprophet.ProjectBuilder;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.nio.file.Path;
 
@@ -48,9 +50,24 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
 
         try {
             testResults = coverageCollector.exec(sourceClassFileFqns, testClassFileFqns);
+            List<TestCase> testsToBeExecuted = new ArrayList<TestCase>();
+            for (String sourceFqn : this.sourceClassFileFqns) {
+                List<String> testNames = testResults.getTestResults().stream()
+                    .filter(t -> t.getCoverages().stream().filter(c -> c.getName().equals(sourceFqn)).findFirst().isPresent())
+                    .map(t -> t.getMethodName().substring(0,  t.getMethodName().lastIndexOf(".")))
+                    .distinct()
+                    .collect(Collectors.toList());
+
+                testsToBeExecuted.add(new TestCase(sourceFqn, testNames));
+            }
+            //ここでtestToBeExecutedをファイル出力
+
             SuspiciousnessCollector suspiciousnessCollector = new SuspiciousnessCollector(testResults, this.sourceClassFileFqns, coefficient);
             suspiciousnessCollector.exec();
             suspiciousnesses = suspiciousnessCollector.getSuspiciousnesses();
+            //ここで疑惑値リストをファイル出力する
+
+
         } catch (Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace();

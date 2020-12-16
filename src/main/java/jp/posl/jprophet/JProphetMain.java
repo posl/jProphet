@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 
@@ -56,7 +57,7 @@ public class JProphetMain {
                 projectPath = args[0];
             }
         }
-        final Project                  project                  = new GradleProject(projectPath);
+        final Project                  project                  = new MavenProject(projectPath);
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project, parameterPath);
         final Coefficient              coefficient              = new Jaccard();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
@@ -77,8 +78,7 @@ public class JProphetMain {
             new CtrlFlowIntroductionOperation(),
             new MethodReplacementOperation(),
             new VariableReplacementOperation(),
-            new CopyReplaceOperation(),
-            new MethodReplacementOperation()
+            new CopyReplaceOperation()
         ));
 
 
@@ -107,24 +107,37 @@ public class JProphetMain {
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
         final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(operations, suspiciousenesses, targetCuMap);
+        System.out.println("finish patch generate. patch num : " + patchCandidates.size());
         
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
         final List<PatchCandidate> sortedCandidates = patchEvaluator.sort(patchCandidates, suspiciousenesses, config);
+        System.out.println("finish sort");
         
         final List<TestCase> testCases = new CoverageCollector(config.getBuildPath()).getTestCases(config);
+        System.out.println("finish select testcase");
+        List<String> testFqns = testCases.stream()
+            .flatMap(et -> et.getTestNames().stream())
+            .distinct()
+            .collect(Collectors.toList());
+        System.out.println(testFqns);
         
+        int testedPatch = 0;
         // 修正パッチ候補ごとにテスト実行
         for(PatchCandidate patchCandidate: sortedCandidates) {
             Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
             //final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
             final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), testCases);
             testResultStore.addTestResults(result.getTestResults(), patchCandidate);
+            testedPatch++;
+            System.out.println("tested patch num : " + testedPatch + " / " + patchCandidates.size());
             if(result.canEndRepair()) {
                 testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
+                System.out.println("finish true");
                 return true;
             }
         }
         testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
+        System.out.println("finish false");
         return false;
     }
 
