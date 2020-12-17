@@ -205,7 +205,7 @@ public final class NodeUtility {
             beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, tokenToInsert.getKind(), tokenToInsert.getText(), null, null));   
             tokenToInsert = tokenToInsert.getNextToken().orElseThrow();
         }
-        
+
         final CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
         return NodeUtility.reparseCompilationUnit(compilationUnit)
             .map(cu -> findNodeInCompilationUnitByBeginRange(cu, nodeWithTokenToInsert, beginRangeOfTarget));

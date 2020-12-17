@@ -7,14 +7,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.github.javaparser.ast.CompilationUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import difflib.Patch;
 import jp.posl.jprophet.project.FileLocator;
 import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.MavenProject;
@@ -101,22 +104,30 @@ public class JProphetMain {
         final List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
 
         final Map<FileLocator, CompilationUnit> targetCuMap = new AstGenerator().exec(suspiciousenesses, config.getTargetProject().getSrcFileLocators());
-        
-        
+
+
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
         final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(operations, suspiciousenesses, targetCuMap);
-        
+
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
         final List<PatchCandidate> sortedCandidates = patchEvaluator.sort(patchCandidates, suspiciousenesses, config);
-        
+
+        final Map<PatchCandidate, Project> projectMap = new HashMap<PatchCandidate, Project>();
+
         // 修正パッチ候補ごとにテスト実行
         for(PatchCandidate patchCandidate: sortedCandidates) {
-            Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
-            //final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
-            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), faultLocalization.getExecutedTests());
-            testResultStore.addTestResults(result.getTestResults(), patchCandidate);
+            projectMap.put(patchCandidate, patchedProjectGenerator.applyPatch(patchCandidate));
+        }
+
+        for(Map.Entry<PatchCandidate, Project> projectEntry: projectMap.entrySet()) {
+            final Project project = projectEntry.getValue();
+            final PatchCandidate patch  = projectEntry.getKey();
+            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, project), faultLocalization.getExecutedTests());
+            testResultStore.addTestResults(result.getTestResults(), patch);
             if(result.canEndRepair()) {
-                testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
+                testResultExporters.stream().forEach(exporter -> {
+                    exporter.export(testResultStore);
+                });
                 return true;
             }
         }

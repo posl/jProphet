@@ -10,7 +10,7 @@ public class OperationDiff { //TODO: クラス名改善の余地あり
         INSERT,
         CHANGE,
     }
-    
+
     private ModifyType modifyType;
     private Node targetNodeBeforeFix;
     private Node targetNodeAfterFix;

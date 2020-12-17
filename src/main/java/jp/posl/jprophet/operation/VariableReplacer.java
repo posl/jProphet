@@ -23,7 +23,7 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 public class VariableReplacer {
 
     /**
-     * 代入文の右辺の値と，メソッド呼び出しの引数を対象に，クラスのメンバ変数及びメソッドのローカル変数，仮引数で置換を行う 
+     * targetNode中において，代入文の右辺の変数と，メソッド呼び出しの引数を対象に，クラスのメンバ変数及びメソッドのローカル変数，仮引数で置換を行う 
      * @param targetNode      置換対象
      * @param fieldNames      フィールド名のリスト
      * @param localVarNames   ローカル変数のリスト
