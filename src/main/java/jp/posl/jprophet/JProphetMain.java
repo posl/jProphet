@@ -111,13 +111,13 @@ public class JProphetMain {
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
         final List<PatchCandidate> sortedCandidates = patchEvaluator.sort(patchCandidates, suspiciousenesses, config);
         
-        final List<TestCase> testCases = new CoverageCollector(config.getBuildPath()).getTestCases(config);
+        final List<TestCase> testsToBeExecuted = new CoverageCollector(config.getBuildPath()).getTestCases(config);
         
         // 修正パッチ候補ごとにテスト実行
         for(PatchCandidate patchCandidate: sortedCandidates) {
             Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
             //final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
-            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), testCases);
+            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), testsToBeExecuted);
             testResultStore.addTestResults(result.getTestResults(), patchCandidate);
             if(result.canEndRepair()) {
                 testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));

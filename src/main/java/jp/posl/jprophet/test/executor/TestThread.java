@@ -14,9 +14,9 @@ public class TestThread extends Thread {
     public boolean isSuccess;
 
     /**
-     * 
+     * クラスに含まれる全てのテストを実行
      * @param junitCore
-     * @param testClass
+     * @param testClass テストするクラス
      */
     public TestThread(JUnitCore junitCore, Class<?> testClass){
         this.junitCore = junitCore;
@@ -25,6 +25,12 @@ public class TestThread extends Thread {
         this.isSingleRun = false;
     }
 
+    /**
+     * クラス内のメソッドを指定して実行
+     * @param junitCore
+     * @param testClass テストするクラス
+     * @param methodName testClassに含まれるテストメソッド
+     */
     public TestThread(JUnitCore junitCore, Class<?> testClass, String methodName){
         this.junitCore = junitCore;
         this.testClass = testClass;
