@@ -53,7 +53,7 @@ public class UnitTestExecutor implements TestExecutor {
     public TestExecutorResult exec(RepairConfiguration config)  {
         try {
             if(builder.build(config)) {
-                getClassLoader(config.getBuildPath());
+                this.getClassLoader(config.getBuildPath());
                 testClasses = loadTestClass(config.getTargetProject());
                 final boolean result = runAllTestClass(testClasses);
                 return new TestExecutorResult(result, List.of(new UnitTestResult(result)));
@@ -68,22 +68,16 @@ public class UnitTestExecutor implements TestExecutor {
     }
 
     @Override
-    public TestExecutorResult exec(RepairConfiguration config, List<TestCase> executionTests)  {
+    public TestExecutorResult exec(RepairConfiguration config, List<TestCase> testsToBeExecuted)  {
         try {
             if (builder.build(config)){
-                getClassLoader(config.getBuildPath());
-                testClasses = new ArrayList<Class<?>>();
-                List<String> testFqns = executionTests.stream()
+                this.getClassLoader(config.getBuildPath());
+                List<String> testFqns = testsToBeExecuted.stream()
                     .flatMap(et -> et.getTestNames().stream())
                     .distinct()
                     .collect(Collectors.toList());
-                /*
-                for (String testFqn : testFqns) {
-                    testClasses.add(loader.loadClass(testFqn));
-                }
-                final boolean result = runAllTestClass(testClasses);
-                */
-                final boolean result = runAllTestCases(testFqns);
+
+                final boolean result = runAllTestFqn(testFqns);
                 return new TestExecutorResult(result, List.of(new UnitTestResult(result)));
             } else {
                 return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
@@ -150,13 +144,14 @@ public class UnitTestExecutor implements TestExecutor {
         }
         return true;
     }
+    
     /**
-     * プロジェクトのテストクラスをJunitで実行し、全て通るか判定
+     * 指定されたメソッドを含めたfqnのみをJUnitで実行し，全て通るか判定
      * 
-     * @param classes テストクラスのリスト
+     * @param testFqns メソッドを含めたfqn(fileFqn.methodName)
      * @return 全てのテスト実行が通ったかどうか
      */
-    private boolean runAllTestCases(List<String> testFqns) {
+    private boolean runAllTestFqn(List<String> testFqns) {
         final JUnitCore junitCore = new JUnitCore();
         for (String testFqn : testFqns) {
             String fileFqn = testFqn.substring(0, testFqn.lastIndexOf("."));
@@ -164,7 +159,7 @@ public class UnitTestExecutor implements TestExecutor {
             Class<?> testClass;
             try {
                 testClass = loader.loadClass(fileFqn);
-            } catch (Exception e) {
+            } catch (ClassNotFoundException e) {
                 continue;
             }
             //タイムアウト処理

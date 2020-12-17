@@ -113,9 +113,9 @@ public class JProphetMain {
         final List<PatchCandidate> sortedCandidates = patchEvaluator.sort(patchCandidates, suspiciousenesses, config);
         System.out.println("finish sort");
         
-        final List<TestCase> testCases = new CoverageCollector(config.getBuildPath()).getTestCases(config);
+        final List<TestCase> testsToBeExecuted = new CoverageCollector(config.getBuildPath()).getTestCases(config);
         System.out.println("finish select testcase");
-        List<String> testFqns = testCases.stream()
+        List<String> testFqns = testsToBeExecuted.stream()
             .flatMap(et -> et.getTestNames().stream())
             .distinct()
             .collect(Collectors.toList());
@@ -133,8 +133,7 @@ public class JProphetMain {
             */
             
             //final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
-            //final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), tcs);
-            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), testCases);
+            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), testsToBeExecuted);
             testResultStore.addTestResults(result.getTestResults(), patchCandidate);
             testedPatch++;
             System.out.println("tested patch num : " + testedPatch + " / " + patchCandidates.size());
