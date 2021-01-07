@@ -111,11 +111,13 @@ public class CoverageCollector {
     }
     
     /**
-     * 正しく動くテストのみを厳選する
+     * 正しく動くテストのみを厳選する．
+     * JUnit のみでテスト実行すると，カバレッジがない，エラーメッセージがない，テストファイルでないものをテストする
+     * などが原因で失敗するテストケースが実行されてしまうため，テストを厳選している．
      * @param config 対象プロジェクトのconfig
      * @return 厳選したテストケース
      */
-    public List<TestCase> getTestCases(RepairConfiguration config) {
+    public List<TestCase> selectCollectTestCases(RepairConfiguration config) {
         try {
             TestResults testResults = this.exec(config.getTargetProject().getSrcFileFqns() , config.getTargetProject().getTestFileFqns());
             List<TestCase> testsToBeExecuted = new ArrayList<TestCase>();

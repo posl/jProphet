@@ -113,7 +113,7 @@ public class JProphetMain {
         final List<PatchCandidate> sortedCandidates = patchEvaluator.sort(patchCandidates, suspiciousenesses, config);
         System.out.println("finish sort");
         
-        final List<TestCase> testsToBeExecuted = new CoverageCollector(config.getBuildPath()).getTestCases(config);
+        final List<TestCase> testsToBeExecuted = new CoverageCollector(config.getBuildPath()).selectCollectTestCases(config);
         System.out.println("finish select testcase");
         List<String> testFqns = testsToBeExecuted.stream()
             .flatMap(et -> et.getTestNames().stream())
