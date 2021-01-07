@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -36,10 +38,11 @@ import com.github.javaparser.ast.type.PrimitiveType;
  * 修正パッチ候補を元にプロジェクト全体の生成を行うクラス
  */
 public class PatchedProjectGenerator {
-    static public class fuga {
+    //TODO: 命名
+    static public class PatchedFile {
         public File patchedFile;
         public File originalFile;
-        public fuga(File patchedFile, File originalFile) {
+        public PatchedFile(File patchedFile, File originalFile) {
             this.patchedFile = patchedFile;
             this.originalFile = originalFile;
         }
@@ -50,7 +53,8 @@ public class PatchedProjectGenerator {
     private final String patchTargetProjectPath;
     // private File lastPatchedFile;
     // private File originalFileOfLastPatched;
-    private final List<fuga> fugas = new ArrayList<fuga>();
+    //TODO: 命名
+    private final List<PatchedFile> patchedFiles = new ArrayList<PatchedFile>();
 
     /**
      * オリジナルのプロジェクトをテスト検証用にコピーし，
@@ -83,16 +87,17 @@ public class PatchedProjectGenerator {
      */
     public Project applyPatch(PatchCandidate patchCandidate){
         // if(this.lastPatchedFile != null) this.unpatch();
-        if(this.fugas.size() > 0) this.unpatch();
+        if(this.patchedFiles.size() > 0) this.unpatch();
 
-        this.hoge(patchCandidate.getFilePath(), patchCandidate.getFixedCompilationUnit());
+        this.addPatchedFile(patchCandidate.getFilePath(), patchCandidate.getFixedCompilationUnit());
 
         // このメソッドが呼び出される度にprojectを返すが
         // オブジェクトそのものに変更は無い
         return this.projectForTestValidation;
     }
 
-    private void hoge(String filePath, CompilationUnit cu) {
+    //TODO: 命名
+    private void addPatchedFile(String filePath, CompilationUnit cu) {
         final String patchTargetFilePath = filePath;
         final File patchTargetFile = new File(this.patchTargetProjectPath + patchTargetFilePath.replace(this.originalProjectPath, ""));
         final String patchedSourceCode = NodeUtility.lexicalPreservingPrint(cu);
@@ -105,57 +110,104 @@ public class PatchedProjectGenerator {
             System.exit(-1);
         }
 
-        this.fugas.add(new fuga(patchTargetFile, new File(filePath)));
+        this.patchedFiles.add(new PatchedFile(patchTargetFile, new File(filePath)));
     }
 
     public Project applyMultiPatch(List<PatchCandidate> patchCandidates) {
-        final String varNamePrefix = "jProphetEnableThisPatch";
-        Map<String, CompilationUnit> cuMap = new HashMap<String, CompilationUnit>();
+        //TODO: 命名
+        final Map<String, CompilationUnit> filePathToUpdatedCu = new HashMap<String, CompilationUnit>();
+        final Set<Node> enclosedTargetNodes = new HashSet<Node>();
 
+        final Map<CompilationUnit, MovementHistory> originalCuToMvHistory = new HashMap<CompilationUnit, MovementHistory>();
+
+        // ターゲットノードをif文で囲む処理
         for (PatchCandidate candidate : patchCandidates) {
-            CompilationUnit cu = candidate.getOriginalCompilationUnit();
+            final Node originalTargetNode = candidate.getOperationDiff().getTargetNodeBeforeFix();
+            if (enclosedTargetNodes.contains(originalTargetNode) && filePathToUpdatedCu.containsKey(candidate.getFilePath())) {
+                continue;
+            }
+            final String varNameForEnableTarget = new StringBuilder()
+                .append("jProphetTarget")
+                .append(String.valueOf(candidate.getId()))
+                .toString();
+            final Expression conditionForTarget = new NameExpr(varNameForEnableTarget);
+            final Node clonedTargetNode = originalTargetNode.clone(); // cloneメソッドによりターゲットノードの先祖を消去
+            final BlockStmt blockStmtWithTarget = new BlockStmt(new NodeList<Statement>(List.of((Statement)clonedTargetNode)));
+            final Node ifEnclosingTargetNode = new IfStmt(conditionForTarget, blockStmtWithTarget, null);
+            final CompilationUnit originalCu = candidate.getOriginalCompilationUnit();
+            CompilationUnit updatedCu = candidate.getOriginalCompilationUnit();
+            if (filePathToUpdatedCu.containsKey(candidate.getFilePath())) {
+                updatedCu = filePathToUpdatedCu.get(candidate.getFilePath());
+            }
+            else {
+                originalCuToMvHistory.put(originalCu, new MovementHistory(originalCu));
+            }
+            final Range originalRange = candidate.getOperationDiff().getTargetNodeBeforeFix().getRange().orElseThrow();
+
+
+            final int beginLineDelta = originalCuToMvHistory.get(originalCu).get(originalRange.begin.line).lineDelta;
+            final int beginColumnDelta = originalCuToMvHistory.get(originalCu).get(originalRange.begin.line).columnDelta;
+            final Position updatedBegin = new Position(originalRange.begin.line + beginLineDelta, originalRange.begin.column + beginColumnDelta);
+
+            final int endLineDelta = originalCuToMvHistory.get(originalCu).get(originalRange.end.line).lineDelta;
+            final int endColumnDelta = originalCuToMvHistory.get(originalCu).get(originalRange.end.line).columnDelta;
+            final Position updatedEnd = new Position(originalRange.end.line + endLineDelta, originalRange.end.column + endColumnDelta);
+
+            final Range updatedRange = new Range(updatedBegin, updatedEnd);
+            final Node targetNode = NodeUtility.findNodeByRange(updatedCu, updatedRange);
+            final Node enclosedTargetNode = NodeUtility.replaceNode(ifEnclosingTargetNode, targetNode).orElseThrow();
+            final Statement varDeclaration = new ExpressionStmt(new VariableDeclarationExpr(new VariableDeclarator(PrimitiveType.booleanType(), varNameForEnableTarget, new BooleanLiteralExpr(false))));
+            final Node nodeWhereVarDeclarationIsInserted = NodeUtility.insertNodeWithNewLine(varDeclaration, enclosedTargetNode).orElseThrow();
+            filePathToUpdatedCu.put(candidate.getFilePath(), nodeWhereVarDeclarationIsInserted.findCompilationUnit().orElseThrow());
+
+
+            final MovementHistory mvHistory = originalCuToMvHistory.get(originalCu);
+            mvHistory.addLineDelta(originalTargetNode.getBegin().orElseThrow().line, originalTargetNode.getEnd().orElseThrow().line, 2);
+            mvHistory.addLineDelta(originalTargetNode.getEnd().orElseThrow().line + 1, candidate.getOriginalCompilationUnit().getEnd().orElseThrow().line, 3);
+            mvHistory.addColumnDelta(originalTargetNode.getBegin().orElseThrow().line, originalTargetNode.getEnd().orElseThrow().line, 4);
+            enclosedTargetNodes.add(originalTargetNode);
+        }
+
+        // パッチ候補をif文で囲む
+        for (PatchCandidate candidate : patchCandidates) {
             final OperationDiff diff = candidate.getOperationDiff();
             if(!(diff.getTargetNodeAfterFix() instanceof Statement)) continue;
-            int increasedLineCount = 0;
-            CompilationUnit updatedCu = cu; // まだパッチが適用されていないファイルの場合，オリジナルのcuに適用するための初期化
-            for (Map.Entry<String, CompilationUnit> entry : cuMap.entrySet()) {
-                if (entry.getKey().equals(candidate.getFilePath())) {
-                    updatedCu = entry.getValue();
-                    int updatedCuLineRange = updatedCu.getEnd().orElseThrow().line; 
-                    int originalCuLineRange = cu.getEnd().orElseThrow().line; 
-                    increasedLineCount =  updatedCuLineRange - originalCuLineRange;
-                }
-            }
             final String varNameForEnablePatch = new StringBuilder()
-                .append(varNamePrefix)
-                .append(String.valueOf(increasedLineCount))
+                .append("jProphetPatch")
+                .append(String.valueOf(candidate.getId()))
                 .toString();
-            final Range originalRange = diff.getTargetNodeBeforeFix().getRange().orElseThrow();
-            final Position newBegin = new Position(originalRange.begin.line + increasedLineCount, originalRange.begin.column);
-            final Position newEnd = new Position(originalRange.end.line + increasedLineCount, originalRange.end.column);
-            final Range newRange = new Range(newBegin, newEnd);
-            final Node nodeToInsert = NodeUtility.findNodeInCompilationUnitByBeginRange(updatedCu, diff.getTargetNodeBeforeFix(), newRange);
             final Expression condition = new NameExpr(varNameForEnablePatch);
             final BlockStmt blockStmt = new BlockStmt(new NodeList<Statement>(List.of((Statement)diff.getTargetNodeAfterFix())));
             final Node ifEnclosingNode = new IfStmt(condition, blockStmt, null);
+            final CompilationUnit originalCu = candidate.getOriginalCompilationUnit();
+            final Range originalRange = candidate.getOperationDiff().getTargetNodeBeforeFix().getRange().orElseThrow();
 
-            Node node;
-            if (diff.getModifyType().equals(ModifyType.INSERT)) {
-                node = NodeUtility.insertNodeWithNewLine(ifEnclosingNode, nodeToInsert).orElseThrow();
-            } else if (diff.getModifyType().equals(ModifyType.CHANGE)) {
-                node = NodeUtility.replaceNode(ifEnclosingNode, nodeToInsert).orElseThrow();
-            }
-            else {
-                continue;
-            }
+            final int beginLineDelta = originalCuToMvHistory.get(originalCu).get(originalRange.begin.line).lineDelta;
+            final int beginColumnDelta = originalCuToMvHistory.get(originalCu).get(originalRange.begin.line).columnDelta;
+            final Position updatedBegin = new Position(originalRange.begin.line + beginLineDelta - 1, originalRange.begin.column + beginColumnDelta - 4);
+            final int endLineDelta = originalCuToMvHistory.get(originalCu).get(originalRange.end.line).lineDelta;
+            final Position updatedEnd = new Position(originalRange.end.line + endLineDelta + 1, originalRange.begin.column + beginColumnDelta - 4);
+            final Range updatedRange = new Range(updatedBegin, updatedEnd);
+            final CompilationUnit updatedCu = filePathToUpdatedCu.get(candidate.getFilePath());
+            final Node enclosedTargetNode = NodeUtility.findNodeByRange(updatedCu, updatedRange);
+
+            Node node = NodeUtility.insertNodeWithNewLine(ifEnclosingNode, enclosedTargetNode).orElseThrow();
             final Statement varDeclaration = new ExpressionStmt(new VariableDeclarationExpr(new VariableDeclarator(PrimitiveType.booleanType(), varNameForEnablePatch, new BooleanLiteralExpr(false))));
-            NodeUtility.insertNodeWithNewLine(varDeclaration, node);
-            cu = node.findCompilationUnit().orElseThrow();
-            cuMap.put(candidate.getFilePath(), cu);
+            node = NodeUtility.insertNodeWithNewLine(varDeclaration, node).orElseThrow();
+            final CompilationUnit newCu = node.findCompilationUnit().orElseThrow();
+            filePathToUpdatedCu.put(candidate.getFilePath(), newCu);
+
+            final MovementHistory mvHistory = originalCuToMvHistory.get(originalCu);
+            final int beginLineOfTargetNodeAfterFix = candidate.getOperationDiff().getTargetNodeAfterFix().getBegin().orElseThrow().line;
+            final int endLineOfTargetNodeAfterFix = candidate.getOperationDiff().getTargetNodeAfterFix().getEnd().orElseThrow().line;
+            final int linesOfTargetNodeAfterFix = endLineOfTargetNodeAfterFix - beginLineOfTargetNodeAfterFix + 1;
+            final Node originalTargetNode = candidate.getOperationDiff().getTargetNodeBeforeFix();
+            mvHistory.addLineDelta(originalTargetNode.getEnd().orElseThrow().line, candidate.getOriginalCompilationUnit().getEnd().orElseThrow().line, linesOfTargetNodeAfterFix + 3);
         }
-        cuMap.entrySet().stream()
+
+        filePathToUpdatedCu.entrySet().stream()
             .forEach(entry -> {
-                this.hoge(entry.getKey(), entry.getValue());
+                this.addPatchedFile(entry.getKey(), entry.getValue());
             });
 
         return this.projectForTestValidation;
@@ -169,7 +221,7 @@ public class PatchedProjectGenerator {
      */
     private void unpatch(){
         try {
-            for (fuga fuga: this.fugas) {
+            for (PatchedFile fuga: this.patchedFiles) {
                 FileUtils.copyFile(fuga.originalFile, fuga.patchedFile, false);
             }
         } catch (IOException e) {
@@ -177,7 +229,7 @@ public class PatchedProjectGenerator {
             e.printStackTrace();
             System.exit(-1);
         }
-        this.fugas.clear();
+        this.patchedFiles.clear();
     }
 }
 

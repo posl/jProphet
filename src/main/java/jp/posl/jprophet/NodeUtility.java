@@ -161,9 +161,12 @@ public final class NodeUtility {
 
     /**
      * targetNodeの直前の行にnodeToInsertを入れる
-     * nodeToInsertのインデントはtargetNodeのインデントと同じ
-     * Statementノードよりも小さい単位のノードを渡すとnullが返される
-     * 挿入後のコードがパースできない場合nullを返す
+     * <ul>
+     * <li>nodeToInsertのインデントはtargetNodeのインデントと同じ．</li>
+     * <li>Statementノードよりも小さい単位のノードを渡すとnullが返される．</li>
+     * <li>挿入後のコードがパースできない場合nullを返す</li>
+     * </ul>
+     * <br>
      * @param nodeToInsert 挿入するノード
      * @param targetNode 挿入するノードの後ろのノード
      * @return 挿入したノード
@@ -375,6 +378,14 @@ public final class NodeUtility {
             return n.equals(node) && n.getRange().orElseThrow().begin.equals(range.begin);
         }).findFirst().orElseThrow();
         return newNode;
+    }
+
+    public static Node findNodeByRange(CompilationUnit compilationUnit, Range range) {
+        List<Node> nodes = NodeUtility.getAllDescendantNodes(compilationUnit);
+        Node targetNode = nodes.stream().filter(n -> {
+            return n.getRange().orElseThrow().equals(range);
+        }).findFirst().orElseThrow();
+        return targetNode;
     }
 
     /**

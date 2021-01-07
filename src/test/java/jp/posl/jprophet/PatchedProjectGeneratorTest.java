@@ -29,53 +29,7 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import org.apache.commons.io.FileUtils;
 
 public class PatchedProjectGeneratorTest{
-    // private String projectPath;
-    // private String targetFilePath;
-    // private String targetFileFqn;
-    // private List<String> projectFilePaths; 
-    // private String buildDir;
     private String resultDir = "./result/";
-    // private RepairConfiguration config;
-    // private PatchedProjectGenerator patchedProjectGenerator;
-    // private String parameterPath;
-
-    @Before public void setUp(){
-        // this.projectPath = "src/test/resources/testGradleProject01";
-        // this.targetFilePath = "src/test/resources/testGradleProject01/src/main/java/testGradleProject01/App.java";
-        // this.targetFileFqn = "testGradleProject01.App";
-        // this.projectFilePaths = List.of(
-        //     "testGradleProject01/src/main/java/testGradleProject01/App.java",
-        //     "testGradleProject01/src/main/java/testGradleProject01/App2.java",
-        //     "testGradleProject01/src/test/java/testGradleProject01/AppTest.java",
-        //     "testGradleProject01/src/test/java/testGradleProject01/App2Test.java",
-        //     "testGradleProject01/gradle/wrapper/gradle-wrapper.jar",
-        //     "testGradleProject01/gradle/wrapper/gradle-wrapper.properties",
-        //     "testGradleProject01/.gitignore",
-        //     "testGradleProject01/build.gradle",
-        //     "testGradleProject01/gradlew",
-        //     "testGradleProject01/gradlew.bat",
-        //     "testGradleProject01/settings.gradle"
-        // );
-        // this.buildDir = "./temp/";
-        // this.resultDir = "./result/";
-        // this.parameterPath = "parameters/para.csv";
-        // this.config = new RepairConfiguration(this.buildDir, this.resultDir, new GradleProject(this.projectPath), this.parameterPath);
-        // this.patchedProjectGenerator = new PatchedProjectGenerator(this.config);
-        // CompilationUnit compilationUnit;
-        // try {
-        //     compilationUnit = JavaParser.parse(Paths.get(this.targetFilePath));
-        // }
-        // catch (IOException e){
-        //     e.printStackTrace();
-        //     fail(e.getMessage());
-        //     return;
-        // }
-        // Node targetNodeBeforeFix = compilationUnit.findRootNode().getChildNodes().get(1).getChildNodes().get(1).getChildNodes().get(2).getChildNodes().get(0);
-        // Node targetNodeAfterFix = NodeUtility.initTokenRange(new ExpressionStmt(new MethodCallExpr("hoge"))).get();
-        // PatchCandidate patchCandidate = new PatchCandidate(new OperationDiff(ModifyType.INSERT, targetNodeBeforeFix, targetNodeAfterFix), this.targetFilePath, this.targetFileFqn, AstOperation.class, 1);
-        // this.patchedProjectGenerator.applyPatch(patchCandidate);
-    }
-
 
     /**
      * ファイルが全て生成されているかテスト
@@ -128,19 +82,6 @@ public class PatchedProjectGeneratorTest{
         final String projectPath = "src/test/resources/testGradleProject01";
         final String targetFilePath = "src/test/resources/testGradleProject01/src/main/java/testGradleProject01/App.java";
         final String targetFileFqn = "testGradleProject01.App";
-        final List<String> projectFilePaths = List.of(
-            "testGradleProject01/src/main/java/testGradleProject01/App.java",
-            "testGradleProject01/src/main/java/testGradleProject01/App2.java",
-            "testGradleProject01/src/test/java/testGradleProject01/AppTest.java",
-            "testGradleProject01/src/test/java/testGradleProject01/App2Test.java",
-            "testGradleProject01/gradle/wrapper/gradle-wrapper.jar",
-            "testGradleProject01/gradle/wrapper/gradle-wrapper.properties",
-            "testGradleProject01/.gitignore",
-            "testGradleProject01/build.gradle",
-            "testGradleProject01/gradlew",
-            "testGradleProject01/gradlew.bat",
-            "testGradleProject01/settings.gradle"
-        );
         final String buildDir = "./temp/";
         final String parameterPath = "parameters/para.csv";
         final RepairConfiguration config = new RepairConfiguration(buildDir, this.resultDir, new GradleProject(projectPath), parameterPath);
@@ -159,9 +100,10 @@ public class PatchedProjectGeneratorTest{
         final PatchCandidate patchCandidate = new PatchCandidate(new OperationDiff(ModifyType.INSERT, targetNodeBeforeFix, targetNodeAfterFix), targetFilePath, targetFileFqn, AstOperation.class, 1);
         patchedProjectGenerator.applyPatch(patchCandidate);
 
+        final String expectedGeneratedFilePath = "testGradleProject01/src/main/java/testGradleProject01/App.java";
         List<String> lines;
         try {
-            lines = FileUtils.readLines(new File(this.resultDir + projectFilePaths.get(0)), "utf-8");
+            lines = FileUtils.readLines(new File(this.resultDir + expectedGeneratedFilePath), "utf-8");
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -193,12 +135,30 @@ public class PatchedProjectGeneratorTest{
         final Node nodeToInsert1 = NodeUtility.initTokenRange(new ExpressionStmt(new MethodCallExpr("hoge1"))).get();
         final Node nodeToInsert2 = NodeUtility.initTokenRange(new ExpressionStmt(new MethodCallExpr("hoge2"))).get();
         final Node nodeToInsert3 = NodeUtility.initTokenRange(new ExpressionStmt(new MethodCallExpr("hoge3"))).get();
-        final PatchCandidate patchCandidate1 = new PatchCandidate(new OperationDiff(ModifyType.INSERT, insertBeforeThisNode, nodeToInsert1), targetFilePath, targetFileFqn, AstOperation.class, 1);
+        final PatchCandidate patchCandidate1 = new PatchCandidate(new OperationDiff(ModifyType.CHANGE, insertBeforeThisNode, nodeToInsert1), targetFilePath, targetFileFqn, AstOperation.class, 0);
         final PatchCandidate patchCandidate2 = new PatchCandidate(new OperationDiff(ModifyType.INSERT, insertBeforeThisNode, nodeToInsert2), targetFilePath, targetFileFqn, AstOperation.class, 1);
-        final PatchCandidate patchCandidate3 = new PatchCandidate(new OperationDiff(ModifyType.INSERT, insertBeforeThisNode, nodeToInsert3), targetFilePath, targetFileFqn, AstOperation.class, 1);
+        final PatchCandidate patchCandidate3 = new PatchCandidate(new OperationDiff(ModifyType.INSERT, insertBeforeThisNode, nodeToInsert3), targetFilePath, targetFileFqn, AstOperation.class, 2);
         final List<PatchCandidate> patchCandidates = List.of(patchCandidate1, patchCandidate2, patchCandidate3);
         final Project project = patchedProjectGenerator.applyMultiPatch(patchCandidates);
 
+
+        final String expectedGeneratedfilePath = "testGradleProject01/src/main/java/testGradleProject01/App.java";
+
+        List<String> lines;
+        try {
+            lines = FileUtils.readLines(new File(this.resultDir + expectedGeneratedfilePath), "utf-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+            return;
+        }
+
+        assertThat(lines.get(7)).contains("jProphetEnableThisPatch0");
+        assertThat(lines.get(8)).contains("hoge1");
+        assertThat(lines.get(10)).contains("jProphetEnableThisPatch1");
+        assertThat(lines.get(11)).contains("hoge2");
+        assertThat(lines.get(13)).contains("jProphetEnableThisPatch2");
+        assertThat(lines.get(14)).contains("hoge3");
     }
 
     @Test public void testMultiApplyForMultiFiles() {
@@ -226,29 +186,54 @@ public class PatchedProjectGeneratorTest{
         final Node nodeToInsert1 = NodeUtility.initTokenRange(new ExpressionStmt(new MethodCallExpr("hoge1"))).get();
         final Node insertBeforeThisNode2 = compilationUnit2.findRootNode().getChildNodes().get(1).getChildNodes().get(1).getChildNodes().get(2).getChildNodes().get(0);
         final Node nodeToInsert2 = NodeUtility.initTokenRange(new ExpressionStmt(new MethodCallExpr("hoge2"))).get();
+        final Node nodeToInsert3 = NodeUtility.initTokenRange(new ExpressionStmt(new MethodCallExpr("hoge3"))).get();
 
-        final PatchCandidate patchCandidate1 = new PatchCandidate(new OperationDiff(ModifyType.INSERT, insertBeforeThisNode1, nodeToInsert1), targetFilePath1, targetFileFqn1, AstOperation.class, 1);
+        final PatchCandidate patchCandidate1 = new PatchCandidate(new OperationDiff(ModifyType.CHANGE, insertBeforeThisNode1, nodeToInsert1), targetFilePath1, targetFileFqn1, AstOperation.class, 1);
         final PatchCandidate patchCandidate2 = new PatchCandidate(new OperationDiff(ModifyType.INSERT, insertBeforeThisNode2, nodeToInsert2), targetFilePath2, targetFileFqn2, AstOperation.class, 1);
+        final PatchCandidate patchCandidate3 = new PatchCandidate(new OperationDiff(ModifyType.INSERT, insertBeforeThisNode2, nodeToInsert3), targetFilePath2, targetFileFqn2, AstOperation.class, 1);
 
-        final List<PatchCandidate> patchCandidates = List.of(patchCandidate1, patchCandidate2);
+        final List<PatchCandidate> patchCandidates = List.of(patchCandidate1, patchCandidate2, patchCandidate3);
         final Project project = patchedProjectGenerator.applyMultiPatch(patchCandidates);
 
+        final String expectedGeneratedfilePath1 = "testGradleProject01/src/main/java/testGradleProject01/App.java";
+        final String expectedGeneratedfilePath2 = "testGradleProject01/src/main/java/testGradleProject01/App2.java";
 
+        List<String> lines1;
+        List<String> lines2;
+        try {
+            lines1 = FileUtils.readLines(new File(this.resultDir + expectedGeneratedfilePath1), "utf-8");
+            lines2 = FileUtils.readLines(new File(this.resultDir + expectedGeneratedfilePath2), "utf-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+            return;
+        }
+
+        return;
     }
 
     @Test public void test() {
         final String targetSource = new StringBuilder().append("")
             .append("public class A {\n")
             .append("    private void ma() {\n")
-            .append("        boolean flag = false;\n")
-            .append("        if (hoge) {\n")
-            .append("            fa = \"b\";\n")
-            .append("        }\n")
+            .append("        hoge();\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        final String targetSource2 = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private void ma() {\n")
+            .append("        hoge();\n")
             .append("    }\n")
             .append("}\n")
             .toString();
 
         final CompilationUnit cu = JavaParser.parse(targetSource);
+        final Node target = cu.getChildNodes().get(0).getChildNodes().get(1).getChildNodes().get(2).getChildNodes().get(0);
+        final CompilationUnit cu2 = JavaParser.parse(targetSource2);
+        final Node target2 = cu2.getChildNodes().get(0).getChildNodes().get(1).getChildNodes().get(2).getChildNodes().get(0);
+        final boolean flag = target.equals(target2.clone());
     }
 
 
