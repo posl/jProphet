@@ -111,7 +111,7 @@ public class JProphetMain {
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
         final List<PatchCandidate> sortedCandidates = patchEvaluator.sort(patchCandidates, suspiciousenesses, config);
         
-        final List<TestCase> testsToBeExecuted = new CoverageCollector(config.getBuildPath()).getTestCases(config);
+        final List<TestCase> testsToBeExecuted = new CoverageCollector(config.getBuildPath()).selectCollectTestCases(config);
         
         // 修正パッチ候補ごとにテスト実行
         for(PatchCandidate patchCandidate: sortedCandidates) {
