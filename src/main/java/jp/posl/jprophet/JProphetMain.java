@@ -59,7 +59,7 @@ public class JProphetMain {
         }
         final Project                  project                  = new MavenProject(projectPath);
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project, parameterPath);
-        final Coefficient              coefficient              = new Jaccard();
+        final Coefficient              coefficient              = new Ochiai();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
         final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
         final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
@@ -161,7 +161,7 @@ public class JProphetMain {
             new CondRefinementOperation(),
             new CondIntroductionOperation(),
             new CtrlFlowIntroductionOperation(),
-            new InsertInitOperation(),
+            new MethodReplacementOperation(),
             new VariableReplacementOperation(),
             new CopyReplaceOperation()
         );
