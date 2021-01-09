@@ -153,12 +153,17 @@ public class PatchedProjectGeneratorTest{
             return;
         }
 
-        assertThat(lines.get(7)).contains("jProphetEnableThisPatch0");
-        assertThat(lines.get(8)).contains("hoge1");
-        assertThat(lines.get(10)).contains("jProphetEnableThisPatch1");
-        assertThat(lines.get(11)).contains("hoge2");
-        assertThat(lines.get(13)).contains("jProphetEnableThisPatch2");
-        assertThat(lines.get(14)).contains("hoge3");
+        assertThat(lines.get(7)).contains("boolean jProphetTarget0");
+        assertThat(lines.get(8)).contains("boolean jProphetPatch0");
+        assertThat(lines.get(9)).contains("if (jProphetPatch0)");
+        assertThat(lines.get(10)).contains("hoge1");
+        assertThat(lines.get(12)).contains("boolean jProphetPatch1");
+        assertThat(lines.get(13)).contains("if (jProphetPatch1)");
+        assertThat(lines.get(14)).contains("hoge2");
+        assertThat(lines.get(16)).contains("boolean jProphetPatch2");
+        assertThat(lines.get(17)).contains("if (jProphetPatch2)");
+        assertThat(lines.get(18)).contains("hoge3");
+        assertThat(lines.get(20)).contains("if (jProphetTarget0)");
     }
 
     @Test public void testMultiApplyForMultiFiles() {
