@@ -38,6 +38,7 @@ import jp.posl.jprophet.trainingcase.TrainingCaseExporter;
 import jp.posl.jprophet.trainingcase.TrainingCaseGenerator;
 import jp.posl.jprophet.trainingcase.TrainingCaseGenerator.TrainingCase;
 import jp.posl.jprophet.test.exporter.TestResultExporter;
+import jp.posl.jprophet.test.exporter.CSVExporter;
 import jp.posl.jprophet.test.exporter.CSVTestResultExporter;
 import jp.posl.jprophet.test.exporter.PatchDiffExporter;
 
@@ -101,16 +102,19 @@ public class JProphetMain {
             ) {
         // フォルトローカライゼーション
         final List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
+        new CSVExporter("./result/", "susp.csv").exportSuspiciousness(suspiciousenesses);
 
         final Map<FileLocator, CompilationUnit> targetCuMap = new AstGenerator().exec(suspiciousenesses, config.getTargetProject().getSrcFileLocators());
         
         
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
         final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(operations, suspiciousenesses, targetCuMap);
+        new CSVExporter("./result/", "allPatches.csv").exportAllPatch(patchCandidates);
         System.out.println("finish patch generate. patch num : " + patchCandidates.size());
         
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
         final List<PatchCandidate> sortedCandidates = patchEvaluator.sort(patchCandidates, suspiciousenesses, config);
+        new CSVExporter("./result/", "sortedPatches.csv").exportAllPatch(sortedCandidates);
         System.out.println("finish sort");
         
         final List<TestCase> testsToBeExecuted = new CoverageCollector(config.getBuildPath()).selectCollectTestCases(config);
@@ -119,7 +123,6 @@ public class JProphetMain {
             .flatMap(et -> et.getTestNames().stream())
             .distinct()
             .collect(Collectors.toList());
-        System.out.println(testFqns);
         
         int testedPatch = 0;
         // 修正パッチ候補ごとにテスト実行

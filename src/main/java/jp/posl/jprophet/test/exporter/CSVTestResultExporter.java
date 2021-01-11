@@ -54,6 +54,7 @@ public class CSVTestResultExporter implements TestResultExporter {
         final String field = "ID,filePath,line,operation," + String.join(",", entryList.get(0).getKey().toStringMap().keySet());
         recodes.add(field);
 
+        /*
         Collections.sort(   //ID順に並び替え
             entryList,
             new Comparator<Map.Entry<TestResult, PatchCandidate>>() {
@@ -63,6 +64,7 @@ public class CSVTestResultExporter implements TestResultExporter {
                 }
             }
         );
+        */
 
         for (Map.Entry<TestResult, PatchCandidate> entry : entryList) {
             final TestResult result = entry.getKey();
