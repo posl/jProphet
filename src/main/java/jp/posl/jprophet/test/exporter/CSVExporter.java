@@ -14,7 +14,7 @@ public class CSVExporter {
     
     private final String resultDir;
     private final String resultFilePath;
-    private List<String> recodes;
+    private List<String> recodes = new ArrayList<String>();
 
     public CSVExporter(String resultDir, String resultFilePath) {
         this.resultDir = resultDir;
