@@ -68,7 +68,7 @@ public class PatchCandidate implements Patch {
     @Override
     public CompilationUnit getFixedCompilationUnit(){
         if (this.operationDiff.getModifyType().equals(ModifyType.INSERT)) {
-            return NodeUtility.insertNodeWithNewLine(this.operationDiff.getTargetNodeAfterFix(), this.operationDiff.getTargetNodeBeforeFix()).get().findCompilationUnit().get();
+            return NodeUtility.insertNodeWithNewLine(this.operationDiff.getTargetNodeAfterFix(), this.operationDiff.getTargetNodeBeforeFix()).get();
         } else if (this.operationDiff.getModifyType().equals(ModifyType.CHANGE)) {
             return NodeUtility.replaceNode(this.operationDiff.getTargetNodeAfterFix(), this.operationDiff.getTargetNodeBeforeFix()).get().findCompilationUnit().get();
         }
