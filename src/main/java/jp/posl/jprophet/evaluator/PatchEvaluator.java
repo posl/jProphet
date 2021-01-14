@@ -96,6 +96,7 @@ public class PatchEvaluator {
                 final List<PatchForEval> candidatesForEvalSortedBySuspiciousness = candidates.stream()
                     .map(candidate -> new PatchForEval(candidate, this.getSuspiciousnessValueFromPatch((PatchCandidate)candidate, suspiciousnessList)))
                     .sorted(Comparator.comparingDouble(candidateWithFLRank -> ((PatchForEval)candidateWithFLRank).getSuspiciousness()).reversed())
+                    .filter(candidate -> candidate.getScore().get() > 0)
                     .collect(Collectors.toList());
                 for (int i = 0, rank = 1; i < candidatesForEvalSortedBySuspiciousness.size(); i++) {
                     final PatchForEval candidate = candidatesForEvalSortedBySuspiciousness.get(i);
@@ -135,19 +136,23 @@ public class PatchEvaluator {
      * @return スコア
      */
     private double calculateScore(PatchCandidate patchCandidate, int suspiciousnessRank, List<Double> parameter) {
-        final double beta = 0.02;
-        final double A = Math.pow((1 - beta), suspiciousnessRank);
-        final FeatureExtractor extractor = new FeatureExtractor();
-        final List<Double> vec = extractor.extract((PatchCandidate)patchCandidate).asDoubleList();
-        if (vec.size() != parameter.size()) {
-            throw new IllegalArgumentException();
+        try {
+            final double beta = 0.02;
+            final double A = Math.pow((1 - beta), suspiciousnessRank);
+            final FeatureExtractor extractor = new FeatureExtractor();
+            final List<Double> vec = extractor.extract((PatchCandidate)patchCandidate).asDoubleList();
+            if (vec.size() != parameter.size()) {
+                throw new IllegalArgumentException();
+            }
+            double sum = 0;
+            for (int i = 0; i < vec.size(); i++) {
+                sum += vec.get(i) * parameter.get(i);
+            }
+            final double B = Math.exp(sum);
+            return A * B;
+        } catch (Exception e) {
+            return 0;
         }
-        double sum = 0;
-        for (int i = 0; i < vec.size(); i++) {
-            sum += vec.get(i) * parameter.get(i);
-        }
-        final double B = Math.exp(sum);
-        return A * B;
     }
 
     /**
