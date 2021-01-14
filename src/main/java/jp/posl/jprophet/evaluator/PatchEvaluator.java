@@ -96,7 +96,6 @@ public class PatchEvaluator {
                 final List<PatchForEval> candidatesForEvalSortedBySuspiciousness = candidates.stream()
                     .map(candidate -> new PatchForEval(candidate, this.getSuspiciousnessValueFromPatch((PatchCandidate)candidate, suspiciousnessList)))
                     .sorted(Comparator.comparingDouble(candidateWithFLRank -> ((PatchForEval)candidateWithFLRank).getSuspiciousness()).reversed())
-                    .filter(candidate -> candidate.getScore().get() > 0)
                     .collect(Collectors.toList());
                 for (int i = 0, rank = 1; i < candidatesForEvalSortedBySuspiciousness.size(); i++) {
                     final PatchForEval candidate = candidatesForEvalSortedBySuspiciousness.get(i);
@@ -110,6 +109,7 @@ public class PatchEvaluator {
                 }
                 final List<PatchCandidate> candidatesSortedByScore = candidatesForEvalSortedBySuspiciousness.stream()
                     .sorted(Comparator.comparingDouble(candidateWithFLRank -> ((PatchForEval)candidateWithFLRank).getScore().orElseThrow()).reversed())
+                    .filter(candidate -> candidate.getScore().get() > 0)
                     .map(candidateWithFLRank -> candidateWithFLRank.getPatch())
                     .collect(Collectors.toList());
                 return candidatesSortedByScore;
