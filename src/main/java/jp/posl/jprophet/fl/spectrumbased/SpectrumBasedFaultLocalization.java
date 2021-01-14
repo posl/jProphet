@@ -5,6 +5,7 @@ import jp.posl.jprophet.fl.spectrumbased.coverage.CoverageCollector;
 import jp.posl.jprophet.fl.spectrumbased.coverage.TestResult;
 import jp.posl.jprophet.fl.spectrumbased.coverage.TestResults;
 import jp.posl.jprophet.fl.spectrumbased.strategy.Coefficient;
+import jp.posl.jprophet.test.exporter.CSVExporter;
 import jp.posl.jprophet.fl.FaultLocalization;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.spectrumbased.statement.SuspiciousnessCollector;
@@ -50,6 +51,7 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
 
         try {
             testResults = coverageCollector.exec(sourceClassFileFqns, testClassFileFqns);
+            new CSVExporter("./result/", "failtest.csv").exportFailedTest(testResults);
             List<TestCase> testsToBeExecuted = new ArrayList<TestCase>();
             for (String sourceFqn : this.sourceClassFileFqns) {
                 List<String> testNames = testResults.getTestResults().stream()

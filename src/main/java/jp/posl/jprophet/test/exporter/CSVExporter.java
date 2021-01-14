@@ -4,10 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 
 import jp.posl.jprophet.fl.Suspiciousness;
+import jp.posl.jprophet.fl.spectrumbased.coverage.TestResults;
 import jp.posl.jprophet.patch.PatchCandidate;
 
 public class CSVExporter {
@@ -66,6 +68,24 @@ public class CSVExporter {
             this.recodes.add(recode);
         }
         this.export();
+    }
+
+    public void exportFailedTest(TestResults testResults) {
+        List<String> ft = testResults.getTestResults().stream()
+            .filter(s -> s.wasFailed() == true)
+            .map(s -> s.getMethodName())
+            .collect(Collectors.toList());
+
+        this.recodes.addAll(ft);
+        this.export();
+        
+
+        /*
+        List<TestResult> coft = testResults.getTestResults().stream()
+            .filter(s -> s.wasFailed() == true)
+            .filter(s -> s.getCoverages().size() != 0)
+            .collect(Collectors.toList());
+        */
     }
 
 }
