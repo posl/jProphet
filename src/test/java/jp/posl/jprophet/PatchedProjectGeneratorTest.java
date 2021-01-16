@@ -153,17 +153,19 @@ public class PatchedProjectGeneratorTest{
             return;
         }
 
-        assertThat(lines.get(7)).contains("boolean jProphetTarget0");
-        assertThat(lines.get(8)).contains("boolean jProphetPatch0");
-        assertThat(lines.get(9)).contains("if (jProphetPatch0)");
-        assertThat(lines.get(10)).contains("hoge1");
-        assertThat(lines.get(12)).contains("boolean jProphetPatch1");
-        assertThat(lines.get(13)).contains("if (jProphetPatch1)");
-        assertThat(lines.get(14)).contains("hoge2");
-        assertThat(lines.get(16)).contains("boolean jProphetPatch2");
-        assertThat(lines.get(17)).contains("if (jProphetPatch2)");
-        assertThat(lines.get(18)).contains("hoge3");
-        assertThat(lines.get(20)).contains("if (jProphetTarget0)");
+        assertThat(lines.get(7)).contains("int jProphetTarget2");
+        assertThat(lines.get(8)).contains("int jProphetTarget1");
+        assertThat(lines.get(9)).contains("int jProphetTarget0");
+        assertThat(lines.get(10)).contains("int jProphetPatch0");
+        assertThat(lines.get(11)).contains("if (jProphetPatch0");
+        assertThat(lines.get(12)).contains("hoge1");
+        assertThat(lines.get(14)).contains("int jProphetPatch1");
+        assertThat(lines.get(15)).contains("if (jProphetPatch1");
+        assertThat(lines.get(16)).contains("hoge2");
+        assertThat(lines.get(18)).contains("int jProphetPatch2");
+        assertThat(lines.get(19)).contains("if (jProphetPatch2");
+        assertThat(lines.get(20)).contains("hoge3");
+        assertThat(lines.get(22)).contains("if (jProphetTarget0");
     }
 
     @Test public void testMultiApplyForMultiFiles() {
@@ -193,9 +195,9 @@ public class PatchedProjectGeneratorTest{
         final Node nodeToInsert2 = NodeUtility.initTokenRange(new ExpressionStmt(new MethodCallExpr("hoge2"))).get();
         final Node nodeToInsert3 = NodeUtility.initTokenRange(new ExpressionStmt(new MethodCallExpr("hoge3"))).get();
 
-        final PatchCandidate patchCandidate1 = new PatchCandidate(new OperationDiff(ModifyType.CHANGE, insertBeforeThisNode1, nodeToInsert1), targetFilePath1, targetFileFqn1, AstOperation.class, 1);
+        final PatchCandidate patchCandidate1 = new PatchCandidate(new OperationDiff(ModifyType.CHANGE, insertBeforeThisNode1, nodeToInsert1), targetFilePath1, targetFileFqn1, AstOperation.class, 0);
         final PatchCandidate patchCandidate2 = new PatchCandidate(new OperationDiff(ModifyType.INSERT, insertBeforeThisNode2, nodeToInsert2), targetFilePath2, targetFileFqn2, AstOperation.class, 1);
-        final PatchCandidate patchCandidate3 = new PatchCandidate(new OperationDiff(ModifyType.INSERT, insertBeforeThisNode2, nodeToInsert3), targetFilePath2, targetFileFqn2, AstOperation.class, 1);
+        final PatchCandidate patchCandidate3 = new PatchCandidate(new OperationDiff(ModifyType.INSERT, insertBeforeThisNode2, nodeToInsert3), targetFilePath2, targetFileFqn2, AstOperation.class, 2);
 
         final List<PatchCandidate> patchCandidates = List.of(patchCandidate1, patchCandidate2, patchCandidate3);
         final Project project = patchedProjectGenerator.applyMultiPatch(patchCandidates);
@@ -221,7 +223,7 @@ public class PatchedProjectGeneratorTest{
         final String targetSource = new StringBuilder().append("")
             .append("public class A {\n")
             .append("    private void ma() {\n")
-            .append("        hoge();\n")
+            .append("        if (fuga == 1 || fuga == 2 || fuga == 3) hoge();\n")
             .append("    }\n")
             .append("}\n")
             .toString();

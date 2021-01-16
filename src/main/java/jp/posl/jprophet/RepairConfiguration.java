@@ -12,18 +12,34 @@ public class RepairConfiguration {
     private final String fixedProjectDirPath;
     private final Project targetProject;
     private final String parameterPath;
+    private final int patchCompressionRatio;
 
     /**
-     * ビルド先パス，修正済みプロジェクト生成先パス，対象プロジェクトを元に生成する
+     * ビルド先パス，修正済みプロジェクト生成先パス，対象プロジェクト，学習済みパラメータパス，
+     * ビルド高速化のためのパッチ圧縮率を元に生成する
      * @param buildDirPath
      * @param fixedProjectDirPath
      * @param project
+     * @param parameterPath
+     * @param patchCompressionRatio 1から9まで指定可能
      */
-    public RepairConfiguration(String buildDirPath, String fixedProjectDirPath, Project project, String parameterPath) {
+    public RepairConfiguration(String buildDirPath, String fixedProjectDirPath, Project project, String parameterPath, int patchCompressionRatio) {
         this.buildDirPath = buildDirPath;
         this.fixedProjectDirPath = fixedProjectDirPath;
         this.targetProject = project;
         this.parameterPath = parameterPath;
+        this.patchCompressionRatio = patchCompressionRatio;
+    }
+
+    /**
+     * ビルド先パス，修正済みプロジェクト生成先パス，対象プロジェクト, 学習済みパラメータパスを元に生成する
+     * @param buildDirPath
+     * @param fixedProjectDirPath
+     * @param project
+     * @param parameterPath
+     */
+    public RepairConfiguration(String buildDirPath, String fixedProjectDirPath, Project project, String parameterPath) {
+        this(buildDirPath, fixedProjectDirPath, project, parameterPath, 1);
     }
 
     /**
@@ -33,7 +49,7 @@ public class RepairConfiguration {
      * @param project
      */
     public RepairConfiguration(String buildDirPath, String fixedProjectDirPath, Project project) {
-        this(buildDirPath, fixedProjectDirPath, project, null);
+        this(buildDirPath, fixedProjectDirPath, project, null, 1);
     }
 
     /**
@@ -42,7 +58,7 @@ public class RepairConfiguration {
      * @param newTargetProject
      */
     public RepairConfiguration(RepairConfiguration config, Project newTargetProject) {
-        this(config.getBuildPath(), config.getFixedProjectDirPath(), newTargetProject, config.getParameterPath().orElse(null));
+        this(config.getBuildPath(), config.getFixedProjectDirPath(), newTargetProject, config.getParameterPath().orElse(null), config.getPatchCompressionRatio());
     }
 
     /**
@@ -72,5 +88,9 @@ public class RepairConfiguration {
         else {
             return Optional.of(this.parameterPath);
         }
+    }
+
+    public int getPatchCompressionRatio() {
+        return this.patchCompressionRatio;
     }
 }

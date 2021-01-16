@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -112,25 +113,59 @@ public class JProphetMain {
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
         final List<PatchCandidate> sortedCandidates = patchEvaluator.sort(patchCandidates, suspiciousenesses, config);
 
-        final Map<PatchCandidate, Project> projectMap = new HashMap<PatchCandidate, Project>();
+        final Map<Project, List<PatchCandidate>> projectToPatches = new HashMap<Project, List<PatchCandidate>>();
 
-        // 修正パッチ候補ごとにテスト実行
-        for(PatchCandidate patchCandidate: sortedCandidates) {
-            projectMap.put(patchCandidate, patchedProjectGenerator.applyPatch(patchCandidate));
-        }
+        if (config.getPatchCompressionRatio() == 1) {
+            final Map<PatchCandidate, Project> projectMap = new HashMap<PatchCandidate, Project>();
 
-        for(Map.Entry<PatchCandidate, Project> projectEntry: projectMap.entrySet()) {
-            final Project project = projectEntry.getValue();
-            final PatchCandidate patch  = projectEntry.getKey();
-            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, project), faultLocalization.getExecutedTests());
-            testResultStore.addTestResults(result.getTestResults(), patch);
-            if(result.canEndRepair()) {
-                testResultExporters.stream().forEach(exporter -> {
-                    exporter.export(testResultStore);
-                });
-                return true;
+            // 修正パッチ候補ごとにテスト実行
+            for(PatchCandidate patchCandidate: sortedCandidates) {
+                Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
+                //final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
+                final TestExecutorResult result = testExecutor.selectiveExec(new RepairConfiguration(config, patchedProject), faultLocalization.getExecutedTests());
+                testResultStore.addTestResults(result.getTestResults(), patchCandidate);
+                if(result.canEndRepair()) {
+                    testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
+                    return true;
+                }
             }
+
         }
+        else {
+            while (true) {
+                List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
+                for (int i = 0; i < 3; i++) {
+                    if (sortedCandidates.size() == 0) {
+                        break;
+                    }
+                    candidates.add(sortedCandidates.remove(0));
+                }
+                Project project = patchedProjectGenerator.applyMultiPatch(candidates);
+                projectToPatches.put(project, candidates);
+                if (sortedCandidates.size() == 0) {
+                    break;
+                }
+            }
+
+            for(Map.Entry<Project, List<PatchCandidate>> projectEntry: projectToPatches.entrySet()) {
+                final Project project = projectEntry.getKey();
+                final List<PatchCandidate> patches  = projectEntry.getValue();
+                final Map<PatchCandidate, TestExecutorResult> results = testExecutor.exec(new RepairConfiguration(config, project), patches);
+                for (Map.Entry<PatchCandidate, TestExecutorResult> entry : results.entrySet()) {
+                    final TestExecutorResult result = entry.getValue();
+                    final PatchCandidate candidate = entry.getKey();
+                    testResultStore.addTestResults(result.getTestResults(), candidate);
+                    if(result.canEndRepair()) {
+                        testResultExporters.stream().forEach(exporter -> {
+                            exporter.export(testResultStore);
+                        });
+                        return true;
+                    }
+                }
+            }
+
+        }
+
         testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
         return false;
     }
