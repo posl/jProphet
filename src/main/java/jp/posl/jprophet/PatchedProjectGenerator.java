@@ -21,6 +21,7 @@ import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.project.ProjectFactory;
 
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.Position;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
@@ -237,54 +238,6 @@ public class PatchedProjectGenerator {
             enclosedTargetNodes.add(originalTargetNode);
         }
 
-        // ターゲットノードをif文で囲む処理
-        // for (PatchCandidate candidate : patchCandidates) {
-        //     final Node originalTargetNode = candidate.getOperationDiff().getTargetNodeBeforeFix();
-        //     if (enclosedTargetNodes.contains(originalTargetNode) && filePathToUpdatedCu.containsKey(candidate.getFilePath())) {
-        //         continue;
-        //     }
-        //     final String varNameForEnableTarget = new StringBuilder()
-        //         .append("jProphetTarget")
-        //         .append(String.valueOf(candidate.getId()))
-        //         .toString();
-        //     final Expression conditionForTarget = new BinaryExpr(new NameExpr(varNameForEnableTarget), new IntegerLiteralExpr(292925), Operator.EQUALS);
-        //     final Node clonedTargetNode = originalTargetNode.clone(); // cloneメソッドによりターゲットノードの先祖を消去
-        //     final BlockStmt blockStmtWithTarget = new BlockStmt(new NodeList<Statement>(List.of((Statement)clonedTargetNode)));
-        //     final Node ifEnclosingTargetNode = new IfStmt(conditionForTarget, blockStmtWithTarget, null);
-        //     final CompilationUnit originalCu = candidate.getOriginalCompilationUnit();
-        //     CompilationUnit updatedCu = candidate.getOriginalCompilationUnit();
-        //     if (filePathToUpdatedCu.containsKey(candidate.getFilePath())) {
-        //         updatedCu = filePathToUpdatedCu.get(candidate.getFilePath());
-        //     }
-        //     else {
-        //         originalCuToMvHistory.put(originalCu, new MovementHistory(originalCu));
-        //     }
-        //     final Range originalRange = candidate.getOperationDiff().getTargetNodeBeforeFix().getRange().orElseThrow();
-
-
-        //     final int beginLineDelta = originalCuToMvHistory.get(originalCu).get(originalRange.begin.line).lineDelta;
-        //     final int beginColumnDelta = originalCuToMvHistory.get(originalCu).get(originalRange.begin.line).columnDelta;
-        //     final Position updatedBegin = new Position(originalRange.begin.line + beginLineDelta, originalRange.begin.column + beginColumnDelta);
-
-        //     final int endLineDelta = originalCuToMvHistory.get(originalCu).get(originalRange.end.line).lineDelta;
-        //     final int endColumnDelta = originalCuToMvHistory.get(originalCu).get(originalRange.end.line).columnDelta;
-        //     final Position updatedEnd = new Position(originalRange.end.line + endLineDelta, originalRange.end.column + endColumnDelta);
-
-        //     final Range updatedRange = new Range(updatedBegin, updatedEnd);
-        //     final Node targetNode = NodeUtility.findNodeByRange(updatedCu, updatedRange);
-        //     final Node enclosedTargetNode = NodeUtility.replaceNode(ifEnclosingTargetNode, targetNode).orElseThrow();
-        //     final Statement varDeclaration = new ExpressionStmt(new VariableDeclarationExpr(new VariableDeclarator(PrimitiveType.intType(), varNameForEnableTarget, new IntegerLiteralExpr(27216100 + candidate.getId()))));
-        //     final Node nodeWhereVarDeclarationIsInserted = NodeUtility.insertNodeWithNewLine(varDeclaration, enclosedTargetNode).orElseThrow();
-        //     filePathToUpdatedCu.put(candidate.getFilePath(), nodeWhereVarDeclarationIsInserted.findCompilationUnit().orElseThrow());
-
-
-        //     final MovementHistory mvHistory = originalCuToMvHistory.get(originalCu);
-        //     mvHistory.addLineDelta(originalTargetNode.getBegin().orElseThrow().line, originalTargetNode.getEnd().orElseThrow().line, 2);
-        //     mvHistory.addLineDelta(originalTargetNode.getEnd().orElseThrow().line + 1, candidate.getOriginalCompilationUnit().getEnd().orElseThrow().line, 3);
-        //     mvHistory.addColumnDelta(originalTargetNode.getBegin().orElseThrow().line, originalTargetNode.getEnd().orElseThrow().line, 4);
-        //     enclosedTargetNodes.add(originalTargetNode);
-        // }
-
         // パッチ候補をif文で囲む
         for (PatchCandidate candidate : patchCandidates) {
             final OperationDiff diff = candidate.getOperationDiff();
@@ -315,11 +268,12 @@ public class PatchedProjectGenerator {
             filePathToUpdatedCu.put(candidate.getFilePath(), newCu);
 
             final MovementHistory mvHistory = originalCuToMvHistory.get(originalCu);
-            final int beginLineOfTargetNodeAfterFix = candidate.getOperationDiff().getTargetNodeAfterFix().getBegin().orElseThrow().line;
-            final int endLineOfTargetNodeAfterFix = candidate.getOperationDiff().getTargetNodeAfterFix().getEnd().orElseThrow().line;
-            final int linesOfTargetNodeAfterFix = endLineOfTargetNodeAfterFix - beginLineOfTargetNodeAfterFix + 1;
+            final Node targetNodeAfterFix = candidate.getOperationDiff().getTargetNodeAfterFix();
+            final int linesOfTargetNodeAfterFix = targetNodeAfterFix.toString().split("\r\n|\r|\n").length;
+            // final int beginLineOfTargetNodeAfterFix = cu.getBegin().orElseThrow().line;
+            // final int endLineOfTargetNodeAfterFix = cu.getEnd().orElseThrow().line;
             final Node originalTargetNode = candidate.getOperationDiff().getTargetNodeBeforeFix();
-            mvHistory.addLineDelta(originalTargetNode.getEnd().orElseThrow().line, candidate.getOriginalCompilationUnit().getEnd().orElseThrow().line, linesOfTargetNodeAfterFix + 3);
+            mvHistory.addLineDelta(originalTargetNode.getBegin().orElseThrow().line, candidate.getOriginalCompilationUnit().getEnd().orElseThrow().line, linesOfTargetNodeAfterFix + 3);
         }
 
         filePathToUpdatedCu.entrySet().stream()

@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.maven.model.Dependency;
@@ -257,7 +258,26 @@ public class MavenProject implements Project {
             System.exit(1);
         }
         return list;
-      }
-    
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) {
+            return true;
+        }
+        if(!(obj instanceof MavenProject)) {
+            return false;
+        }
+        final MavenProject other = (MavenProject) obj;
+        if (obj instanceof MavenProject) {
+            return other.rootPath.equals(this.rootPath);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.rootPath);
+    }
 
 }

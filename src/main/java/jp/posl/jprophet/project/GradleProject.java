@@ -7,7 +7,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
 
 public class GradleProject implements Project{
     private List<String> srcFilePaths;
@@ -177,6 +179,26 @@ public class GradleProject implements Project{
         final String gradleTestPath = "/src/test/java/";
         final String testDirPath = this.rootPath + gradleTestPath;
         return filePath.replace(testDirPath, "").replace("/", ".").replace(".java", "");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) {
+            return true;
+        }
+        if(!(obj instanceof GradleProject)) {
+            return false;
+        }
+        final GradleProject other = (GradleProject) obj;
+        if (obj instanceof GradleProject) {
+            return other.rootPath.equals(this.rootPath);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.rootPath);
     }
 }
 

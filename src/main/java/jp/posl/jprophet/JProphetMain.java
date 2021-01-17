@@ -113,10 +113,8 @@ public class JProphetMain {
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
         final List<PatchCandidate> sortedCandidates = patchEvaluator.sort(patchCandidates, suspiciousenesses, config);
 
-        final Map<Project, List<PatchCandidate>> projectToPatches = new HashMap<Project, List<PatchCandidate>>();
 
         if (config.getPatchCompressionRatio() == 1) {
-            final Map<PatchCandidate, Project> projectMap = new HashMap<PatchCandidate, Project>();
 
             // 修正パッチ候補ごとにテスト実行
             for(PatchCandidate patchCandidate: sortedCandidates) {
@@ -132,25 +130,25 @@ public class JProphetMain {
 
         }
         else {
+            // final Map<Project, List<PatchCandidate>> projectToPatches = new HashMap<Project, List<PatchCandidate>>();
+            final List<List<PatchCandidate>> compressedPatchesList = new ArrayList<List<PatchCandidate>>();
             while (true) {
-                List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
-                for (int i = 0; i < 3; i++) {
+                final List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
+                for (int i = 0; i < config.getPatchCompressionRatio(); i++) {
                     if (sortedCandidates.size() == 0) {
                         break;
                     }
                     candidates.add(sortedCandidates.remove(0));
                 }
-                Project project = patchedProjectGenerator.applyMultiPatch(candidates);
-                projectToPatches.put(project, candidates);
+                compressedPatchesList.add(candidates);
                 if (sortedCandidates.size() == 0) {
                     break;
                 }
             }
 
-            for(Map.Entry<Project, List<PatchCandidate>> projectEntry: projectToPatches.entrySet()) {
-                final Project project = projectEntry.getKey();
-                final List<PatchCandidate> patches  = projectEntry.getValue();
-                final Map<PatchCandidate, TestExecutorResult> results = testExecutor.exec(new RepairConfiguration(config, project), patches);
+            for(List<PatchCandidate> compressedPatches: compressedPatchesList) {
+                final Project project = patchedProjectGenerator.applyMultiPatch(compressedPatches);
+                final Map<PatchCandidate, TestExecutorResult> results = testExecutor.exec(new RepairConfiguration(config, project), compressedPatches);
                 for (Map.Entry<PatchCandidate, TestExecutorResult> entry : results.entrySet()) {
                     final TestExecutorResult result = entry.getValue();
                     final PatchCandidate candidate = entry.getKey();
