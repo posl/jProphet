@@ -110,6 +110,9 @@ public class JProphetMain {
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
         final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(operations, suspiciousenesses, targetCuMap);
         new CSVExporter("./result/", "allPatches.csv").exportAllPatch(patchCandidates);
+
+        final String slackURL = "";
+
         System.out.println("finish patch generate. patch num : " + patchCandidates.size());
         
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
@@ -117,7 +120,8 @@ public class JProphetMain {
         new CSVExporter("./result/", "sortedPatches.csv").exportAllPatch(sortedCandidates);
         System.out.println("finish sort");
         try {
-            ProcessBuilder p = new ProcessBuilder("curl", "-X", "POST", "--data-urlencode", "payload={\"channel\": \"#general\", \"username\": \"webhookbot\", \"text\": \"ソートまで完了\", \"icon_emoji\": \":jigsaw:\"}", "");
+            final String noti = "payload={\"channel\": \"#general\", \"username\": \"webhookbot\", \"text\": " + "\"" + config.getTargetProject().getRootPath() + " ソートまで完了\", \"icon_emoji\": \":jigsaw:\"}";
+            ProcessBuilder p = new ProcessBuilder("curl", "-X", "POST", "--data-urlencode", noti, slackURL);
             p.redirectErrorStream(true);
             Process process = p.start();
             process.waitFor();
@@ -156,7 +160,8 @@ public class JProphetMain {
                 testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
                 System.out.println("finish true");
                 try {
-                    ProcessBuilder p = new ProcessBuilder("curl", "-X", "POST", "--data-urlencode", "payload={\"channel\": \"#general\", \"username\": \"webhookbot\", \"text\": \"成功するパッチを発見\", \"icon_emoji\": \":congratulations:\"}", "");
+                    final String noti = "payload={\"channel\": \"#general\", \"username\": \"webhookbot\", \"text\": " + "\"" + config.getTargetProject().getRootPath()+ " 成功するパッチを発見\", \"icon_emoji\": \":congratulations:\"}";
+                    ProcessBuilder p = new ProcessBuilder("curl", "-X", "POST", "--data-urlencode", noti, slackURL);
                     p.redirectErrorStream(true);
                     Process process = p.start();
                     process.waitFor();
@@ -170,7 +175,8 @@ public class JProphetMain {
         testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
         System.out.println("finish false");
         try {
-            ProcessBuilder p = new ProcessBuilder("curl", "-X", "POST", "--data-urlencode", "payload={\"channel\": \"#general\", \"username\": \"webhookbot\", \"text\": \"残念でした\", \"icon_emoji\": \":cold_face:\"}", "");
+            final String noti = "payload={\"channel\": \"#general\", \"username\": \"webhookbot\", \"text\": " + "\"" + config.getTargetProject().getRootPath()+ " 残念でした\", \"icon_emoji\": \":icon_emoji:\"}";
+            ProcessBuilder p = new ProcessBuilder("curl", "-X", "POST", "--data-urlencode", noti, slackURL);
             p.redirectErrorStream(true);
             Process process = p.start();
             process.waitFor();
