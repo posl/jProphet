@@ -44,10 +44,6 @@ public class ConcreteConditionsTest {
                     "localBoolVarA == false",
                     "localObjectA == null",
                     "localObjectA != null",
-                    "fieldBoolVarA == null",
-                    "fieldBoolVarA != null",
-                    "localBoolVarA == null",
-                    "localBoolVarA != null",
                     "true"
         ); 
 
