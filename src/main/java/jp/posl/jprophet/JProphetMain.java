@@ -116,13 +116,25 @@ public class JProphetMain {
         final List<PatchCandidate> sortedCandidates = patchEvaluator.sort(patchCandidates, suspiciousenesses, config);
         new CSVExporter("./result/", "sortedPatches.csv").exportAllPatch(sortedCandidates);
         System.out.println("finish sort");
+        try {
+            ProcessBuilder p = new ProcessBuilder("curl", "-X", "POST", "--data-urlencode", "payload={\"channel\": \"#general\", \"username\": \"webhookbot\", \"text\": \"ソートまで完了\", \"icon_emoji\": \":jigsaw:\"}", "");
+            p.redirectErrorStream(true);
+            Process process = p.start();
+            process.waitFor();
+        } catch (IOException | InterruptedException e) {
+            System.out.println("noti error");
+        }
+
         
         final List<TestCase> testsToBeExecuted = new CoverageCollector(config.getBuildPath()).selectCollectTestCases(config);
         System.out.println("finish select testcase");
-        List<String> testFqns = testsToBeExecuted.stream()
+        CSVExporter selectedTest = new CSVExporter("./result/", "selectedTest.csv");
+        testsToBeExecuted.stream()
             .flatMap(et -> et.getTestNames().stream())
             .distinct()
-            .collect(Collectors.toList());
+            .forEach(t -> selectedTest.addRecode(t));
+        
+        selectedTest.export();
         
         int testedPatch = 0;
         // 修正パッチ候補ごとにテスト実行
@@ -143,11 +155,29 @@ public class JProphetMain {
             if(result.canEndRepair()) {
                 testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
                 System.out.println("finish true");
+                try {
+                    ProcessBuilder p = new ProcessBuilder("curl", "-X", "POST", "--data-urlencode", "payload={\"channel\": \"#general\", \"username\": \"webhookbot\", \"text\": \"成功するパッチを発見\", \"icon_emoji\": \":congratulations:\"}", "");
+                    p.redirectErrorStream(true);
+                    Process process = p.start();
+                    process.waitFor();
+                } catch (IOException | InterruptedException e) {
+                    System.out.println("noti error");
+                }
+        
                 return true;
             }
         }
         testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
         System.out.println("finish false");
+        try {
+            ProcessBuilder p = new ProcessBuilder("curl", "-X", "POST", "--data-urlencode", "payload={\"channel\": \"#general\", \"username\": \"webhookbot\", \"text\": \"残念でした\", \"icon_emoji\": \":cold_face:\"}", "");
+            p.redirectErrorStream(true);
+            Process process = p.start();
+            process.waitFor();
+        } catch (IOException | InterruptedException e) {
+            System.out.println("noti error");
+        }
+    
         return false;
     }
 
