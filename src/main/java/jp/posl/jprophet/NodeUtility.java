@@ -168,37 +168,46 @@ public final class NodeUtility {
      * @param targetNode 挿入するノードの後ろのノード
      * @return 挿入したノード
      */
-    public static Optional<CompilationUnit> insertNodeWithNewLine(Node nodeToInsert, Node targetNode){
-        Optional<CompilationUnit> cu = targetNode.findCompilationUnit();
-        if (cu.isPresent()) {
-            String [] lines = NodeUtility.lexicalPreservingPrint(cu.get()).split("\n");
-            StringBuilder sb = new StringBuilder();
-            int beginLine = targetNode.getRange().get().begin.line;
-            int beginColumn = targetNode.getRange().get().begin.column;
-            StringBuilder indentSB = new StringBuilder();
-            for (int i = 0; i < lines.length; i++) {
-                if (i == beginLine - 1) {
-                    for (int j = 1; j < beginColumn; j++) {
-                        indentSB.append(" ");
-                    }
-                    Optional<Node> copiedNodeToInsert = NodeUtility.initTokenRange(nodeToInsert);
-                    if (copiedNodeToInsert.isPresent()) {
-                        String [] insertedSources = NodeUtility.lexicalPreservingPrint(copiedNodeToInsert.get()).split("\n");
-                        for (int k = 0; k < insertedSources.length; k++) {
-                            sb.append(indentSB.toString() + insertedSources[k]);
-                            sb.append("\n");
-                        }
-                    } else {
-                        return Optional.empty();
-                    }
-                }
-                sb.append(lines[i]);
-                sb.append("\n");
-            }
-            String source = sb.toString();
-            return Optional.of(JavaParser.parse(source));
+    public static Optional<Node> insertNodeWithNewLine(Node nodeToInsert, Node targetNode){
+        Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
+        Node nodeWithTokenToInsert;
+        try {
+            nodeWithTokenToInsert = NodeUtility.initTokenRange(nodeToInsert).orElseThrow();
+        } catch (NoSuchElementException e){
+            return Optional.empty();
         }
-        return Optional.empty();
+
+        JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
+        JavaToken tokenToInsert = nodeWithTokenToInsert.getTokenRange().orElseThrow().getBegin();
+        final JavaToken endTokenOfInsert = nodeWithTokenToInsert.getTokenRange().orElseThrow().getEnd();
+        final JavaToken originalBeginTokenOfTarget = targetNode.getTokenRange().orElseThrow().getBegin();
+
+        final Range beginRangeOfTarget = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
+
+        while (true){
+            beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, tokenToInsert.getKind(), tokenToInsert.getText(), null, null));
+            if (tokenToInsert.getRange().equals(endTokenOfInsert.getRange())) break;
+
+            //複数行を挿入する時のインデントの調節
+            if (tokenToInsert.getKind() == JavaToken.Kind.UNIX_EOL.getKind())
+                NodeUtility.adjustmentIndent(targetNode, beginTokenOfTarget, beginRangeOfTarget);
+            
+            tokenToInsert = tokenToInsert.getNextToken().orElseThrow();
+        }
+
+        tokenToInsert = targetNode.getTokenRange().orElseThrow().getBegin();
+
+        while (!tokenToInsert.getText().equals("\n")){
+            tokenToInsert = tokenToInsert.getPreviousToken().orElseThrow();
+        }
+
+        while (!tokenToInsert.getRange().equals(originalBeginTokenOfTarget.getRange())){
+            beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, tokenToInsert.getKind(), tokenToInsert.getText(), null, null));   
+            tokenToInsert = tokenToInsert.getNextToken().orElseThrow();
+        }
+        
+        final CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
+        return NodeUtility.reparseCompilationUnit(compilationUnit).map(cu -> findNodeInCompilationUnitByBeginRange(cu, nodeWithTokenToInsert, beginRangeOfTarget)); 
     }
 
     /**
@@ -253,55 +262,61 @@ public final class NodeUtility {
      * @return 置換後のASTノード
      */
     public static Optional<Node> replaceNode(Node nodeToReplaceWith, Node targetNode) {
-        Optional<CompilationUnit> cu = targetNode.findCompilationUnit();
-        if (cu.isPresent()) {
-            String [] lines = NodeUtility.lexicalPreservingPrint(cu.get()).split("\n");
-            for (int i = 0; i < lines.length; i++) {
-                lines[i] = lines[i] + "\n";
-            }
-            StringBuilder sb = new StringBuilder();
-            int beginLine = targetNode.getRange().get().begin.line;
-            int endLine = targetNode.getRange().get().end.line;
-            int beginColumn = targetNode.getRange().get().begin.column;
-            int endColumn = targetNode.getRange().get().end.column;
-            StringBuilder indentSB = new StringBuilder();
-            for (int i = 0; i < lines.length; i++) {
-                if (i >= beginLine - 1 && i <= endLine - 1) {
-                    for (int j = 0; j < lines[i].length(); j++) {
-                        if (i == beginLine - 1 && j < beginColumn - 1) {
-                            sb.append(lines[i].charAt(j));
-                            if (lines[i].charAt(j) == ' ')
-                                indentSB.append(" ");
-                        }
-                        if (i == beginLine - 1 && j == beginColumn - 1) {
-                            Optional<Node> copiedNodeToReplaceWith = NodeUtility.initTokenRange(nodeToReplaceWith);
-                            if (copiedNodeToReplaceWith.isPresent()) {
-                                String [] insertedSources = NodeUtility.lexicalPreservingPrint(copiedNodeToReplaceWith.get()).split("\n");
-                                if (insertedSources.length == 1) {
-                                    sb.append(insertedSources[0]);
-                                } else {
-                                    sb.append(insertedSources[0]);
-                                    sb.append("\n");
-                                    for (int k = 1; k < insertedSources.length - 1; k++) {
-                                        sb.append(indentSB.toString() + insertedSources[k]);
-                                        sb.append("\n");
-                                    }
-                                    sb.append(indentSB.toString() + insertedSources[insertedSources.length - 1]);
-                                }
-                            }
-                        }
-                        if (i == endLine - 1 && j > endColumn - 1) {
-                            sb.append(lines[i].charAt(j));
-                        }
-                    }
-                } else {
-                    sb.append(lines[i]);
-                }
-            }
-            String source = sb.toString();
-            return Optional.of(JavaParser.parse(source));
+        Node copiedTargetNode = NodeUtility.deepCopyByReparse(targetNode);
+        Node nodeWithTokenToReplaceWith;
+        try {
+            nodeWithTokenToReplaceWith = NodeUtility.initTokenRange(nodeToReplaceWith).orElseThrow();
+        } catch (NoSuchElementException e) {
+            return Optional.empty();
         }
-        return Optional.empty();
+
+        JavaToken beginTokenOfTarget = copiedTargetNode.getTokenRange().orElseThrow().getBegin();
+        JavaToken tokenToReplaceWith = nodeWithTokenToReplaceWith.getTokenRange().orElseThrow().getBegin();
+        final JavaToken endTokenOfReplace = nodeWithTokenToReplaceWith.getTokenRange().orElseThrow().getEnd();
+        JavaToken endTokenOfTarget = targetNode.getTokenRange().orElseThrow().getEnd();
+
+        // コメントが後ろに付いているノードに対して置換範囲のTokenをコメントの部分まで広げる
+        // よってコメントごと置換されるのでコメントは消える
+        if (targetNode.getComment().isPresent()) {
+            endTokenOfTarget = targetNode.getComment().get().getTokenRange().orElseThrow().getEnd();
+            Range range = endTokenOfTarget.getRange().orElseThrow();
+            Range newRange = new Range(new Position(range.begin.line, range.end.column + 1), new Position(range.begin.line, range.end.column + 1));
+            JavaToken endTokenOfCopiedTarget = copiedTargetNode.getComment().get().getTokenRange().orElseThrow().getEnd();
+            endTokenOfCopiedTarget.insertAfter(new JavaToken(newRange, JavaToken.Kind.UNIX_EOL.getKind(), "\n", null, null));
+        }
+
+        final Range beginRangeOfTarget = targetNode.getTokenRange().orElseThrow().getBegin().getRange().orElseThrow();
+
+        while (true){
+            beginTokenOfTarget.insert(new JavaToken(beginRangeOfTarget, tokenToReplaceWith.getKind(), tokenToReplaceWith.getText(), null, null));
+            if (tokenToReplaceWith.getRange().equals(endTokenOfReplace.getRange())) break;
+
+            //複数行置換する時のインデントの調整
+            if (tokenToReplaceWith.getKind() == JavaToken.Kind.UNIX_EOL.getKind())
+                NodeUtility.adjustmentIndent(targetNode, beginTokenOfTarget, beginRangeOfTarget);
+            
+            tokenToReplaceWith = tokenToReplaceWith.getNextToken().orElseThrow();
+        }
+
+        JavaToken tokenToDelete = beginTokenOfTarget.getNextToken().orElseThrow();
+
+        while (true){
+            if (beginTokenOfTarget.getRange().equals(endTokenOfTarget.getRange())){
+                beginTokenOfTarget.deleteToken();
+                break;
+            }
+            if (tokenToDelete.getRange().equals(endTokenOfTarget.getRange())){
+                tokenToDelete.deleteToken();
+                beginTokenOfTarget.deleteToken();
+                break;
+            }
+            tokenToDelete.deleteToken();
+            tokenToDelete = beginTokenOfTarget.getNextToken().orElseThrow();
+        }
+
+        final CompilationUnit compilationUnit = copiedTargetNode.findCompilationUnit().orElseThrow();
+        return NodeUtility.reparseCompilationUnit(compilationUnit)
+            .map(cu -> NodeUtility.findNodeInCompilationUnitByBeginRange(cu, nodeWithTokenToReplaceWith, beginRangeOfTarget)); 
     }
 
     /**
