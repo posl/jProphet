@@ -1,20 +1,35 @@
 package jp.posl.jprophet.operation;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
+import com.github.javaparser.ast.expr.IntegerLiteralExpr;
+import com.github.javaparser.ast.expr.LongLiteralExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.expr.BooleanLiteralExpr;
+import com.github.javaparser.ast.expr.CharLiteralExpr;
+import com.github.javaparser.ast.expr.DoubleLiteralExpr;
+import com.github.javaparser.ast.expr.Expression;
 
 import jp.posl.jprophet.patch.OperationDiff;
 import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 
 
 /**
- * 対象ステートメント中の変数を別のもので置き換える操作を行う
+ * 対象ステートメント中の関数を別のもので置き換える操作を行う
  */
 public class MethodReplacementOperation implements AstOperation {
     /**
@@ -33,20 +48,38 @@ public class MethodReplacementOperation implements AstOperation {
         if (!hasScopeOfThis)
             return new ArrayList<>();
 
-        final List<String> methodNameCandidates = this.collectMethodNames(targetNode).stream()
-                .filter(name -> !targetMethodCallExpr.getNameAsString().equals(name)).collect(Collectors.toList());
+        if (!this.findMethodType(targetMethodCallExpr).isPresent()) {
+            return Collections.emptyList();
+        }
+        List<MethodDeclaration> methodCandidates;
+        final String targetMethodType = this.findMethodType(targetMethodCallExpr).orElseThrow();
+        if (targetMethodType.equals("void")) {
+            methodCandidates = this.collectMethods(targetNode).stream()
+                .filter(method -> !targetMethodCallExpr.getNameAsString().equals(method.getNameAsString()))
+                .collect(Collectors.toList());
+        }
+        else {
+            methodCandidates = this.collectMethodsWithTypeFilter(targetNode, targetMethodType).stream()
+                .filter(method -> !targetMethodCallExpr.getNameAsString().equals(method.getNameAsString()))
+                .collect(Collectors.toList());
+        }
 
-
-        final List<Node> replacedMethods =
-            this.replaceMethodName(targetMethodCallExpr, methodNameCandidates);
+        final List<MethodCallExpr> replacedMethods = this.replaceMethodName(targetMethodCallExpr, methodCandidates);
 
         final List<Node> replacedArgmentsMethods = replaceArgments(replacedMethods, targetNode);
 
         final List<OperationDiff> operationDiffs = replacedArgmentsMethods.stream()
             .map(node -> new OperationDiff(ModifyType.CHANGE, targetNode, node))
             .collect(Collectors.toList());
-            
+
         return operationDiffs;
+    }
+
+    private Optional<String> findMethodType(MethodCallExpr methodCallExpr) {
+        return methodCallExpr.findRootNode().findAll(MethodDeclaration.class).stream()
+            .filter(m -> m.getNameAsString().equals(methodCallExpr.getNameAsString()))
+            .map(m -> m.getTypeAsString())
+            .findAny();
     }
 
     /**
@@ -55,9 +88,21 @@ public class MethodReplacementOperation implements AstOperation {
      * @param node 対象ノード
      * @return メソッド名のリスト
      */
-    private List<String> collectMethodNames(Node node) {
-        return node.findRootNode().findAll(MethodDeclaration.class).stream().map(m -> m.getNameAsString())
-                .collect(Collectors.toList());
+    private List<MethodDeclaration> collectMethods(Node node) {
+        return node.findRootNode().findAll(MethodDeclaration.class);
+    }
+
+    /**
+     * ノードが存在するクラス内のメソッドの内，与えられた型と一致する型の返り値を持つメソッドを集める
+     * 
+     * @param node 対象ノード
+     * @param type 収集するメソッドの型
+     * @return メソッド名のリスト
+     */
+    private List<MethodDeclaration> collectMethodsWithTypeFilter(Node node, String type) {
+        return node.findRootNode().findAll(MethodDeclaration.class).stream()
+            .filter(m -> m.getType().asString().equals(type))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -67,30 +112,77 @@ public class MethodReplacementOperation implements AstOperation {
      * @param methodNames 新しいメソッド名のリスト
      * @return 置換後のMethodCallExprのリスト
      */
-    private List<Node> replaceMethodName(MethodCallExpr targetExpr, List<String> methodNames) {
-        List<Node> replacedMethods = methodNames.stream()
-                .map(name -> new MethodCallExpr(new ThisExpr(), name, targetExpr.getArguments()))
+    private List<MethodCallExpr> replaceMethodName(MethodCallExpr targetExpr, List<MethodDeclaration> methods) {
+        final DeclarationCollector collector = new DeclarationCollector();
+        final Map<String, String> fieldNameToType = collector.collectFileds(targetExpr).stream()
+            .collect(Collectors.toMap(
+                var -> var.getName().toString(),
+                var -> var.getTypeAsString()
+            ));
+        final Map<String, String> localVarNameToType = collector.collectLocalVarsDeclared(targetExpr).stream()
+            .collect(Collectors.toMap(
+                var -> var.getName().toString(),
+                var -> var.getTypeAsString()
+            ));
+        final Map<String, String> parameterNameToType = collector.collectParameters(targetExpr).stream()
+            .collect(Collectors.toMap(
+                var -> var.getName().toString(),
+                var -> var.getTypeAsString()
+            ));
+        final Map<String, String> allVarNameToType = new HashMap<String, String>();
+        allVarNameToType.putAll(fieldNameToType);
+        allVarNameToType.putAll(localVarNameToType);
+        allVarNameToType.putAll(parameterNameToType);
+        final List<MethodCallExpr> newMethods = new ArrayList<MethodCallExpr>();
+        for (MethodDeclaration method: methods) {
+            final List<String> parameterTypes = method.getParameters().stream()
+                .map(p -> p.getTypeAsString())
                 .collect(Collectors.toList());
-        return replacedMethods;
+            final NodeList<Expression> typeMatchedVars = new NodeList<Expression>();
+            for (String parameterType: parameterTypes) {
+                allVarNameToType.entrySet().stream()
+                    .filter(e -> e.getValue().equals(parameterType))
+                    .map(e -> e.getKey())
+                    .findFirst()
+                    .map(varName -> new NameExpr(varName))
+                    .ifPresent(varExpr -> typeMatchedVars.add(varExpr));
+            }
+            if (typeMatchedVars.size() != parameterTypes.size()) {
+                break;
+            }
+            newMethods.add(new MethodCallExpr(new ThisExpr(), method.getNameAsString(), typeMatchedVars));
+        }
+        return newMethods;
     }
 
-    private List<Node> replaceArgments(List<Node> targetMethods, Node scope) {
-        final DeclarationCollector collector = new DeclarationCollector();
-        final List<String> fieldNames = collector.collectFileds(scope)
-            .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
-        final List<String> localVarNames = collector.collectLocalVarsDeclared(scope)
-            .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
-        final List<String> parameterNames = collector.collectParameters(scope)
-            .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
 
-        VariableReplacer replacer = new VariableReplacer();
+    private List<Node> replaceArgments(List<MethodCallExpr> targetMethods, Node scope) {
+        final DeclarationCollector collector = new DeclarationCollector();
+        final Map<String, String> fieldNameToType = collector.collectFileds(scope).stream()
+            .collect(Collectors.toMap(
+                var -> var.getName().toString(),
+                var -> var.getTypeAsString()
+            ));
+        final Map<String, String> localVarNameToType = collector.collectLocalVarsDeclared(scope).stream()
+            .collect(Collectors.toMap(
+                var -> var.getName().toString(),
+                var -> var.getTypeAsString()
+            ));
+        final Map<String, String> parameterNameToType = collector.collectParameters(scope).stream()
+            .collect(Collectors.toMap(
+                var -> var.getName().toString(),
+                var -> var.getTypeAsString()
+            ));
+
+        final VariableReplacer replacer = new VariableReplacer();
 
         final List<Node> replacedArgmentsMethods = new ArrayList<Node>();
         replacedArgmentsMethods.addAll(targetMethods);
         targetMethods.stream()
-            .map(node -> replacer.replaceAllVariables(node, fieldNames, localVarNames, parameterNames))
+            .map(node -> replacer.replaceAllVariables(node, fieldNameToType, localVarNameToType, parameterNameToType))
             .forEach(replacedNodes -> replacedArgmentsMethods.addAll(replacedNodes));
-            return replacedArgmentsMethods;
+
+        return replacedArgmentsMethods;
     }
 
 }

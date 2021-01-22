@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.Node;
@@ -16,10 +17,6 @@ import com.github.javaparser.ast.Node;
 
 public class VariableReplacerTest {
 
-    //置換対象の変数名が正しく取得できている前提でテストする
-    final List<String> fieldNames = List.of("fa");
-    final List<String> localVarNames = List.of("la");
-    final List<String> parameterNames = List.of("pa");
 
     @Test public void testForReplacementAssignExpr() {
         final String targetSource = new StringBuilder().append("")
@@ -32,6 +29,10 @@ public class VariableReplacerTest {
             .append("   }\n")
             .append("}\n")
             .toString();
+        //置換対象の変数名が正しく取得できている前提でテストする
+        final Map<String, String> fieldNames = Map.of("fa", "String");
+        final Map<String, String> localVarNameToType = Map.of("la", "String");
+        final Map<String, String> parameterNameToType = Map.of("pa", "String");
         final List<String> expectedExpressions = List.of(
             "hoge = this.fa",
             "hoge = la",
@@ -41,7 +42,7 @@ public class VariableReplacerTest {
         for(Node node : nodes){
             final VariableReplacer vr = new VariableReplacer();
             final List<Node> results = vr.replaceAllVariables(
-                    node, fieldNames, localVarNames, parameterNames);
+                    node, fieldNames, localVarNameToType, parameterNameToType);
             replacedNodes.addAll(results);
         }
         final List<String> actualExpressions = replacedNodes.stream().map(n -> n.toString()).collect(Collectors.toList());
@@ -58,6 +59,10 @@ public class VariableReplacerTest {
             .append("   }\n")
             .append("}\n")
             .toString();
+        //置換対象の変数名が正しく取得できている前提でテストする
+        final Map<String, String> fieldNames = Map.of("fa", "String");
+        final Map<String, String> localVarNameToType = Map.of("la", "String");
+        final Map<String, String> parameterNameToType = Map.of("pa", "String");
         final List<String> expectedExpressions = List.of(
             "ma(this.fa)",
             "ma(la)",
@@ -67,7 +72,7 @@ public class VariableReplacerTest {
         for(Node node : nodes){
             final VariableReplacer vr = new VariableReplacer();
             final List<Node> results = vr.replaceAllVariables(
-                    node, fieldNames, localVarNames, parameterNames);
+                    node, fieldNames, localVarNameToType, parameterNameToType);
             replacedNodes.addAll(results);
         }
         final List<String> actualExpressions = replacedNodes.stream().map(n -> n.toString()).collect(Collectors.toList());
@@ -85,6 +90,10 @@ public class VariableReplacerTest {
             .append("   }\n")
             .append("}\n")
             .toString();
+        //置換対象の変数名が正しく取得できている前提でテストする
+        final Map<String, String> fieldNames = Map.of("fa", "String");
+        final Map<String, String> localVarNameToType = Map.of("la", "String", "hoge", "String");
+        final Map<String, String> parameterNameToType = Map.of("pa", "String");
         final List<String> expectedExpressions = List.of(
             "if (this.fa == \"b\")\n    return;",
             "if (la == \"b\")\n    return;",
@@ -94,7 +103,7 @@ public class VariableReplacerTest {
         for(Node node : nodes){
             final VariableReplacer vr = new VariableReplacer();
             final List<Node> results = vr.replaceAllVariables(
-                    node, fieldNames, localVarNames, parameterNames);
+                    node, fieldNames, localVarNameToType, parameterNameToType);
             replacedNodes.addAll(results);
         }
         final List<String> actualExpressions = replacedNodes.stream().map(n -> n.toString()).collect(Collectors.toList());
@@ -111,6 +120,10 @@ public class VariableReplacerTest {
             .append("   }\n")
             .append("}\n")
             .toString();
+        //置換対象の変数名が正しく取得できている前提でテストする
+        final Map<String, String> fieldNames = Map.of("fa", "String");
+        final Map<String, String> localVarNameToType = Map.of("la", "String");
+        final Map<String, String> parameterNameToType = Map.of("pa", "String");
         final List<String> expectedStatements = List.of(
             "return this.fa;",
             "return la;",
@@ -120,11 +133,41 @@ public class VariableReplacerTest {
         for(Node node : nodes){
             final VariableReplacer vr = new VariableReplacer();
             final List<Node> results = vr.replaceAllVariables(
-                    node, fieldNames, localVarNames, parameterNames);
+                    node, fieldNames, localVarNameToType, parameterNameToType);
             replacedNodes.addAll(results);
         }
         final List<String> actualStatements = replacedNodes.stream().map(n -> n.toString()).collect(Collectors.toList());
         assertThat(actualStatements).containsOnlyElementsOf(expectedStatements);
+    }
+
+    @Test public void testForReplacementAssignExprWithNoCompileProblem() {
+        final String targetSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("   private String fa;\n")
+            .append("   private void ma(String pa) {\n")
+            .append("        int la = \"a\";\n")
+            .append("        String hoge;\n") 
+            .append("        hoge = \"b\";\n")  //Target
+            .append("   }\n")
+            .append("}\n")
+            .toString();
+        //置換対象の変数名が正しく取得できている前提でテストする
+        final Map<String, String> fieldNames = Map.of("fa", "String");
+        final Map<String, String> localVarNameToType = Map.of("la", "int");
+        final Map<String, String> parameterNameToType = Map.of("pa", "String");
+        final List<String> expectedExpressions = List.of(
+            "hoge = this.fa",
+            "hoge = pa");
+        final List<Node> nodes = NodeUtility.getAllNodesFromCode(targetSource);
+        final List<Node> replacedNodes = new ArrayList<Node>();
+        for(Node node : nodes){
+            final VariableReplacer vr = new VariableReplacer();
+            final List<Node> results = vr.replaceAllVariables(
+                    node, fieldNames, localVarNameToType, parameterNameToType);
+            replacedNodes.addAll(results);
+        }
+        final List<String> actualExpressions = replacedNodes.stream().map(n -> n.toString()).collect(Collectors.toList());
+        assertThat(actualExpressions).containsOnlyElementsOf(expectedExpressions);
     }
 
 }

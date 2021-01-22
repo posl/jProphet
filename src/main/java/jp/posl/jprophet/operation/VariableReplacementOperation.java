@@ -1,6 +1,7 @@
 package jp.posl.jprophet.operation;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.Node;
@@ -28,15 +29,24 @@ public class VariableReplacementOperation implements AstOperation {
         final DeclarationCollector collector = new DeclarationCollector();
 
         //TODO: 変数名を集める処理は他にもあるので共通メソッドにした方がいいかも...？
-        final List<String> fieldNames = collector.collectFileds(targetNode)
-            .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
-        final List<String> localVarNames = collector.collectLocalVarsDeclared(targetNode)
-            .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
-        final List<String> parameterNames = collector.collectParameters(targetNode)
-            .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
+        final Map<String, String> fieldNameToType = collector.collectFileds(targetNode).stream()
+            .collect(Collectors.toMap(
+                var -> var.getName().toString(),
+                var -> var.getTypeAsString()
+            ));
+        final Map<String, String> localVarNameToType = collector.collectLocalVarsDeclared(targetNode).stream()
+            .collect(Collectors.toMap(
+                var -> var.getName().toString(),
+                var -> var.getTypeAsString()
+            ));
+        final Map<String, String> parameterNameToType = collector.collectParameters(targetNode).stream()
+            .collect(Collectors.toMap(
+                var -> var.getName().toString(),
+                var -> var.getTypeAsString()
+            ));
 
         final VariableReplacer replacer = new VariableReplacer();
-        final List<Node> replacedNodes = replacer.replaceAllVariables(targetNode, fieldNames, localVarNames, parameterNames);
+        final List<Node> replacedNodes = replacer.replaceAllVariables(targetNode, fieldNameToType, localVarNameToType, parameterNameToType);
         List<OperationDiff> candidates = replacedNodes.stream()
             .map(node -> new OperationDiff(ModifyType.CHANGE, targetNode, node)).collect(Collectors.toList());
 
