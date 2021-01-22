@@ -231,4 +231,29 @@ public class VariableReplacementOperationTest{
         final List<String> actualSources = operationTest.applyOperation(targetSource, new VariableReplacementOperation());
         assertThat(actualSources).containsOnlyElementsOf(expectedSources);
     }
+
+    /**
+     */
+    @Test public void testForTypeMatchReplacement(){
+        final String targetSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private String fa = \"a\";\n")
+            .append("    private int fb = \"a\";\n")
+            .append("    private void ma(String pa, int pb) {\n")
+            .append("        int la = \"b\";\n")
+            .append("        this.mb(\"hoge\", \"fuga\");\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+        final List<String> expectedSources = new ArrayList<String>();
+        expectedSources.add("this.mb(this.fa, \"fuga\")");
+        expectedSources.add("this.mb(\"hoge\", this.fa)");
+        expectedSources.add("this.mb(pa, \"fuga\")");
+        expectedSources.add("this.mb(\"hoge\", pa)");
+
+        OperationTest operationTest = new OperationTest();
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new VariableReplacementOperation());
+        assertThat(actualSources).containsOnlyElementsOf(expectedSources);
+    }
 }

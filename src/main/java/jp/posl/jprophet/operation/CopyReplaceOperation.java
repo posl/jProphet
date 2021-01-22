@@ -2,6 +2,7 @@ package jp.posl.jprophet.operation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.Optional;
@@ -79,12 +80,21 @@ public class CopyReplaceOperation implements AstOperation{
      */
     private List<Node> copyAndPasteReplacedStatementToBeforeTarget(List<Statement> statements, Node scope){
         final DeclarationCollector collector = new DeclarationCollector();
-        final List<String> fieldNames = collector.collectFileds(scope)
-            .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
-        final List<String> localVarNames = collector.collectLocalVarsDeclared(scope)
-            .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
-        final List<String> parameterNames = collector.collectParameters(scope)
-            .stream().map(var -> var.getName().asString()).collect(Collectors.toList());
+        final Map<String, String> fieldNames = collector.collectFileds(scope).stream()
+            .collect(Collectors.toMap(
+                var -> var.getName().toString(),
+                var -> var.getTypeAsString()
+            ));
+        final Map<String, String> localVarNames = collector.collectLocalVarsDeclared(scope).stream()
+            .collect(Collectors.toMap(
+                var -> var.getName().toString(),
+                var -> var.getTypeAsString()
+            ));
+        final Map<String, String> parameterNames = collector.collectParameters(scope).stream()
+            .collect(Collectors.toMap(
+                var -> var.getName().toString(),
+                var -> var.getTypeAsString()
+            ));
 
         VariableReplacer replacer = new VariableReplacer();
 
