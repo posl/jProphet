@@ -1,8 +1,10 @@
 package jp.posl.jprophet.operation;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.Expression;
@@ -14,6 +16,7 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.WhileStmt;
+import com.github.javaparser.ast.type.VoidType;
 
 import jp.posl.jprophet.patch.OperationDiff;
 import jp.posl.jprophet.patch.OperationDiff.ModifyType;
@@ -47,9 +50,15 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
         final List<Expression> conditions = new ConcreteConditions(vars, parameters).getExpressions();
 
         final List<OperationDiff> operationDiffs = new ArrayList<OperationDiff>();
-        conditions.stream()
-            .map(c -> new IfStmt(c, new ReturnStmt(), null))
-            .forEach(stmt -> operationDiffs.add(new OperationDiff(ModifyType.INSERT, targetNode, stmt)));
+
+        final MethodDeclaration methodDeclaration = targetNode.findParent(MethodDeclaration.class).orElseThrow();
+        final boolean targetNodeIsInVoidTypeMethod = methodDeclaration.getChildNodes().stream()
+            .anyMatch(child -> child instanceof VoidType);
+        if (targetNodeIsInVoidTypeMethod) {
+            conditions.stream()
+                .map(c -> new IfStmt(c, new ReturnStmt(), null))
+                .forEach(stmt -> operationDiffs.add(new OperationDiff(ModifyType.INSERT, targetNode, stmt)));
+        }
 
         if(targetNode.findParent(ForStmt.class).isPresent() || targetNode.findParent(WhileStmt.class).isPresent()) {
             conditions.stream()

@@ -5,16 +5,21 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import difflib.Patch;
 import jp.posl.jprophet.project.FileLocator;
 import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.MavenProject;
@@ -101,25 +106,66 @@ public class JProphetMain {
         final List<Suspiciousness> suspiciousenesses = faultLocalization.exec();
 
         final Map<FileLocator, CompilationUnit> targetCuMap = new AstGenerator().exec(suspiciousenesses, config.getTargetProject().getSrcFileLocators());
-        
-        
+
+
         // 各ASTに対して修正テンプレートを適用し抽象修正候補の生成
         final List<PatchCandidate> patchCandidates = patchCandidateGenerator.exec(operations, suspiciousenesses, targetCuMap);
-        
+
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
         final List<PatchCandidate> sortedCandidates = patchEvaluator.sort(patchCandidates, suspiciousenesses, config);
-        
-        // 修正パッチ候補ごとにテスト実行
-        for(PatchCandidate patchCandidate: sortedCandidates) {
-            Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
-            //final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
-            final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject), faultLocalization.getExecutedTests());
-            testResultStore.addTestResults(result.getTestResults(), patchCandidate);
-            if(result.canEndRepair()) {
-                testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
-                return true;
+
+
+        if (config.getPatchCompressionRatio() == 1) {
+
+            // 修正パッチ候補ごとにテスト実行
+            for(PatchCandidate patchCandidate: sortedCandidates) {
+                Project patchedProject = patchedProjectGenerator.applyPatch(patchCandidate);
+                //final TestExecutorResult result = testExecutor.exec(new RepairConfiguration(config, patchedProject));
+                final TestExecutorResult result = testExecutor.selectiveExec(new RepairConfiguration(config, patchedProject), faultLocalization.getExecutedTests());
+                testResultStore.addTestResults(result.getTestResults(), patchCandidate);
+                if(result.canEndRepair()) {
+                    testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
+                    return true;
+                }
             }
+
         }
+        else {
+            // final Map<Project, List<PatchCandidate>> projectToPatches = new HashMap<Project, List<PatchCandidate>>();
+            final List<List<PatchCandidate>> compressedPatchesList = new ArrayList<List<PatchCandidate>>();
+            while (true) {
+                final List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
+                for (int i = 0; i < config.getPatchCompressionRatio(); i++) {
+                    if (sortedCandidates.size() == 0) {
+                        break;
+                    }
+                    PatchCandidate candidate = sortedCandidates.remove(0);
+                    candidates.add(candidate);
+                }
+                compressedPatchesList.add(candidates);
+                if (sortedCandidates.size() == 0) {
+                    break;
+                }
+            }
+
+            for(List<PatchCandidate> compressedPatches: compressedPatchesList) {
+                final Project project = patchedProjectGenerator.applyMultiPatch(compressedPatches);
+                final Map<PatchCandidate, TestExecutorResult> results = testExecutor.exec(new RepairConfiguration(config, project), compressedPatches);
+                for (Map.Entry<PatchCandidate, TestExecutorResult> entry : results.entrySet()) {
+                    final TestExecutorResult result = entry.getValue();
+                    final PatchCandidate candidate = entry.getKey();
+                    testResultStore.addTestResults(result.getTestResults(), candidate);
+                    if(result.canEndRepair()) {
+                        testResultExporters.stream().forEach(exporter -> {
+                            exporter.export(testResultStore);
+                        });
+                        return true;
+                    }
+                }
+            }
+
+        }
+
         testResultExporters.stream().forEach(exporter -> exporter.export(testResultStore));
         return false;
     }

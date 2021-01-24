@@ -60,6 +60,27 @@ public class CtrlFlowIntroductionOperationTest {
     }
 
     /**
+     * 返り値の型がVoidではない関数でreturnのパッチが生成されないか
+     */
+    @Test public void testReturnIsNotInsertedInNonVoidFunction(){
+        final String targetSource = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private String fa = \"a\";\n")
+            .append("    private String ma() {\n")
+            .append("        String la = \"b\";\n")
+            .append("        fa = \"b\";\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+
+
+        OperationTest operationTest = new OperationTest();
+        final List<String> actualSources = operationTest.applyOperation(targetSource, new CtrlFlowIntroductionOperation());
+        assertThat(actualSources.size()).isEqualTo(0);
+    }
+
+
+    /**
      * for文内でbreakを行うifブロックが挿入されているかテスト
      */
     @Test public void testForAddBreakInForLoop(){
@@ -82,31 +103,7 @@ public class CtrlFlowIntroductionOperationTest {
         );
 
         expectedSources.add(new StringBuilder().append("")
-            .append("if (i == null)\n")
-            .append("    return;")
-            .toString()
-        );
-
-        expectedSources.add(new StringBuilder().append("")
-            .append("if (i != null)\n")
-            .append("    return;")
-            .toString()
-        );
-
-        expectedSources.add(new StringBuilder().append("")
             .append("if (true)\n")
-            .append("    break;")
-            .toString()
-        );
-
-        expectedSources.add(new StringBuilder().append("")
-            .append("if (i == null)\n")
-            .append("    break;")
-            .toString()
-        );
-
-        expectedSources.add(new StringBuilder().append("")
-            .append("if (i != null)\n")
             .append("    break;")
             .toString()
         );

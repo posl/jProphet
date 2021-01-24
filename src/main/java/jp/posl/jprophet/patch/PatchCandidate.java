@@ -23,11 +23,11 @@ public class PatchCandidate implements Patch {
 
     /**
      * 以下の引数の情報を元にパッチ候補を生成 
-     * @param targetNodeBeforeFix 修正前の対象ASTノード
-     * @param fixedCompilationUnit 修正されたASTノードの情報を持つCompilationUnit
+     * @param operationDiff 修正操作によるdiff
      * @param fixedFilePath 修正されたファイルのパス（jprophetルートからの相対パス）
      * @param fixedFileFQN 修正されたファイルのFQN
      * @param operation 適用されたオペレータのクラス
+     * @param id パッチに割り当てるid
      */
     public PatchCandidate(OperationDiff operationDiff, String fixedFilePath, String fixedFileFQN, Class<? extends AstOperation> operation, int id) {
         this.operationDiff = operationDiff;
@@ -35,6 +35,10 @@ public class PatchCandidate implements Patch {
         this.fixedFileFqn = fixedFileFQN;
         this.operation = operation;
         this.id = id;
+    }
+
+    public OperationDiff getOperationDiff() {
+        return operationDiff;
     }
  
     /**

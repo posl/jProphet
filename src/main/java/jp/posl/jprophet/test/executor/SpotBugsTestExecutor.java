@@ -1,11 +1,14 @@
 package jp.posl.jprophet.test.executor;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import jp.posl.jprophet.RepairConfiguration;
+import jp.posl.jprophet.patch.PatchCandidate;
 import jp.posl.jprophet.spotbugs.SpotBugsExecutor;
 import jp.posl.jprophet.spotbugs.SpotBugsResultXMLReader;
 import jp.posl.jprophet.spotbugs.SpotBugsWarning;

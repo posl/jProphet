@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.operation.AstOperation;
@@ -38,6 +39,9 @@ public class PatchCandidateGenerator{
                 if (!findZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
                     final List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
                     for(AppliedOperationResult result : appliedOperationResults){
+                        if (result.getOperationDiff().getTargetNodeBeforeFix() instanceof ReturnStmt) {
+                            continue;
+                        }
                         candidates.add(new PatchCandidate(result.getOperationDiff(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
                         patchCandidateID += 1;
                     }

@@ -87,7 +87,7 @@ public class UnitTestExecutorTest {
         List<TestCase> executionTests = new ArrayList<TestCase>();
         executionTests.add(new TestCase("source", Arrays.asList("testGradleProject01.App2Test", "testGradleProject01.AppTest")));
         executionTests.add(new TestCase("source2", Arrays.asList("testGradleProject01.App2Test", "testGradleProject01.AppTest")));
-        boolean isSuccess01 = this.testExecutor.exec(correctConfig, executionTests).canEndRepair();
+        boolean isSuccess01 = this.testExecutor.selectiveExec(correctConfig, executionTests).canEndRepair();
         assertThat(isSuccess01).isTrue();
         try {
             FileUtils.deleteDirectory(this.buildDir);
@@ -99,7 +99,7 @@ public class UnitTestExecutorTest {
         List<TestCase> executionTests2 = new ArrayList<TestCase>();
         executionTests2.add(new TestCase("source", Arrays.asList("testGradleProject01.App2Test")));
         executionTests2.add(new TestCase("source2", Arrays.asList("testGradleProject01.App2Test")));
-        boolean isSuccess02 = this.testExecutor.exec(correctConfig, executionTests2).canEndRepair();
+        boolean isSuccess02 = this.testExecutor.selectiveExec(correctConfig, executionTests2).canEndRepair();
         assertThat(isSuccess02).isTrue();
         try {
             FileUtils.deleteDirectory(this.buildDir);

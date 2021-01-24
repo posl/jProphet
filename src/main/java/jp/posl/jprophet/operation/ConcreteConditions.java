@@ -12,6 +12,9 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.BinaryExpr.Operator;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.PrimitiveType;
+import com.github.javaparser.ast.type.PrimitiveType.Primitive;
 
 
 /**
@@ -27,7 +30,7 @@ public class ConcreteConditions {
      */
 	public ConcreteConditions(List<VariableDeclarator> vars, List<Parameter> parameters) {
         final List<String> booleanVarNames = this.collectBooleanNames(vars, parameters);
-        final List<String> allVarNames = this.collectNames(vars, parameters);
+        final List<String> allVarNames = this.collectObjectNames(vars, parameters);
         this.generateExpressions(booleanVarNames, allVarNames);
     }
 
@@ -72,17 +75,19 @@ public class ConcreteConditions {
     }
 
     /**
-     * 与えられた全ての変数の名前を収集する 
+     * 与えられた変数からObject型の変数の名前を全て収集する 
      * @param vars 仮引数以外の変数
      * @param parameters 仮引数
      * @return 変数の名前のリスト
      */
-    private List<String> collectNames(List<VariableDeclarator> vars, List<Parameter> parameters) {
+    private List<String> collectObjectNames(List<VariableDeclarator> vars, List<Parameter> parameters) {
         final List<String> names = new ArrayList<String>();
         vars.stream()
+            .filter(v -> v.getType() instanceof ClassOrInterfaceType)
             .map(v -> v.getNameAsString())
             .forEach(names::add);
         parameters.stream()
+            .filter(v -> v.getType() instanceof ClassOrInterfaceType)
             .map(p -> p.getNameAsString())
             .forEach(names::add);
         return names;
