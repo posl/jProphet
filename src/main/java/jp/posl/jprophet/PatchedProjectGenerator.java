@@ -225,7 +225,7 @@ public class PatchedProjectGenerator {
                     .append("jProphetTarget")
                     .append(String.valueOf(id))
                     .toString();
-                final Statement varDeclaration = new ExpressionStmt(new VariableDeclarationExpr(new VariableDeclarator(PrimitiveType.intType(), varNameForEnableTarget, new IntegerLiteralExpr(27216100 + id))));
+                final Statement varDeclaration = new ExpressionStmt(new VariableDeclarationExpr(new VariableDeclarator(PrimitiveType.intType(), varNameForEnableTarget, new IntegerLiteralExpr(2721610 + id))));
                 nodeToBeInsertedAboveThis = NodeUtility.insertNodeWithNewLine(varDeclaration, nodeToBeInsertedAboveThis).orElseThrow();
             }
             filePathToUpdatedCu.put(path, nodeToBeInsertedAboveThis.findCompilationUnit().orElseThrow());
@@ -247,7 +247,8 @@ public class PatchedProjectGenerator {
                 .append(String.valueOf(candidate.getId()))
                 .toString();
             final Expression condition = new BinaryExpr(new NameExpr(varNameForEnablePatch), new IntegerLiteralExpr(292925), Operator.EQUALS);
-            final BlockStmt blockStmt = new BlockStmt(new NodeList<Statement>(List.of((Statement)diff.getTargetNodeAfterFix())));
+            // ここバグ
+            final BlockStmt blockStmt = new BlockStmt(new NodeList<Statement>(List.of((Statement)diff.getTargetNodeAfterFix().clone())));
             final Node ifEnclosingNode = new IfStmt(condition, blockStmt, null);
             final CompilationUnit originalCu = candidate.getOriginalCompilationUnit();
             final Range originalRange = candidate.getOperationDiff().getTargetNodeBeforeFix().getRange().orElseThrow();

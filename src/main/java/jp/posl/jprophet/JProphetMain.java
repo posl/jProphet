@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -138,7 +139,8 @@ public class JProphetMain {
                     if (sortedCandidates.size() == 0) {
                         break;
                     }
-                    candidates.add(sortedCandidates.remove(0));
+                    PatchCandidate candidate = sortedCandidates.remove(0);
+                    candidates.add(candidate);
                 }
                 compressedPatchesList.add(candidates);
                 if (sortedCandidates.size() == 0) {

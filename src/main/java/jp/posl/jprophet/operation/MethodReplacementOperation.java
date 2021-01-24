@@ -15,6 +15,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -24,6 +25,7 @@ import com.github.javaparser.ast.expr.CharLiteralExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
 import com.github.javaparser.ast.expr.Expression;
 
+import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.patch.OperationDiff;
 import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 
@@ -42,6 +44,8 @@ public class MethodReplacementOperation implements AstOperation {
      */
     public List<OperationDiff> exec(Node targetNode) {
         if (!(targetNode instanceof MethodCallExpr))
+            return new ArrayList<>();
+        if (!(targetNode.findParent(Statement.class).isPresent()))
             return new ArrayList<>();
         final MethodCallExpr targetMethodCallExpr = (MethodCallExpr) targetNode;
         final boolean hasScopeOfThis = targetMethodCallExpr.getScope().map(s -> s instanceof ThisExpr).orElse(true);
@@ -69,7 +73,13 @@ public class MethodReplacementOperation implements AstOperation {
         final List<Node> replacedArgmentsMethods = replaceArgments(replacedMethods, targetNode);
 
         final List<OperationDiff> operationDiffs = replacedArgmentsMethods.stream()
-            .map(node -> new OperationDiff(ModifyType.CHANGE, targetNode, node))
+            .map(replacedeNode -> {
+                final Node copiedTargetNode = NodeUtility.deepCopy(targetNode);
+                final Node replacedTargetNode = NodeUtility.replaceNode(replacedeNode, copiedTargetNode).orElseThrow();
+                final Node replacedTargetStmt = replacedTargetNode.findParent(Statement.class).orElseThrow();
+                final Node targetStmt = targetNode.findParent(Statement.class).orElseThrow();
+                return new OperationDiff(ModifyType.CHANGE, targetStmt, replacedTargetStmt);
+            })
             .collect(Collectors.toList());
 
         return operationDiffs;

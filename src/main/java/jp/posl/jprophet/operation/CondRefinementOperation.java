@@ -12,7 +12,9 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.Statement;
 
+import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.patch.OperationDiff;
 import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 
@@ -42,11 +44,21 @@ public class CondRefinementOperation implements AstOperation{
 
         conditions.stream()
             .map(expr -> this.replaceWithBinaryExprWithAbst(condition, new EnclosedExpr(expr), Operator.OR))
-            .forEach(expr -> operationDiffs.add(new OperationDiff(ModifyType.CHANGE, ((IfStmt)targetNode).getCondition(), expr)));
-        
+            .forEach(expr -> {
+                final Node copiedTargetCondition = NodeUtility.deepCopy(((IfStmt)targetNode).getCondition());
+                final Node replacedTargetCondition = NodeUtility.replaceNode(expr, copiedTargetCondition).orElseThrow();
+                final Statement replacedTargetStmt = replacedTargetCondition.findParent(Statement.class).orElseThrow();
+                operationDiffs.add(new OperationDiff(ModifyType.CHANGE, targetNode, replacedTargetStmt));
+            });
+
         conditions.stream()
             .map(expr -> this.replaceWithBinaryExprWithAbst(condition, new UnaryExpr(new EnclosedExpr(expr), UnaryExpr.Operator.LOGICAL_COMPLEMENT), Operator.AND))
-            .forEach(expr -> operationDiffs.add(new OperationDiff(ModifyType.CHANGE, ((IfStmt)targetNode).getCondition(), expr)));
+            .forEach(expr -> {
+                final Node copiedTargetCondition = NodeUtility.deepCopy(((IfStmt)targetNode).getCondition());
+                final Node replacedTargetCondition = NodeUtility.replaceNode(expr, copiedTargetCondition).orElseThrow();
+                final Statement replacedTargetStmt = replacedTargetCondition.findParent(Statement.class).orElseThrow();
+                operationDiffs.add(new OperationDiff(ModifyType.CHANGE, targetNode, replacedTargetStmt));
+            });
 
         return operationDiffs;
 

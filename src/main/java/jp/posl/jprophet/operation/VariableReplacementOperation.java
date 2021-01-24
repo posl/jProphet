@@ -1,11 +1,14 @@
 package jp.posl.jprophet.operation;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.stmt.Statement;
 
+import jp.posl.jprophet.NodeUtility;
 import jp.posl.jprophet.patch.OperationDiff;
 import jp.posl.jprophet.patch.OperationDiff.ModifyType;
 
@@ -26,6 +29,8 @@ public class VariableReplacementOperation implements AstOperation {
      * @return 生成された修正後のCompilationUnitのリスト
      */
     public List<OperationDiff> exec(Node targetNode) {
+        if (!(targetNode.findParent(Statement.class).isPresent()))
+            return Collections.emptyList();
         final DeclarationCollector collector = new DeclarationCollector();
 
         //TODO: 変数名を集める処理は他にもあるので共通メソッドにした方がいいかも...？
@@ -48,7 +53,16 @@ public class VariableReplacementOperation implements AstOperation {
         final VariableReplacer replacer = new VariableReplacer();
         final List<Node> replacedNodes = replacer.replaceAllVariables(targetNode, fieldNameToType, localVarNameToType, parameterNameToType);
         List<OperationDiff> candidates = replacedNodes.stream()
-            .map(node -> new OperationDiff(ModifyType.CHANGE, targetNode, node)).collect(Collectors.toList());
+            .map(replacedNode -> {
+                final Node copiedTargetNode = NodeUtility.deepCopy(targetNode);
+                final Node replacedTargetNode = NodeUtility.replaceNode(replacedNode, copiedTargetNode).orElseThrow();
+                if (replacedTargetNode instanceof Statement) {
+                    return new OperationDiff(ModifyType.CHANGE, targetNode, replacedTargetNode);
+                }
+                final Statement replacedTargetStmt = replacedTargetNode.findParent(Statement.class).orElseThrow();
+                final Statement targetStmt = targetNode.findParent(Statement.class).orElseThrow();
+                return new OperationDiff(ModifyType.CHANGE, targetStmt, replacedTargetStmt);
+            }).collect(Collectors.toList());
 
         return candidates;
     }

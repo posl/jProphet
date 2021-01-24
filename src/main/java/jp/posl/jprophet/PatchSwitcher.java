@@ -41,9 +41,9 @@ public class PatchSwitcher {
                                 finishTargetSearch = true;
                             }
                             if (content[j + 2] == patchValueSuffix) {
-                                content[j] = (byte)0x00;
-                                content[j + 1] = (byte)0x72;
-                                content[j + 2] = (byte)0x6f;
+                                content[j] = (byte)0x04;
+                                content[j + 1] = (byte)0x78;
+                                content[j + 2] = (byte)0x3d;
                                 finishPatchSearch = true;
                             }
                         }

@@ -110,7 +110,9 @@ public class UnitTestExecutor implements TestExecutor {
                     final boolean result = runAllTestClass(testClasses);
                     results.put(candidate, new TestExecutorResult(result, List.of(new UnitTestResult(result))));
                     Files.write(rewritedPath, pathToContent.get(rewritedPath));
+                    if (result) break;
                 }
+                return results;
 
             } else {
                 return new HashMap<PatchCandidate, TestExecutorResult>();
@@ -120,7 +122,6 @@ public class UnitTestExecutor implements TestExecutor {
             System.err.println(e.getMessage());
             return new HashMap<PatchCandidate, TestExecutorResult>();
         }
-        return new HashMap<PatchCandidate, TestExecutorResult>();
     }
 
     @Override

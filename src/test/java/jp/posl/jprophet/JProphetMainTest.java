@@ -85,20 +85,20 @@ public class JProphetMainTest {
             e.printStackTrace();
         }
     }
-
     @Test public void testForPatchCompression() {
         final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(
-            // new CondRefinementOperation(),
-            // new CondIntroductionOperation(),
-            new CtrlFlowIntroductionOperation() 
-            // new InsertInitOperation(), 
-            // new VariableReplacementOperation()
+            new CondRefinementOperation(),
+            new CondIntroductionOperation(),
+            new CtrlFlowIntroductionOperation(),
+            new VariableReplacementOperation(),
+            new MethodReplacementOperation()
             // new CopyReplaceOperation()
         ));
         final String buildDir = "./tmp/";
         final String resultDir = "./result/";
         final String parameterPath = "parameters/para.csv";
-        final Project                  project                  = new MavenProject("src/test/resources/MavenFizzBuzz01");
+        final Project                  project                  = new GradleProject("src/test/resources/ProjectMulti");
+        // final Project                  project                  = new MavenProject("src/test/resources/MavenFizzBuzz01");
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project, parameterPath, 3);
         final Coefficient              coefficient              = new Jaccard();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
