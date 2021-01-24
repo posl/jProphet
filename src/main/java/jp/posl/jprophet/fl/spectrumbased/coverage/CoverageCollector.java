@@ -120,7 +120,7 @@ public class CoverageCollector {
     public List<TestCase> selectCollectTestCases(RepairConfiguration config) {
         try {
             TestResults testResults = this.exec(config.getTargetProject().getSrcFileFqns() , config.getTargetProject().getTestFileFqns());
-            List<TestCase> testsToBeExecuted = new ArrayList<TestCase>();
+            List<TestCase> correctTestCases = new ArrayList<TestCase>();
             for (String sourceFqn : config.getTargetProject().getSrcFileFqns()) {
                 List<String> testNames = testResults.getTestResults().stream()
                     .filter(t -> t.getCoverages().stream().filter(c -> c.getName().equals(sourceFqn)).findFirst().isPresent())
@@ -128,9 +128,9 @@ public class CoverageCollector {
                     .distinct()
                     .collect(Collectors.toList());
 
-                testsToBeExecuted.add(new TestCase(sourceFqn, testNames));
+                correctTestCases.add(new TestCase(sourceFqn, testNames));
             }
-            return testsToBeExecuted;
+            return correctTestCases;
         } catch (Exception e) {
             return new ArrayList<TestCase>();
         }
