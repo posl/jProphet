@@ -82,7 +82,12 @@ public class PatchEvaluator {
      * @return ソート済みのパッチ候補リスト
      */
     public List<PatchCandidate> sort(List<PatchCandidate> candidates, List<Suspiciousness> suspiciousnessList, RepairConfiguration config) {
-        if(config.getParameterPath().isPresent()) {
+        candidates = candidates.stream()
+            .filter(candidate -> filterCandidate(candidate))
+            .collect(Collectors.toList());
+
+        // if(config.getParameterPath().isPresent()) {
+        if(false) {
             final String parameterPath = config.getParameterPath().orElseThrow();
             try {
                 final List<String> lines = Files.readAllLines(Paths.get(parameterPath), StandardCharsets.UTF_8);
@@ -184,6 +189,15 @@ public class PatchEvaluator {
             }
         }
         return Optional.empty();
+    }
+
+    private boolean filterCandidate(PatchCandidate candidate) {
+        try {
+            candidate.getFixedCompilationUnit();
+            return true;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
     }
 
 }

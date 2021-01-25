@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
@@ -40,6 +41,7 @@ public class CtrlFlowIntroductionOperation implements AstOperation{
     public List<OperationDiff> exec(Node targetNode){
         if(!(targetNode instanceof Statement)) return new ArrayList<>();
         if(targetNode instanceof BlockStmt) return new ArrayList<>();
+        if (targetNode.findParent(ConstructorDeclaration.class).isPresent()) return new ArrayList<>();
 
         final DeclarationCollector collector = new DeclarationCollector();
         final List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();

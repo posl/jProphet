@@ -99,7 +99,7 @@ public class JProphetMainTest {
         final String parameterPath = "parameters/para.csv";
         final Project                  project                  = new GradleProject("src/test/resources/ProjectMulti");
         // final Project                  project                  = new MavenProject("src/test/resources/MavenFizzBuzz01");
-        final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project, parameterPath, 3);
+        final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project, parameterPath, 1);
         final Coefficient              coefficient              = new Jaccard();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
         final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
