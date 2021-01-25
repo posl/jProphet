@@ -23,6 +23,8 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
+import jp.posl.jprophet.RepairConfiguration;
+import jp.posl.jprophet.fl.spectrumbased.TestCase;
 import jp.posl.jprophet.test.executor.TestThread;
 
 /**
@@ -106,6 +108,32 @@ public class CoverageCollector {
         }
         
         return testResults;
+    }
+    
+    /**
+     * 正しく動くテストのみを厳選する．
+     * JUnit のみでテスト実行すると，カバレッジがない，エラーメッセージがない，テストファイルでないものをテストする
+     * などが原因で失敗するテストケースが実行されてしまうため，テストを厳選している．
+     * @param config 対象プロジェクトのconfig
+     * @return 厳選したテストケース
+     */
+    public List<TestCase> selectCollectTestCases(RepairConfiguration config) {
+        try {
+            TestResults testResults = this.exec(config.getTargetProject().getSrcFileFqns() , config.getTargetProject().getTestFileFqns());
+            List<TestCase> correctTestCases = new ArrayList<TestCase>();
+            for (String sourceFqn : config.getTargetProject().getSrcFileFqns()) {
+                List<String> testNames = testResults.getTestResults().stream()
+                    .filter(t -> t.getCoverages().stream().filter(c -> c.getName().equals(sourceFqn)).findFirst().isPresent())
+                    .map(t -> t.getMethodName())
+                    .distinct()
+                    .collect(Collectors.toList());
+
+                correctTestCases.add(new TestCase(sourceFqn, testNames));
+            }
+            return correctTestCases;
+        } catch (Exception e) {
+            return new ArrayList<TestCase>();
+        }
     }
 
     /**
@@ -246,7 +274,7 @@ public class CoverageCollector {
                 .collect(Collectors.toList());
 
             final TestResult testResult = new TestResult(testMethodFQN, wasFailed, coverages);
-            if (hasErrorMassage && !description.getMethodName().equals("initializationError")) {
+            if (coverages.size() > 0 && hasErrorMassage && !description.getMethodName().equals("initializationError")) {
                 testResults.add(testResult);
             }
         }
