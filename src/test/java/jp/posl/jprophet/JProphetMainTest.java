@@ -84,7 +84,4 @@ public class JProphetMainTest {
             e.printStackTrace();
         }
     }
-
-
-    
 }
