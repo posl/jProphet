@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite tests="13" failures="1" name="org.apache.commons.math.optimization.linear.SimplexSolverTest" time="0.118" errors="0" skipped="0">
+  <properties>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="java.vm.version" value="12.0.1+12"/>
+    <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/lib"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="path.separator" value=":"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="user.country" value="JP"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="java.runtime.version" value="12.0.1+12"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.CGraphicsEnvironment"/>
+    <property name="basedir" value="/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy"/>
+    <property name="os.arch" value="x86_64"/>
+    <property name="surefire.real.class.path" value="/var/folders/nm/cclr2yq90hggq19hq5t89xwr0000gn/T/surefirebooter16707419616944340778.jar"/>
+    <property name="java.io.tmpdir" value="/var/folders/nm/cclr2yq90hggq19hq5t89xwr0000gn/T/"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="os.name" value="Mac OS X"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.library.path" value="/Users/shuto/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/>
+    <property name="surefire.test.class.path" value="/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy/target/test-classes:/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy/target/classes:/Users/shuto/.m2/repository/junit/junit/4.4/junit-4.4.jar:"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="java.class.version" value="56.0"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="os.version" value="10.15.6"/>
+    <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="user.home" value="/Users/shuto"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.specification.version" value="12"/>
+    <property name="user.name" value="shuto"/>
+    <property name="java.class.path" value="/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy/target/test-classes:/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy/target/classes:/Users/shuto/.m2/repository/junit/junit/4.4/junit-4.4.jar:"/>
+    <property name="java.vm.specification.version" value="12"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="sun.java.command" value="/var/folders/nm/cclr2yq90hggq19hq5t89xwr0000gn/T/surefirebooter16707419616944340778.jar /var/folders/nm/cclr2yq90hggq19hq5t89xwr0000gn/T/surefire7815014926054734955tmp /var/folders/nm/cclr2yq90hggq19hq5t89xwr0000gn/T/surefire18120773375034749106tmp"/>
+    <property name="java.home" value="/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home"/>
+    <property name="user.language" value="ja"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.version" value="12.0.1"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="localRepository" value="/Users/shuto/.m2/repository"/>
+    <property name="file.separator" value="/"/>
+    <property name="java.version.date" value="2019-04-16"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeBig"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+  </properties>
+  <testcase classname="org.apache.commons.math.optimization.linear.SimplexSolverTest" name="testMath272" time="0.004"/>
+  <testcase classname="org.apache.commons.math.optimization.linear.SimplexSolverTest" name="testMath286" time="0">
+    <failure message="expected:&lt;6.9&gt; but was:&lt;4.6000000000000005&gt;" type="java.lang.AssertionError">java.lang.AssertionError: expected:&lt;6.9&gt; but was:&lt;4.6000000000000005&gt;
+	at org.junit.Assert.fail(Assert.java:74)
+	at org.junit.Assert.failNotEquals(Assert.java:448)
+	at org.junit.Assert.assertEquals(Assert.java:315)
+	at org.junit.Assert.assertEquals(Assert.java:346)
+	at org.apache.commons.math.optimization.linear.SimplexSolverTest.testMath286(SimplexSolverTest.java:58)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:567)
+	at org.junit.internal.runners.TestMethod.invoke(TestMethod.java:59)
+	at org.junit.internal.runners.MethodRoadie.runTestMethod(MethodRoadie.java:98)
+	at org.junit.internal.runners.MethodRoadie$2.run(MethodRoadie.java:79)
+	at org.junit.internal.runners.MethodRoadie.runBeforesThenTestThenAfters(MethodRoadie.java:87)
+	at org.junit.internal.runners.MethodRoadie.runTest(MethodRoadie.java:77)
+	at org.junit.internal.runners.MethodRoadie.run(MethodRoadie.java:42)
+	at org.junit.internal.runners.JUnit4ClassRunner.invokeTestMethod(JUnit4ClassRunner.java:88)
+	at org.junit.internal.runners.JUnit4ClassRunner.runMethods(JUnit4ClassRunner.java:51)
+	at org.junit.internal.runners.JUnit4ClassRunner$1.run(JUnit4ClassRunner.java:44)
+	at org.junit.internal.runners.ClassRoadie.runUnprotected(ClassRoadie.java:27)
+	at org.junit.internal.runners.ClassRoadie.runProtected(ClassRoadie.java:37)
+	at org.junit.internal.runners.JUnit4ClassRunner.run(JUnit4ClassRunner.java:42)
+	at org.apache.maven.surefire.junit4.JUnit4TestSet.execute(JUnit4TestSet.java:62)
+	at org.apache.maven.surefire.suite.AbstractDirectoryTestSuite.executeTestSet(AbstractDirectoryTestSuite.java:140)
+	at org.apache.maven.surefire.suite.AbstractDirectoryTestSuite.execute(AbstractDirectoryTestSuite.java:127)
+	at org.apache.maven.surefire.Surefire.run(Surefire.java:177)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:567)
+	at org.apache.maven.surefire.booter.SurefireBooter.runSuitesInProcess(SurefireBooter.java:345)
+	at org.apache.maven.surefire.booter.SurefireBooter.main(SurefireBooter.java:1009)
+</failure>
+  </testcase>
+  <testcase classname="org.apache.commons.math.optimization.linear.SimplexSolverTest" name="testSimplexSolver" time="0.001"/>
+  <testcase classname="org.apache.commons.math.optimization.linear.SimplexSolverTest" name="testSingleVariableAndConstraint" time="0"/>
+  <testcase classname="org.apache.commons.math.optimization.linear.SimplexSolverTest" name="testModelWithNoArtificialVars" time="0"/>
+  <testcase classname="org.apache.commons.math.optimization.linear.SimplexSolverTest" name="testMinimization" time="0"/>
+  <testcase classname="org.apache.commons.math.optimization.linear.SimplexSolverTest" name="testSolutionWithNegativeDecisionVariable" time="0.001"/>
+  <testcase classname="org.apache.commons.math.optimization.linear.SimplexSolverTest" name="testInfeasibleSolution" time="0.001"/>
+  <testcase classname="org.apache.commons.math.optimization.linear.SimplexSolverTest" name="testUnboundedSolution" time="0"/>
+  <testcase classname="org.apache.commons.math.optimization.linear.SimplexSolverTest" name="testRestrictVariablesToNonNegative" time="0"/>
+  <testcase classname="org.apache.commons.math.optimization.linear.SimplexSolverTest" name="testEpsilon" time="0"/>
+  <testcase classname="org.apache.commons.math.optimization.linear.SimplexSolverTest" name="testTrivialModel" time="0"/>
+  <testcase classname="org.apache.commons.math.optimization.linear.SimplexSolverTest" name="testLargeModel" time="0.107"/>
+</testsuite>

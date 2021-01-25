@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite tests="3" failures="0" name="org.apache.commons.math.estimation.EstimatedParameterTest" time="0.002" errors="0" skipped="0">
+  <properties>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="java.vm.version" value="12.0.1+12"/>
+    <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/lib"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="path.separator" value=":"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="user.country" value="JP"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="java.runtime.version" value="12.0.1+12"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.CGraphicsEnvironment"/>
+    <property name="basedir" value="/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy"/>
+    <property name="os.arch" value="x86_64"/>
+    <property name="surefire.real.class.path" value="/var/folders/nm/cclr2yq90hggq19hq5t89xwr0000gn/T/surefirebooter16707419616944340778.jar"/>
+    <property name="java.io.tmpdir" value="/var/folders/nm/cclr2yq90hggq19hq5t89xwr0000gn/T/"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="os.name" value="Mac OS X"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.library.path" value="/Users/shuto/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/>
+    <property name="surefire.test.class.path" value="/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy/target/test-classes:/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy/target/classes:/Users/shuto/.m2/repository/junit/junit/4.4/junit-4.4.jar:"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="java.class.version" value="56.0"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="os.version" value="10.15.6"/>
+    <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="user.home" value="/Users/shuto"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.specification.version" value="12"/>
+    <property name="user.name" value="shuto"/>
+    <property name="java.class.path" value="/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy/target/test-classes:/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy/target/classes:/Users/shuto/.m2/repository/junit/junit/4.4/junit-4.4.jar:"/>
+    <property name="java.vm.specification.version" value="12"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="sun.java.command" value="/var/folders/nm/cclr2yq90hggq19hq5t89xwr0000gn/T/surefirebooter16707419616944340778.jar /var/folders/nm/cclr2yq90hggq19hq5t89xwr0000gn/T/surefire7815014926054734955tmp /var/folders/nm/cclr2yq90hggq19hq5t89xwr0000gn/T/surefire18120773375034749106tmp"/>
+    <property name="java.home" value="/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home"/>
+    <property name="user.language" value="ja"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.version" value="12.0.1"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="localRepository" value="/Users/shuto/.m2/repository"/>
+    <property name="file.separator" value="/"/>
+    <property name="java.version.date" value="2019-04-16"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeBig"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+  </properties>
+  <testcase classname="org.apache.commons.math.estimation.EstimatedParameterTest" name="testBound" time="0.001"/>
+  <testcase classname="org.apache.commons.math.estimation.EstimatedParameterTest" name="testEstimate" time="0"/>
+  <testcase classname="org.apache.commons.math.estimation.EstimatedParameterTest" name="testConstruction" time="0"/>
+</testsuite>

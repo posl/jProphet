@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite tests="18" failures="1" name="org.apache.commons.math.estimation.MinpackTest" time="0.631" errors="0" skipped="0">
+  <properties>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="java.vm.version" value="12.0.1+12"/>
+    <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/lib"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="path.separator" value=":"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="user.country" value="JP"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="java.runtime.version" value="12.0.1+12"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.CGraphicsEnvironment"/>
+    <property name="basedir" value="/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy"/>
+    <property name="os.arch" value="x86_64"/>
+    <property name="surefire.real.class.path" value="/var/folders/nm/cclr2yq90hggq19hq5t89xwr0000gn/T/surefirebooter16707419616944340778.jar"/>
+    <property name="java.io.tmpdir" value="/var/folders/nm/cclr2yq90hggq19hq5t89xwr0000gn/T/"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="os.name" value="Mac OS X"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.library.path" value="/Users/shuto/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/>
+    <property name="surefire.test.class.path" value="/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy/target/test-classes:/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy/target/classes:/Users/shuto/.m2/repository/junit/junit/4.4/junit-4.4.jar:"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="java.class.version" value="56.0"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="os.version" value="10.15.6"/>
+    <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="user.home" value="/Users/shuto"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.specification.version" value="12"/>
+    <property name="user.name" value="shuto"/>
+    <property name="java.class.path" value="/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy/target/test-classes:/Users/shuto/OneDrive - Kyushu University/research/jProphet/src/test/resources/math_83_buggy/target/classes:/Users/shuto/.m2/repository/junit/junit/4.4/junit-4.4.jar:"/>
+    <property name="java.vm.specification.version" value="12"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="sun.java.command" value="/var/folders/nm/cclr2yq90hggq19hq5t89xwr0000gn/T/surefirebooter16707419616944340778.jar /var/folders/nm/cclr2yq90hggq19hq5t89xwr0000gn/T/surefire7815014926054734955tmp /var/folders/nm/cclr2yq90hggq19hq5t89xwr0000gn/T/surefire18120773375034749106tmp"/>
+    <property name="java.home" value="/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home"/>
+    <property name="user.language" value="ja"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.version" value="12.0.1"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="localRepository" value="/Users/shuto/.m2/repository"/>
+    <property name="file.separator" value="/"/>
+    <property name="java.version.date" value="2019-04-16"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeBig"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+  </properties>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackLinearFullRank" time="0.054"/>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackLinearRank1" time="0.004"/>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackLinearRank1ZeroColsAndRows" time="0.004"/>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackRosenbrok" time="0.001"/>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackHelicalValley" time="0.002"/>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackPowellSingular" time="0.022"/>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackFreudensteinRoth" time="0.001"/>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackBard" time="0.005"/>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackKowalikOsborne" time="0.031"/>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackMeyer" time="0.035">
+    <failure message="null" type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError: null
+	at junit.framework.Assert.fail(Assert.java:47)
+	at junit.framework.Assert.assertTrue(Assert.java:20)
+	at junit.framework.Assert.assertTrue(Assert.java:27)
+	at org.apache.commons.math.estimation.MinpackTest.minpackTest(MinpackTest.java:503)
+	at org.apache.commons.math.estimation.MinpackTest.testMinpackMeyer(MinpackTest.java:226)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:567)
+	at junit.framework.TestCase.runTest(TestCase.java:168)
+	at junit.framework.TestCase.runBare(TestCase.java:134)
+	at junit.framework.TestResult$1.protect(TestResult.java:110)
+	at junit.framework.TestResult.runProtected(TestResult.java:128)
+	at junit.framework.TestResult.run(TestResult.java:113)
+	at junit.framework.TestCase.run(TestCase.java:124)
+	at junit.framework.TestSuite.runTest(TestSuite.java:232)
+	at junit.framework.TestSuite.run(TestSuite.java:227)
+	at org.junit.internal.runners.JUnit38ClassRunner.run(JUnit38ClassRunner.java:81)
+	at org.apache.maven.surefire.junit4.JUnit4TestSet.execute(JUnit4TestSet.java:62)
+	at org.apache.maven.surefire.suite.AbstractDirectoryTestSuite.executeTestSet(AbstractDirectoryTestSuite.java:140)
+	at org.apache.maven.surefire.suite.AbstractDirectoryTestSuite.execute(AbstractDirectoryTestSuite.java:127)
+	at org.apache.maven.surefire.Surefire.run(Surefire.java:177)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:567)
+	at org.apache.maven.surefire.booter.SurefireBooter.runSuitesInProcess(SurefireBooter.java:345)
+	at org.apache.maven.surefire.booter.SurefireBooter.main(SurefireBooter.java:1009)
+</failure>
+  </testcase>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackWatson" time="0.136"/>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackBox3Dimensional" time="0.001"/>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackJennrichSampson" time="0"/>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackBrownDennis" time="0.059"/>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackChebyquad" time="0.004"/>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackBrownAlmostLinear" time="0.227"/>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackOsborne1" time="0.005"/>
+  <testcase classname="org.apache.commons.math.estimation.MinpackTest" name="testMinpackOsborne2" time="0.036"/>
+</testsuite>
