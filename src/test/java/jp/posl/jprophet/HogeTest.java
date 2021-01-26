@@ -52,19 +52,19 @@ public class HogeTest {
 
     @Test public void testThesis() {
         final List<AstOperation> operations = new ArrayList<AstOperation>(Arrays.asList(
-            new CondRefinementOperation()
-            // new CondIntroductionOperation(),
-            // new CtrlFlowIntroductionOperation(),
+            new CondRefinementOperation(),
+            new CondIntroductionOperation(),
+            new CtrlFlowIntroductionOperation(),
             // new VariableReplacementOperation()
-            // new MethodReplacementOperation(),
-            // new CopyReplaceOperation()
+            new MethodReplacementOperation(),
+            new CopyReplaceOperation()
         ));
         final String buildDir = "./tmp/";
         final String resultDir = "./result/";
         final String parameterPath = "parameters/para.csv";
         final Project                  project                  = new MavenProject("src/test/resources/math_83_buggy");
         // final Project                  project                  = new MavenProject("src/test/resources/MavenFizzBuzz01");
-        final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project, parameterPath, 1);
+        final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project, parameterPath, 5);
         final Coefficient              coefficient              = new Jaccard();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
         final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();

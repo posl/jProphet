@@ -22,7 +22,7 @@ public class PatchSwitcher {
             boolean finishPatchSearch = false;
             for (Map.Entry<Path, byte[]> entry : this.pathToContent.entrySet()) {
                 final byte[] content = entry.getValue();
-                for (int j = 0; j < content.length; j++) {
+                for (int j = 0; j < content.length - 2; j++) {
                     final Byte prefix1 = (byte)0x29;
                     final Byte prefix2 = (byte)0x87;
                     final Byte targetValueSuffix = (byte)(0x4a + candidate.getId());
