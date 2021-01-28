@@ -1,6 +1,7 @@
 package jp.posl.jprophet;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -30,10 +31,25 @@ public class PatchCandidateGenerator{
     public List<PatchCandidate> exec(List<AstOperation> operations, List<Suspiciousness> suspiciousnesses, Map<FileLocator, CompilationUnit> fileLocatorMap){
         List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
         int patchCandidateID = 1;
+        //0より大きい疑惑値をリストにして上位10までとかにする？
+        //ちょうど10位の疑惑値より大きいものだけfilterする
+        List<Double> selectedSusp = suspiciousnesses.stream()
+            .filter(s -> s.getValue() > 0)
+            .map(s -> s.getValue())
+            .distinct()
+            .sorted(Comparator.comparingDouble(susp -> (double)susp).reversed())
+            .collect(Collectors.toList());
+
+        double limit = selectedSusp.size() >= 10 ? selectedSusp.get(9) : selectedSusp.get(selectedSusp.size() - 1);
+
         for(Map.Entry<FileLocator, CompilationUnit> entry : fileLocatorMap.entrySet()){
             final FileLocator fileLocator = entry.getKey();
             final List<Node> targetNodes = NodeUtility.getAllDescendantNodes(entry.getValue());
-            for(Node targetNode : targetNodes){
+            List<Node> sortedNodes = targetNodes.stream()
+                .sorted(Comparator.comparingDouble(n -> calcSusp(fileLocator.getFqn(), (Node)n, suspiciousnesses)).reversed())
+                .filter(n -> calcSusp(fileLocator.getFqn(), n, suspiciousnesses) >= limit)
+                .collect(Collectors.toList());
+            for(Node targetNode : sortedNodes){
                 //疑惑値0のtargetNodeはパッチを生成しない
                 if (!findZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
                     final List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
@@ -46,6 +62,25 @@ public class PatchCandidateGenerator{
         }
 
         return candidates;
+    }
+
+    private double calcSusp(String fqn, Node node, List<Suspiciousness> suspiciousnesses) {
+        try {
+            final int line = node.getRange().orElseThrow().begin.line;
+            final Optional<Suspiciousness> suspiciousness = suspiciousnesses.stream()
+                .filter(s -> s.getFQN().equals(fqn))
+                .filter(s -> s.getLineNumber() == line)
+                .findAny();
+
+            if (suspiciousness.isPresent()) {
+                return suspiciousness.get().getValue();
+            } else {
+                return -1.0;
+            }
+            
+        } catch (NoSuchElementException e){
+            return -1.0;
+        }
     }
 
     /**
