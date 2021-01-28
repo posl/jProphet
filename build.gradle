@@ -25,6 +25,7 @@ test {
         events "passed", "skipped", "failed"
         exceptionFormat "full"
     }
+    maxHeapSize = '10G'
 }
 
 jacoco {

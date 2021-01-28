@@ -29,6 +29,7 @@ public class PatchCandidateGenerator{
      * @return 条件式が抽象化された修正パッチ候補のリスト
      */
     public List<PatchCandidate> exec(List<AstOperation> operations, List<Suspiciousness> suspiciousnesses, Map<FileLocator, CompilationUnit> fileLocatorMap){
+    // public List<PatchCandidate> exec(List<AstOperation> operations, Map<FileLocator, CompilationUnit> fileLocatorMap){
         List<PatchCandidate> candidates = new ArrayList<PatchCandidate>();
         int patchCandidateID = 1;
         for(Map.Entry<FileLocator, CompilationUnit> entry : fileLocatorMap.entrySet()){

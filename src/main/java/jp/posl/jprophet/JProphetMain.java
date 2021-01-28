@@ -11,7 +11,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.stmt.ReturnStmt;
@@ -113,6 +115,16 @@ public class JProphetMain {
 
         // 学習モデルやフォルトローカライゼーションのスコアによってソート
         final List<PatchCandidate> sortedCandidates = patchEvaluator.sort(patchCandidates, suspiciousenesses, config);
+        // final List<PatchCandidate> sortedCandidates = patchCandidates.stream()
+        //     .filter(candidate -> {
+        //         try {
+        //             candidate.getFixedCompilationUnit();
+        //             return true;
+        //         } catch (NoSuchElementException e) {
+        //             return false;
+        //         }
+        //     })
+        //     .collect(Collectors.toList());
 
 
         if (config.getPatchCompressionRatio() == 1) {
@@ -149,7 +161,12 @@ public class JProphetMain {
             }
 
             for(List<PatchCandidate> compressedPatches: compressedPatchesList) {
-                final Project project = patchedProjectGenerator.applyMultiPatch(compressedPatches);
+                final Project project;
+                try {
+                    project = patchedProjectGenerator.applyMultiPatch(compressedPatches);
+                } catch (NoSuchElementException e) {
+                    continue;
+                }
                 final Map<PatchCandidate, TestExecutorResult> results = testExecutor.exec(new RepairConfiguration(config, project), compressedPatches);
                 for (Map.Entry<PatchCandidate, TestExecutorResult> entry : results.entrySet()) {
                     final TestExecutorResult result = entry.getValue();

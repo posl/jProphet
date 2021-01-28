@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -162,28 +163,29 @@ public class PatchedProjectGenerator {
         final Set<Node> enclosedTargetNodes = new HashSet<Node>();
 
         final Map<CompilationUnit, MovementHistory> originalCuToMvHistory = new HashMap<CompilationUnit, MovementHistory>();
-        final Map<PathAndNode, List<Integer>> nodeToIds = new HashMap<PathAndNode, List<Integer>>();
+        final Map<PathAndNode, List<Integer>> nodeToIndexs = new HashMap<PathAndNode, List<Integer>>();
 
-        for (PatchCandidate candidate : patchCandidates) {
+        for (int i = 0; i < patchCandidates.size(); i++) {
+            final PatchCandidate candidate = patchCandidates.get(i);
             final Node targetNode = candidate.getOperationDiff().getTargetNodeBeforeFix();
             final PathAndNode pathAndNode = new PathAndNode(candidate.getFilePath(), targetNode);
-            if (nodeToIds.containsKey(pathAndNode)) {
-                nodeToIds.get(pathAndNode).add(candidate.getId());
+            if (nodeToIndexs.containsKey(pathAndNode)) {
+                nodeToIndexs.get(pathAndNode).add(i);
             } else {
-                nodeToIds.put(pathAndNode, new ArrayList<Integer>(Arrays.asList(candidate.getId())));
+                nodeToIndexs.put(pathAndNode, new ArrayList<Integer>(Arrays.asList(i)));
             }
         }
 
-        for (Map.Entry<PathAndNode, List<Integer>> entry : nodeToIds.entrySet()) {
+        for (Map.Entry<PathAndNode, List<Integer>> entry : nodeToIndexs.entrySet()) {
             final Node originalTargetNode = entry.getKey().node;
             final CompilationUnit originalCu = originalTargetNode.findCompilationUnit().orElseThrow();
-            final List<Integer> ids = entry.getValue();
+            final List<Integer> indexs = entry.getValue();
 
             BinaryExpr be = null;
-            for (int id: ids) {
+            for (int index: indexs) {
                 final String varNameForEnableTarget = new StringBuilder()
                     .append("jProphetTarget")
-                    .append(String.valueOf(id))
+                    .append(String.valueOf(index))
                     .toString();
                 final BinaryExpr equalityExpr = new BinaryExpr(new NameExpr(varNameForEnableTarget), new IntegerLiteralExpr(292925), Operator.EQUALS);
                 if (be != null) {
@@ -218,33 +220,42 @@ public class PatchedProjectGenerator {
 
             final Range updatedRange = new Range(updatedBegin, updatedEnd);
             final Node targetNode = NodeUtility.findNodeByRange(updatedCu, updatedRange);
+            // try {
+            // } catch (NoSuchElementException e) {
+            //     System.out.println("hoge1");
+            //     throw new IllegalArgumentException();
+            // }
             final Node enclosedTargetNode = NodeUtility.replaceNode(ifEnclosingTargetNode, targetNode).orElseThrow();
             Node nodeToBeInsertedAboveThis = enclosedTargetNode;
-            for (int id: ids) {
+            for (int index: indexs) {
                 final String varNameForEnableTarget = new StringBuilder()
                     .append("jProphetTarget")
-                    .append(String.valueOf(id))
+                    .append(String.valueOf(index))
                     .toString();
-                final Statement varDeclaration = new ExpressionStmt(new VariableDeclarationExpr(new VariableDeclarator(PrimitiveType.intType(), varNameForEnableTarget, new IntegerLiteralExpr(2721610 + id))));
+                final Statement varDeclaration = new ExpressionStmt(new VariableDeclarationExpr(new VariableDeclarator(PrimitiveType.intType(), varNameForEnableTarget, new IntegerLiteralExpr(2721610 + index))));
                 nodeToBeInsertedAboveThis = NodeUtility.insertNodeWithNewLine(varDeclaration, nodeToBeInsertedAboveThis).orElseThrow();
             }
             filePathToUpdatedCu.put(path, nodeToBeInsertedAboveThis.findCompilationUnit().orElseThrow());
 
 
             final MovementHistory mvHistory = originalCuToMvHistory.get(originalCu);
-            mvHistory.addLineDelta(originalTargetNode.getBegin().orElseThrow().line, originalTargetNode.getEnd().orElseThrow().line, 1 + ids.size());
-            mvHistory.addLineDelta(originalTargetNode.getEnd().orElseThrow().line + 1, originalCu.getEnd().orElseThrow().line, 2 + ids.size());
+            mvHistory.addLineDelta(originalTargetNode.getBegin().orElseThrow().line, originalTargetNode.getEnd().orElseThrow().line, 1 + indexs.size());
+            mvHistory.addLineDelta(originalTargetNode.getEnd().orElseThrow().line + 1, originalCu.getEnd().orElseThrow().line, 2 + indexs.size());
             mvHistory.addColumnDelta(originalTargetNode.getBegin().orElseThrow().line, originalTargetNode.getEnd().orElseThrow().line, 4);
             enclosedTargetNodes.add(originalTargetNode);
         }
 
         // パッチ候補をif文で囲む
-        for (PatchCandidate candidate : patchCandidates) {
+        for (int i = 0; i < patchCandidates.size(); i++) {
+            final PatchCandidate candidate = patchCandidates.get(i);
+            if (candidate.getId() == 4) {
+                System.out.println("hopge");
+            }
             final OperationDiff diff = candidate.getOperationDiff();
             if(!(diff.getTargetNodeAfterFix() instanceof Statement)) continue;
             final String varNameForEnablePatch = new StringBuilder()
                 .append("jProphetPatch")
-                .append(String.valueOf(candidate.getId()))
+                .append(String.valueOf(i))
                 .toString();
             final Expression condition = new BinaryExpr(new NameExpr(varNameForEnablePatch), new IntegerLiteralExpr(292925), Operator.EQUALS);
             // ここバグ
@@ -261,9 +272,16 @@ public class PatchedProjectGenerator {
             final Range updatedRange = new Range(updatedBegin, updatedEnd);
             final CompilationUnit updatedCu = filePathToUpdatedCu.get(candidate.getFilePath());
             final Node enclosedTargetNode = NodeUtility.findNodeByRange(updatedCu, updatedRange);
+            // try {
+            //     enclosedTargetNode = NodeUtility.findNodeByRange(updatedCu, updatedRange);
+            // } catch (NoSuchElementException e) {
+            //     //TODO: handle exception
+            //     System.out.println("hoge");
+            //     throw new IllegalArgumentException("ID: " + candidate.getId());
+            // }
 
             Node node = NodeUtility.insertNodeWithNewLine(ifEnclosingNode, enclosedTargetNode).orElseThrow();
-            final Statement varDeclaration = new ExpressionStmt(new VariableDeclarationExpr(new VariableDeclarator(PrimitiveType.intType(), varNameForEnablePatch, new IntegerLiteralExpr(2721600 + candidate.getId()))));
+            final Statement varDeclaration = new ExpressionStmt(new VariableDeclarationExpr(new VariableDeclarator(PrimitiveType.intType(), varNameForEnablePatch, new IntegerLiteralExpr(2721600 + i))));
             node = NodeUtility.insertNodeWithNewLine(varDeclaration, node).orElseThrow();
             final CompilationUnit newCu = node.findCompilationUnit().orElseThrow();
             filePathToUpdatedCu.put(candidate.getFilePath(), newCu);

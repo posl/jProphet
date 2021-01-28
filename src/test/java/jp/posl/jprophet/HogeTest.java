@@ -55,7 +55,7 @@ public class HogeTest {
             new CondRefinementOperation(),
             new CondIntroductionOperation(),
             new CtrlFlowIntroductionOperation(),
-            // new VariableReplacementOperation()
+            // new VariableReplacementOperation(),
             new MethodReplacementOperation(),
             new CopyReplaceOperation()
         ));
@@ -64,7 +64,7 @@ public class HogeTest {
         final String parameterPath = "parameters/para.csv";
         final Project                  project                  = new MavenProject("src/test/resources/math_83_buggy");
         // final Project                  project                  = new MavenProject("src/test/resources/MavenFizzBuzz01");
-        final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project, parameterPath, 5);
+        final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project, parameterPath, 2);
         final Coefficient              coefficient              = new Jaccard();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
         final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();

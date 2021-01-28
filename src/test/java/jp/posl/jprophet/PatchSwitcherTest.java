@@ -41,7 +41,7 @@ public class PatchSwitcherTest {
             }
             final PatchSwitcher switcher = new PatchSwitcher(pathToContent);
             final PatchCandidate candidate = new PatchCandidate(new OperationDiff(ModifyType.INSERT, null, null), null, null, AstOperation.class, 0);
-            switcher.rewrite(candidate);
+            switcher.rewrite(candidate, 0);
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(-1);

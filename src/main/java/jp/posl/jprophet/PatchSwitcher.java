@@ -16,7 +16,7 @@ public class PatchSwitcher {
         this.pathToContent = pathToContent;
     }
 
-    public Optional<Path> rewrite(PatchCandidate candidate) {
+    public Optional<Path> rewrite(PatchCandidate candidate, int index) {
         try {
             boolean finishTargetSearch = false;
             boolean finishPatchSearch = false;
@@ -25,8 +25,8 @@ public class PatchSwitcher {
                 for (int j = 0; j < content.length - 2; j++) {
                     final Byte prefix1 = (byte)0x29;
                     final Byte prefix2 = (byte)0x87;
-                    final Byte targetValueSuffix = (byte)(0x4a + candidate.getId());
-                    final Byte patchValueSuffix = (byte)(0x40 + candidate.getId());
+                    final Byte targetValueSuffix = (byte)(0x4a + index);
+                    final Byte patchValueSuffix = (byte)(0x40 + index);
                     if (content[j] == prefix1) {
                         if (content[j + 1] == prefix2) {
                             if (candidate.getOperationDiff().getModifyType() == ModifyType.INSERT) {

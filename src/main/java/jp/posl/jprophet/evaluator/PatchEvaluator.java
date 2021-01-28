@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -82,12 +83,33 @@ public class PatchEvaluator {
      * @return ソート済みのパッチ候補リスト
      */
     public List<PatchCandidate> sort(List<PatchCandidate> candidates, List<Suspiciousness> suspiciousnessList, RepairConfiguration config) {
+        List<String> normals;
+        try {
+            normals = Files.readAllLines(Paths.get("result1.csv")).subList(1, 220).stream()
+            .map(normal -> {
+                String[] parts = normal.split(",");
+                return parts[1] + parts[2];
+            })
+            .distinct()
+            .collect(Collectors.toList());
+        } catch (IOException e1) {
+            e1.printStackTrace();
+            return Collections.emptyList();
+        }
+        candidates.stream()
+            .filter(candidate -> {
+                String pathAndLine = candidate.getFilePath() + String.valueOf(candidate.getLineNumber().orElseThrow());
+                return normals.stream()
+                    .anyMatch(line -> line.equals(pathAndLine));
+            })
+            .collect(Collectors.toList());
+
         candidates = candidates.stream()
             .filter(candidate -> filterCandidate(candidate))
             .collect(Collectors.toList());
 
-        // if(config.getParameterPath().isPresent()) {
-        if(false) {
+        if(config.getParameterPath().isPresent()) {
+        // if(false) {
             final String parameterPath = config.getParameterPath().orElseThrow();
             try {
                 final List<String> lines = Files.readAllLines(Paths.get(parameterPath), StandardCharsets.UTF_8);

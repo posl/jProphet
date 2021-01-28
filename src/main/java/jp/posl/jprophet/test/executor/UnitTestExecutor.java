@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
@@ -103,12 +104,24 @@ public class UnitTestExecutor implements TestExecutor {
                 final PatchSwitcher switcher = new PatchSwitcher(pathToContent);
 
                 final Map<PatchCandidate, TestExecutorResult> results = new HashMap<PatchCandidate, TestExecutorResult>();
-                for (PatchCandidate candidate : candidates) {
-                    final Path rewritedPath = switcher.rewrite(candidate).orElseThrow();
+                for (int index = 0; index < candidates.size(); index++) {
+                // for (PatchCandidate candidate : candidates) {
+                    // int id = candidate.getId();
+                    // if (id > 1 ) {
+                    // if (id == 2180 || id == 2510) {
+                    //     System.out.println("hoge");
+                    // }
+                    final Path rewritedPath;
+                    try {
+                        rewritedPath = switcher.rewrite(candidates.get(index), index).orElseThrow();
+                    } catch (NoSuchElementException e) {
+                        System.out.println("ID:" + candidates.get(index).getId());
+                        throw new NoSuchElementException();
+                    }
                     getClassLoader(config.getBuildPath());
                     testClasses = loadTestClass(config.getTargetProject());
                     final boolean result = runAllTestClass(testClasses);
-                    results.put(candidate, new TestExecutorResult(result, List.of(new UnitTestResult(result))));
+                    results.put(candidates.get(index), new TestExecutorResult(result, List.of(new UnitTestResult(result))));
                     Files.write(rewritedPath, pathToContent.get(rewritedPath));
                     if (result) break;
                 }
