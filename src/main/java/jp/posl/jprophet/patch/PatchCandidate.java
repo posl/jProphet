@@ -1,6 +1,7 @@
 package jp.posl.jprophet.patch;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.github.javaparser.Range;
@@ -128,5 +129,10 @@ public class PatchCandidate implements Patch {
             .append("\n\n")
             .append(new RepairDiff(this.operationDiff.getTargetNodeBeforeFix(), this.getFixedCompilationUnit()).toString())
             .toString();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getOperationDiff().getTargetNodeBeforeFix(), this.getOperationDiff().getTargetNodeAfterFix());
     }
 }

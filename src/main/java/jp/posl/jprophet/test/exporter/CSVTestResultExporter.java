@@ -67,7 +67,7 @@ public class CSVTestResultExporter implements TestResultExporter {
         for (Map.Entry<TestResult, PatchCandidate> entry : entryList) {
             final TestResult result = entry.getKey();
             final PatchCandidate patch = entry.getValue();
-            final String patchLine = patch.getId() + "," + patch.getFilePath() + "," + patch.getLineNumber().get() + "," + patch.getAppliedOperation();
+            final String patchLine = patch.getId() + "," + patch.getFilePath() + "," + patch.getLineNumber().get() + "," + patch.getAppliedOperation() + "," + patch.hashCode();
             final String resultLine = String.join(",", result.toStringMap().values());
             final String recode = patchLine + "," + resultLine;
             recodes.add(recode);

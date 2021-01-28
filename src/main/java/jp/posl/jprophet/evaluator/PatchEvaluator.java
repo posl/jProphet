@@ -85,10 +85,11 @@ public class PatchEvaluator {
     public List<PatchCandidate> sort(List<PatchCandidate> candidates, List<Suspiciousness> suspiciousnessList, RepairConfiguration config) {
         List<String> hashCodes;
         try {
-            hashCodes = Files.readAllLines(Paths.get("result1.csv")).subList(1, 224).stream()
-            .map(normal -> normal.split(",")[4])
-            .distinct()
-            .collect(Collectors.toList());
+            hashCodes = Files.readAllLines(Paths.get("result.csv")).subList(1, 502).stream()
+                // .map(normal -> normal.split(",")[1] + normal.split(",")[2])
+                .map(normal -> normal.split(",")[4])
+                .distinct()
+                .collect(Collectors.toList());
         } catch (IOException e1) {
             e1.printStackTrace();
             return Collections.emptyList();
@@ -96,6 +97,7 @@ public class PatchEvaluator {
         candidates.stream()
             .filter(candidate -> {
                 return hashCodes.stream()
+                    // .anyMatch(hashCode -> (candidate.getFilePath() + String.valueOf(candidate.getLineNumber())).equals(hashCode));
                     .anyMatch(hashCode -> String.valueOf(candidate.hashCode()).equals(hashCode));
             })
             .collect(Collectors.toList());
