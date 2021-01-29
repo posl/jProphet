@@ -41,24 +41,34 @@ public class PatchCandidateGenerator{
             .collect(Collectors.toList());
 
         double limit = selectedSusp.size() >= 10 ? selectedSusp.get(9) : selectedSusp.get(selectedSusp.size() - 1);
+        boolean limitFlag = false;
 
-        for(Map.Entry<FileLocator, CompilationUnit> entry : fileLocatorMap.entrySet()){
-            final FileLocator fileLocator = entry.getKey();
-            final List<Node> targetNodes = NodeUtility.getAllDescendantNodes(entry.getValue());
-            List<Node> sortedNodes = targetNodes.stream()
-                .sorted(Comparator.comparingDouble(n -> calcSusp(fileLocator.getFqn(), (Node)n, suspiciousnesses)).reversed())
-                .filter(n -> calcSusp(fileLocator.getFqn(), n, suspiciousnesses) >= limit)
-                .collect(Collectors.toList());
-            for(Node targetNode : sortedNodes){
-                //疑惑値0のtargetNodeはパッチを生成しない
-                if (!findZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
-                    final List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
-                    for(AppliedOperationResult result : appliedOperationResults){
-                        candidates.add(new PatchCandidate(result.getOperationDiff(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
-                        patchCandidateID += 1;
+        for (double susp : selectedSusp) {
+            for(Map.Entry<FileLocator, CompilationUnit> entry : fileLocatorMap.entrySet()){
+                final FileLocator fileLocator = entry.getKey();
+                final List<Node> targetNodes = NodeUtility.getAllDescendantNodes(entry.getValue());
+                List<Node> sortedNodes = targetNodes.stream()
+                    .sorted(Comparator.comparingDouble(n -> calcSusp(fileLocator.getFqn(), (Node)n, suspiciousnesses)).reversed())
+                    .filter(n -> calcSusp(fileLocator.getFqn(), n, suspiciousnesses) == susp)
+                    .collect(Collectors.toList());
+                for(Node targetNode : sortedNodes){
+                    //疑惑値0のtargetNodeはパッチを生成しない
+                    if (!findZeroSuspiciousness(fileLocator.getFqn(), targetNode, suspiciousnesses)) {
+                        final List<AppliedOperationResult> appliedOperationResults = this.applyTemplate(targetNode, operations);
+                        for(AppliedOperationResult result : appliedOperationResults){
+                            candidates.add(new PatchCandidate(result.getOperationDiff(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
+                            patchCandidateID += 1;
+                            if (patchCandidateID > 10000) {
+                                limitFlag = true;
+                                break;
+                            }
+                        }
                     }
+                    if (limitFlag) break;
                 }
+                if (limitFlag) break;
             }
+            if (limitFlag) break;
         }
 
         return candidates;
