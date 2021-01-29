@@ -26,6 +26,7 @@ import jp.posl.jprophet.fl.spectrumbased.coverage.CoverageCollector;
 import jp.posl.jprophet.evaluator.PatchEvaluator;
 import jp.posl.jprophet.fl.FaultLocalization;
 import jp.posl.jprophet.fl.Suspiciousness;
+import jp.posl.jprophet.fl.manualspecification.strategy.*;
 import jp.posl.jprophet.fl.spectrumbased.strategy.*;
 import jp.posl.jprophet.operation.*;
 import jp.posl.jprophet.patch.PatchCandidate;
@@ -58,6 +59,11 @@ public class JProphetMain {
                 projectPath = args[0];
             }
         }
+
+        CSVImporter csvImporter = new CSVImporter("./specifications.csv");
+        //specifications.csv は jprophet 直下におく
+        List<SpecificationStrategy> specificationStrategies = csvImporter.getSpecifications();
+
         final Project                  project                  = new MavenProject(projectPath);
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project, parameterPath);
         final Coefficient              coefficient              = new Ochiai();
