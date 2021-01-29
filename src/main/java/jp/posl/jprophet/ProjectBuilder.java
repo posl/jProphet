@@ -65,6 +65,7 @@ public class ProjectBuilder {
         final boolean isSuccess = task.call();
 
         for (Diagnostic<?> diagnostic : diagnostics.getDiagnostics()) {
+            /*
             System.err.println(diagnostic.getCode());
             System.err.println(diagnostic.getKind());
             System.err.println(diagnostic.getPosition());
@@ -72,6 +73,7 @@ public class ProjectBuilder {
             System.err.println(diagnostic.getEndPosition());
             System.err.println(diagnostic.getSource());
             System.err.println(diagnostic.getMessage(null));
+            */
 
         }
 

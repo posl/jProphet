@@ -21,6 +21,7 @@ import jp.posl.jprophet.project.GradleProject;
 import jp.posl.jprophet.project.MavenProject;
 import jp.posl.jprophet.project.Project;
 import jp.posl.jprophet.fl.spectrumbased.SpectrumBasedFaultLocalization;
+import jp.posl.jprophet.fl.manualspecification.ManualSpecification;
 import jp.posl.jprophet.fl.spectrumbased.TestCase;
 import jp.posl.jprophet.fl.spectrumbased.coverage.CoverageCollector;
 import jp.posl.jprophet.evaluator.PatchEvaluator;
@@ -68,6 +69,7 @@ public class JProphetMain {
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project, parameterPath);
         final Coefficient              coefficient              = new Ochiai();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);
+        //final FaultLocalization        faultLocalization        = new ManualSpecification(config, specificationStrategies);
         final PatchCandidateGenerator  patchCandidateGenerator  = new PatchCandidateGenerator();
         final PatchEvaluator           patchEvaluator           = new PatchEvaluator();
         final TestExecutor             testExecutor             = new UnitTestExecutor();
