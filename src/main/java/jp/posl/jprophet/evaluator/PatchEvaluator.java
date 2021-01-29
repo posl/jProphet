@@ -85,7 +85,7 @@ public class PatchEvaluator {
     public List<PatchCandidate> sort(List<PatchCandidate> candidates, List<Suspiciousness> suspiciousnessList, RepairConfiguration config) {
         List<String> hashCodes;
         try {
-            hashCodes = Files.readAllLines(Paths.get("result.csv")).subList(1, 502).stream()
+            hashCodes = Files.readAllLines(Paths.get("result.csv")).subList(1, 238).stream()
                 // .map(normal -> normal.split(",")[1] + normal.split(",")[2])
                 .map(normal -> normal.split(",")[4])
                 .distinct()
@@ -94,11 +94,12 @@ public class PatchEvaluator {
             e1.printStackTrace();
             return Collections.emptyList();
         }
-        candidates.stream()
+        candidates = candidates.stream()
             .filter(candidate -> {
+                String hash = String.valueOf(candidate.hashCode());
                 return hashCodes.stream()
                     // .anyMatch(hashCode -> (candidate.getFilePath() + String.valueOf(candidate.getLineNumber())).equals(hashCode));
-                    .anyMatch(hashCode -> String.valueOf(candidate.hashCode()).equals(hashCode));
+                    .anyMatch(hashCode -> hash.equals(hashCode));
             })
             .collect(Collectors.toList());
 
@@ -106,8 +107,8 @@ public class PatchEvaluator {
             .filter(candidate -> filterCandidate(candidate))
             .collect(Collectors.toList());
 
-        if(config.getParameterPath().isPresent()) {
-        // if(false) {
+        // if(config.getParameterPath().isPresent()) {
+        if(false) {
             final String parameterPath = config.getParameterPath().orElseThrow();
             try {
                 final List<String> lines = Files.readAllLines(Paths.get(parameterPath), StandardCharsets.UTF_8);

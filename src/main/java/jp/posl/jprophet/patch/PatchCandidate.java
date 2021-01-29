@@ -133,6 +133,10 @@ public class PatchCandidate implements Patch {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getOperationDiff().getTargetNodeBeforeFix(), this.getOperationDiff().getTargetNodeAfterFix());
+        return Objects.hash(
+            this.fixedFileFqn,
+            this.getLineNumber(),
+            this.getAppliedOperation()
+        );
     }
 }

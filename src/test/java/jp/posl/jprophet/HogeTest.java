@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.Statement;
 
@@ -37,6 +39,17 @@ public class HogeTest {
         final String src = new StringBuilder().append("")
             .append("public class A {\n")
             .append("    private void ma() {\n")
+            .append("        method();\n")
+            .append("        Fuga hoge = new Fuga();\n")
+            .append("        hoge = \"str\";\n")
+            .append("        method();\n")
+            .append("        if (hoge) return \"hoge\";\n")
+            .append("    }\n")
+            .append("}\n")
+            .toString();
+        final String src2 = new StringBuilder().append("")
+            .append("public class A {\n")
+            .append("    private void ma() {\n")
             .append("        Fuga hoge = new Fuga();\n")
             .append("        hoge = \"str\";\n")
             .append("        method();\n")
@@ -45,6 +58,16 @@ public class HogeTest {
             .append("}\n")
             .toString();
         final CompilationUnit cu = JavaParser.parse(src);
+        final CompilationUnit cu2 = JavaParser.parse(src2);
+        Node node1 = cu.getChildNodes().get(0).getChildNodes().get(1).getChildNodes().get(2).getChildNodes().get(0);
+        Node node2 = cu.getChildNodes().get(0).getChildNodes().get(1).getChildNodes().get(2).getChildNodes().get(3);
+        int h1 = Objects.hash("hoge.hoge1", 1, node1.hashCode());
+        int h2 = Objects.hash("hoge.hoge1", 1, node2.hashCode());
+        int test = Integer.hashCode(12344);
+        int hashNode = node1.hashCode();
+        int hashNode2 = node2.hashCode();
+        int hashCu = cu.hashCode();
+        int hashCu2 = cu2.hashCode();
         final MethodCallExpr m = cu.findFirst(MethodCallExpr.class).orElseThrow();
         final Statement s = m.findParent(Statement.class).orElseThrow();
         return;
