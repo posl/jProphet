@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.posl.jprophet.fl.Suspiciousness;
+import jp.posl.jprophet.ProjectBuilder;
 import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.fl.manualspecification.strategy.SpecificationStrategy;
 import jp.posl.jprophet.project.Project;
@@ -24,6 +25,7 @@ public class ManualSpecification implements FaultLocalization{
 
     final private List<SpecificationStrategy> specificationStrategyList;
     final private Project project;
+    ProjectBuilder projectBuilder = new ProjectBuilder();
 
     /**
      * バグの位置を指定して,その行の疑惑値を変化させる
@@ -33,6 +35,7 @@ public class ManualSpecification implements FaultLocalization{
     public ManualSpecification(RepairConfiguration repairConfigulation, List<SpecificationStrategy> specificationStrategyList){
         this.project = repairConfigulation.getTargetProject();
         this.specificationStrategyList = specificationStrategyList;
+        this.projectBuilder.build(repairConfigulation);
     }
 
     /**
