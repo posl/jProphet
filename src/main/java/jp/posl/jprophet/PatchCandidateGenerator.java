@@ -58,7 +58,7 @@ public class PatchCandidateGenerator{
                         for(AppliedOperationResult result : appliedOperationResults){
                             candidates.add(new PatchCandidate(result.getOperationDiff(), fileLocator.getPath(), fileLocator.getFqn(), result.getOperation(), patchCandidateID));
                             patchCandidateID += 1;
-                            if (patchCandidateID > 10000) {
+                            if (patchCandidateID > 5000) {
                                 limitFlag = true;
                                 break;
                             }
