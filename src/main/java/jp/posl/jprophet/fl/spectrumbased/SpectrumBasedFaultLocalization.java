@@ -52,6 +52,7 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
         try {
             testResults = coverageCollector.exec(sourceClassFileFqns, testClassFileFqns);
             new CSVExporter("./result/", "failtest.csv").exportFailedTest(testResults);
+            /*
             List<TestCase> testsToBeExecuted = new ArrayList<TestCase>();
             for (String sourceFqn : this.sourceClassFileFqns) {
                 List<String> testNames = testResults.getTestResults().stream()
@@ -62,6 +63,7 @@ public class SpectrumBasedFaultLocalization implements FaultLocalization{
 
                 testsToBeExecuted.add(new TestCase(sourceFqn, testNames));
             }
+            */
             //ここでtestToBeExecutedをファイル出力
 
             SuspiciousnessCollector suspiciousnessCollector = new SuspiciousnessCollector(testResults, this.sourceClassFileFqns, coefficient);

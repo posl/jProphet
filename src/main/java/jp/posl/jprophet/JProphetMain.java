@@ -139,12 +139,17 @@ public class JProphetMain {
         }
 
         
-        final List<TestCase> testsToBeExecuted = new CoverageCollector(config.getBuildPath()).selectCollectTestCases(config);
+        //final List<TestCase> testsToBeExecuted = new CoverageCollector(config.getBuildPath()).selectCollectTestCases(config);
+        final List<String> testsToBeExecuted = new CoverageCollector(config.getBuildPath()).selectCollectTestCases(config);
         System.out.println("finish select testcase");
         CSVExporter selectedTest = new CSVExporter("./result/", "selectedTest.csv");
+        /*
         testsToBeExecuted.stream()
             .flatMap(et -> et.getTestNames().stream())
             .distinct()
+            .forEach(t -> selectedTest.addRecode(t));
+        */
+        testsToBeExecuted.stream()
             .forEach(t -> selectedTest.addRecode(t));
         
         selectedTest.export();

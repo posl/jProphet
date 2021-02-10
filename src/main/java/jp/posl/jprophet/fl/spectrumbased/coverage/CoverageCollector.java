@@ -117,10 +117,11 @@ public class CoverageCollector {
      * @param config 対象プロジェクトのconfig
      * @return 厳選したテストケース
      */
-    public List<TestCase> selectCollectTestCases(RepairConfiguration config) {
+    public List<String> selectCollectTestCases(RepairConfiguration config) {
         try {
             TestResults testResults = this.exec(config.getTargetProject().getSrcFileFqns() , config.getTargetProject().getTestFileFqns());
             List<TestCase> testsToBeExecuted = new ArrayList<TestCase>();
+            /*
             for (String sourceFqn : config.getTargetProject().getSrcFileFqns()) {
                 List<String> testNames = testResults.getTestResults().stream()
                     .filter(t -> t.getCoverages().stream().filter(c -> c.getName().equals(sourceFqn)).findFirst().isPresent())
@@ -130,9 +131,17 @@ public class CoverageCollector {
 
                 testsToBeExecuted.add(new TestCase(sourceFqn, testNames));
             }
-            return testsToBeExecuted;
+            */
+            List<String> testNames = testResults.getTestResults().stream()
+                .map(t -> t.getMethodName())
+                .distinct()
+                .collect(Collectors.toList());
+                
+            return testNames;
+            //return testsToBeExecuted;
         } catch (Exception e) {
-            return new ArrayList<TestCase>();
+            return new ArrayList<String>();
+            //return new ArrayList<TestCase>();
         }
     }
 

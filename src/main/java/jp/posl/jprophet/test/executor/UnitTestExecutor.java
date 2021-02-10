@@ -68,14 +68,18 @@ public class UnitTestExecutor implements TestExecutor {
     }
 
     @Override
-    public TestExecutorResult exec(RepairConfiguration config, List<TestCase> testsToBeExecuted)  {
+    public TestExecutorResult exec(RepairConfiguration config, List<String> testsToBeExecuted)  {
         try {
             if (builder.build(config)){
                 this.getClassLoader(config.getBuildPath());
+                /*
                 List<String> testFqns = testsToBeExecuted.stream()
                     .flatMap(et -> et.getTestNames().stream())
                     .distinct()
                     .collect(Collectors.toList());
+                */
+                List<String> testFqns = testsToBeExecuted;
+
 
                 final boolean result = runAllTestFqn(testFqns);
                 return new TestExecutorResult(result, List.of(new UnitTestResult(result)));

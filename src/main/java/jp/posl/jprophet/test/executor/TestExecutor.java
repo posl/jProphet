@@ -25,7 +25,8 @@ public interface TestExecutor {
      * @param executionTests 実行するテスト
      * @return テスト結果のリスト
      */
-    default public TestExecutorResult exec(RepairConfiguration config, List<TestCase> testsToBeExecuted) {
+    default public TestExecutorResult exec(RepairConfiguration config, List<String> testsToBeExecuted) {
         return new TestExecutorResult(false, List.of(new UnitTestResult(false)));
     };
+
 } 
