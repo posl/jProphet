@@ -11,6 +11,7 @@ import org.apache.commons.io.FileUtils;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.fl.spectrumbased.coverage.TestResults;
 import jp.posl.jprophet.patch.PatchCandidate;
+import jp.posl.jprophet.evaluator.PatchEvaluator;
 
 public class CSVExporter {
     
@@ -55,6 +56,16 @@ public class CSVExporter {
         this.recodes.add(field);
         for (PatchCandidate candidate : candidates) {
             final String recode = candidate.getId() + "," + candidate.getFilePath() + "," + candidate.getLineNumber().get() + "," + candidate.getAppliedOperation();
+            this.recodes.add(recode);
+        }
+        this.export();
+    }
+
+    public void exportAllPatchScore(List<PatchEvaluator.PatchForEval> candidates) {
+        final String field = "ID,filePath,line,operation,score";
+        this.recodes.add(field);
+        for (PatchEvaluator.PatchForEval candidate : candidates) {
+            final String recode = candidate.patch.getId() + "," + candidate.patch.getFilePath() + "," + candidate.patch.getLineNumber().get() + "," + candidate.patch.getAppliedOperation() + "," + candidate.getScore().get();
             this.recodes.add(recode);
         }
         this.export();

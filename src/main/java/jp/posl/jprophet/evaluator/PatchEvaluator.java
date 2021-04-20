@@ -17,6 +17,7 @@ import jp.posl.jprophet.RepairConfiguration;
 import jp.posl.jprophet.evaluator.extractor.FeatureExtractor;
 import jp.posl.jprophet.fl.Suspiciousness;
 import jp.posl.jprophet.patch.PatchCandidate;
+import jp.posl.jprophet.test.exporter.CSVExporter;
 
 /**
  * 
@@ -28,8 +29,8 @@ public class PatchEvaluator {
      * パッチ候補，FLによる疑惑値，疑惑値による順位，スコアの四つを合わせたクラス
      * 疑惑値と学習パラメータによって算出されるスコアによるパッチ候補のソートに用いる
     */
-    static class PatchForEval {
-        final private PatchCandidate patch;
+    public static class PatchForEval {
+        final public PatchCandidate patch;
         final private double suspiciousness;
         private Integer rank;
         private Double score;
@@ -112,6 +113,14 @@ public class PatchEvaluator {
                     .filter(candidate -> candidate.getScore().get() > 0)
                     .map(candidateWithFLRank -> candidateWithFLRank.getPatch())
                     .collect(Collectors.toList());
+
+                CSVExporter ce = new CSVExporter("result/", "patchScore.csv");
+                ce.exportAllPatchScore(candidatesForEvalSortedBySuspiciousness.stream()
+                    .sorted(Comparator.comparingDouble(candidateWithFLRank -> ((PatchForEval)candidateWithFLRank).getScore().orElseThrow()).reversed())
+                    .filter(candidate -> candidate.getScore().get() > 0)
+                    .collect(Collectors.toList()));
+                ce.export();
+
                 return candidatesSortedByScore;
             } catch (IOException | IllegalFormatException e) {
                 e.printStackTrace();
