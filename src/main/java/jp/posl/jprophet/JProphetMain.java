@@ -65,7 +65,7 @@ public class JProphetMain {
         //specifications.csv は jprophet 直下におく
         List<SpecificationStrategy> specificationStrategies = csvImporter.getSpecifications();
 
-        final Project                  project                  = new GradleProject(projectPath);
+        final Project                  project                  = new MavenProject(projectPath);
         final RepairConfiguration      config                   = new RepairConfiguration(buildDir, resultDir, project, parameterPath);
         final Coefficient              coefficient              = new Ochiai();
         final FaultLocalization        faultLocalization        = new SpectrumBasedFaultLocalization(config, coefficient);

@@ -62,10 +62,10 @@ public class CSVExporter {
     }
 
     public void exportAllPatchScore(List<PatchEvaluator.PatchForEval> candidates) {
-        final String field = "ID,filePath,line,operation,score";
+        final String field = "ID,filePath,line,operation,score,rank";
         this.recodes.add(field);
         for (PatchEvaluator.PatchForEval candidate : candidates) {
-            final String recode = candidate.patch.getId() + "," + candidate.patch.getFilePath() + "," + candidate.patch.getLineNumber().get() + "," + candidate.patch.getAppliedOperation() + "," + candidate.getScore().get();
+            final String recode = candidate.patch.getId() + "," + candidate.patch.getFilePath() + "," + candidate.patch.getLineNumber().get() + "," + candidate.patch.getAppliedOperation() + "," + candidate.getScore().get() + "," + candidate.getRank().get();
             this.recodes.add(recode);
         }
         this.export();
