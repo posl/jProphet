@@ -174,7 +174,7 @@ public class MavenProject implements Project {
     private String buildSrcFileFqn(String filePath){
         final String gradleSrcPath = "/src/main/java/";
         final String srcDirPath = this.rootPath + gradleSrcPath;
-        return filePath.replace(srcDirPath, "").replace("/", ".").replace(".java", "");
+        return filePath.replace(srcDirPath, "").replace(".java", "").replace("/", ".");
     }
 
     /**
